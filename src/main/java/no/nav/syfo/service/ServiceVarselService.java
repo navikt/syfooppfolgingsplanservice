@@ -1,0 +1,49 @@
+package no.nav.syfo.service;
+
+import no.nav.melding.virksomhet.varsel.v1.varsel.XMLAktoerId;
+import no.nav.melding.virksomhet.varsel.v1.varsel.XMLParameter;
+import no.nav.melding.virksomhet.varsel.v1.varsel.XMLVarsel;
+import no.nav.melding.virksomhet.varsel.v1.varsel.XMLVarslingstyper;
+import no.nav.syfo.model.Kontaktinfo;
+import no.nav.syfo.model.Varseltype;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.jms.core.JmsTemplate;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import static java.lang.System.getProperty;
+import static java.util.UUID.randomUUID;
+import static no.nav.syfo.util.JAXB.marshallVarsel;
+import static no.nav.syfo.util.JmsUtil.messageCreator;
+
+public class ServiceVarselService {
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceVarselService.class);
+
+    @Inject
+    @Named("servicevarselqueue")
+    private JmsTemplate servicevarselqueue;
+    @Inject
+    private DkifService dkifService;
+
+    public void sendServiceVarsel(String aktoerId, Varseltype varseltype, Long oppfoelgingsdialogId) {
+        Kontaktinfo kontaktinfo = dkifService.hentKontaktinfoAktoerId(aktoerId);
+        if (!kontaktinfo.skalHaVarsel) {
+            LOG.warn("Bruker {} skal ikke ha varsel pga {}", aktoerId, kontaktinfo.feilAarsak.name());
+            return;
+        }
+        XMLVarsel xmlVarsel = new XMLVarsel()
+                .withMottaker(new XMLAktoerId(aktoerId))
+                .withVarslingstype(new XMLVarslingstyper(varseltype.name(), null, null))
+                .withParameterListes(
+                        new XMLParameter("dittnavUrl", getProperty("TJENESTER_URL") + "/sykefravaer/oppfolgingsplaner/" + oppfoelgingsdialogId),
+                        new XMLParameter("url", getProperty("TJENESTER_URL") + "/sykefravaer")
+                );
+
+        String xml = marshallVarsel(xmlVarsel);
+        servicevarselqueue.send(messageCreator(xml, randomUUID().toString()));
+    }
+
+
+}

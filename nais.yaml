@@ -1,0 +1,128 @@
+image: docker.adeo.no:5000/digisyfo/syfooppfolgingsplanservice
+name: syfooppfolgingsplanservice
+team: teamsykefravr
+replicas:
+  min: 1
+  max: 1
+  cpuThresholdPercentage: 80
+port: 8080
+webproxy: true
+healthcheck:
+  liveness:
+    path: syfooppfolgingsplanservice/internal/isAlive
+    initialDelay: 60
+  readiness:
+    path: syfooppfolgingsplanservice/internal/isAlive
+    initialDelay: 60
+prometheus:
+  enabled: true
+  path: syfooppfolgingsplanservice/internal/metrics
+resources:
+  limits:
+    cpu: 3000m
+    memory: 2048Mi
+  requests:
+    cpu: 500m
+    memory: 1024Mi
+fasitResources:
+  exposed:
+  - alias: syfooppfolgingsplanserviceapi
+    resourceType: restservice
+    path: /syfooppfolgingsplanservice/api
+  - alias: syfooppfolgingsplanservicefeedveilederoppgaver
+    resourceType: restservice
+    path: /syfooppfolgingsplanservice/api/system/feed/oppfoelgingsdialoger
+  used:
+  - alias: appdynamics
+    resourceType: applicationproperties
+  - alias: srvsyfooppfolgingsplanservice
+    resourceType: credential
+  - alias: loadbalancer:syfooppfolgingsplanservice
+    resourceType: loadbalancerconfig
+  - alias: securityTokenService
+    resourceType: baseurl
+  - alias: modapp
+    resourceType: baseurl
+  - alias: tjenester
+    resourceType: baseurl
+  - alias: juridiskloggEndepunkt
+    resourceType: baseurl
+  - alias: syfooppfolgingsplanservice.properties
+    resourceType: applicationproperties
+  - alias: syfotoggles.properties
+    resourceType: applicationproperties
+  - alias: serviceoppfoelgingsdialogDB
+    resourceType: datasource
+  - alias: syfoveilederoppgaver.systemapi
+    resourceType: credential
+  - alias: altinnUser
+    resourceType: credential
+  - alias: Aktoer_v2
+    resourceType: webserviceendpoint
+  - alias: BehandleJournal_v2
+    resourceType: webserviceendpoint
+  - alias: ekstern:altinn_behandlealtinnmelding_v1
+    resourceType: webserviceendpoint
+  - alias: Sykefravaersoppfoelging_v1
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Arbeidsfordeling_v1
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Arbeidsforhold_v3
+    resourceType: webserviceendpoint
+  - alias: virksomhet:BehandleSak_v1
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Brukerprofil_v3
+    resourceType: webserviceendpoint
+  - alias: virksomhet:DigitalKontakinformasjon_v1
+    resourceType: webserviceendpoint
+  - alias: virksomhet:EgenAnsatt_v1
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Organisasjon_v4
+    resourceType: webserviceendpoint
+  - alias: virksomhet:OrganisasjonEnhet_v2
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Person_v3
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Sak_v1
+    resourceType: webserviceendpoint
+
+ # Queue
+  - alias: mqGateway03
+    resourceType: queuemanager
+  - alias: syfooppfolgingsplanservice_channel
+    resourceType: channel
+  - alias: VARSELPRODUKSJON.VARSLINGER
+    resourceType: queue
+  - alias: VARSELPRODUKSJON.BEST_SRVMLD_M_KONTAKT
+    resourceType: queue
+
+  # OIDC med AzureAD B2C
+  - alias: aad_b2c_clientid
+    resourceType: credential
+  - alias: aad_b2c_discovery
+    resourceType: baseurl
+  - alias: isso-host
+    resourceType: baseurl
+  - alias: isso-jwks
+    resourceType: baseurl
+  - alias: isso-issuer
+    resourceType: baseurl
+  - alias: isso.isalive
+    resourceType: baseurl
+  - alias: isso-rp-user
+    resourceType: credential
+  - alias: veilarblogin.redirect-url
+    resourceType: restservice
+
+  - alias: fastlege-dialogmelding-api-v1
+    resourceType: restservice
+  - alias: LagreJuridiskLogg_Rest
+    resourceType: restservice
+  - alias: tilgangskontrollapi
+    resourceType: restservice
+  - alias: syfoveilederoppgaver_system_v1
+    resourceType: restservice
+    path: /syfoveilederoppgaver/api/system/veilederoppgaver/v1
+  - alias: syfoveilederoppgaver_actions_system_v1
+    resourceType: restservice
+

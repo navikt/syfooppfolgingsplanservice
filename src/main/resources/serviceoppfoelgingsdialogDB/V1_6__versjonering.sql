@@ -1,0 +1,21 @@
+-- ROLLBACK-START
+------------------
+-- ALTER TABLE GODKJENTPLAN ADD ( VERSJON );
+---------------
+-- ROLLBACK-END
+
+DROP SEQUENCE TILBAKEMELDING_ID_SEQ;
+DROP TABLE TILBAKEMELDING;
+
+ALTER TABLE GODKJENTPLAN
+  DROP (
+  SAMTYKKE_SYKMELDT,
+  SAMTYKKE_ARBEIDSGIVER,
+  VERSJON
+);
+
+ALTER TABLE OPPFOELGINGSDIALOG
+  ADD (
+  samtykke_sykmeldt CHAR CHECK (samtykke_sykmeldt IN (0, 1)),
+  samtykke_arbeidsgiver CHAR CHECK (samtykke_arbeidsgiver IN (0, 1))
+  );

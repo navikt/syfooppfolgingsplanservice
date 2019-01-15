@@ -1,0 +1,10 @@
+-- ROLLBACK-START
+------------------
+-- ALTER TABLE GODKJENTPLAN DROP ( TILDELT_ENHET );
+---------------
+-- ROLLBACK-END
+
+ALTER TABLE GODKJENTPLAN
+  ADD (
+  tildelt_enhet VARCHAR(10)
+  );
