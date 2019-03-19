@@ -1,16 +1,11 @@
 package no.nav.syfo.api.intern.ressurs;
 
 import no.nav.syfo.api.intern.domain.RSBrukerPaaEnhet;
-import no.nav.syfo.service.TilgangsKontroll;
-import no.nav.syfo.service.AktoerService;
-import no.nav.syfo.service.EgenAnsattService;
-import no.nav.syfo.service.PersonService;
-import no.nav.syfo.service.VeilederBehandlingService;
+import no.nav.syfo.service.*;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -22,20 +17,26 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Produces(APPLICATION_JSON)
 public class EnhetRessurs {
 
-    @Inject
+    private AktoerService aktoerService;
+    private EgenAnsattService egenAnsattService;
+    private PersonService personService;
+    private TilgangsKontroll tilgangsKontroll;
     private VeilederBehandlingService veilederBehandlingService;
 
     @Inject
-    private AktoerService aktoerService;
-
-    @Inject
-    private TilgangsKontroll tilgangsKontroll;
-
-    @Inject
-    private PersonService personService;
-
-    @Inject
-    private EgenAnsattService egenAnsattService;
+    public EnhetRessurs(
+            final AktoerService aktoerService,
+            final EgenAnsattService egenAnsattService,
+            final PersonService personService,
+            final TilgangsKontroll tilgangsKontroll,
+            final VeilederBehandlingService veilederBehandlingService
+    ) {
+        this.aktoerService = aktoerService;
+        this.egenAnsattService = egenAnsattService;
+        this.personService = personService;
+        this.tilgangsKontroll = tilgangsKontroll;
+        this.veilederBehandlingService = veilederBehandlingService;
+    }
 
     @GET
     @Path("/{enhet}/oppfolgingsplaner/brukere")
@@ -45,8 +46,8 @@ public class EnhetRessurs {
                 .stream()
                 .map(aktorId -> aktoerService.hentFnrForAktoer(aktorId))
                 .map(fnr -> new RSBrukerPaaEnhet()
-                    .fnr(fnr)
-                    .skjermetEllerEgenAnsatt(sykmeldtErDiskresjonsmerketEllerEgenAnsatt(fnr)))
+                        .fnr(fnr)
+                        .skjermetEllerEgenAnsatt(sykmeldtErDiskresjonsmerketEllerEgenAnsatt(fnr)))
                 .collect(toList());
     }
 
