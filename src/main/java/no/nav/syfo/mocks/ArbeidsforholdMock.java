@@ -3,9 +3,15 @@ package no.nav.syfo.mocks;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.*;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.*;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.meldinger.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+import static no.nav.syfo.config.ws.wsconfig.AAregConfig.MOCK_KEY;
+
+@Service
+@ConditionalOnProperty(value = MOCK_KEY, havingValue = "true")
 public class ArbeidsforholdMock implements ArbeidsforholdV3 {
     public FinnArbeidsforholdPrArbeidsgiverResponse finnArbeidsforholdPrArbeidsgiver(FinnArbeidsforholdPrArbeidsgiverRequest parameters)
             throws FinnArbeidsforholdPrArbeidsgiverForMangeForekomster, FinnArbeidsforholdPrArbeidsgiverSikkerhetsbegrensning, FinnArbeidsforholdPrArbeidsgiverUgyldigInput {

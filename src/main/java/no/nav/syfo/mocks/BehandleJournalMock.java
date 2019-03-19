@@ -1,10 +1,14 @@
 package no.nav.syfo.mocks;
 
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.*;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
+import static no.nav.syfo.config.ws.wsconfig.BehandleJournalConfig.MOCK_KEY;
+
+@Service
+@ConditionalOnProperty(value = MOCK_KEY, havingValue = "true")
 public class BehandleJournalMock implements BehandleJournalV2 {
     @Override
     public WSArkiverUstrukturertKravResponse arkiverUstrukturertKrav(WSArkiverUstrukturertKravRequest wsArkiverUstrukturertKravRequest) {

@@ -6,17 +6,20 @@ replicas:
   max: 1
   cpuThresholdPercentage: 80
 port: 8080
-webproxy: true
 healthcheck:
   liveness:
-    path: syfooppfolgingsplanservice/internal/isAlive
-    initialDelay: 60
+    path: /syfooppfolgingsplanservice/internal/isAlive
+    initialDelay: 120
+    timeout: 1
+    periodSeconds: 10
+    failureThreshold: 3
   readiness:
-    path: syfooppfolgingsplanservice/internal/isAlive
-    initialDelay: 60
+    path: /syfooppfolgingsplanservice/internal/isReady
+    initialDelay: 120
+    timeout: 1
 prometheus:
   enabled: true
-  path: syfooppfolgingsplanservice/internal/metrics
+  path: /syfooppfolgingsplanservice/internal/prometheus
 resources:
   limits:
     cpu: 3000m
@@ -53,6 +56,10 @@ fasitResources:
     resourceType: applicationproperties
   - alias: serviceoppfoelgingsdialogDB
     resourceType: datasource
+    propertyMap:
+      url: SPRING_DATASOURCE_URL
+      username: SPRING_DATASOURCE_USERNAME
+      password: SPRING_DATASOURCE_PASSWORD
   - alias: syfoveilederoppgaver.systemapi
     resourceType: credential
   - alias: altinnUser
@@ -99,7 +106,16 @@ fasitResources:
   # OIDC med AzureAD B2C
   - alias: aad_b2c_clientid
     resourceType: credential
+    propertyMap:
+      username: NO_NAV_SECURITY_OIDC_ISSUER_SELVBETJENING_ACCEPTEDAUDIENCE
   - alias: aad_b2c_discovery
+    resourceType: baseurl
+    propertyMap:
+      url: NO_NAV_SECURITY_OIDC_ISSUER_SELVBETJENING_DISCOVERYURL
+  - alias: opam_oidc_discovery
+    resourceType: baseurl
+    propertyMap:
+      url: NO_NAV_SECURITY_OIDC_ISSUER_INTERN_DISCOVERYURL
     resourceType: baseurl
   - alias: isso-host
     resourceType: baseurl
@@ -111,8 +127,6 @@ fasitResources:
     resourceType: baseurl
   - alias: isso-rp-user
     resourceType: credential
-  - alias: veilarblogin.redirect-url
-    resourceType: restservice
 
   - alias: fastlege-dialogmelding-api-v1
     resourceType: restservice

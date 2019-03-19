@@ -1,29 +1,32 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 
-import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
 
 @Service
 public class SamtykkeService {
 
     private AktoerService aktoerService;
+    private Metrikk metrikk;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private TilgangskontrollService tilgangskontrollService;
 
     @Inject
     public SamtykkeService(
             AktoerService aktoerService,
+            Metrikk metrikk,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             TilgangskontrollService tilgangskontrollService
     ) {
         this.aktoerService = aktoerService;
+        this.metrikk = metrikk;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.tilgangskontrollService = tilgangskontrollService;
 
@@ -37,7 +40,7 @@ public class SamtykkeService {
             throw new ForbiddenException("Ikke tilgang");
         }
 
-        createEvent("samtykke").addFieldToReport("giSamtykke", giSamtykke).report();
+        metrikk.tellOPSamtykke(giSamtykke);
         if (erArbeidstakeren(oppfoelgingsdialog, aktoerId)) {
             oppfoelingsdialogDAO.lagreSamtykkeSykmeldt(oppfoelgingsdialogId, giSamtykke);
         } else {

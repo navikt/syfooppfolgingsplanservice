@@ -1,6 +1,8 @@
 package no.nav.syfo.mockdata;
 
 import no.nav.syfo.api.intern.domain.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static javax.ws.rs.core.Response.ok;
 import static org.apache.commons.io.IOUtils.toByteArray;
+import static org.springframework.http.MediaType.APPLICATION_PDF;
 
 public class MockData {
     public static List<RSOppfoelgingsdialog> mockedOppfoelgingsdialoger() {
@@ -36,17 +39,16 @@ public class MockData {
         );
     }
 
-    public static Response mockPdf() {
+    public static ResponseEntity mockPdf() {
         byte[] dokument;
         try {
             dokument = toByteArray(MockData.class.getResourceAsStream("/mock.pdf"));
         } catch (IOException e) {
             throw new RuntimeException();
         }
-        return ok()
-                .type("application/pdf")
-                .entity(dokument)
-                .build();
+        return ResponseEntity.ok()
+                .contentType(APPLICATION_PDF)
+                .body(dokument);
     }
 
     public static byte[] mockPdfBytes() {

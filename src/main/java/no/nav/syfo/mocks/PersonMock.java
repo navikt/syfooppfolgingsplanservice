@@ -2,7 +2,13 @@ package no.nav.syfo.mocks;
 
 import no.nav.tjeneste.virksomhet.person.v3.*;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
+import static no.nav.syfo.config.ws.wsconfig.PersonConfig.MOCK_KEY;
+
+@Service
+@ConditionalOnProperty(value = MOCK_KEY, havingValue = "true")
 public class PersonMock implements PersonV3 {
     @Override
     public WSHentPersonResponse hentPerson(WSHentPersonRequest wsHentPersonRequest) throws HentPersonSikkerhetsbegrensning, HentPersonPersonIkkeFunnet {

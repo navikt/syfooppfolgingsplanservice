@@ -1,9 +1,6 @@
 package no.nav.syfo;
 
-import no.nav.syfo.domain.Godkjenning;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.domain.Person;
-import no.nav.syfo.domain.Virksomhet;
+import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
@@ -20,7 +17,7 @@ import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.fjernEldsteGodkjenning;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,7 +48,6 @@ public class OppfoelgingsdialogServiceTest {
                 dialog2
         ));
         when(oppfoelingsdialogDAO.populate(dialog1)).thenReturn(dialog1);
-        when(oppfoelingsdialogDAO.populate(dialog2)).thenReturn(dialog2);
         List<Oppfoelgingsdialog> dialoger = oppfoelgingsdialogService.hentAktoersOppfoelgingsdialoger("aktoerId", "ARBEIDSGIVER", "123");
         assertThat(dialoger.size()).isEqualTo(1);
         assertThat(dialoger.get(0).id).isEqualTo(1L);

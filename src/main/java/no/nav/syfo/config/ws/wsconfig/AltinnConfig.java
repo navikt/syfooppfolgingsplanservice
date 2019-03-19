@@ -1,27 +1,29 @@
 package no.nav.syfo.config.ws.wsconfig;
 
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
-//import no.nav.modig.jaxws.handlers.MDCOutHandler;
-import no.nav.sbl.dialogarena.common.cxf.CXFClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import no.nav.syfo.service.ws.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.*;
 
-import static java.lang.System.getProperty;
-import static no.nav.metrics.MetricsFactory.createTimerProxyForWebService;
-import static no.nav.syfo.util.PropertyUtil.ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL;
+import static java.util.Collections.singletonList;
 
 @Configuration
 public class AltinnConfig {
 
+    @Value("${ekstern.altinn.behandlealtinnmelding.v1.endpointurl}")
+    private String serviceUrl;
+
     @Bean
+    @Primary
     public ICorrespondenceAgencyExternalBasic iCorrespondenceAgencyExternal() {
-        return createTimerProxyForWebService(
-                "Altinn.ICorrespondenceAgencyExternal",
-                new CXFClient<>(ICorrespondenceAgencyExternalBasic.class)
-                        .address(getProperty(ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL))
-                        .configureStsForSystemUser()
-//                        .withHandler(new MDCOutHandler())
-                        .build(),
-                ICorrespondenceAgencyExternalBasic.class);
+        ICorrespondenceAgencyExternalBasic port = factory();
+        STSClientConfig.configureRequestSamlToken(port);
+        return port;
+    }
+
+    @SuppressWarnings("unchecked")
+    private ICorrespondenceAgencyExternalBasic factory() {
+        return new WsClient<ICorrespondenceAgencyExternalBasic>()
+                .createPort(serviceUrl, ICorrespondenceAgencyExternalBasic.class, singletonList(new LogErrorHandler()));
     }
 }

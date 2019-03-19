@@ -6,7 +6,6 @@ import no.nav.syfo.model.Kontaktinfo;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.informasjon.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.meldinger.WSHentDigitalKontaktinformasjonRequest;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -32,7 +31,6 @@ public class DkifService {
         this.aktoerService = aktoerService;
     }
 
-    @Cacheable(value = "dkif", keyGenerator = "userkeygenerator")
     public Kontaktinfo hentKontaktinfoFnr(String fnr) {
         if (isBlank(fnr) || !fnr.matches("\\d{11}$")) {
             log.error("Prøvde å hente kontaktinfo for fnr");
@@ -83,7 +81,6 @@ public class DkifService {
                 .isPresent();
     }
 
-    @Cacheable(value = "dkif", keyGenerator = "userkeygenerator")
     public Kontaktinfo hentKontaktinfoAktoerId(String aktoerId) {
         return hentKontaktinfoFnr(aktoerService.hentFnrForAktoer(aktoerId));
     }

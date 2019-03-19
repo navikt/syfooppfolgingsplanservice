@@ -5,7 +5,6 @@ import no.nav.syfo.model.Stilling;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.*;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.*;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.meldinger.FinnArbeidsforholdPrArbeidstakerRequest;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -62,7 +61,6 @@ public class ArbeidsforholdService {
         }
     }
 
-    @Cacheable(value = "arbeidsforhold", keyGenerator = "userkeygenerator")
     public List<Stilling> hentArbeidsforholdMedAktoerId(String aktoerId, LocalDate oppfoelgingsdialogStartDato, String orgnr) {
         return hentArbeidsforholdMedFnr(aktoerService.hentFnrForAktoer(aktoerId), oppfoelgingsdialogStartDato, orgnr);
     }

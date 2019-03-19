@@ -1,6 +1,7 @@
 package no.nav.syfo.services;
 
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.DokumentDAO;
 import no.nav.syfo.service.PdfService;
 import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
@@ -8,15 +9,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
 public class PdfServiceTest {
 
+    @Mock
+    private Metrikk metrikk;
     @Mock
     private DokumentDAO dokumentDAO;
     @InjectMocks
@@ -26,7 +30,7 @@ public class PdfServiceTest {
     public void hentPdfTilAltinn() {
         Oppfoelgingsdialog oppfoelgingsdialog = OppfoelgingsdialogTestUtils.oppfoelgingsdialogGodkjentTvang();
         byte[] oppfoelgingsdialogPdf = hentOppfoelgingsdialogPdf();
-        when(dokumentDAO.hent(anyString())).thenReturn(oppfoelgingsdialogPdf);
+        when(dokumentDAO.hent(any())).thenReturn(oppfoelgingsdialogPdf);
 
         byte[] dbPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
         assertEquals(dbPdf, oppfoelgingsdialogPdf);

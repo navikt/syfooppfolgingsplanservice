@@ -2,6 +2,7 @@ package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -9,13 +10,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import static java.lang.System.getProperty;
 import static no.nav.syfo.util.RestUtils.basicCredentials;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @Service
 public class JuridiskLoggService {
+
+    @Value("${lagrejuridisklogg.rest.url}")
+    private String altinnUrl;
+
+    @Value("${srvsyfooppfolgingsplanservice.username}")
+    private String altinnUsername;
+
+    @Value("${srvsyfooppfolgingsplanservice.password}")
+    private String systemPassword;
 
     public void loggSendOppfoelgingsdialogTilAltinn(OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogAltinn.oppfoelgingsdialog;
@@ -30,14 +39,12 @@ public class JuridiskLoggService {
             rt.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
             rt.getMessageConverters().add(new StringHttpMessageConverter());
 
-            String url = getProperty("JURIDISKLOGG-LAGRE_URL");
-
-            String credentials = basicCredentials("srvserviceoppfoelgingsdialog");
+            String credentials = basicCredentials(altinnUsername, systemPassword);
             HttpHeaders headers = new HttpHeaders();
             headers.add(AUTHORIZATION, credentials);
             HttpEntity<LoggMelding> requestPost = new HttpEntity<>(loggMelding, headers);
 
-            rt.exchange(url, HttpMethod.POST, requestPost, LoggMelding.class);
+            rt.exchange(altinnUrl, HttpMethod.POST, requestPost, LoggMelding.class);
             log.info("Logget sending av oppfølgingsplan med id {} i juridisk loggSendOppfoelgingsdialogTilAltinn", oppfoelgingsdialog.id);
         } catch (HttpClientErrorException e) {
             log.error("Klientfeil mot JuridiskLogg ved logging av sendt oppfølgingsplan med id {} til Altinn", oppfoelgingsdialog.id, e);

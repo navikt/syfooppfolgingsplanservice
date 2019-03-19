@@ -54,7 +54,7 @@ public class JournalService {
 
         return behandleJournalV2.journalfoerInngaaendeHenvendelse(
                 new WSJournalfoerInngaaendeHenvendelseRequest()
-                        .withApplikasjonsID("SRVOPPFOELGINGSDIAL")
+                        .withApplikasjonsID("SRVSYFOOPPFOLGINGSP")
                         .withJournalpost(new WSJournalpost()
                                 .withDokumentDato(LocalDateTime.now())
                                 .withJournalfoerendeEnhetREF(GOSYS)
@@ -62,7 +62,7 @@ public class JournalService {
                                 .withSignatur(new WSSignatur().withSignert(true))
                                 .withArkivtema(new WSArkivtemaer().withValue("OPP"))
                                 .withForBruker(new WSPerson().withIdent(new WSNorskIdent().withIdent(fnr)))
-                                .withOpprettetAvNavn("Serviceoppfoelgingsdialog")
+                                .withOpprettetAvNavn("Syfooppfolgingsplanservice")
                                 .withInnhold(dokumentNavn)
                                 .withEksternPart(new WSEksternPart()
                                         .withNavn(sykmeldtAvsendernavnHvisSistEndretAvSykmeldt(oppfoelgingsdialog).orElse(virksomhetsnavn))

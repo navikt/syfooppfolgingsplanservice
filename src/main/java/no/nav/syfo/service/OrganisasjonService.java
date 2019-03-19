@@ -6,7 +6,6 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.WSUstrukturertNavn
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.WSHentOrganisasjonRequest;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.WSHentOrganisasjonResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -24,7 +23,6 @@ public class OrganisasjonService {
         this.organisasjonV4 = organisasjonV4;
     }
 
-    @Cacheable("ereg")
     public String finnVirksomhetsnavn(String orgnummer) {
         try {
             WSHentOrganisasjonResponse response = organisasjonV4.hentOrganisasjon(request(orgnummer));

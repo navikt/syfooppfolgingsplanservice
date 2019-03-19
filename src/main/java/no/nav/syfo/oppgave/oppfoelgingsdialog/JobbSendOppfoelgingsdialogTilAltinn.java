@@ -1,25 +1,23 @@
 package no.nav.syfo.oppgave.oppfoelgingsdialog;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.metrics.Event;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
 import no.nav.syfo.oppgave.Oppgavetype;
 import no.nav.syfo.service.*;
+import no.nav.syfo.util.Toggle;
 import no.nav.syfo.ws.AltinnConsumer;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
-import static java.lang.System.getProperty;
 import static java.time.LocalDateTime.now;
-import static java.time.temporal.ChronoUnit.DAYS;
-import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
-import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
-import static no.nav.syfo.util.ToggleUtil.toggleBatch;
 
 @Slf4j
 @Service
@@ -27,8 +25,10 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 
     private final AktoerService aktoerService;
     private final AltinnConsumer altinnConsumer;
+    private final Metrikk metrikk;
     private final OppfoelgingsdialogService oppfoelgingsdialogService;
     private final PdfService pdfService;
+    private final Toggle toggle;
 
     @Override
     public Oppgavetype oppgavetype() {
@@ -39,19 +39,23 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
     public JobbSendOppfoelgingsdialogTilAltinn(
             AktoerService aktoerService,
             AltinnConsumer altinnConsumer,
+            Metrikk metrikk,
             OppfoelgingsdialogService oppfoelgingsdialogService,
-            PdfService pdfService
+            PdfService pdfService,
+            Toggle toggle
     ) {
         this.aktoerService = aktoerService;
         this.altinnConsumer = altinnConsumer;
+        this.metrikk = metrikk;
         this.oppfoelgingsdialogService = oppfoelgingsdialogService;
         this.pdfService = pdfService;
+        this.toggle = toggle;
     }
 
 
     @Override
     public void utfoerOppgave(String oppfoelgingsdialogId) {
-        if (!"true".equals(getProperty(LOCAL_MOCK)) && toggleBatch()) {
+        if (toggle.toggleBatch()) {
             log.info("TRACEBATCH: run {}", this.getClass().getName());
 
             Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(Long.valueOf(oppfoelgingsdialogId));
@@ -63,12 +67,12 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 
             altinnConsumer.sendOppfoelgingsplanTilArbeidsgiver(oppfoelgingsdialogAltinn);
 
-            Event event = createEvent("antallDagerOpprettetOppfoelgingsdialog");
-            long dager = DAYS.between(Optional.ofNullable(oppfoelgingsdialog.godkjentPlan
-                    .orElse(null).opprettetTidspunkt)
-                    .orElse(now()), now());
-            event.addFieldToReport("dager", dager);
-            event.report();
+
+            LocalDateTime dato = Optional.ofNullable(Objects.requireNonNull(oppfoelgingsdialog.godkjentPlan
+                    .orElse(null)).opprettetTidspunkt)
+                    .orElse(now());
+
+            metrikk.tellAntallDagerSiden(dato, "antallDagerOpprettetOppfoelgingsdialog");
         }
     }
 }

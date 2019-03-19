@@ -1,6 +1,7 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.domain.*;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.util.List;
 
-import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeTiltakHoererTilDialog;
 
 @Service
@@ -19,6 +19,7 @@ public class TiltakService {
     private AktoerService aktoerService;
     private GodkjenningerDAO godkjenningerDAO;
     private KommentarDAO kommentarDAO;
+    private Metrikk metrikk;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private TilgangskontrollService tilgangskontrollService;
     private TiltakDAO tiltakDAO;
@@ -28,6 +29,7 @@ public class TiltakService {
             AktoerService aktoerService,
             GodkjenningerDAO godkjenningerDAO,
             KommentarDAO kommentarDAO,
+            Metrikk metrikk,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             TilgangskontrollService tilgangskontrollService,
             TiltakDAO tiltakDAO
@@ -35,6 +37,7 @@ public class TiltakService {
         this.aktoerService = aktoerService;
         this.godkjenningerDAO = godkjenningerDAO;
         this.kommentarDAO = kommentarDAO;
+        this.metrikk = metrikk;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.tilgangskontrollService = tilgangskontrollService;
         this.tiltakDAO = tiltakDAO;
@@ -55,7 +58,7 @@ public class TiltakService {
 
         oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
         if (tiltak.id == null) {
-            createEvent("nyttTiltak").report();
+            metrikk.tellHendelse("nyttTiltak");
             return tiltakDAO.create(tiltak
                     .oppfoelgingsdialogId(oppfoelgingsdialogId)
                     .opprettetAvAktoerId(innloggetAktoerId)

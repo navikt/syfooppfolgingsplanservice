@@ -3,8 +3,7 @@ package no.nav.syfo.service;
 import no.nav.melding.virksomhet.servicemeldingmedkontaktinformasjon.v1.servicemeldingmedkontaktinformasjon.*;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.model.Varseltype;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +18,9 @@ import static no.nav.syfo.util.JmsUtil.messageCreator;
 @Service
 public class TredjepartsvarselService {
 
+    @Value("${tjenester.url}")
+    private String tjenesterUrl;
+
     private JmsTemplate tredjepartsvarselqueue;
 
     @Autowired
@@ -28,8 +30,8 @@ public class TredjepartsvarselService {
 
     public void sendVarselTilNaermesteLeder(Varseltype varseltype, Naermesteleder naermesteleder, Long oppfoelgingsdialogId) {
         List<Parameter> parametere = asList(
-                createParameter("url", getProperty("TJENESTER_URL") + "/sykefravaerarbeidsgiver/"),
-                createParameter("dittnavUrl", getProperty("TJENESTER_URL") + "/sykefravaerarbeidsgiver/" + naermesteleder.naermesteLederAktoerId + "/oppfolgingsplaner/" + oppfoelgingsdialogId)
+                createParameter("url", tjenesterUrl + "/sykefravaerarbeidsgiver/"),
+                createParameter("dittnavUrl", tjenesterUrl + "/sykefravaerarbeidsgiver/" + naermesteleder.naermesteLederAktoerId + "/oppfolgingsplaner/" + oppfoelgingsdialogId)
         );
         ServicemeldingMedKontaktinformasjon melding = new ServicemeldingMedKontaktinformasjon();
         populerServiceMelding(melding, kontaktinformasjon(naermesteleder), naermesteleder, varseltype, parametere);

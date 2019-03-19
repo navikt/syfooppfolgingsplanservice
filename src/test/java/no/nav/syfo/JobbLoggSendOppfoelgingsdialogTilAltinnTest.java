@@ -2,10 +2,9 @@ package no.nav.syfo;
 
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbLoggSendOppfoelgingsdialogTilAltinn;
-import no.nav.syfo.service.JuridiskLoggService;
-import no.nav.syfo.service.OppfoelgingsdialogService;
-import no.nav.syfo.service.PdfService;
+import no.nav.syfo.service.*;
 import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
+import no.nav.syfo.util.Toggle;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,11 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static java.lang.System.setProperty;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
-import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
-import static no.nav.syfo.util.ToggleUtil.TOGGLE_ENABLE_BATCH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -29,14 +25,15 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinnTest {
     @Mock
     private JuridiskLoggService juridiskLoggService;
     @Mock
+    private Toggle toggle;
+    @Mock
     private PdfService pdfService;
     @InjectMocks
     private JobbLoggSendOppfoelgingsdialogTilAltinn jobbLoggSendOppfoelgingsdialogTilAltinn;
 
     @Before
     public void setup() {
-        setProperty(LOCAL_MOCK, "false");
-        setProperty(TOGGLE_ENABLE_BATCH, "true");
+        when(toggle.toggleBatch()).thenReturn(true);
     }
 
     @Test

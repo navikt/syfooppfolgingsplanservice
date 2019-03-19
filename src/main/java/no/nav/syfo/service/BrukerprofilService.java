@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.brukerprofil.v3.*;
 import no.nav.tjeneste.virksomhet.brukerprofil.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.brukerprofil.v3.meldinger.WSHentKontaktinformasjonOgPreferanserRequest;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -32,7 +31,6 @@ public class BrukerprofilService {
         this.aktoerService = aktoerService;
     }
 
-    @Cacheable(value = "tps", keyGenerator = "userkeygenerator")
     public String hentNavnByFnr(String fnr) {
         if (isBlank(fnr) || !fnr.matches("\\d{11}$")) {
             log.error("Prøvde å hente navn med fnr {}", fnr);
@@ -75,7 +73,6 @@ public class BrukerprofilService {
         return of(brukersNavn);
     }
 
-    @Cacheable(value = "tps", keyGenerator = "userkeygenerator")
     public String hentNavnByAktoerId(String aktoerId) {
         if (!aktoerId.matches("\\d{13}$")) {
             throw new RuntimeException();
@@ -83,7 +80,6 @@ public class BrukerprofilService {
         return hentNavnByFnr(aktoerService.hentFnrForAktoer(aktoerId));
     }
 
-    @Cacheable(value = "tps", keyGenerator = "userkeygenerator")
     public boolean erKode6eller7(String fnr) {
         if (!fnr.matches("\\d{11}$")) {
             throw new RuntimeException();

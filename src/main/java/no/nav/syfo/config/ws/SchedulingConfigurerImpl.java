@@ -4,7 +4,6 @@ import no.nav.syfo.scheduler.ScheduledTask;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
@@ -12,8 +11,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 @Configuration
-@EnableScheduling
-@Profile("batch")
+@Profile("remote")
 public class SchedulingConfigurerImpl implements SchedulingConfigurer {
 
     private List<ScheduledTask> scheduledTasks;

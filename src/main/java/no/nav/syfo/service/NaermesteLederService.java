@@ -5,7 +5,6 @@ import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.*;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.*;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -30,7 +29,6 @@ public class NaermesteLederService {
         this.sykefravaersoppfoelgingV1 = sykefravaersoppfoelgingV1;
     }
 
-    @Cacheable(value = "syfo", keyGenerator = "userkeygenerator")
     public List<Ansatt> hentAnsatte(String aktoerId) {
         try {
             WSHentNaermesteLedersAnsattListeResponse response = sykefravaersoppfoelgingV1.hentNaermesteLedersAnsattListe(new WSHentNaermesteLedersAnsattListeRequest()
@@ -42,7 +40,6 @@ public class NaermesteLederService {
         }
     }
 
-    @Cacheable(value = "syfo", keyGenerator = "userkeygenerator")
     public List<Naermesteleder> hentNaermesteLedere(String aktoerId) {
         try {
             WSHentNaermesteLederListeResponse response = sykefravaersoppfoelgingV1.hentNaermesteLederListe(new WSHentNaermesteLederListeRequest()
@@ -54,7 +51,6 @@ public class NaermesteLederService {
         }
     }
 
-    @Cacheable(value = "syfo", keyGenerator = "userkeygenerator")
     public Optional<Naermesteleder> hentNaermesteLeder(String aktoerId, String virksomhetsnummer) {
         try {
             return of(map(sykefravaersoppfoelgingV1.hentNaermesteLeder(new WSHentNaermesteLederRequest().withAktoerId(aktoerId).withOrgnummer(virksomhetsnummer)).getNaermesteLeder(), ws2naermesteLeder));

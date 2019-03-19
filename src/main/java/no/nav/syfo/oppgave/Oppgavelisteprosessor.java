@@ -1,8 +1,7 @@
 package no.nav.syfo.oppgave;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.metrics.Event;
-import no.nav.syfo.domain.AsynkOppgave;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +10,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
-import static java.lang.System.getProperty;
-import static java.time.LocalDateTime.now;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.util.ToggleUtil.kjorerIProduksjon;
 
 @Slf4j
@@ -24,8 +19,10 @@ public class Oppgavelisteprosessor {
     private Oppgaveelementprosessor oppgaveelementprosessor;
     private AsynkOppgaveDAO asynkOppgaveDAO;
     private OppgaveIterator oppgaveIterator;
+    @Inject
+    private Metrikk metrikk;
 
-    private final int limit = Integer.parseInt(getProperty("asynkoppgavelimit", "100"));
+    private final int limit = 100;
 
     public void run() {
         log.info("Kjører asynk oppgaver");
@@ -35,12 +32,12 @@ public class Oppgavelisteprosessor {
                 .forEach(oppgave -> {
                     try {
                         oppgaveelementprosessor.runTransactional(oppgave);
-                        reportAsynkOppgave(oppgave, true);
+                        metrikk.tellAsynkOppgave(oppgave, true);
 
                     } catch (Exception e) {
                         log.error("Feil ved prossesering av oppgavetype " + oppgave.oppgavetype + " med id " + oppgave.id + " og ressursId " + oppgave.ressursId, e);
                         asynkOppgaveDAO.update(oppgave.inkrementerAntallForsoek());
-                        reportAsynkOppgave(oppgave, false);
+                        metrikk.tellAsynkOppgave(oppgave, false);
 
                         // I test: sletter asynkOppgave som har blitt forsøkt prosessert minst 100 ganger
                         if (!kjorerIProduksjon() && oppgave.antallForsoek > 100) {
@@ -50,16 +47,6 @@ public class Oppgavelisteprosessor {
                         }
                     }
                 });
-    }
-
-    private void reportAsynkOppgave(AsynkOppgave asynkOppgave, boolean success) {
-        Event hendelse = createEvent("asynkOppgave");
-        hendelse.addTagToReport("oppgavetype", asynkOppgave.oppgavetype);
-        hendelse.addTagToReport("success", String.valueOf(success));
-        hendelse.addFieldToReport("asynkOppgave", asynkOppgave.oppgavetype);
-        hendelse.addFieldToReport("antallForsok", asynkOppgave.antallForsoek);
-        hendelse.addFieldToReport("antallSekunderPaKo", SECONDS.between(asynkOppgave.opprettetTidspunkt(), now()));
-        hendelse.report();
     }
 
     @Inject

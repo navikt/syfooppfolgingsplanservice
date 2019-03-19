@@ -1,35 +1,25 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.brukerdialog.security.oidc.SystemUserTokenProvider;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.repository.dao.*;
-import no.nav.syfo.service.exceptions.FeilDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static java.lang.System.getProperty;
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static no.nav.syfo.model.Varseltype.*;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
-import static no.nav.syfo.util.PropertyUtil.FASTLEGE_DIALOGMELDING_API_URL;
 
 @Slf4j
 @Service
@@ -53,6 +43,8 @@ public class OppfoelgingsdialogService {
 
     private BrukerprofilService brukerprofilService;
 
+    private FastlegeService fastlegeService;
+
     private EgenAnsattService egenAnsattService;
 
     private NorgService norgService;
@@ -71,14 +63,8 @@ public class OppfoelgingsdialogService {
 
     private VeilederBehandlingDAO veilederBehandlingDAO;
 
-    private Client client;
-
-    private SystemUserTokenProvider systemUserTokenProvider;
-
     @Inject
     public OppfoelgingsdialogService(
-            Client client,
-            SystemUserTokenProvider systemUserTokenProvider,
             ArbeidsoppgaveDAO arbeidsoppgaveDAO,
             DokumentDAO dokumentDAO,
             KommentarDAO kommentarDAO,
@@ -90,6 +76,7 @@ public class OppfoelgingsdialogService {
             AktoerService aktoerService,
             ArbeidsfordelingService arbeidsfordelingService,
             BrukerprofilService brukerprofilService,
+            FastlegeService fastlegeService,
             EgenAnsattService egenAnsattService,
             NaermesteLederService naermesteLederService,
             NorgService norgService,
@@ -98,8 +85,6 @@ public class OppfoelgingsdialogService {
             TredjepartsvarselService tredjepartsvarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
-        this.client = client;
-        this.systemUserTokenProvider = systemUserTokenProvider;
         this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
         this.dokumentDAO = dokumentDAO;
         this.kommentarDAO = kommentarDAO;
@@ -111,6 +96,7 @@ public class OppfoelgingsdialogService {
         this.aktoerService = aktoerService;
         this.arbeidsfordelingService = arbeidsfordelingService;
         this.brukerprofilService = brukerprofilService;
+        this.fastlegeService = fastlegeService;
         this.egenAnsattService = egenAnsattService;
         this.naermesteLederService = naermesteLederService;
         this.norgService = norgService;
@@ -309,26 +295,7 @@ public class OppfoelgingsdialogService {
                 .map(dokumentDAO::hent)
                 .orElseThrow(() -> new RuntimeException("Finner ikke pdf for oppfølgingsplan med id " + oppfoelgingsdialogId));
 
-        Response response = client.target(getProperty(FASTLEGE_DIALOGMELDING_API_URL) + "/sendOppfolgingsplan")
-                .request()
-                .header(AUTHORIZATION, "Bearer " + systemUserTokenProvider.getToken())
-                .post(Entity.entity(new RSOppfoelgingsplan(sendesTilFnr, pdf), MediaType.APPLICATION_JSON_TYPE));
-
-        int responsekode = response.getStatus();
-        if (responsekode == 500) {
-            FeilDTO feilDTO = response.readEntity(FeilDTO.class);
-            if (feilDTO.detaljer.detaljertType.contains("FastlegeIkkeFunnet")) {
-//                throw new DelOppfoelgingsdialogMedFastlegeFastlegeIkkeFunnet("FastlegeIkkeFunnet", forretningsmessigUnntak(WSFastlegeIkkeFunnet.class, "FastlegeIkkeFunnet"));
-                throw new NotFoundException();
-            } else if (feilDTO.detaljer.detaljertType.contains("PartnerinformasjonIkkeFunnet")) {
-//                throw new DelOppfoelgingsdialogMedFastlegePartnerinformasjonIkkeFunnet("PartnerinformasjonIkkeFunnet", forretningsmessigUnntak(WSPartnerinformasjonIkkeFunnet.class, "PartnerinformasjonIkkeFunnet"));
-                throw new NotFoundException();
-            }
-        }
-        if (responsekode >= 300) {
-            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
-            throw new RuntimeException("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
-        }
+        fastlegeService.sendOppfolgingsplan(new RSOppfoelgingsplan(sendesTilFnr, pdf));
 
         godkjentplanDAO.delMedFastlege(oppfoelgingsdialogId);
     }

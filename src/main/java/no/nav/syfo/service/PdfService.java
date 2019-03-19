@@ -3,6 +3,7 @@ package no.nav.syfo.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
@@ -14,8 +15,6 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.awt.image.BufferedImage;
 import java.io.*;
-
-import static no.nav.syfo.util.MetricsUtil.reportAntallDagerSiden;
 
 @Slf4j
 @Service
@@ -29,17 +28,21 @@ public class PdfService {
 
     private GodkjentplanDAO godkjentplanDAO;
 
+    private Metrikk metrikk;
+
     @Inject
     public PdfService(
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             OppfoelgingsdialogService oppfoelgingsdialogService,
             DokumentDAO dokumentDAO,
-            GodkjentplanDAO godkjentplanDAO
+            GodkjentplanDAO godkjentplanDAO,
+            Metrikk metrikk
     ) {
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.oppfoelgingsdialogService = oppfoelgingsdialogService;
         this.dokumentDAO = dokumentDAO;
         this.godkjentplanDAO = godkjentplanDAO;
+        this.metrikk = metrikk;
     }
 
     public byte[] hentPdf(long oppfoelgingsdialogId, String fnr) {
@@ -47,14 +50,14 @@ public class PdfService {
             throw new ForbiddenException("Ikke tilgang");
         }
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        reportAntallDagerSiden(oppfoelgingsdialog.opprettet, "antallDagerFraOpprettetTilPdf");
+        metrikk.tellAntallDagerSiden(oppfoelgingsdialog.opprettet, "antallDagerFraOpprettetTilPdf");
         String dokumentUuid = godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(oppfoelgingsdialogId).get().dokumentUuid;
 
         return dokumentDAO.hent(dokumentUuid);
     }
 
     public byte[] hentPdfTilAltinn(Oppfoelgingsdialog oppfoelgingsdialog) {
-        reportAntallDagerSiden(oppfoelgingsdialog.opprettet, "antallDagerFraOpprettetTilPdf");
+        metrikk.tellAntallDagerSiden(oppfoelgingsdialog.opprettet, "antallDagerFraOpprettetTilPdf");
 
         GodkjentPlan godkjentPlan = oppfoelgingsdialog.godkjentPlan.orElseThrow(() ->
                 throwOppfoelgingsplanUtenGodkjenPlan(oppfoelgingsdialog)

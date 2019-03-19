@@ -3,7 +3,7 @@ package no.nav.syfo.util;
 import java.util.Base64;
 
 import static java.lang.String.format;
-import static java.lang.System.getProperty;
+import static java.lang.System.getenv;
 import static no.nav.syfo.util.PropertyUtil.FASIT_ENVIRONMENT_NAME;
 
 public class RestUtils {
@@ -13,13 +13,14 @@ public class RestUtils {
     }
 
     private static String miljo() {
-        if ("p".equals(getProperty(FASIT_ENVIRONMENT_NAME))) {
+        String environmentName = getenv(FASIT_ENVIRONMENT_NAME);
+        if ("p".equals(environmentName)) {
             return "";
         }
-        return "-" + getProperty(FASIT_ENVIRONMENT_NAME);
+        return "-" + environmentName;
     }
 
-    public static String basicCredentials(String credential) {
-        return "Basic " + Base64.getEncoder().encodeToString(format("%s:%s", getProperty(credential + "_USERNAME"), getProperty(credential + "_PASSWORD")).getBytes());
+    public static String basicCredentials(String credentialUsername, String credentialPassword) {
+        return "Basic " + Base64.getEncoder().encodeToString(format("%s:%s", credentialUsername, credentialPassword).getBytes());
     }
 }

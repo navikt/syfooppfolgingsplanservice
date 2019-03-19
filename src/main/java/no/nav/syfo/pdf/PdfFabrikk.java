@@ -3,6 +3,7 @@ package no.nav.syfo.pdf;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.xhtmlrenderer.pdf.DefaultPDFCreationListener;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
@@ -18,6 +19,9 @@ import static org.apache.commons.io.IOUtils.toByteArray;
 
 @Slf4j
 public class PdfFabrikk {
+
+    @Value("${dev}")
+    private boolean dev;
 
     public static byte[] tilPdf(String xml) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
