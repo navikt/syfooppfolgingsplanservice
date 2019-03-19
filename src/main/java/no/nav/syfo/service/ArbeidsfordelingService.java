@@ -6,16 +6,22 @@ import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.ArbeidsfordelingV1;
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.FinnBehandlendeEnhetListeUgyldigInput;
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.*;
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.WSFinnBehandlendeEnhetListeRequest;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
 import static no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.WSEnhetsstatus.AKTIV;
 
 @Slf4j
+@Service
 public class ArbeidsfordelingService {
 
-    @Inject
     private ArbeidsfordelingV1 arbeidsfordelingV1;
+
+    @Inject
+    public ArbeidsfordelingService(ArbeidsfordelingV1 arbeidsfordelingV1) {
+        this.arbeidsfordelingV1 = arbeidsfordelingV1;
+    }
 
     public Enhet finnBehandlendeEnhet(String geografiskTilknytning) {
         try {

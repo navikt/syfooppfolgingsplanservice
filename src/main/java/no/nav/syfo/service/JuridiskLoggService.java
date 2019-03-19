@@ -5,6 +5,7 @@ import no.nav.syfo.domain.*;
 import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,6 +14,7 @@ import static no.nav.syfo.util.RestUtils.basicCredentials;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
+@Service
 public class JuridiskLoggService {
 
     public void loggSendOppfoelgingsdialogTilAltinn(OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn) {

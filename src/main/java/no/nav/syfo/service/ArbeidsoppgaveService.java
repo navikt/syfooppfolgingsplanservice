@@ -2,10 +2,9 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.repository.dao.ArbeidsoppgaveDAO;
-import no.nav.syfo.repository.dao.GodkjenningerDAO;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
+import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -14,18 +13,29 @@ import javax.ws.rs.ForbiddenException;
 import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeArbeidsoppgaveHoererTilDialog;
 
+@Service
 public class ArbeidsoppgaveService {
 
-    @Inject
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
-    @Inject
-    private TilgangskontrollService tilgangskontrollService;
-    @Inject
     private AktoerService aktoerService;
-    @Inject
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
-    @Inject
     private GodkjenningerDAO godkjenningerDAO;
+    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private TilgangskontrollService tilgangskontrollService;
+
+    @Inject
+    public ArbeidsoppgaveService(
+            AktoerService aktoerService,
+            ArbeidsoppgaveDAO arbeidsoppgaveDAO,
+            GodkjenningerDAO godkjenningerDAO,
+            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            TilgangskontrollService tilgangskontrollService
+    ) {
+        this.aktoerService = aktoerService;
+        this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
+        this.godkjenningerDAO = godkjenningerDAO;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.tilgangskontrollService = tilgangskontrollService;
+    }
 
     @Transactional
     public Long lagreArbeidsoppgave(Long oppfoelgingsdialogId, Arbeidsoppgave arbeidsoppgave, String fnr) throws ConflictException {

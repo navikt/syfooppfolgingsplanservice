@@ -29,7 +29,6 @@ import static javax.ws.rs.client.ClientBuilder.newClient;
         CacheConfig.class,
         DatabaseConfig.class,
         MQConfig.class,
-        ServiceConfig.class,
         WSConfigs.class,
 })
 public class ApplicationConfig implements ApiApplication.NaisApiApplication {

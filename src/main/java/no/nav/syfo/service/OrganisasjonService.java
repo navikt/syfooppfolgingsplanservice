@@ -7,16 +7,22 @@ import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.WSHentOrganisasjonRe
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.WSHentOrganisasjonResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
 import static java.util.stream.Collectors.joining;
 
 @Slf4j
+@Service
 public class OrganisasjonService {
 
-    @Inject
     private OrganisasjonV4 organisasjonV4;
+
+    @Inject
+    public OrganisasjonService(OrganisasjonV4 organisasjonV4) {
+        this.organisasjonV4 = organisasjonV4;
+    }
 
     @Cacheable("ereg")
     public String finnVirksomhetsnavn(String orgnummer) {

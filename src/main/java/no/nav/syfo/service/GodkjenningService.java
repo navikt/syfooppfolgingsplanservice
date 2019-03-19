@@ -9,6 +9,7 @@ import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.repository.domain.Dokument;
 import no.nav.syfo.util.ConflictException;
 import no.nav.syfo.util.JAXB;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -34,38 +35,73 @@ import static no.nav.syfo.util.DatoUtil.antallDagerIPeriode;
 import static no.nav.syfo.util.DatoUtil.dagerMellom;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.*;
 
+@Service
 public class GodkjenningService {
 
-    @Inject
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
-    @Inject
+
     private NaermesteLederService naermesteLederService;
-    @Inject
+
     private TilgangskontrollService tilgangskontrollService;
-    @Inject
+
     private AktoerService aktoerService;
-    @Inject
+
     private DkifService dkifService;
-    @Inject
+
     private GodkjentplanDAO godkjentplanDAO;
-    @Inject
+
     private DokumentDAO dokumentDAO;
-    @Inject
+
     private BrukerprofilService brukerprofilService;
-    @Inject
+
     private OrganisasjonService organisasjonService;
-    @Inject
+
     private ArbeidsforholdService arbeidsforholdService;
-    @Inject
+
     private ServiceVarselService serviceVarselService;
-    @Inject
+
     private TredjepartsvarselService tredjepartsvarselService;
-    @Inject
+
     private SykeforloepService sykeforloepService;
-    @Inject
+
     private GodkjenningerDAO godkjenningerDAO;
-    @Inject
+
     private AsynkOppgaveDAO asynkOppgaveDAO;
+
+    @Inject
+    public GodkjenningService(
+            AsynkOppgaveDAO asynkOppgaveDAO,
+            DokumentDAO dokumentDAO,
+            GodkjenningerDAO godkjenningerDAO,
+            GodkjentplanDAO godkjentplanDAO,
+            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            AktoerService aktoerService,
+            ArbeidsforholdService arbeidsforholdService,
+            BrukerprofilService brukerprofilService,
+            DkifService dkifService,
+            OrganisasjonService organisasjonService,
+            NaermesteLederService naermesteLederService,
+            ServiceVarselService serviceVarselService,
+            SykeforloepService sykeforloepService,
+            TredjepartsvarselService tredjepartsvarselService,
+            TilgangskontrollService tilgangskontrollService
+    ) {
+        this.asynkOppgaveDAO = asynkOppgaveDAO;
+        this.dokumentDAO = dokumentDAO;
+        this.godkjenningerDAO = godkjenningerDAO;
+        this.godkjentplanDAO = godkjentplanDAO;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.aktoerService = aktoerService;
+        this.arbeidsforholdService = arbeidsforholdService;
+        this.brukerprofilService = brukerprofilService;
+        this.dkifService = dkifService;
+        this.organisasjonService = organisasjonService;
+        this.naermesteLederService = naermesteLederService;
+        this.serviceVarselService = serviceVarselService;
+        this.sykeforloepService = sykeforloepService;
+        this.tredjepartsvarselService = tredjepartsvarselService;
+        this.tilgangskontrollService = tilgangskontrollService;
+    }
 
     @Transactional
     public void godkjennOppfoelgingsdialog(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning) {

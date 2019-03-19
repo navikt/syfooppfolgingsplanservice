@@ -1,6 +1,7 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.model.VeilederOppgave;
+import org.springframework.stereotype.Service;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.GenericType;
@@ -12,6 +13,7 @@ import static javax.ws.rs.client.ClientBuilder.newClient;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static no.nav.syfo.util.RestUtils.basicCredentials;
 
+@Service
 public class VeilederOppgaverService {
     private final Client client = newClient();
 

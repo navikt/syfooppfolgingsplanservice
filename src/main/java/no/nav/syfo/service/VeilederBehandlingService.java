@@ -1,24 +1,30 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.repository.dao.GodkjentplanDAO;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
-import no.nav.syfo.repository.dao.VeilederBehandlingDAO;
+import no.nav.syfo.repository.dao.*;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+@Service
 public class VeilederBehandlingService {
 
-    @Inject
+    private GodkjentplanDAO godkjentplanDAO;
+    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private VeilederBehandlingDAO veilederBehandlingDAO;
 
     @Inject
-    private GodkjentplanDAO godkjentplanDAO;
-
-    @Inject
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    public VeilederBehandlingService(
+            GodkjentplanDAO godkjentplanDAO,
+            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            VeilederBehandlingDAO veilederBehandlingDAO
+    ) {
+        this.godkjentplanDAO = godkjentplanDAO;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.veilederBehandlingDAO = veilederBehandlingDAO;
+    }
 
 
     public List<String> hentSykmeldteMedUlesteOppfolgingsplaner(String enhetId) {

@@ -8,6 +8,7 @@ import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.service.exceptions.FeilDTO;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -31,48 +32,93 @@ import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
 import static no.nav.syfo.util.PropertyUtil.FASTLEGE_DIALOGMELDING_API_URL;
 
 @Slf4j
+@Service
 public class OppfoelgingsdialogService {
 
-    @Inject
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
-    @Inject
+
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
-    @Inject
+
     private GodkjentplanDAO godkjentplanDAO;
-    @Inject
+
     private TiltakDAO tiltakDAO;
-    @Inject
+
     private NaermesteLederService naermesteLederService;
-    @Inject
+
     private TilgangskontrollService tilgangskontrollService;
-    @Inject
+
     private AktoerService aktoerService;
-    @Inject
+
     private ArbeidsfordelingService arbeidsfordelingService;
-    @Inject
+
     private BrukerprofilService brukerprofilService;
-    @Inject
+
     private EgenAnsattService egenAnsattService;
-    @Inject
+
     private NorgService norgService;
-    @Inject
+
     private ServiceVarselService serviceVarselService;
-    @Inject
+
     private TredjepartsvarselService tredjepartsvarselService;
-    @Inject
+
     private PersonService personService;
-    @Inject
+
     private GodkjenningerDAO godkjenningerDAO;
-    @Inject
+
     private KommentarDAO kommentarDAO;
-    @Inject
+
     private DokumentDAO dokumentDAO;
-    @Inject
+
     private VeilederBehandlingDAO veilederBehandlingDAO;
-    @Inject
+
     private Client client;
-    @Inject
+
     private SystemUserTokenProvider systemUserTokenProvider;
+
+    @Inject
+    public OppfoelgingsdialogService(
+            Client client,
+            SystemUserTokenProvider systemUserTokenProvider,
+            ArbeidsoppgaveDAO arbeidsoppgaveDAO,
+            DokumentDAO dokumentDAO,
+            KommentarDAO kommentarDAO,
+            GodkjenningerDAO godkjenningerDAO,
+            GodkjentplanDAO godkjentplanDAO,
+            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            TiltakDAO tiltakDAO,
+            VeilederBehandlingDAO veilederBehandlingDAO,
+            AktoerService aktoerService,
+            ArbeidsfordelingService arbeidsfordelingService,
+            BrukerprofilService brukerprofilService,
+            EgenAnsattService egenAnsattService,
+            NaermesteLederService naermesteLederService,
+            NorgService norgService,
+            PersonService personService,
+            ServiceVarselService serviceVarselService,
+            TredjepartsvarselService tredjepartsvarselService,
+            TilgangskontrollService tilgangskontrollService
+    ) {
+        this.client = client;
+        this.systemUserTokenProvider = systemUserTokenProvider;
+        this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
+        this.dokumentDAO = dokumentDAO;
+        this.kommentarDAO = kommentarDAO;
+        this.godkjenningerDAO = godkjenningerDAO;
+        this.godkjentplanDAO = godkjentplanDAO;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.tiltakDAO = tiltakDAO;
+        this.veilederBehandlingDAO = veilederBehandlingDAO;
+        this.aktoerService = aktoerService;
+        this.arbeidsfordelingService = arbeidsfordelingService;
+        this.brukerprofilService = brukerprofilService;
+        this.egenAnsattService = egenAnsattService;
+        this.naermesteLederService = naermesteLederService;
+        this.norgService = norgService;
+        this.personService = personService;
+        this.serviceVarselService = serviceVarselService;
+        this.tredjepartsvarselService = tredjepartsvarselService;
+        this.tilgangskontrollService = tilgangskontrollService;
+    }
 
     public List<Oppfoelgingsdialog> hentAktoersOppfoelgingsdialoger(String aktoerId, String brukerkontekst, String innloggetFnr) {
         if ("ARBEIDSGIVER".equals(brukerkontekst)) {
