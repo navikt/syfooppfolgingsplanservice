@@ -1,15 +1,9 @@
 package no.nav.syfo.service;
 
-import no.nav.tjeneste.virksomhet.brukerprofil.v3.BrukerprofilV3;
-import no.nav.tjeneste.virksomhet.brukerprofil.v3.HentKontaktinformasjonOgPreferanserPersonIdentErUtgaatt;
-import no.nav.tjeneste.virksomhet.brukerprofil.v3.HentKontaktinformasjonOgPreferanserPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.brukerprofil.v3.HentKontaktinformasjonOgPreferanserSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.brukerprofil.v3.informasjon.WSNorskIdent;
-import no.nav.tjeneste.virksomhet.brukerprofil.v3.informasjon.WSPerson;
-import no.nav.tjeneste.virksomhet.brukerprofil.v3.informasjon.WSPersonidenter;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tjeneste.virksomhet.brukerprofil.v3.*;
+import no.nav.tjeneste.virksomhet.brukerprofil.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.brukerprofil.v3.meldinger.WSHentKontaktinformasjonOgPreferanserRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 
 import javax.inject.Inject;
@@ -21,8 +15,9 @@ import static java.util.Optional.of;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.text.WordUtils.capitalize;
 
+@Slf4j
 public class BrukerprofilService {
-    private static final Logger LOG = LoggerFactory.getLogger(BrukerprofilService.class);
+
     @Inject
     private BrukerprofilV3 brukerprofilV3;
     @Inject
@@ -31,7 +26,7 @@ public class BrukerprofilService {
     @Cacheable(value = "tps", keyGenerator = "userkeygenerator")
     public String hentNavnByFnr(String fnr) {
         if (isBlank(fnr) || !fnr.matches("\\d{11}$")) {
-            LOG.error("Prøvde å hente navn med fnr {}", fnr);
+            log.error("Prøvde å hente navn med fnr {}", fnr);
             throw new RuntimeException();
         }
         try {
@@ -49,16 +44,16 @@ public class BrukerprofilService {
             final String navnFraTps = wsPerson.getPersonnavn().getFornavn() + " " + mellomnavn + wsPerson.getPersonnavn().getEtternavn();
             return capitalize(navnFraTps.toLowerCase(), '-', ' ');
         } catch (HentKontaktinformasjonOgPreferanserPersonIdentErUtgaatt e) {
-            LOG.error("HentKontaktinformasjonOgPreferanserPersonIdentErUtgaatt ved oppslag mot TPS", e);
+            log.error("HentKontaktinformasjonOgPreferanserPersonIdentErUtgaatt ved oppslag mot TPS", e);
             throw new RuntimeException();
         } catch (HentKontaktinformasjonOgPreferanserSikkerhetsbegrensning e) {
-            LOG.error("Sikkerhetsbegrensning ved henting av navn fra TPS", e);
+            log.error("Sikkerhetsbegrensning ved henting av navn fra TPS", e);
             throw new ForbiddenException();
         } catch (HentKontaktinformasjonOgPreferanserPersonIkkeFunnet e) {
-            LOG.error("HentKontaktinformasjonOgPreferanserPersonIkkeFunnet ved oppslap mot TPS", e);
+            log.error("HentKontaktinformasjonOgPreferanserPersonIkkeFunnet ved oppslap mot TPS", e);
             throw new RuntimeException();
         } catch (RuntimeException e) {
-            LOG.error("Fikk RuntimeException ved oppslag mot TPS", e);
+            log.error("Fikk RuntimeException ved oppslag mot TPS", e);
             return "Vi fant ikke navnet";
         }
     }
@@ -94,16 +89,16 @@ public class BrukerprofilService {
                             ))).getBruker();
             return ((wsPerson.getDiskresjonskode() != null) && "6".equals(wsPerson.getDiskresjonskode().getValue())) || ((wsPerson.getDiskresjonskode() != null) && "7".equals(wsPerson.getDiskresjonskode().getValue()));
         } catch (HentKontaktinformasjonOgPreferanserPersonIdentErUtgaatt e) {
-            LOG.error("HentKontaktinformasjonOgPreferanserPersonIdentErUtgaatt ved oppslag mot TPS", e);
+            log.error("HentKontaktinformasjonOgPreferanserPersonIdentErUtgaatt ved oppslag mot TPS", e);
             throw new RuntimeException();
         } catch (HentKontaktinformasjonOgPreferanserSikkerhetsbegrensning e) {
-            LOG.error("Sikkerhetsbegrensning ved henting av person fra TPS", e);
+            log.error("Sikkerhetsbegrensning ved henting av person fra TPS", e);
             throw new ForbiddenException();
         } catch (HentKontaktinformasjonOgPreferanserPersonIkkeFunnet e) {
-            LOG.error("HentKontaktinformasjonOgPreferanserPersonIkkeFunnet ved oppslag mot TPS", e);
+            log.error("HentKontaktinformasjonOgPreferanserPersonIkkeFunnet ved oppslag mot TPS", e);
             return true;
         } catch (RuntimeException e) {
-            LOG.error("Fikk RuntimeException ved oppslag mot TPS", e);
+            log.error("Fikk RuntimeException ved oppslag mot TPS", e);
             throw e;
         }
     }

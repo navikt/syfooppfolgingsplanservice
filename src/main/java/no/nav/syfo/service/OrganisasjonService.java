@@ -1,22 +1,19 @@
 package no.nav.syfo.service;
 
-import no.nav.tjeneste.virksomhet.organisasjon.v4.HentOrganisasjonOrganisasjonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.HentOrganisasjonUgyldigInput;
-import no.nav.tjeneste.virksomhet.organisasjon.v4.OrganisasjonV4;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tjeneste.virksomhet.organisasjon.v4.*;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.informasjon.WSUstrukturertNavn;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.WSHentOrganisasjonRequest;
 import no.nav.tjeneste.virksomhet.organisasjon.v4.meldinger.WSHentOrganisasjonResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import org.springframework.cache.annotation.Cacheable;
 
 import javax.inject.Inject;
 
 import static java.util.stream.Collectors.joining;
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 public class OrganisasjonService {
-    private static final Logger LOG = getLogger(OrganisasjonService.class);
 
     @Inject
     private OrganisasjonV4 organisasjonV4;
@@ -32,7 +29,7 @@ public class OrganisasjonService {
                     .collect(joining(", "));
 
         } catch (HentOrganisasjonOrganisasjonIkkeFunnet | HentOrganisasjonUgyldigInput e) {
-            LOG.error("Feil ved henting av Arbeidsgivers navn", e);
+            log.error("Feil ved henting av Arbeidsgivers navn", e);
             throw new RuntimeException("Feil ved henting av Arbeidsgivers navn", e);
         }
     }

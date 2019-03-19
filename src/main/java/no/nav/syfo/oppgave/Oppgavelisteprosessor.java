@@ -1,9 +1,9 @@
 package no.nav.syfo.oppgave;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.metrics.Event;
 import no.nav.syfo.domain.AsynkOppgave;
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO;
-import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -16,11 +16,10 @@ import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.util.ToggleUtil.kjorerIProduksjon;
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 @Service
 public class Oppgavelisteprosessor {
-    private static final Logger LOG = getLogger(Oppgavelisteprosessor.class);
 
     private Oppgaveelementprosessor oppgaveelementprosessor;
     private AsynkOppgaveDAO asynkOppgaveDAO;
@@ -29,7 +28,7 @@ public class Oppgavelisteprosessor {
     private final int limit = Integer.parseInt(getProperty("asynkoppgavelimit", "100"));
 
     public void run() {
-        LOG.info("Kjører asynk oppgaver");
+        log.info("Kjører asynk oppgaver");
 
         StreamSupport.stream(Spliterators.spliteratorUnknownSize(oppgaveIterator, Spliterator.ORDERED), false)
                 .limit(limit)
@@ -39,13 +38,13 @@ public class Oppgavelisteprosessor {
                         reportAsynkOppgave(oppgave, true);
 
                     } catch (Exception e) {
-                        LOG.error("Feil ved prossesering av oppgavetype " + oppgave.oppgavetype + " med id " + oppgave.id + " og ressursId " + oppgave.ressursId, e);
+                        log.error("Feil ved prossesering av oppgavetype " + oppgave.oppgavetype + " med id " + oppgave.id + " og ressursId " + oppgave.ressursId, e);
                         asynkOppgaveDAO.update(oppgave.inkrementerAntallForsoek());
                         reportAsynkOppgave(oppgave, false);
 
                         // I test: sletter asynkOppgave som har blitt forsøkt prosessert minst 100 ganger
                         if (!kjorerIProduksjon() && oppgave.antallForsoek > 100) {
-                            LOG.info("Oppgave " + oppgave.oppgavetype + " med id " + oppgave.id + " og ressursId " + oppgave.ressursId +
+                            log.info("Oppgave " + oppgave.oppgavetype + " med id " + oppgave.id + " og ressursId " + oppgave.ressursId +
                                     " har feilet " + (oppgave.antallForsoek - 1) + " ganger. Sletter oppgaven fra databasen");
                             asynkOppgaveDAO.delete(oppgave.id);
                         }

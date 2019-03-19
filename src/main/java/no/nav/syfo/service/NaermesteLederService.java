@@ -1,13 +1,10 @@
 package no.nav.syfo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
-import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentNaermesteLederListeSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentNaermesteLederSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentNaermesteLedersAnsattListeSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.SykefravaersoppfoelgingV1;
+import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.*;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.*;
-import org.slf4j.Logger;
 import org.springframework.cache.annotation.Cacheable;
 
 import javax.inject.Inject;
@@ -20,10 +17,9 @@ import static no.nav.syfo.mappers.ws.WSAnsattMapper.ws2ansatt;
 import static no.nav.syfo.mappers.ws.WSNaermesteLederMapper.ws2naermesteLeder;
 import static no.nav.syfo.util.MapUtil.map;
 import static no.nav.syfo.util.MapUtil.mapListe;
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 public class NaermesteLederService {
-    private static final Logger LOG = getLogger(NaermesteLederService.class);
 
     @Inject
     private SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1;
@@ -35,7 +31,7 @@ public class NaermesteLederService {
                     .withAktoerId(aktoerId));
             return mapListe(response.getAnsattListe(), ws2ansatt);
         } catch (HentNaermesteLedersAnsattListeSikkerhetsbegrensning e) {
-            LOG.warn("Fikk sikkerhetsbegrensning ved henting av ansatte for person {}", aktoerId);
+            log.warn("Fikk sikkerhetsbegrensning ved henting av ansatte for person {}", aktoerId);
             throw new ForbiddenException();
         }
     }
@@ -47,7 +43,7 @@ public class NaermesteLederService {
                     .withAktoerId(aktoerId));
             return mapListe(response.getNaermesteLederListe(), ws2naermesteLeder);
         } catch (HentNaermesteLederListeSikkerhetsbegrensning e) {
-            LOG.warn("Fikk sikkerhetsbegrensning ved henting av naermeste ledere for person {}", aktoerId);
+            log.warn("Fikk sikkerhetsbegrensning ved henting av naermeste ledere for person {}", aktoerId);
             throw new ForbiddenException();
         }
     }
@@ -57,10 +53,10 @@ public class NaermesteLederService {
         try {
             return of(map(sykefravaersoppfoelgingV1.hentNaermesteLeder(new WSHentNaermesteLederRequest().withAktoerId(aktoerId).withOrgnummer(virksomhetsnummer)).getNaermesteLeder(), ws2naermesteLeder));
         } catch (HentNaermesteLederSikkerhetsbegrensning e) {
-            LOG.warn("Fikk sikkerhetsbegrensning ved henting av naermeste leder for person {} i virksomhet {}", aktoerId, virksomhetsnummer);
+            log.warn("Fikk sikkerhetsbegrensning ved henting av naermeste leder for person {} i virksomhet {}", aktoerId, virksomhetsnummer);
             throw new ForbiddenException();
         } catch (RuntimeException e) {
-            LOG.error("Runtime-feil mot SyfoService. Trolig restart av syfoservice eller at datapower er nede e.l. " +
+            log.error("Runtime-feil mot SyfoService. Trolig restart av syfoservice eller at datapower er nede e.l. " +
                     "Parametere: aktoerId: {} virksomhetsnummer: {} av bruker ", aktoerId, virksomhetsnummer, e);
             throw e;
         }

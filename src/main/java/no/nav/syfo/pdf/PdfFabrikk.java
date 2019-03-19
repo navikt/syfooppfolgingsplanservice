@@ -1,20 +1,14 @@
 package no.nav.syfo.pdf;
 
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
-import com.lowagie.text.pdf.PdfWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.lowagie.text.pdf.*;
+import lombok.extern.slf4j.Slf4j;
 import org.xhtmlrenderer.pdf.DefaultPDFCreationListener;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 
 import static java.util.Optional.ofNullable;
@@ -22,9 +16,8 @@ import static no.nav.syfo.util.ToggleUtil.kjorerLokalt;
 import static no.nav.syfo.util.XmlUtil.xmlTilHtml;
 import static org.apache.commons.io.IOUtils.toByteArray;
 
+@Slf4j
 public class PdfFabrikk {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PdfFabrikk.class);
 
     public static byte[] tilPdf(String xml) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -71,7 +64,7 @@ public class PdfFabrikk {
             stamperOs.close();
             os.close();
         } catch (DocumentException | IOException e) {
-            LOG.error("Feil i konvertering av xml til pdf", e);
+            log.error("Feil i konvertering av xml til pdf", e);
             throw new RuntimeException("Kunne ikke generere PDF", e);
         }
         return stamperOs.toByteArray();
@@ -101,7 +94,7 @@ public class PdfFabrikk {
         try {
             html = xmlTilHtml(xml, PdfFabrikk.class.getClassLoader().getResourceAsStream("oppfoelgingsdialog.xsl"));
         } catch (JAXBException | FileNotFoundException | TransformerException e) {
-            LOG.error("Feil i konvertering av xml til HTML", e);
+            log.error("Feil i konvertering av xml til HTML", e);
             throw new RuntimeException();
         }
         return html;

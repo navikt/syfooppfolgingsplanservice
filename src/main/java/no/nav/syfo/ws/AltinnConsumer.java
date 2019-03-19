@@ -1,5 +1,6 @@
 package no.nav.syfo.ws;
 
+import lombok.extern.slf4j.Slf4j;
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptExternal;
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
@@ -7,8 +8,6 @@ import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondence
 import no.nav.metrics.aspects.Timed;
 import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
 import no.nav.syfo.service.BrukerprofilService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -18,10 +17,9 @@ import java.util.Optional;
 import static java.lang.System.getProperty;
 import static no.nav.syfo.ws.mappers.OppfoelgingsdialogAltinnMapper.oppfoelgingsdialogTilCorrespondence;
 
+@Slf4j
 @Service
 public class AltinnConsumer {
-
-    public static final Logger LOG = LoggerFactory.getLogger(AltinnConsumer.class);
 
     public static final String SYSTEM_USER_CODE = "NAV_DIGISYFO";
     private static final String FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN = "Feil ved sending av oppfølgingsplan til Altinn";
@@ -47,20 +45,20 @@ public class AltinnConsumer {
                     SYSTEM_USER_CODE,
                     oppfoelgingsdialogAltinn.oppfoelgingsdialog.uuid,
                     oppfoelgingsdialogTilCorrespondence(oppfoelgingsdialogAltinn, brukersNavn.orElseThrow(() -> {
-                        LOG.error("Fikk uventet feil fra TPS");
+                        log.error("Fikk uventet feil fra TPS");
                         return new RuntimeException(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN);
                     }))
             );
             if (receiptExternal.getReceiptStatusCode() != ReceiptStatusEnum.OK) {
-                LOG.error("Fikk uventet statuskode fra Altinn {}", receiptExternal.getReceiptStatusCode());
+                log.error("Fikk uventet statuskode fra Altinn {}", receiptExternal.getReceiptStatusCode());
                 throw new RuntimeException(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN);
             }
             return receiptExternal.getReceiptId();
         } catch (ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage e) {
-            LOG.error(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN, e);
+            log.error(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN, e);
             throw new RuntimeException(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN, e);
         } catch (SOAPFaultException e) {
-            LOG.error(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN, e);
+            log.error(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN, e);
             throw e;
         }
     }

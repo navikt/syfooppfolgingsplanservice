@@ -1,8 +1,8 @@
 package no.nav.syfo.repository.dao;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.repository.domain.POppfoelgingsdialog;
-import org.slf4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,16 +16,15 @@ import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
-import static no.nav.syfo.util.MapUtil.map;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper.p2oppfoelgingsdialog;
 import static no.nav.syfo.repository.DbUtil.convert;
 import static no.nav.syfo.repository.DbUtil.nesteSekvensverdi;
+import static no.nav.syfo.util.MapUtil.map;
+import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 public class OppfoelingsdialogDAO {
-    private static final Logger LOG = getLogger(OppfoelingsdialogDAO.class);
 
     @Inject
     private JdbcTemplate jdbcTemplate;
@@ -99,7 +98,7 @@ public class OppfoelingsdialogDAO {
         oppfoelgingsdialog.godkjentPlan
                 .filter(godkjentPlan -> !oppfoelgingsdialog.godkjenninger.isEmpty())
                 .ifPresent(godkjentPlan -> {
-                    LOG.warn("Sletter godkjenning som finnes selv om oppfølgingsplanen allerede er godkjent");
+                    log.warn("Sletter godkjenning som finnes selv om oppfølgingsplanen allerede er godkjent");
                     godkjenningerDAO.deleteAllByOppfoelgingsdialogId(godkjentPlan.oppfoelgingsdialogId);
                     oppfoelgingsdialog.godkjenninger = emptyList();
                 });

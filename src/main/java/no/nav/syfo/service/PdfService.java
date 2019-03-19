@@ -1,28 +1,23 @@
 package no.nav.syfo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.repository.dao.DokumentDAO;
-import no.nav.syfo.repository.dao.GodkjentplanDAO;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
+import no.nav.syfo.repository.dao.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
-import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 import static no.nav.syfo.util.MetricsUtil.reportAntallDagerSiden;
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 public class PdfService {
-    private static final Logger LOG = getLogger(PdfService.class);
 
     @Inject
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
@@ -67,7 +62,7 @@ public class PdfService {
     }
 
     private RuntimeException throwOppfoelgingsplanUtenGodkjenPlan(Oppfoelgingsdialog oppfoelgingsdialog) {
-        LOG.error("Oppfoelgingsplan med id {} har ikke godkjentPlan", oppfoelgingsdialog.id);
+        log.error("Oppfoelgingsplan med id {} har ikke godkjentPlan", oppfoelgingsdialog.id);
         return new RuntimeException("Oppfoelgingsplan har ikke godkjentPlan");
     }
 }

@@ -1,18 +1,14 @@
 package no.nav.syfo.service;
 
-import no.nav.tjeneste.virksomhet.behandlesak.v1.BehandleSakV1;
-import no.nav.tjeneste.virksomhet.behandlesak.v1.OpprettSakSakEksistererAllerede;
-import no.nav.tjeneste.virksomhet.behandlesak.v1.OpprettSakUgyldigInput;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tjeneste.virksomhet.behandlesak.v1.*;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.informasjon.*;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.meldinger.WSOpprettSakRequest;
-import org.slf4j.Logger;
 
 import javax.inject.Inject;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+@Slf4j
 public class BehandleSakService {
-    private static final Logger LOG = getLogger(BehandleSakService.class);
 
     @Inject
     private BehandleSakV1 behandleSakV1;
@@ -27,10 +23,10 @@ public class BehandleSakService {
                     )
             ).getSakId();
         } catch (OpprettSakSakEksistererAllerede e) {
-            LOG.error("Sak finnes allerede", e);
+            log.error("Sak finnes allerede", e);
             throw new RuntimeException("Sak finnes allerede", e);
         } catch (OpprettSakUgyldigInput e) {
-            LOG.error("Ugyldig input", e);
+            log.error("Ugyldig input", e);
             throw new RuntimeException("Ugyldid input i sak", e);
         }
     }

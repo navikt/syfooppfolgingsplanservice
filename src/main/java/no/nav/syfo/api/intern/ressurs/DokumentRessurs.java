@@ -2,21 +2,17 @@ package no.nav.syfo.api.intern.ressurs;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
-import no.nav.syfo.service.DokumentService;
-import no.nav.syfo.service.PdfService;
-import no.nav.syfo.service.TilgangsKontroll;
+import no.nav.syfo.service.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import static java.lang.System.getProperty;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -24,15 +20,13 @@ import static javax.ws.rs.core.Response.ok;
 import static no.nav.syfo.mockdata.MockData.mockPdf;
 import static no.nav.syfo.mockdata.MockData.mockPdfBytes;
 import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 @Component
 @Path("/dokument/{oppfoelgingsdialogId}")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class DokumentRessurs {
-
-    private static final Logger LOG = getLogger(DokumentRessurs.class);
 
     @Inject
     private DokumentService dokumentService;
@@ -61,7 +55,7 @@ public class DokumentRessurs {
                     .entity(pdfService.pdf2image(pdf, side))
                     .build();
         } catch (IndexOutOfBoundsException e) {
-            LOG.error("Fikk IndexOutOfBoundsException ved henting av side {} for oppfoelgingsplan {} ", side, oppfoelgingsdialogId);
+            log.error("Fikk IndexOutOfBoundsException ved henting av side {} for oppfoelgingsplan {} ", side, oppfoelgingsdialogId);
             throw e;
         }
     }

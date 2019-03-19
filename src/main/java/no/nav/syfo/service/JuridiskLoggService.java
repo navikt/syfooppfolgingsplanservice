@@ -1,12 +1,8 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.domain.LoggMelding;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
-import org.slf4j.Logger;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.domain.*;
+import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
@@ -14,12 +10,10 @@ import org.springframework.web.client.RestTemplate;
 
 import static java.lang.System.getProperty;
 import static no.nav.syfo.util.RestUtils.basicCredentials;
-import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+@Slf4j
 public class JuridiskLoggService {
-
-    private static final Logger LOG = getLogger(JuridiskLoggService.class);
 
     public void loggSendOppfoelgingsdialogTilAltinn(OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogAltinn.oppfoelgingsdialog;
@@ -42,9 +36,9 @@ public class JuridiskLoggService {
             HttpEntity<LoggMelding> requestPost = new HttpEntity<>(loggMelding, headers);
 
             rt.exchange(url, HttpMethod.POST, requestPost, LoggMelding.class);
-            LOG.info("Logget sending av oppfølgingsplan med id {} i juridisk loggSendOppfoelgingsdialogTilAltinn", oppfoelgingsdialog.id);
+            log.info("Logget sending av oppfølgingsplan med id {} i juridisk loggSendOppfoelgingsdialogTilAltinn", oppfoelgingsdialog.id);
         } catch (HttpClientErrorException e) {
-            LOG.error("Klientfeil mot JuridiskLogg ved logging av sendt oppfølgingsplan med id {} til Altinn", oppfoelgingsdialog.id, e);
+            log.error("Klientfeil mot JuridiskLogg ved logging av sendt oppfølgingsplan med id {} til Altinn", oppfoelgingsdialog.id, e);
             throw e;
         }
     }

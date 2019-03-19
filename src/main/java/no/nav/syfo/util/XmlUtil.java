@@ -1,16 +1,13 @@
 package no.nav.syfo.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -18,9 +15,8 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.charset.Charset;
 
+@Slf4j
 public class XmlUtil {
-
-    private static final Logger LOG = LoggerFactory.getLogger(XmlUtil.class);
 
     public static Document parseXml(String xml) {
         return parseXml(xml, true);
@@ -33,7 +29,7 @@ public class XmlUtil {
             DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
             return documentBuilder.parse(new InputSource(new StringReader(xml)));
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOG.error("Feil i parsing av XML", e);
+            log.error("Feil i parsing av XML", e);
         }
         return null;
     }
@@ -43,7 +39,7 @@ public class XmlUtil {
         TransformerFactory transformerFactory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
 
         Source xslDoc = new StreamSource(xslPath);
-        Source xmlDoc = new StreamSource(IOUtils.toInputStream(xml, Charset.forName("UTF-8")) );
+        Source xmlDoc = new StreamSource(IOUtils.toInputStream(xml, Charset.forName("UTF-8")));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Transformer transformer = transformerFactory.newTransformer(xslDoc);

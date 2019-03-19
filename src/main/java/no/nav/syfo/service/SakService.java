@@ -1,22 +1,15 @@
 package no.nav.syfo.service;
 
-import no.nav.tjeneste.virksomhet.sak.v1.FinnSakForMangeForekomster;
-import no.nav.tjeneste.virksomhet.sak.v1.FinnSakUgyldigInput;
-import no.nav.tjeneste.virksomhet.sak.v1.SakV1;
-import no.nav.tjeneste.virksomhet.sak.v1.informasjon.WSFagomraader;
-import no.nav.tjeneste.virksomhet.sak.v1.informasjon.WSFagsystemer;
-import no.nav.tjeneste.virksomhet.sak.v1.informasjon.WSPerson;
-import no.nav.tjeneste.virksomhet.sak.v1.informasjon.WSSak;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tjeneste.virksomhet.sak.v1.*;
+import no.nav.tjeneste.virksomhet.sak.v1.informasjon.*;
 import no.nav.tjeneste.virksomhet.sak.v1.meldinger.WSFinnSakRequest;
-import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import java.util.Optional;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+@Slf4j
 public class SakService {
-    private static final Logger LOG = getLogger(SakService.class);
 
     @Inject
     private SakV1 sakV1;
@@ -32,7 +25,7 @@ public class SakService {
                     .map(WSSak::getSakId)
                     .findFirst();
         } catch (FinnSakForMangeForekomster | FinnSakUgyldigInput | RuntimeException e) {
-            LOG.error("Det skjedde en feil", e);
+            log.error("Det skjedde en feil", e);
             throw new RuntimeException("Sak finnes allerede", e);
         }
     }

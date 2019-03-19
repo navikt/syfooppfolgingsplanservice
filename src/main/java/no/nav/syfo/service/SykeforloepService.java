@@ -1,21 +1,18 @@
 package no.nav.syfo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.sykmelding.Periode;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentSykeforlopperiodeSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.SykefravaersoppfoelgingV1;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.informasjon.WSSykeforlopperiode;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.WSHentSykeforlopperiodeRequest;
-import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+@Slf4j
 public class SykeforloepService {
-
-    private static final Logger LOG = getLogger(SykeforloepService.class);
 
     @Inject
     private SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1;
@@ -38,7 +35,7 @@ public class SykeforloepService {
                     });
             return sammenslaattePerioder;
         } catch (HentSykeforlopperiodeSikkerhetsbegrensning e) {
-            LOG.error("Sikkerhetsbegrensing ved innhenting av sykeforloepsperioder");
+            log.error("Sikkerhetsbegrensing ved innhenting av sykeforloepsperioder");
             throw new RuntimeException("Sikkerhetsbegrensing ved innhenting av sykeforloepsperioder", e);
         }
     }

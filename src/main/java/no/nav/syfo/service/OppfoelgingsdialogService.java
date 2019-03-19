@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.brukerdialog.security.oidc.SystemUserTokenProvider;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
@@ -7,7 +8,6 @@ import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.service.exceptions.FeilDTO;
-import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -19,9 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.lang.System.getProperty;
 import static java.time.LocalDateTime.now;
@@ -31,10 +29,9 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static no.nav.syfo.model.Varseltype.*;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
 import static no.nav.syfo.util.PropertyUtil.FASTLEGE_DIALOGMELDING_API_URL;
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 public class OppfoelgingsdialogService {
-    private static final Logger LOG = getLogger(OppfoelgingsdialogService.class);
 
     @Inject
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
@@ -283,7 +280,7 @@ public class OppfoelgingsdialogService {
             }
         }
         if (responsekode >= 300) {
-            LOG.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
+            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             throw new RuntimeException("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
         }
 

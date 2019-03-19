@@ -1,20 +1,18 @@
 package no.nav.syfo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Enhet;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.HentOverordnetEnhetListeEnhetIkkeFunnet;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.OrganisasjonEnhetV2;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.informasjon.WSEnhetRelasjonstyper;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.informasjon.WSEnhetsstatus;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.meldinger.WSHentOverordnetEnhetListeRequest;
-import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import java.util.Optional;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+@Slf4j
 public class NorgService {
-    private static final Logger LOG = getLogger(NorgService.class);
 
     @Inject
     private OrganisasjonEnhetV2 organisasjonEnhetV2;
@@ -29,7 +27,7 @@ public class NorgService {
                     .map(wsOrganisasjonsenhet -> new Enhet().enhetId(wsOrganisasjonsenhet.getEnhetId()).navn(wsOrganisasjonsenhet.getEnhetNavn()))
                     .findFirst();
         } catch (HentOverordnetEnhetListeEnhetIkkeFunnet e) {
-            LOG.error("Fant ingen overordnet enhet");
+            log.error("Fant ingen overordnet enhet");
             throw new RuntimeException();
         }
     }

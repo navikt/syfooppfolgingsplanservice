@@ -1,7 +1,6 @@
 package no.nav.syfo.util;
 
-import no.nav.syfo.oppgave.Oppgavelisteprosessor;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,10 +10,9 @@ import static java.lang.System.getProperty;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 public final class OppfoelgingsdialogservicePropertiesUtil {
-    private static final Logger LOG = getLogger(Oppgavelisteprosessor.class);
 
     public static int hentIntProperty(String property, int defaultValue) {
         try {
@@ -22,7 +20,7 @@ public final class OppfoelgingsdialogservicePropertiesUtil {
                     .map(Integer::parseInt)
                     .orElse(defaultValue);
         } catch (Exception e) {
-            LOG.error("Feil ved henting av Int-property " + property, e);
+            log.error("Feil ved henting av Int-property " + property, e);
             throw e;
         }
     }

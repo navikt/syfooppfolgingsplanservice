@@ -1,13 +1,9 @@
 package no.nav.syfo.service;
 
-import no.nav.melding.virksomhet.varsel.v1.varsel.XMLAktoerId;
-import no.nav.melding.virksomhet.varsel.v1.varsel.XMLParameter;
-import no.nav.melding.virksomhet.varsel.v1.varsel.XMLVarsel;
-import no.nav.melding.virksomhet.varsel.v1.varsel.XMLVarslingstyper;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.melding.virksomhet.varsel.v1.varsel.*;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Varseltype;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 import javax.inject.Inject;
@@ -18,8 +14,8 @@ import static java.util.UUID.randomUUID;
 import static no.nav.syfo.util.JAXB.marshallVarsel;
 import static no.nav.syfo.util.JmsUtil.messageCreator;
 
+@Slf4j
 public class ServiceVarselService {
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceVarselService.class);
 
     @Inject
     @Named("servicevarselqueue")
@@ -30,7 +26,7 @@ public class ServiceVarselService {
     public void sendServiceVarsel(String aktoerId, Varseltype varseltype, Long oppfoelgingsdialogId) {
         Kontaktinfo kontaktinfo = dkifService.hentKontaktinfoAktoerId(aktoerId);
         if (!kontaktinfo.skalHaVarsel) {
-            LOG.warn("Bruker {} skal ikke ha varsel pga {}", aktoerId, kontaktinfo.feilAarsak.name());
+            log.warn("Bruker {} skal ikke ha varsel pga {}", aktoerId, kontaktinfo.feilAarsak.name());
             return;
         }
         XMLVarsel xmlVarsel = new XMLVarsel()

@@ -1,14 +1,10 @@
 package no.nav.syfo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.model.Stilling;
-import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.ArbeidsforholdV3;
-import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.FinnArbeidsforholdPrArbeidstakerSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.FinnArbeidsforholdPrArbeidstakerUgyldigInput;
-import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.NorskIdent;
-import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.Organisasjon;
-import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.Regelverker;
+import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.*;
+import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.*;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.meldinger.FinnArbeidsforholdPrArbeidstakerRequest;
-import org.slf4j.Logger;
 import org.springframework.cache.annotation.Cacheable;
 
 import javax.inject.Inject;
@@ -18,10 +14,9 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 public class ArbeidsforholdService {
-    private static final Logger LOG = getLogger(ArbeidsforholdService.class);
     private static final Regelverker A_ORDNINGEN = new Regelverker();
 
     static {
@@ -36,7 +31,7 @@ public class ArbeidsforholdService {
 
     private List<Stilling> hentArbeidsforholdMedFnr(String fnr, LocalDate fom, String orgnr) {
         if (isBlank(fnr) || !fnr.matches("\\d{11}$")) {
-            LOG.error("Prøvde å hente arbeidsforhold");
+            log.error("Prøvde å hente arbeidsforhold");
             throw new RuntimeException();
         }
         try {
@@ -52,7 +47,7 @@ public class ArbeidsforholdService {
                     )
                     .collect(toList());
         } catch (FinnArbeidsforholdPrArbeidstakerUgyldigInput | FinnArbeidsforholdPrArbeidstakerSikkerhetsbegrensning e) {
-            LOG.error("Feil ved henting av arbeidsforhold", e);
+            log.error("Feil ved henting av arbeidsforhold", e);
             throw new RuntimeException();
         }
     }
