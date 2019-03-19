@@ -2,13 +2,11 @@ package no.nav.syfo.api.intern.ressurs;
 
 import no.nav.syfo.api.intern.domain.RSHistorikk;
 import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
-import no.nav.syfo.service.TilgangsKontroll;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.model.VeilederOppgave.OppgaveStatus;
+import no.nav.syfo.model.VeilederOppgave.OppgaveType;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
-import no.nav.syfo.service.AktoerService;
-import no.nav.syfo.service.BrukerprofilService;
-import no.nav.syfo.service.OrganisasjonService;
-import no.nav.syfo.service.VeilederOppgaverService;
+import no.nav.syfo.service.*;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -19,13 +17,10 @@ import static java.lang.System.getProperty;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.concat;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.api.intern.mappers.OppfoelgingsdialogRestMapper.oppfoelgingsdialog2rs;
 import static no.nav.syfo.mockdata.MockData.mockedOppfoelgingsdialoger;
+import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
-
-import no.nav.syfo.model.VeilederOppgave.OppgaveType;
-import no.nav.syfo.model.VeilederOppgave.OppgaveStatus;
 
 @Component
 @Path("/oppfoelgingsdialog/v1/{fnr}")
@@ -33,18 +28,29 @@ import no.nav.syfo.model.VeilederOppgave.OppgaveStatus;
 @Produces(APPLICATION_JSON)
 public class OppfoelgingsdialogRessurs {
 
-    @Inject
     private AktoerService aktoerService;
-    @Inject
-    private VeilederOppgaverService veilederOppgaverService;
-    @Inject
     private BrukerprofilService brukerprofilService;
-    @Inject
-    private OrganisasjonService organisasjonService;
-    @Inject
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
-    @Inject
+    private OrganisasjonService organisasjonService;
     private TilgangsKontroll tilgangsKontroll;
+    private VeilederOppgaverService veilederOppgaverService;
+
+    @Inject
+    public OppfoelgingsdialogRessurs(
+            final AktoerService aktoerService,
+            final BrukerprofilService brukerprofilService,
+            final OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            final OrganisasjonService organisasjonService,
+            final TilgangsKontroll tilgangsKontroll,
+            final VeilederOppgaverService veilederOppgaverService
+    ) {
+        this.aktoerService = aktoerService;
+        this.brukerprofilService = brukerprofilService;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.organisasjonService = organisasjonService;
+        this.tilgangsKontroll = tilgangsKontroll;
+        this.veilederOppgaverService = veilederOppgaverService;
+    }
 
     private String finnDeltAvNavn(Oppfoelgingsdialog oppfoelgingsdialog) {
         if (oppfoelgingsdialog.sistEndretAvAktoerId.equals(oppfoelgingsdialog.arbeidstaker.aktoerId)) {
@@ -67,7 +73,7 @@ public class OppfoelgingsdialogRessurs {
 
         List<RSHistorikk> utfoertHistorikk = veilederOppgaverService.get(fnr).stream()
                 .filter(veilederOppgave -> veilederOppgave.type.equals(OppgaveType.SE_OPPFOLGINGSPLAN.name())
-                                        && veilederOppgave.status.equals(OppgaveStatus.FERDIG.name()))
+                        && veilederOppgave.status.equals(OppgaveStatus.FERDIG.name()))
                 .map(veilederOppgave -> new RSHistorikk()
                         .tekst("Oppfølgingsplanen ble lest av " + veilederOppgave.sistEndretAv)
                         .tidspunkt(veilederOppgave.getSistEndret())

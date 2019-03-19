@@ -28,14 +28,23 @@ import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
 @Produces(APPLICATION_JSON)
 public class DokumentRessurs {
 
-    @Inject
     private DokumentService dokumentService;
-    @Inject
-    private PdfService pdfService;
-    @Inject
     private GodkjentplanDAO godkjentplanDAO;
-    @Inject
+    private PdfService pdfService;
     private TilgangsKontroll tilgangsKontroll;
+
+    @Inject
+    public DokumentRessurs(
+            final DokumentService dokumentService,
+            final GodkjentplanDAO godkjentplanDAO,
+            final PdfService pdfService,
+            final TilgangsKontroll tilgangsKontroll
+    ) {
+        this.dokumentService = dokumentService;
+        this.godkjentplanDAO = godkjentplanDAO;
+        this.pdfService = pdfService;
+        this.tilgangsKontroll = tilgangsKontroll;
+    }
 
     @GET
     @Path("/side/{side}")
