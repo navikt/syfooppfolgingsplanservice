@@ -5,16 +5,22 @@ import no.nav.tjeneste.virksomhet.aktoer.v2.*;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.WSHentAktoerIdForIdentRequest;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.WSHentIdentForAktoerIdRequest;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
+@Service
 public class AktoerService {
 
-    @Inject
     private AktoerV2 aktoerV2;
+
+    @Inject
+    public AktoerService(AktoerV2 aktoerV2) {
+        this.aktoerV2 = aktoerV2;
+    }
 
     @Cacheable("aktoer")
     public String hentAktoerIdForFnr(String fnr) {

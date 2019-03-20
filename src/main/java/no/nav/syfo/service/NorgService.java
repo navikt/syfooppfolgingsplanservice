@@ -7,15 +7,21 @@ import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.OrganisasjonEnhetV2;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.informasjon.WSEnhetRelasjonstyper;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.informasjon.WSEnhetsstatus;
 import no.nav.tjeneste.virksomhet.organisasjonenhet.v2.meldinger.WSHentOverordnetEnhetListeRequest;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.Optional;
 
 @Slf4j
+@Service
 public class NorgService {
 
-    @Inject
     private OrganisasjonEnhetV2 organisasjonEnhetV2;
+
+    @Inject
+    public NorgService(OrganisasjonEnhetV2 organisasjonEnhetV2) {
+        this.organisasjonEnhetV2 = organisasjonEnhetV2;
+    }
 
     public Optional<Enhet> finnSetteKontor(String enhet) {
         try {

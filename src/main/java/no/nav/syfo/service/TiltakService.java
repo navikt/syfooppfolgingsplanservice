@@ -1,13 +1,9 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.domain.Kommentar;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.domain.Tiltak;
-import no.nav.syfo.repository.dao.GodkjenningerDAO;
-import no.nav.syfo.repository.dao.KommentarDAO;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
-import no.nav.syfo.repository.dao.TiltakDAO;
+import no.nav.syfo.domain.*;
+import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -17,20 +13,32 @@ import java.util.List;
 import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeTiltakHoererTilDialog;
 
+@Service
 public class TiltakService {
 
-    @Inject
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
-    @Inject
     private AktoerService aktoerService;
-    @Inject
-    private TiltakDAO tiltakDAO;
-    @Inject
     private GodkjenningerDAO godkjenningerDAO;
-    @Inject
-    private TilgangskontrollService tilgangskontrollService;
-    @Inject
     private KommentarDAO kommentarDAO;
+    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private TilgangskontrollService tilgangskontrollService;
+    private TiltakDAO tiltakDAO;
+
+    @Inject
+    public TiltakService(
+            AktoerService aktoerService,
+            GodkjenningerDAO godkjenningerDAO,
+            KommentarDAO kommentarDAO,
+            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            TilgangskontrollService tilgangskontrollService,
+            TiltakDAO tiltakDAO
+    ) {
+        this.aktoerService = aktoerService;
+        this.godkjenningerDAO = godkjenningerDAO;
+        this.kommentarDAO = kommentarDAO;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.tilgangskontrollService = tilgangskontrollService;
+        this.tiltakDAO = tiltakDAO;
+    }
 
     @Transactional
     public Long lagreTiltak(Long oppfoelgingsdialogId, Tiltak tiltak, String fnr) {

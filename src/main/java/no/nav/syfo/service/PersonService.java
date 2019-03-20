@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.person.v3.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.*;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
@@ -11,13 +12,18 @@ import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
 @Slf4j
+@Service
 public class PersonService {
 
     private static final String KODE6 = "SPSF";
     private static final String KODE7 = "SPFO";
 
-    @Inject
     private PersonV3 personV3;
+
+    @Inject
+    public PersonService(PersonV3 personV3) {
+        this.personV3 = personV3;
+    }
 
     public String hentGeografiskTilknytning(String fnr) {
         try {

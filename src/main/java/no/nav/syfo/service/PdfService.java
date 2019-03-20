@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
@@ -17,16 +18,29 @@ import java.io.*;
 import static no.nav.syfo.util.MetricsUtil.reportAntallDagerSiden;
 
 @Slf4j
+@Service
 public class PdfService {
 
-    @Inject
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
-    @Inject
+
     private OppfoelgingsdialogService oppfoelgingsdialogService;
-    @Inject
+
     private DokumentDAO dokumentDAO;
-    @Inject
+
     private GodkjentplanDAO godkjentplanDAO;
+
+    @Inject
+    public PdfService(
+            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OppfoelgingsdialogService oppfoelgingsdialogService,
+            DokumentDAO dokumentDAO,
+            GodkjentplanDAO godkjentplanDAO
+    ) {
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.dokumentDAO = dokumentDAO;
+        this.godkjentplanDAO = godkjentplanDAO;
+    }
 
     public byte[] hentPdf(long oppfoelgingsdialogId, String fnr) {
         if (!oppfoelgingsdialogService.harBrukerTilgangTilDialog(oppfoelgingsdialogId, fnr)) {

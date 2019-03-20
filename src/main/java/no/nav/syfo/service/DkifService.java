@@ -7,6 +7,7 @@ import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.informasjon.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.meldinger.WSHentDigitalKontaktinformasjonRequest;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.time.OffsetDateTime;
@@ -16,12 +17,21 @@ import static no.nav.syfo.model.Kontaktinfo.FeilAarsak.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
+@Service
 public class DkifService {
 
-    @Inject
     private DigitalKontaktinformasjonV1 dkifV1;
-    @Inject
+
     private AktoerService aktoerService;
+
+    @Inject
+    public DkifService(
+            DigitalKontaktinformasjonV1 dkifV1,
+            AktoerService aktoerService
+    ) {
+        this.dkifV1 = dkifV1;
+        this.aktoerService = aktoerService;
+    }
 
     @Cacheable(value = "dkif", keyGenerator = "userkeygenerator")
     public Kontaktinfo hentKontaktinfoFnr(String fnr) {

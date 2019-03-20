@@ -6,6 +6,7 @@ import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.*;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.*;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.meldinger.FinnArbeidsforholdPrArbeidstakerRequest;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -16,18 +17,27 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
+@Service
 public class ArbeidsforholdService {
+
     private static final Regelverker A_ORDNINGEN = new Regelverker();
 
     static {
         A_ORDNINGEN.setValue("A_ORDNINGEN");
     }
 
-    @Inject
     private ArbeidsforholdV3 arbeidsforholdV3;
 
-    @Inject
     private AktoerService aktoerService;
+
+    @Inject
+    public ArbeidsforholdService(
+            ArbeidsforholdV3 arbeidsforholdV3,
+            AktoerService aktoerService
+    ) {
+        this.arbeidsforholdV3 = arbeidsforholdV3;
+        this.aktoerService = aktoerService;
+    }
 
     private List<Stilling> hentArbeidsforholdMedFnr(String fnr, LocalDate fom, String orgnr) {
         if (isBlank(fnr) || !fnr.matches("\\d{11}$")) {

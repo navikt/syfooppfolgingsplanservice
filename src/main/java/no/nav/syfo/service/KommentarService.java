@@ -1,30 +1,37 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.domain.Kommentar;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.domain.Tiltak;
-import no.nav.syfo.repository.dao.GodkjenningerDAO;
-import no.nav.syfo.repository.dao.KommentarDAO;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
-import no.nav.syfo.repository.dao.TiltakDAO;
+import no.nav.syfo.domain.*;
+import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 
+@Service
 public class KommentarService {
 
-    @Inject
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
-    @Inject
-    private TiltakDAO tiltakDAO;
-    @Inject
     private AktoerService aktoerService;
-    @Inject
-    private KommentarDAO kommentarDAO;
-    @Inject
     private GodkjenningerDAO godkjenningerDAO;
+    private KommentarDAO kommentarDAO;
+    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private TiltakDAO tiltakDAO;
+
+    @Inject
+    public KommentarService(
+            AktoerService aktoerService,
+            GodkjenningerDAO godkjenningerDAO,
+            KommentarDAO kommentarDAO,
+            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            TiltakDAO tiltakDAO
+    ) {
+        this.aktoerService = aktoerService;
+        this.godkjenningerDAO = godkjenningerDAO;
+        this.kommentarDAO = kommentarDAO;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.tiltakDAO = tiltakDAO;
+    }
 
     @Transactional
     public Long lagreKommentar(Long tiltakId, Kommentar kommentar, String fnr) {

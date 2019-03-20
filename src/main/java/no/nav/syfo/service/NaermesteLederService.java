@@ -6,6 +6,7 @@ import no.nav.syfo.model.Naermesteleder;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.*;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.*;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
@@ -19,10 +20,15 @@ import static no.nav.syfo.util.MapUtil.map;
 import static no.nav.syfo.util.MapUtil.mapListe;
 
 @Slf4j
+@Service
 public class NaermesteLederService {
 
-    @Inject
     private SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1;
+
+    @Inject
+    public NaermesteLederService(SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1) {
+        this.sykefravaersoppfoelgingV1 = sykefravaersoppfoelgingV1;
+    }
 
     @Cacheable(value = "syfo", keyGenerator = "userkeygenerator")
     public List<Ansatt> hentAnsatte(String aktoerId) {

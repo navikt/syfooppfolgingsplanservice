@@ -5,10 +5,9 @@ import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.*;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.WSDokumentinfoRelasjon;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.WSJournalfoertDokumentInfo;
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.WSJournalpost;
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.*;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.WSJournalfoerInngaaendeHenvendelseRequest;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
@@ -18,22 +17,34 @@ import static java.lang.String.format;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
+@Service
 public class JournalService {
 
     private static final String GOSYS = "FS22";
 
-    @Inject
-    private BehandleJournalV2 behandleJournalV2;
-    @Inject
-    private BrukerprofilService brukerprofilService;
-    @Inject
     private AktoerService aktoerService;
-    @Inject
-    private OrganisasjonService organisasjonService;
-    @Inject
+    private BehandleJournalV2 behandleJournalV2;
+    private BrukerprofilService brukerprofilService;
     private DokumentService dokumentService;
-    @Inject
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OrganisasjonService organisasjonService;
+
+    @Inject
+    public JournalService(
+            AktoerService aktoerService,
+            BehandleJournalV2 behandleJournalV2,
+            BrukerprofilService brukerprofilService,
+            DokumentService dokumentService,
+            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OrganisasjonService organisasjonService
+    ) {
+        this.aktoerService = aktoerService;
+        this.behandleJournalV2 = behandleJournalV2;
+        this.brukerprofilService = brukerprofilService;
+        this.dokumentService = dokumentService;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.organisasjonService = organisasjonService;
+    }
 
     public String opprettJournalpost(String saksId, GodkjentPlan godkjentPlan) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(godkjentPlan.oppfoelgingsdialogId);

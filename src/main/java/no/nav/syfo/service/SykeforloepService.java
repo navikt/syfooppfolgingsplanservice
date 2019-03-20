@@ -6,16 +6,22 @@ import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentSykeforlopperio
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.SykefravaersoppfoelgingV1;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.informasjon.WSSykeforlopperiode;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.WSHentSykeforlopperiodeRequest;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Service
 public class SykeforloepService {
 
-    @Inject
     private SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1;
+
+    @Inject
+    public SykeforloepService(SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1) {
+        this.sykefravaersoppfoelgingV1 = sykefravaersoppfoelgingV1;
+    }
 
 
     public List<Periode> hentSykeforlopperiode(String aktoerid, String orgnr) {

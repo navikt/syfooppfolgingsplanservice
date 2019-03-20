@@ -4,14 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.*;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.informasjon.*;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.meldinger.WSOpprettSakRequest;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
 @Slf4j
+@Service
 public class BehandleSakService {
 
-    @Inject
     private BehandleSakV1 behandleSakV1;
+
+    @Inject
+    public BehandleSakService(BehandleSakV1 behandleSakV1) {
+        this.behandleSakV1 = behandleSakV1;
+    }
 
     public String opprettSak(String fnr) {
         try {

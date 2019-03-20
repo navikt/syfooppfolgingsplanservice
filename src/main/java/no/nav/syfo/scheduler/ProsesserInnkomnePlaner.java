@@ -6,6 +6,7 @@ import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
 import no.nav.syfo.service.*;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
@@ -14,20 +15,32 @@ import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
 import static no.nav.syfo.util.ToggleUtil.toggleBatch;
 
 @Slf4j
+@Service
 public class ProsesserInnkomnePlaner {
 
-    @Inject
-    private BehandleSakService behandleSakService;
-    @Inject
-    private SakService sakService;
-    @Inject
     private AktoerService aktoerService;
-    @Inject
+    private BehandleSakService behandleSakService;
     private GodkjentplanDAO godkjentplanDAO;
-    @Inject
     private JournalService journalService;
-    @Inject
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private SakService sakService;
+
+    @Inject
+    public ProsesserInnkomnePlaner(
+            AktoerService aktoerService,
+            BehandleSakService behandleSakService,
+            GodkjentplanDAO godkjentplanDAO,
+            JournalService journalService,
+            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            SakService sakService
+    ) {
+        this.aktoerService = aktoerService;
+        this.behandleSakService = behandleSakService;
+        this.godkjentplanDAO = godkjentplanDAO;
+        this.journalService = journalService;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.sakService = sakService;
+    }
 
     @Scheduled(fixedRate = 60000)
     public void opprettSaker() {

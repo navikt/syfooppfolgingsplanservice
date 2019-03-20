@@ -5,6 +5,7 @@ import no.nav.tjeneste.virksomhet.brukerprofil.v3.*;
 import no.nav.tjeneste.virksomhet.brukerprofil.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.brukerprofil.v3.meldinger.WSHentKontaktinformasjonOgPreferanserRequest;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
@@ -16,12 +17,21 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.text.WordUtils.capitalize;
 
 @Slf4j
+@Service
 public class BrukerprofilService {
 
-    @Inject
     private BrukerprofilV3 brukerprofilV3;
-    @Inject
+
     private AktoerService aktoerService;
+
+    @Inject
+    public BrukerprofilService(
+            BrukerprofilV3 brukerprofilV3,
+            AktoerService aktoerService
+    ) {
+        this.brukerprofilV3 = brukerprofilV3;
+        this.aktoerService = aktoerService;
+    }
 
     @Cacheable(value = "tps", keyGenerator = "userkeygenerator")
     public String hentNavnByFnr(String fnr) {

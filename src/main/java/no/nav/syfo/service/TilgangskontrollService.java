@@ -1,15 +1,21 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
 import static java.lang.System.getProperty;
 
+@Service
 public class TilgangskontrollService {
 
-    @Inject
     private NaermesteLederService naermesteLederService;
+
+    @Inject
+    public TilgangskontrollService(NaermesteLederService naermesteLederService) {
+        this.naermesteLederService = naermesteLederService;
+    }
 
     public boolean aktoerTilhoererDialogen(String aktoerId, Oppfoelgingsdialog oppfoelgingsdialog) {
         return "true".equals(getProperty("disable.tilgangskontroll")) || oppfoelgingsdialog.arbeidstaker.aktoerId.equals(aktoerId) || erAktoerNaermestelederForBruker(aktoerId, oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer);
