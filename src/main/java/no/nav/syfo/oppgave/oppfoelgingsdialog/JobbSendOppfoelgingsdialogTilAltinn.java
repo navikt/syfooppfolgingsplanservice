@@ -25,15 +25,29 @@ import static no.nav.syfo.util.ToggleUtil.toggleBatch;
 @Service
 public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 
-    private OppfoelgingsdialogService oppfoelgingsdialogService;
-    private AltinnConsumer altinnConsumer;
-    private AktoerService aktoerService;
-    private PdfService pdfService;
+    private final AktoerService aktoerService;
+    private final AltinnConsumer altinnConsumer;
+    private final OppfoelgingsdialogService oppfoelgingsdialogService;
+    private final PdfService pdfService;
 
     @Override
     public Oppgavetype oppgavetype() {
         return OPPFOELGINGSDIALOG_SEND;
     }
+
+    @Inject
+    public JobbSendOppfoelgingsdialogTilAltinn(
+            AktoerService aktoerService,
+            AltinnConsumer altinnConsumer,
+            OppfoelgingsdialogService oppfoelgingsdialogService,
+            PdfService pdfService
+    ) {
+        this.aktoerService = aktoerService;
+        this.altinnConsumer = altinnConsumer;
+        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.pdfService = pdfService;
+    }
+
 
     @Override
     public void utfoerOppgave(String oppfoelgingsdialogId) {
@@ -56,25 +70,5 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
             event.addFieldToReport("dager", dager);
             event.report();
         }
-    }
-
-    @Inject
-    public void setOppfoelgingsdialogService(OppfoelgingsdialogService oppfoelgingsdialogService) {
-        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
-    }
-
-    @Inject
-    public void setAktoerIdConsumer(AktoerService aktoerService) {
-        this.aktoerService = aktoerService;
-    }
-
-    @Inject
-    public void setAltinnConsumer(AltinnConsumer altinnConsumer) {
-        this.altinnConsumer = altinnConsumer;
-    }
-
-    @Inject
-    public void setPdfService(PdfService pdfService) {
-        this.pdfService = pdfService;
     }
 }

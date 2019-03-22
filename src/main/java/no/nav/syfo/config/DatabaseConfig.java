@@ -2,7 +2,6 @@ package no.nav.syfo.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import no.nav.syfo.repository.dao.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -47,50 +46,5 @@ public class DatabaseConfig {
     @Bean
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
         return new NamedParameterJdbcTemplate(dataSource());
-    }
-
-    @Bean
-    public GodkjentplanDAO godkjentplanDAO() {
-        return new GodkjentplanDAO();
-    }
-
-    @Bean
-    public ArbeidsoppgaveDAO arbeidsoppgaveDAO() {
-        return new ArbeidsoppgaveDAO();
-    }
-
-    @Bean
-    public TiltakDAO tiltakDAO() {
-        return new TiltakDAO();
-    }
-
-    @Bean
-    public KommentarDAO kommentarDAO() {
-        return new KommentarDAO();
-    }
-
-    @Bean
-    public OppfoelingsdialogDAO oppfoelingsdialogDAO() {
-        return new OppfoelingsdialogDAO();
-    }
-
-    @Bean
-    public DokumentDAO dokumentDAO() {
-        return new DokumentDAO();
-    }
-
-    @Bean
-    public GodkjenningerDAO godkjenningerDAO() {
-        return new GodkjenningerDAO();
-    }
-
-    @Bean
-    public AsynkOppgaveDAO asynkOppgaveDAO() {
-        return new AsynkOppgaveDAO();
-    }
-
-    @Bean
-    public VeilederBehandlingDAO veilederBehandlingDAO() {
-        return new VeilederBehandlingDAO();
     }
 }

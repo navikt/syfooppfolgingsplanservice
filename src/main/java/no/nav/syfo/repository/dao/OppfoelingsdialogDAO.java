@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -24,20 +25,32 @@ import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
 
 @Slf4j
+@Repository
 public class OppfoelingsdialogDAO {
 
-    @Inject
     private JdbcTemplate jdbcTemplate;
-    @Inject
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @Inject
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
-    @Inject
-    private TiltakDAO tiltakDAO;
-    @Inject
     private GodkjenningerDAO godkjenningerDAO;
-    @Inject
     private GodkjentplanDAO godkjentplanDAO;
+    private TiltakDAO tiltakDAO;
+
+    @Inject
+    public OppfoelingsdialogDAO(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+            ArbeidsoppgaveDAO arbeidsoppgaveDAO,
+            GodkjenningerDAO godkjenningerDAO,
+            GodkjentplanDAO godkjentplanDAO,
+            TiltakDAO tiltakDAO
+    ) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
+        this.godkjenningerDAO = godkjenningerDAO;
+        this.godkjentplanDAO = godkjentplanDAO;
+        this.tiltakDAO = tiltakDAO;
+    }
 
     public Oppfoelgingsdialog create(Oppfoelgingsdialog oppfoelgingsdialog) {
         long id = nesteSekvensverdi("OPPFOELGINGSDIALOG_ID_SEQ", jdbcTemplate);

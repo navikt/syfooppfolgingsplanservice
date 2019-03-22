@@ -102,15 +102,5 @@ public class MQConfig {
         jmsTemplate.setSessionTransacted(true);
         return jmsTemplate;
     }
-
-    @Bean
-    public ServiceVarselService serviceVarselService() {
-        return new ServiceVarselService();
-    }
-
-    @Bean
-    public TredjepartsvarselService tredjepartsvarselService() {
-        return new TredjepartsvarselService();
-    }
 }
 

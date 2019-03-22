@@ -7,24 +7,31 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.support.SqlLobValue;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper.p2godkjenning;
 import static no.nav.syfo.repository.DbUtil.*;
+import static no.nav.syfo.util.MapUtil.mapListe;
 
+@Repository
 public class GodkjenningerDAO {
 
-    @Inject
     private JdbcTemplate jdbcTemplate;
-    @Inject
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Inject
+    public GodkjenningerDAO(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     public List<Godkjenning> godkjenningerByOppfoelgingsdialogId(long oppfoelgingsdialogId) {
         return mapListe(jdbcTemplate.query("select * from godkjenning where oppfoelgingsdialog_id = ?", new GodkjenningerRowMapper(), oppfoelgingsdialogId), p2godkjenning);

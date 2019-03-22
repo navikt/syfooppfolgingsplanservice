@@ -24,8 +24,17 @@ public class AltinnConsumer {
     public static final String SYSTEM_USER_CODE = "NAV_DIGISYFO";
     private static final String FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN = "Feil ved sending av oppfølgingsplan til Altinn";
 
-    private ICorrespondenceAgencyExternalBasic insertCorrespondenceBasic;
-    private BrukerprofilService brukerprofilService;
+    private final ICorrespondenceAgencyExternalBasic insertCorrespondenceBasic;
+    private final BrukerprofilService brukerprofilService;
+
+    @Inject
+    public AltinnConsumer(
+            BrukerprofilService brukerprofilService,
+            ICorrespondenceAgencyExternalBasic insertCorrespondenceBasic
+    ) {
+        this.brukerprofilService = brukerprofilService;
+        this.insertCorrespondenceBasic = insertCorrespondenceBasic;
+    }
 
     private String brukernavn() {
         return getProperty("altinnUser.username");
@@ -61,15 +70,5 @@ public class AltinnConsumer {
             log.error(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN, e);
             throw e;
         }
-    }
-
-    @Inject
-    public void setInsertCorrespondenceV2(ICorrespondenceAgencyExternalBasic insertCorrespondenceBasic) {
-        this.insertCorrespondenceBasic = insertCorrespondenceBasic;
-    }
-
-    @Inject
-    public void setBrukerprofilService(BrukerprofilService brukerprofilService) {
-        this.brukerprofilService = brukerprofilService;
     }
 }

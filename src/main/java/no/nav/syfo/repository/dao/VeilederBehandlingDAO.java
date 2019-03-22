@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -13,18 +14,26 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper.p2veilederbehandling;
 import static no.nav.syfo.repository.DbUtil.convert;
 import static no.nav.syfo.repository.DbUtil.nesteSekvensverdi;
 import static no.nav.syfo.repository.domain.VeilederBehandlingStatus.IKKE_LEST;
+import static no.nav.syfo.util.MapUtil.mapListe;
 
+@Repository
 public class VeilederBehandlingDAO {
 
-    @Inject
     private JdbcTemplate jdbcTemplate;
-    @Inject
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Inject
+    public VeilederBehandlingDAO(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     public VeilederBehandling opprett(VeilederBehandling veilederBehandling) {
         long id = nesteSekvensverdi("VEILEDER_BEHANDLING_ID_SEQ", jdbcTemplate);

@@ -19,9 +19,20 @@ import static no.nav.syfo.util.ToggleUtil.toggleBatch;
 @Service
 public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
 
-    private OppfoelgingsdialogService oppfoelgingsdialogService;
-    private JuridiskLoggService juridiskLoggService;
-    private PdfService pdfService;
+    private final JuridiskLoggService juridiskLoggService;
+    private final OppfoelgingsdialogService oppfoelgingsdialogService;
+    private final PdfService pdfService;
+
+    @Inject
+    public JobbLoggSendOppfoelgingsdialogTilAltinn(
+            JuridiskLoggService juridiskLoggService,
+            OppfoelgingsdialogService oppfoelgingsdialogService,
+            PdfService pdfService
+    ) {
+        this.juridiskLoggService = juridiskLoggService;
+        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.pdfService = pdfService;
+    }
 
     @Override
     public Oppgavetype oppgavetype() {
@@ -41,20 +52,5 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
 
             juridiskLoggService.loggSendOppfoelgingsdialogTilAltinn(oppfoelgingsdialogAltinn);
         }
-    }
-
-    @Inject
-    public void setOppfoelgingsdialogService(OppfoelgingsdialogService oppfoelgingsdialogService) {
-        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
-    }
-
-    @Inject
-    public void setJuridiskLoggService(JuridiskLoggService juridiskLoggService) {
-        this.juridiskLoggService = juridiskLoggService;
-    }
-
-    @Inject
-    public void setPdfService(PdfService pdfService) {
-        this.pdfService = pdfService;
     }
 }

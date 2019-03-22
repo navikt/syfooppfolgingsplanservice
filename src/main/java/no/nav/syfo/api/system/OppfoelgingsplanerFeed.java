@@ -22,12 +22,20 @@ import static no.nav.syfo.util.RestUtils.baseUrl;
 @Produces(APPLICATION_JSON)
 public class OppfoelgingsplanerFeed {
 
-    @Inject
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
-    @Inject
-    private GodkjentplanDAO godkjentplanDAO;
-    @Inject
     private AktoerService aktoerService;
+    private GodkjentplanDAO godkjentplanDAO;
+    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+
+    @Inject
+    public OppfoelgingsplanerFeed(
+            AktoerService aktoerService,
+            GodkjentplanDAO godkjentplanDAO,
+            OppfoelingsdialogDAO oppfoelingsdialogDAO
+    ) {
+        this.aktoerService = aktoerService;
+        this.godkjentplanDAO = godkjentplanDAO;
+        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+    }
 
     @GET
     public List<VeilederOppgaveFeedItem> oppfoelgingsplanOppgaverFeed(@QueryParam("timestamp") String timestamp) {

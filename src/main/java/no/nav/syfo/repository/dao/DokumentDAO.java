@@ -6,18 +6,25 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.support.SqlLobValue;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 
-
+@Repository
 public class DokumentDAO {
-    @Inject
+
     private JdbcTemplate jdbcTemplate;
-    @Inject
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Inject
+    public DokumentDAO(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     public byte[] hent(String uuid) {
         return jdbcTemplate.queryForObject("select * from dokument where dokument_uuid = ?", new DokumentRowMapper(), uuid).pdf;

@@ -7,24 +7,32 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.support.SqlLobValue;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
-import static no.nav.syfo.util.MapUtil.map;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper.p2arbeidsoppgave;
 import static no.nav.syfo.repository.DbUtil.*;
+import static no.nav.syfo.util.MapUtil.map;
+import static no.nav.syfo.util.MapUtil.mapListe;
 
+@Repository
 public class ArbeidsoppgaveDAO {
-    @Inject
+
     private JdbcTemplate jdbcTemplate;
-    @Inject
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Inject
+    public ArbeidsoppgaveDAO(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     public List<Arbeidsoppgave> arbeidsoppgaverByOppfoelgingsdialogId(long oppfoelgingsdialogId) {
         return mapListe(jdbcTemplate.query("select * from arbeidsoppgave where oppfoelgingsdialog_id = ?", new ArbeidsoppgaveRowMapper(), oppfoelgingsdialogId), p2arbeidsoppgave);
@@ -81,7 +89,7 @@ public class ArbeidsoppgaveDAO {
     }
 
     public void delete(Long id) {
-        jdbcTemplate.update("delete from arbeidsoppgave where arbeidsoppgave_id = ?",  id);
+        jdbcTemplate.update("delete from arbeidsoppgave where arbeidsoppgave_id = ?", id);
     }
 
     private class ArbeidsoppgaveRowMapper implements RowMapper<PArbeidsoppgave> {

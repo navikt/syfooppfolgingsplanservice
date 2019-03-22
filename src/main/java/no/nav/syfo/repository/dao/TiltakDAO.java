@@ -7,28 +7,36 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.support.SqlLobValue;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
 import static java.util.stream.Collectors.toList;
-import static no.nav.syfo.util.MapUtil.map;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper.p2tiltak;
 import static no.nav.syfo.repository.DbUtil.*;
+import static no.nav.syfo.util.MapUtil.map;
+import static no.nav.syfo.util.MapUtil.mapListe;
 
+@Repository
 public class TiltakDAO {
 
-    @Inject
     private JdbcTemplate jdbcTemplate;
-    @Inject
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @Inject
     private KommentarDAO kommentarDAO;
+
+    @Inject
+    public TiltakDAO(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+            KommentarDAO kommentarDAO
+    ) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.kommentarDAO = kommentarDAO;
+    }
 
     public List<Tiltak> finnTiltakByOppfoelgingsdialogId(long oppfoelgingsdialogId) {
         return mapListe(jdbcTemplate.query("SELECT * FROM tiltak WHERE oppfoelgingsdialog_id = ?", new TiltakRowMapper(), oppfoelgingsdialogId), p2tiltak)

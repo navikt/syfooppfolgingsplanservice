@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -16,17 +17,25 @@ import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 import static no.nav.metrics.MetricsFactory.createEvent;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper.p2godkjentplan;
 import static no.nav.syfo.repository.DbUtil.*;
 import static no.nav.syfo.util.DatoUtil.dagerMellom;
+import static no.nav.syfo.util.MapUtil.mapListe;
 
+@Repository
 public class GodkjentplanDAO {
 
-    @Inject
     private JdbcTemplate jdbcTemplate;
-    @Inject
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Inject
+    public GodkjentplanDAO(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     public Optional<GodkjentPlan> godkjentPlanByOppfoelgingsdialogId(long oppfoelgingsdialogId) {
         return queryOptional(jdbcTemplate, "SELECT * FROM godkjentplan WHERE oppfoelgingsdialog_id = ?", new GodkjentPlanRowMapper(), oppfoelgingsdialogId)

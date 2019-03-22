@@ -21,7 +21,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class DkifService {
 
     private DigitalKontaktinformasjonV1 dkifV1;
-
     private AktoerService aktoerService;
 
     @Inject

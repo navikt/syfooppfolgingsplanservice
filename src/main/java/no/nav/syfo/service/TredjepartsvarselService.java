@@ -3,10 +3,11 @@ package no.nav.syfo.service;
 import no.nav.melding.virksomhet.servicemeldingmedkontaktinformasjon.v1.servicemeldingmedkontaktinformasjon.*;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.model.Varseltype;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.List;
 
 import static java.lang.System.getProperty;
@@ -15,11 +16,15 @@ import static java.util.UUID.randomUUID;
 import static no.nav.syfo.util.JAXB.marshallTredjepartsServiceMelding;
 import static no.nav.syfo.util.JmsUtil.messageCreator;
 
+@Service
 public class TredjepartsvarselService {
 
-    @Inject
-    @Named("tredjepartsvarselqueue")
     private JmsTemplate tredjepartsvarselqueue;
+
+    @Autowired
+    public TredjepartsvarselService(@Qualifier("tredjepartsvarselqueue") JmsTemplate tredjepartsvarselqueue) {
+        this.tredjepartsvarselqueue = tredjepartsvarselqueue;
+    }
 
     public void sendVarselTilNaermesteLeder(Varseltype varseltype, Naermesteleder naermesteleder, Long oppfoelgingsdialogId) {
         List<Parameter> parametere = asList(

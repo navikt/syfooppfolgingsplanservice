@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -21,14 +22,22 @@ import static no.nav.syfo.repository.DbUtil.nesteSekvensverdi;
 import static no.nav.syfo.util.MapUtil.mapListe;
 
 @Transactional
+@Repository
 public class AsynkOppgaveDAO {
 
     private static final double FEM_MINUTTER = 5.0 / (24.0 * 60.0);
 
-    @Inject
     private JdbcTemplate jdbcTemplate;
-    @Inject
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Inject
+    public AsynkOppgaveDAO(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     public AsynkOppgave create(AsynkOppgave asynkOppgave) {
         long id = nesteSekvensverdi("ASYNK_OPPGAVE_ID_SEQ", jdbcTemplate);

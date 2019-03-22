@@ -13,7 +13,6 @@ import java.util.Optional;
 @Service
 public class SakService {
 
-    @Inject
     private SakV1 sakV1;
 
     @Inject

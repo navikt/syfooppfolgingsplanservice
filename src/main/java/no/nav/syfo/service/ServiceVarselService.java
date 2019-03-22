@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.melding.virksomhet.varsel.v1.varsel.*;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Varseltype;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
-
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Service;
 
 import static java.lang.System.getProperty;
 import static java.util.UUID.randomUUID;
@@ -15,13 +15,20 @@ import static no.nav.syfo.util.JAXB.marshallVarsel;
 import static no.nav.syfo.util.JmsUtil.messageCreator;
 
 @Slf4j
+@Service
 public class ServiceVarselService {
 
-    @Inject
-    @Named("servicevarselqueue")
     private JmsTemplate servicevarselqueue;
-    @Inject
     private DkifService dkifService;
+
+    @Autowired
+    public ServiceVarselService(
+            @Qualifier("servicevarselqueue") JmsTemplate servicevarselqueue,
+            DkifService dkifService
+    ) {
+        this.servicevarselqueue = servicevarselqueue;
+        this.dkifService = dkifService;
+    }
 
     public void sendServiceVarsel(String aktoerId, Varseltype varseltype, Long oppfoelgingsdialogId) {
         Kontaktinfo kontaktinfo = dkifService.hentKontaktinfoAktoerId(aktoerId);

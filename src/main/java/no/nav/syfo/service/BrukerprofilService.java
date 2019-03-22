@@ -21,7 +21,6 @@ import static org.apache.commons.lang3.text.WordUtils.capitalize;
 public class BrukerprofilService {
 
     private BrukerprofilV3 brukerprofilV3;
-
     private AktoerService aktoerService;
 
     @Inject

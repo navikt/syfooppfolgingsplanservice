@@ -7,24 +7,32 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.support.SqlLobValue;
+import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
-import static no.nav.syfo.util.MapUtil.map;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper.p2kommentar;
 import static no.nav.syfo.repository.DbUtil.*;
+import static no.nav.syfo.util.MapUtil.map;
+import static no.nav.syfo.util.MapUtil.mapListe;
 
+@Repository
 public class KommentarDAO {
-    @Inject
+
     private JdbcTemplate jdbcTemplate;
-    @Inject
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Inject
+    public KommentarDAO(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     public Kommentar finnKommentar(long id) {
         return map(jdbcTemplate.queryForObject("SELECT * FROM kommentar WHERE kommentar_id = ?", new KommentarRowMapper(), id), p2kommentar);
