@@ -2,36 +2,58 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.model.VeilederOppgave;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
+import java.net.URI;
 import java.util.List;
 
-import static javax.ws.rs.client.ClientBuilder.newClient;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static java.util.Collections.singletonMap;
 import static no.nav.syfo.util.RestUtils.basicCredentials;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
 @Service
 public class VeilederOppgaverService {
-    private final Client client = newClient();
 
-    @Value("${syfoveilederoppgaver.system.v1.url}")
-    private String syfoveilederoppgaveUrl;
-
-    @Value("${syfoveilederoppgaver.systemapi.username}")
     private String syfoveilederoppgaveUsername;
-
-    @Value("${syfoveilederoppgaver.systemapi.password}")
     private String syfoveilederoppgavePassword;
 
+    public static final String FNR = "fnr";
+    private static final String FNR_PLACEHOLDER = "{" + FNR + "}";
+    private final RestTemplate template;
+    private final UriComponentsBuilder hentVeilederoppgaverUriTemplate;
+
+    public VeilederOppgaverService(
+            RestTemplate template,
+            @Value("${syfoveilederoppgaver.system.v1.url}") String syfoveilederoppgaveUrl,
+            @Value("${syfoveilederoppgaver.systemapi.username}") String syfoveilederoppgaveUsername,
+            @Value("${syfoveilederoppgaver.systemapi.password}") String syfoveilederoppgavePassword
+    ) {
+        this.syfoveilederoppgaveUsername = syfoveilederoppgaveUsername;
+        this.syfoveilederoppgavePassword = syfoveilederoppgavePassword;
+        this.template = template;
+        hentVeilederoppgaverUriTemplate = fromHttpUrl(syfoveilederoppgaveUrl)
+                .queryParam(FNR, FNR_PLACEHOLDER);
+    }
+
     public List<VeilederOppgave> get(String fnr) {
-        return client.target(syfoveilederoppgaveUrl)
-                .queryParam("fnr", fnr)
-                .request(MediaType.APPLICATION_JSON)
-                .header(AUTHORIZATION, basicCredentials(syfoveilederoppgaveUsername, syfoveilederoppgavePassword))
-                .get(new GenericType<List<VeilederOppgave>>() {
-                });
+        String credentials = basicCredentials(syfoveilederoppgaveUsername, syfoveilederoppgavePassword);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, credentials);
+        HttpEntity request = new HttpEntity<>(headers);
+
+        URI tilgangTilBrukerUriMedFnr = hentVeilederoppgaverUriTemplate.build(singletonMap(FNR, fnr));
+
+        ResponseEntity<List<VeilederOppgave>> response = template.exchange(
+                tilgangTilBrukerUriMedFnr,
+                HttpMethod.GET,
+                request, new ParameterizedTypeReference<List<VeilederOppgave>>() {
+                }
+        );
+
+        return response.getBody();
     }
 }
