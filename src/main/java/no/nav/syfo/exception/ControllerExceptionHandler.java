@@ -3,6 +3,7 @@ package no.nav.syfo.exception;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.spring.oidc.validation.interceptor.OIDCUnauthorizedException;
 import no.nav.syfo.metric.Metrikk;
+import no.nav.syfo.util.ConflictException;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,7 @@ import javax.ws.rs.NotFoundException;
 public class ControllerExceptionHandler {
 
     private final String BAD_REQUEST_MSG = "Vi kunne ikke tolke inndataene";
+    private final String CONFLICT_MSG = "Dette oppsto en konflikt i tilstand";
     private final String FORBIDDEN_MSG = "Handling er forbudt";
     private final String INTERNAL_MSG = "Det skjedde en uventet feil";
     private final String UNAUTHORIZED_MSG = "Autorisasjonsfeil";
@@ -33,6 +35,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler({
             Exception.class,
+            ConflictException.class,
             ConstraintViolationException.class,
             ForbiddenException.class,
             IllegalArgumentException.class,
@@ -62,6 +65,10 @@ public class ControllerExceptionHandler {
             NotFoundException notFoundException = (NotFoundException) ex;
 
             return handleNotFoundException(notFoundException, headers, request);
+        } else if (ex instanceof ConflictException) {
+            ConflictException conflictException = (ConflictException) ex;
+
+            return handleConflictException(conflictException, headers, request);
         } else {
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -91,6 +98,11 @@ public class ControllerExceptionHandler {
     private ResponseEntity<ApiError> handleNotFoundException(NotFoundException ex, HttpHeaders headers, WebRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
         return handleExceptionInternal(ex, new ApiError(status.value(), NOT_FOUND_MSG), headers, status, request);
+    }
+
+    private ResponseEntity<ApiError> handleConflictException(ConflictException ex, HttpHeaders headers, WebRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        return handleExceptionInternal(ex, new ApiError(status.value(), CONFLICT_MSG), headers, status, request);
     }
 
     private ResponseEntity<ApiError> handleExceptionInternal(Exception ex, ApiError body, HttpHeaders headers, HttpStatus status, WebRequest request) {

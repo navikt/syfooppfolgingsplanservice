@@ -98,7 +98,7 @@ public class Metrikk {
     }
 
     private String addPrefix(String navn) {
-        String METRIKK_PREFIX = "syfooppfolgingsplanservice";
+        String METRIKK_PREFIX = "syfooppfolgingsplanservice_";
         return METRIKK_PREFIX + navn;
     }
 }

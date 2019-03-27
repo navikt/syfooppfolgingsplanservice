@@ -16,7 +16,7 @@ spring:
   cache:
     type: none
 server:
-  port: 8999
+  port: 8583
   servlet:
     context-path: /syfooppfolgingsplanservice
 
