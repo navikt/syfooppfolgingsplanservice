@@ -2,6 +2,7 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 
-import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeArbeidsoppgaveHoererTilDialog;
 
 @Service
@@ -19,6 +19,7 @@ public class ArbeidsoppgaveService {
     private AktoerService aktoerService;
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
     private GodkjenningerDAO godkjenningerDAO;
+    private Metrikk metrikk;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private TilgangskontrollService tilgangskontrollService;
 
@@ -27,12 +28,14 @@ public class ArbeidsoppgaveService {
             AktoerService aktoerService,
             ArbeidsoppgaveDAO arbeidsoppgaveDAO,
             GodkjenningerDAO godkjenningerDAO,
+            Metrikk metrikk,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             TilgangskontrollService tilgangskontrollService
     ) {
         this.aktoerService = aktoerService;
         this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
         this.godkjenningerDAO = godkjenningerDAO;
+        this.metrikk = metrikk;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.tilgangskontrollService = tilgangskontrollService;
     }
@@ -53,7 +56,7 @@ public class ArbeidsoppgaveService {
 
         oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
         if (arbeidsoppgave.id == null) {
-            createEvent("nyArbeidsoppgave").report();
+            metrikk.tellHendelse("nyArbeidsoppgave");
             return arbeidsoppgaveDAO.create(arbeidsoppgave
                     .oppfoelgingsdialogId(oppfoelgingsdialogId)
                     .erVurdertAvSykmeldt(oppfoelgingsdialog.arbeidstaker.aktoerId.equals(innloggetAktoerId))

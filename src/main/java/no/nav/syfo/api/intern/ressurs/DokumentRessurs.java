@@ -3,76 +3,74 @@ package no.nav.syfo.api.intern.ressurs;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.service.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.springframework.stereotype.Component;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.NotFoundException;
 import java.io.*;
 
 import static java.lang.System.getProperty;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.ok;
 import static no.nav.syfo.mockdata.MockData.mockPdf;
 import static no.nav.syfo.mockdata.MockData.mockPdfBytes;
+import static no.nav.syfo.oidc.OIDCIssuer.INTERN;
 import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
+import static org.springframework.http.MediaType.*;
 
 @Slf4j
-@Component
-@Path("/dokument/{oppfoelgingsdialogId}")
-@Consumes(APPLICATION_JSON)
-@Produces(APPLICATION_JSON)
+@RestController
+@ProtectedWithClaims(issuer = INTERN)
+@RequestMapping(value = "/api/dokument/{oppfoelgingsdialogId}")
 public class DokumentRessurs {
 
     private DokumentService dokumentService;
     private GodkjentplanDAO godkjentplanDAO;
     private PdfService pdfService;
-    private TilgangsKontroll tilgangsKontroll;
+    private VeilederTilgangService veilederTilgangService;
 
     @Inject
     public DokumentRessurs(
             final DokumentService dokumentService,
             final GodkjentplanDAO godkjentplanDAO,
             final PdfService pdfService,
-            final TilgangsKontroll tilgangsKontroll
+            final VeilederTilgangService veilederTilgangService
     ) {
         this.dokumentService = dokumentService;
         this.godkjentplanDAO = godkjentplanDAO;
         this.pdfService = pdfService;
-        this.tilgangsKontroll = tilgangsKontroll;
+        this.veilederTilgangService = veilederTilgangService;
     }
 
-    @GET
-    @Path("/side/{side}")
-    public Response bilde(@PathParam("oppfoelgingsdialogId") long oppfoelgingsdialogId, @PathParam("side") int side) throws IOException {
-        tilgangsKontroll.sjekkTilgangTilTjenesten();
+    @GetMapping
+    @RequestMapping(value = "/side/{side}")
+    public ResponseEntity bilde(@PathVariable("oppfoelgingsdialogId") long oppfoelgingsdialogId, @PathVariable("side") int side) throws IOException {
+        veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilTjenesten();
 
         if ("true".equals(getProperty(LOCAL_MOCK))) {
-            return Response.ok()
-                    .type("image/png")
-                    .entity(pdfService.pdf2image(mockPdfBytes(), side))
-                    .build();
+            return ResponseEntity.ok()
+                    .contentType(IMAGE_PNG)
+                    .body(pdfService.pdf2image(mockPdfBytes(), side));
         }
         try {
             byte[] pdf = getPdf(oppfoelgingsdialogId);
-            return Response.ok()
-                    .type("image/png")
-                    .entity(pdfService.pdf2image(pdf, side))
-                    .build();
+            return ResponseEntity.ok()
+                    .contentType(IMAGE_PNG)
+                    .body(pdfService.pdf2image(pdf, side));
         } catch (IndexOutOfBoundsException e) {
             log.error("Fikk IndexOutOfBoundsException ved henting av side {} for oppfoelgingsplan {} ", side, oppfoelgingsdialogId);
             throw e;
         }
     }
 
-    @GET
-    @Path("/dokumentinfo")
-    public Dokumentinfo dokumentinfo(@PathParam("oppfoelgingsdialogId") long oppfoelgingsdialogId) {
-        tilgangsKontroll.sjekkTilgangTilTjenesten();
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/dokumentinfo")
+    public Dokumentinfo dokumentinfo(@PathVariable("oppfoelgingsdialogId") long oppfoelgingsdialogId) {
+        veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilTjenesten();
 
         if ("true".equals(getProperty(LOCAL_MOCK))) {
             return new Dokumentinfo().antallSider(2);
@@ -88,17 +86,16 @@ public class DokumentRessurs {
         public int antallSider;
     }
 
-    @GET
-    public Response dokument(@PathParam("oppfoelgingsdialogId") long oppfoelgingsdialogId) {
-        tilgangsKontroll.sjekkTilgangTilTjenesten();
+    @GetMapping
+    public ResponseEntity dokument(@PathVariable("oppfoelgingsdialogId") long oppfoelgingsdialogId) {
+        veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilTjenesten();
         if ("true".equals(getProperty(LOCAL_MOCK))) {
             return mockPdf();
         }
         byte[] pdf = getPdf(oppfoelgingsdialogId);
-        return ok()
-                .type("application/pdf")
-                .entity(pdf)
-                .build();
+        return ResponseEntity.ok()
+                .contentType(APPLICATION_PDF)
+                .body(pdf);
     }
 
     private byte[] getPdf(long oppfoelgingsdialogId) {

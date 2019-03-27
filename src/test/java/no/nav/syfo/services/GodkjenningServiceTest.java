@@ -3,12 +3,10 @@ package no.nav.syfo.services;
 import no.nav.syfo.api.intern.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.sykmelding.Periode;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Naermesteleder;
-import no.nav.syfo.repository.dao.DokumentDAO;
-import no.nav.syfo.repository.dao.GodkjenningerDAO;
-import no.nav.syfo.repository.dao.GodkjentplanDAO;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
+import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.service.*;
 import no.nav.syfo.util.ToggleUtil;
 import org.junit.Before;
@@ -16,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -25,13 +23,13 @@ import java.util.Optional;
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
 import static no.nav.syfo.util.PropertyUtil.ENVIRONMENT_NAME;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
 public class GodkjenningServiceTest {
 
+    @Mock
+    private Metrikk metrikk;
     @Mock
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     @Mock
@@ -98,7 +96,7 @@ public class GodkjenningServiceTest {
 
     @Before
     public void setup() {
-        when(naermesteLederService.hentNaermesteLeder(anyString(), anyString())).thenReturn(Optional.of(new Naermesteleder()
+        when(naermesteLederService.hentNaermesteLeder(any(), any())).thenReturn(Optional.of(new Naermesteleder()
                 .epost("epost")
                 .mobil("mobil")
                 .navn("navn")

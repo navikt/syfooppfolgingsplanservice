@@ -5,21 +5,25 @@ import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptExternal
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage;
-import no.nav.metrics.aspects.Timed;
 import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
 import no.nav.syfo.service.BrukerprofilService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.util.Optional;
 
-import static java.lang.System.getProperty;
 import static no.nav.syfo.ws.mappers.OppfoelgingsdialogAltinnMapper.oppfoelgingsdialogTilCorrespondence;
 
 @Slf4j
 @Service
 public class AltinnConsumer {
+
+    @Value("${altinnUser.username}")
+    private String alltinnUsername;
+    @Value("${altinnUser.password}")
+    private String altinnPassword;
 
     public static final String SYSTEM_USER_CODE = "NAV_DIGISYFO";
     private static final String FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN = "Feil ved sending av oppfølgingsplan til Altinn";
@@ -36,21 +40,12 @@ public class AltinnConsumer {
         this.insertCorrespondenceBasic = insertCorrespondenceBasic;
     }
 
-    private String brukernavn() {
-        return getProperty("altinnUser.username");
-    }
-
-    private String passord() {
-        return getProperty("altinnUser.password");
-    }
-
-    @Timed(name = "oppfoelgingsplanTilAltinn")
     public Integer sendOppfoelgingsplanTilArbeidsgiver(OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn) {
         Optional<String> brukersNavn = brukerprofilService.hentNavnByFnrForAsynkOppgave(oppfoelgingsdialogAltinn.oppfoelgingsdialog.arbeidstaker.fnr);
         try {
             ReceiptExternal receiptExternal = insertCorrespondenceBasic.insertCorrespondenceBasicV2(
-                    brukernavn(),
-                    passord(),
+                    alltinnUsername,
+                    altinnPassword,
                     SYSTEM_USER_CODE,
                     oppfoelgingsdialogAltinn.oppfoelgingsdialog.uuid,
                     oppfoelgingsdialogTilCorrespondence(oppfoelgingsdialogAltinn, brukersNavn.orElseThrow(() -> {

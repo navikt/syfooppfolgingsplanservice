@@ -1,9 +1,7 @@
 package no.nav.syfo;
 
 import no.nav.syfo.domain.AsynkOppgave;
-import no.nav.syfo.oppgave.Jobb;
-import no.nav.syfo.oppgave.Oppgaveelementprosessor;
-import no.nav.syfo.oppgave.Oppgavetype;
+import no.nav.syfo.oppgave.*;
 import no.nav.syfo.oppgave.exceptions.OppgaveUgyldigTilstandException;
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO;
 import org.junit.Test;
@@ -16,7 +14,7 @@ import java.util.List;
 
 import static java.util.stream.Stream.of;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

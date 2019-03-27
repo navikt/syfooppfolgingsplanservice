@@ -1,76 +1,98 @@
 package no.nav.syfo.services;
 
-import no.nav.brukerdialog.security.oidc.SystemUserTokenProvider;
+import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.syfo.LocalApplication;
 import no.nav.syfo.domain.*;
-import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Naermesteleder;
+import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.service.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 
+import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import java.util.Arrays;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.eq;
+import static no.nav.syfo.service.FastlegeService.SEND_OPPFOLGINGSPLAN_PATH;
+import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
+import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
+import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.test.web.client.ExpectedCount.manyTimes;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = LocalApplication.class)
+@DirtiesContext
 public class OppfoelgingsdialogServiceTest {
 
-    @Mock
+    @MockBean
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
-    @Mock
+    @MockBean
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
-    @Mock
+    @MockBean
     private GodkjentplanDAO godkjentplanDAO;
-    @Mock
+    @MockBean
     private DokumentDAO dokumentDAO;
-    @Mock
+    @MockBean
     private TiltakDAO tiltakDAO;
-    @Mock
+    @MockBean
     private KommentarDAO kommentarDAO;
-    @Mock
+    @MockBean
     private NaermesteLederService naermesteLederService;
-    @Mock
+    @MockBean
     private TilgangskontrollService tilgangskontrollService;
-    @Mock
+    @MockBean
     private AktoerService aktoerService;
-    @Mock
+    @MockBean
     private BrukerprofilService brukerprofilService;
-    @Mock
+    @MockBean
     private ServiceVarselService serviceVarselService;
-    @Mock
+    @MockBean
     private TredjepartsvarselService tredjepartsvarselService;
-    @Mock
+    @MockBean
     private VeilederOppgaverService veilederOppgaverService;
-    @Mock
+    @MockBean
     private GodkjenningerDAO godkjenningerDAO;
-    @Mock
-    private Client client;
-    @Mock
-    private SystemUserTokenProvider systemUserTokenProvider;
-    @InjectMocks
+
+    @Value("${fastlege.dialogmelding.api.v1.url}")
+    private String fastlegerestUrl;
+
+    @Inject
+    public OIDCRequestContextHolder oidcRequestContextHolder;
+
+    @Inject
+    private RestTemplate restTemplate;
+
+    private MockRestServiceServer mockRestServiceServer;
+
+    @Inject
     private OppfoelgingsdialogService oppfoelgingsdialogService;
 
     @Before
-    public void setup() {
+    public void setUp() {
+        this.mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build();
+        loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR);
+    }
+
+    @After
+    public void tearDown() {
+        loggUtAlle(oidcRequestContextHolder);
     }
 
 
@@ -146,30 +168,19 @@ public class OppfoelgingsdialogServiceTest {
 
     @Test
     public void delMedFastlege() throws Exception {
+        mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.OK);
+
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
         when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("aktoerId");
         when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
         when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
         when(dokumentDAO.hent(anyString())).thenReturn(new byte[]{0, 1, 2});
 
-
-        WebTarget webTarget = mock(WebTarget.class);
-        Invocation.Builder builder = mock(Invocation.Builder.class);
-        Response response = mock(Response.class);
-        when(client.target(anyString())).thenReturn(webTarget);
-        when(webTarget.request()).thenReturn(builder);
-        when(builder.header(anyString(), any())).thenReturn(builder);
-        when(builder.post(any(Entity.class))).thenReturn(response);
-        when(response.getStatus()).thenReturn(200);
-
         oppfoelgingsdialogService.delMedFastlege(1L, "fnr");
 
-        ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
-        verify(builder).post(captor.capture());
-
-        assertThat(((RSOppfoelgingsplan) captor.getValue().getEntity()).getOppfolgingsplanPdf()).isEqualTo(new Byte[]{0, 1, 2});
-
         verify(godkjentplanDAO).delMedFastlege(1L);
+
+        mockRestServiceServer.verify();
     }
 
     @Test(expected = ForbiddenException.class)
@@ -193,22 +204,29 @@ public class OppfoelgingsdialogServiceTest {
 
     @Test(expected = RuntimeException.class)
     public void delMedFastlegeFeilFraFastlegerest() throws Exception {
+        mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.INTERNAL_SERVER_ERROR);
+
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
         when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("aktoerId");
         when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
         when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
         when(dokumentDAO.hent(anyString())).thenReturn(new byte[]{0, 1, 2});
 
-
-        WebTarget webTarget = mock(WebTarget.class);
-        Invocation.Builder builder = mock(Invocation.Builder.class);
-        Response response = mock(Response.class);
-        when(client.target(anyString())).thenReturn(webTarget);
-        when(webTarget.request()).thenReturn(builder);
-        when(builder.header(anyString(), any())).thenReturn(builder);
-        when(builder.post(any(Entity.class))).thenReturn(response);
-        when(response.getStatus()).thenReturn(400);
-
         oppfoelgingsdialogService.delMedFastlege(1L, "fnr");
+
+        mockRestServiceServer.verify();
+    }
+
+    public void mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus status) {
+        String uriString = fromHttpUrl(fastlegerestUrl)
+                .path(SEND_OPPFOLGINGSPLAN_PATH)
+                .toUriString();
+
+        String idToken = oidcRequestContextHolder.getOIDCValidationContext().getToken(OIDCIssuer.EKSTERN).getIdToken();
+
+        mockRestServiceServer.expect(manyTimes(), requestTo(uriString))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header(AUTHORIZATION, "Bearer " + idToken))
+                .andRespond(withStatus(status));
     }
 }

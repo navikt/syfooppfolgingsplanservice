@@ -1,26 +1,26 @@
 package no.nav.syfo.api.intern.ressurs;
 
+import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
 import no.nav.syfo.api.intern.domain.RSBrukerPaaEnhet;
 import no.nav.syfo.service.*;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static no.nav.syfo.oidc.OIDCIssuer.INTERN;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Component
-@Path("/enhet")
-@Consumes(APPLICATION_JSON)
-@Produces(APPLICATION_JSON)
+@RestController
+@RequestMapping(value = "/api/enhet")
+@ProtectedWithClaims(issuer = INTERN)
 public class EnhetRessurs {
 
     private AktoerService aktoerService;
     private EgenAnsattService egenAnsattService;
     private PersonService personService;
-    private TilgangsKontroll tilgangsKontroll;
+    private VeilederTilgangService veilederTilgangService;
     private VeilederBehandlingService veilederBehandlingService;
 
     @Inject
@@ -28,20 +28,20 @@ public class EnhetRessurs {
             final AktoerService aktoerService,
             final EgenAnsattService egenAnsattService,
             final PersonService personService,
-            final TilgangsKontroll tilgangsKontroll,
+            final VeilederTilgangService veilederTilgangService,
             final VeilederBehandlingService veilederBehandlingService
     ) {
         this.aktoerService = aktoerService;
         this.egenAnsattService = egenAnsattService;
         this.personService = personService;
-        this.tilgangsKontroll = tilgangsKontroll;
+        this.veilederTilgangService = veilederTilgangService;
         this.veilederBehandlingService = veilederBehandlingService;
     }
 
-    @GET
-    @Path("/{enhet}/oppfolgingsplaner/brukere")
-    public List<RSBrukerPaaEnhet> hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(@PathParam("enhet") String enhet) {
-        tilgangsKontroll.sjekkTilgangTilEnhet(enhet);
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{enhet}/oppfolgingsplaner/brukere")
+    public List<RSBrukerPaaEnhet> hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(@PathVariable("enhet") String enhet) {
+        veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilEnhet(enhet);
         return veilederBehandlingService.hentSykmeldteMedUlesteOppfolgingsplaner(enhet)
                 .stream()
                 .map(aktorId -> aktoerService.hentFnrForAktoer(aktorId))

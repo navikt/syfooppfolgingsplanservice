@@ -1,86 +1,104 @@
 package no.nav.syfo.api.intern.ressurs;
 
-import no.nav.brukerdialog.security.context.SubjectRule;
-import no.nav.brukerdialog.security.domain.IdentType;
-import no.nav.common.auth.SsoToken;
-import no.nav.common.auth.Subject;
-import no.nav.syfo.service.TilgangsKontroll;
-import org.jose4j.jwt.ReservedClaimNames;
+import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.syfo.LocalApplication;
+import no.nav.syfo.oidc.OIDCIssuer;
+import no.nav.syfo.service.VeilederTilgangService;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Map;
+import javax.inject.Inject;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static no.nav.common.auth.SsoToken.oidcToken;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static no.nav.syfo.service.VeilederTilgangService.*;
+import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.test.web.client.ExpectedCount.manyTimes;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
 /**
  * Hensikten her er å samle koden som mock svar fra syfo-tilgangskontroll.
  * Subklasser arver tilgangskontrollResponse, som de kan sette opp til å returnere 200 OK, 403 Forbidden eller
  * 500-feil.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ClientBuilder.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = LocalApplication.class)
+@DirtiesContext
 public abstract class AbstractRessursTilgangTest {
 
-    private static final int EXPIRATION_TIME = Integer.MAX_VALUE;
+    @Value("${tilgangskontrollapi.url}")
+    private String tilgangskontrollUrl;
 
-    static final String FNR = "123456789";
+    @Value("${dev}")
+    private String dev;
 
-    private static Client client;
-    private static TilgangsKontroll tilgangService;
-    private static final String EXPIRATION_TIME_ATTRIBUTE_NAME = ReservedClaimNames.EXPIRATION_TIME;
+    @Inject
+    public OIDCRequestContextHolder oidcRequestContextHolder;
 
-    @Mock
-    Response tilgangskontrollResponse;
+    @Inject
+    private RestTemplate restTemplate;
 
-    @Rule
-    public SubjectRule subjectRule = new SubjectRule();
-
-    @BeforeClass
-    public static void initialize() {
-        mockStatic(ClientBuilder.class);
-        client = mock(Client.class);
-        when(ClientBuilder.newClient()).thenReturn(client);
-        tilgangService = spy(new TilgangsKontroll());
-    }
+    private MockRestServiceServer mockRestServiceServer;
 
     @Before
     public void setUp() {
-        // Mock REST-klienten
-        Invocation.Builder builderMock = mock(Invocation.Builder.class);
-        when(builderMock.get()).thenReturn(tilgangskontrollResponse);
-        when(builderMock.header(anyString(), anyString())).thenReturn(builderMock);
-
-        final WebTarget webTargetMock = mock(WebTarget.class);
-        when(webTargetMock.request(APPLICATION_JSON)).thenReturn(builderMock);
-        when(webTargetMock.queryParam(anyString(), anyString())).thenReturn(webTargetMock);
-
-        when(client.target(anyString())).thenReturn(webTargetMock);
-
-        gittBrukerMedOidcAssertation();
+        this.mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build();
     }
 
-    private void gittBrukerMedOidcAssertation() {
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put(EXPIRATION_TIME_ATTRIBUTE_NAME, EXPIRATION_TIME);
-        SsoToken oidcToken = oidcToken("token", attributes);
+    @After
+    public void tearDown() {
+        mockRestServiceServer.verify();
+        loggUtAlle(oidcRequestContextHolder);
+    }
 
-        Subject subject = new Subject(FNR, IdentType.InternBruker, oidcToken);
-        subjectRule.setSubject(subject);
+    public void mockSvarFraTilgangTilBruker(String fnr, HttpStatus status) {
+        String uriString = fromHttpUrl(tilgangskontrollUrl)
+                .path(TILGANG_TIL_BRUKER_PATH)
+                .queryParam(VeilederTilgangService.FNR, fnr)
+                .toUriString();
+
+        String idToken = oidcRequestContextHolder.getOIDCValidationContext().getToken(OIDCIssuer.INTERN).getIdToken();
+
+        mockRestServiceServer.expect(manyTimes(), requestTo(uriString))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header(AUTHORIZATION, "Bearer " + idToken))
+                .andRespond(withStatus(status));
+    }
+
+    public void mockSvarFraTilgangTilEnhet(String enhet, HttpStatus status) {
+        String uriString = fromHttpUrl(tilgangskontrollUrl)
+                .path(TILGANG_TIL_ENHET_PATH)
+                .queryParam(VeilederTilgangService.ENHET, enhet)
+                .toUriString();
+
+        String idToken = oidcRequestContextHolder.getOIDCValidationContext().getToken(OIDCIssuer.INTERN).getIdToken();
+
+        mockRestServiceServer.expect(manyTimes(), requestTo(uriString))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header(AUTHORIZATION, "Bearer " + idToken))
+                .andRespond(withStatus(status));
+    }
+
+    public void mockSvarFraTilgangTilTjenesten(HttpStatus status) {
+        String uriString = fromHttpUrl(tilgangskontrollUrl)
+                .path(TILGANG_TIL_TJENESTEN)
+                .toUriString();
+
+        String idToken = oidcRequestContextHolder.getOIDCValidationContext().getToken(OIDCIssuer.INTERN).getIdToken();
+
+        mockRestServiceServer.expect(manyTimes(), requestTo(uriString))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header(AUTHORIZATION, "Bearer " + idToken))
+                .andRespond(withStatus(status));
     }
 }

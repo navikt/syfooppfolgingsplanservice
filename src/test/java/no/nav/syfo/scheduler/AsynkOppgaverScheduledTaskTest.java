@@ -1,7 +1,7 @@
 package no.nav.syfo.scheduler;
 
 import no.nav.syfo.oppgave.Oppgavelisteprosessor;
-import org.junit.After;
+import no.nav.syfo.util.Toggle;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,14 +9,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static java.lang.System.setProperty;
-import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
-import static no.nav.syfo.util.ToggleUtil.TOGGLE_ENABLE_BATCH;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AsynkOppgaverScheduledTaskTest {
 
+    @Mock
+    private Toggle toggle;
     @Mock
     private Oppgavelisteprosessor oppgavelisteprosessor;
 
@@ -25,14 +25,7 @@ public class AsynkOppgaverScheduledTaskTest {
 
     @Before
     public void setup() {
-        setProperty(LOCAL_MOCK, "false");
-        setProperty(TOGGLE_ENABLE_BATCH, "true");
-    }
-
-    @After
-    public void cleanUp() {
-        setProperty(LOCAL_MOCK, "");
-        setProperty(TOGGLE_ENABLE_BATCH, "");
+        when(toggle.toggleBatch()).thenReturn(true);
     }
 
     @Test

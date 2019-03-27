@@ -2,6 +2,7 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.api.intern.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.domain.*;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdf.domain.*;
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Optional.ofNullable;
-import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.util.time.DateUtil.tilKortDato;
 import static no.nav.syfo.util.time.DateUtil.tilMuntligDatoAarFormat;
 import static no.nav.syfo.util.MapUtil.mapListe;
@@ -37,6 +37,8 @@ import static no.nav.syfo.util.OppfoelgingsdialogUtil.*;
 
 @Service
 public class GodkjenningService {
+
+    private Metrikk metrikk;
 
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
 
@@ -70,6 +72,7 @@ public class GodkjenningService {
 
     @Inject
     public GodkjenningService(
+            Metrikk metrikk,
             AsynkOppgaveDAO asynkOppgaveDAO,
             DokumentDAO dokumentDAO,
             GodkjenningerDAO godkjenningerDAO,
@@ -86,6 +89,7 @@ public class GodkjenningService {
             TredjepartsvarselService tredjepartsvarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
+        this.metrikk = metrikk;
         this.asynkOppgaveDAO = asynkOppgaveDAO;
         this.dokumentDAO = dokumentDAO;
         this.godkjenningerDAO = godkjenningerDAO;
@@ -162,13 +166,13 @@ public class GodkjenningService {
 
     private void rapporterMetrikkerForNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, boolean erPlanTvungenGodkjent) {
         if (erPlanTvungenGodkjent) {
-            createEvent("genererTvungenPlan").report();
+            metrikk.tellHendelse("genererTvungenPlan");
         } else {
-            createEvent("genererNyPlan").report();
+            metrikk.tellHendelse("genererNyPlan");
         }
 
-        createEvent("tiltak").addFieldToReport("antall", oppfoelgingsdialog.tiltakListe.size()).report();
-        createEvent("arbeidsoppgaver").addFieldToReport("antall", oppfoelgingsdialog.arbeidsoppgaveListe.size()).report();
+        metrikk.tellHendelseMedAntall("tiltak", oppfoelgingsdialog.tiltakListe.size());
+        metrikk.tellHendelseMedAntall("arbeidsoppgaver", oppfoelgingsdialog.arbeidsoppgaveListe.size());
 
         long antallArboppgGjennomforNormalt = oppfoelgingsdialog.arbeidsoppgaveListe
                 .stream()
@@ -182,9 +186,10 @@ public class GodkjenningService {
                 .stream()
                 .filter(arbeidsoppgave -> KAN_IKKE.name().equals(arbeidsoppgave.gjennomfoering.gjennomfoeringStatus))
                 .count();
-        createEvent("arbeidsoppgaverGjennomforesNormalt").addFieldToReport("antall", antallArboppgGjennomforNormalt).report();
-        createEvent("arbeidsoppgaverGjennomforesTilrettelegging").addFieldToReport("antall", antallArboppgGjennomforTilrettelegging).report();
-        createEvent("arbeidsoppgaverGjennomforesIkke").addFieldToReport("antall", antallArboppgGjennomforIkke).report();
+
+        metrikk.tellHendelseMedAntall("arbeidsoppgaverGjennomforesNormalt", antallArboppgGjennomforNormalt);
+        metrikk.tellHendelseMedAntall("arbeidsoppgaverGjennomforesTilrettelegging", antallArboppgGjennomforTilrettelegging);
+        metrikk.tellHendelseMedAntall("arbeidsoppgaverGjennomforesIkke", antallArboppgGjennomforIkke);
 
         String arbeidstakerAktoerId = oppfoelgingsdialog.arbeidstaker.aktoerId;
 
@@ -200,9 +205,9 @@ public class GodkjenningService {
                 .stream()
                 .filter(arbeidsoppgave -> !(arbeidsoppgave.erVurdertAvSykmeldt || arbeidsoppgave.opprettetAvAktoerId.equals(arbeidstakerAktoerId)))
                 .count();
-        createEvent("arbeidsoppgaverVurdertAvATOpprettetAvAT").addFieldToReport("antall", antallArbboppgVurdertOgOpprettetAvAT).report();
-        createEvent("arbeidsoppgaverVurdertAvATOpprettetAvNL").addFieldToReport("antall", antallArbboppgVurdertOgOpprettetAvNL).report();
-        createEvent("arbeidsoppgaverIkkeVurdertAvATOpprettetAvNL").addFieldToReport("antall", antallArbboppgIkkeVurdertOgOpprettetAvAT).report();
+        metrikk.tellHendelseMedAntall("arbeidsoppgaverVurdertAvATOpprettetAvAT", antallArbboppgVurdertOgOpprettetAvAT);
+        metrikk.tellHendelseMedAntall("arbeidsoppgaverVurdertAvATOpprettetAvNL", antallArbboppgVurdertOgOpprettetAvNL);
+        metrikk.tellHendelseMedAntall("arbeidsoppgaverIkkeVurdertAvATOpprettetAvNL", antallArbboppgIkkeVurdertOgOpprettetAvAT);
 
         List<Kommentar> kommentarListe = oppfoelgingsdialog.tiltakListe
                 .stream()
@@ -216,8 +221,8 @@ public class GodkjenningService {
                 .stream()
                 .filter(kommentar -> !kommentar.opprettetAvAktoerId.equals(arbeidstakerAktoerId))
                 .count();
-        createEvent("tiltakKommentarerFraAT").addFieldToReport("antall", antallKommentarerAT).report();
-        createEvent("tiltakKommentarerFraNL").addFieldToReport("antall", antallKommentarerNL).report();
+        metrikk.tellHendelseMedAntall("tiltakKommentarerFraAT", antallKommentarerAT);
+        metrikk.tellHendelseMedAntall("tiltakKommentarerFraNL", antallKommentarerNL);
     }
 
     public void genererNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId) {
@@ -302,8 +307,8 @@ public class GodkjenningService {
                         .tom(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.tom)
                         .evalueres(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.evalueres)
                 ));
-        createEvent("opprettettilgodkjent").addFieldToReport("dager", dagerMellom(oppfoelgingsdialog.opprettet, now())).report();
-        createEvent("fragodkjenningtilplan").addFieldToReport("dager", dagerMellom(finnGodkjenning(oppfoelgingsdialog).godkjenningsTidspunkt, now())).report();
+        metrikk.tellAntallDagerSiden(oppfoelgingsdialog.opprettet, "opprettettilgodkjent");
+        metrikk.tellAntallDagerSiden(finnGodkjenning(oppfoelgingsdialog).godkjenningsTidspunkt, "fragodkjenningtilplan");
         dokumentDAO.lagre(new Dokument()
                 .uuid(dokumentUuid)
                 .pdf(tilPdf(xml))

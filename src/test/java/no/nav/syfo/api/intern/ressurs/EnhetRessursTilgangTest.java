@@ -1,54 +1,49 @@
 package no.nav.syfo.api.intern.ressurs;
 
-import no.nav.syfo.service.*;
-import org.glassfish.jersey.message.internal.Statuses;
+import no.nav.syfo.service.VeilederBehandlingService;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
+import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.ClientBuilder;
 
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static no.nav.syfo.testhelper.OidcTestHelper.loggInnVeileder;
+import static no.nav.syfo.testhelper.UserConstants.NAV_ENHET;
+import static no.nav.syfo.testhelper.UserConstants.VEILEDER_ID;
+import static org.springframework.http.HttpStatus.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ClientBuilder.class)
 public class EnhetRessursTilgangTest extends AbstractRessursTilgangTest {
 
-    @Mock
+    @MockBean
     VeilederBehandlingService veilederBehandlingService;
 
-    @InjectMocks
+    @Inject
     private EnhetRessurs enhetRessurs;
 
-    private static final String ENHET = "1234";
+    @Before
+    public void setup() {
+        loggInnVeileder(oidcRequestContextHolder, VEILEDER_ID);
+    }
 
     @Test
     public void hentSykmeldte_har_tilgang() {
-        when(tilgangskontrollResponse.getStatus()).thenReturn(200);
+        mockSvarFraTilgangTilEnhet(NAV_ENHET, OK);
 
-        enhetRessurs.hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(ENHET);
-
-        verify(tilgangskontrollResponse).getStatus();
+        enhetRessurs.hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(NAV_ENHET);
     }
 
     @Test(expected = ForbiddenException.class)
     public void hentSykmeldte_har_ikke_tilgang() {
-        when(tilgangskontrollResponse.getStatus()).thenReturn(403);
+        mockSvarFraTilgangTilEnhet(NAV_ENHET, FORBIDDEN);
 
-        enhetRessurs.hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(ENHET);
+        enhetRessurs.hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(NAV_ENHET);
     }
 
-    @Test(expected = WebApplicationException.class)
+    @Test(expected = RuntimeException.class)
     public void hentDialoger_annen_tilgangsfeil() {
-        when(tilgangskontrollResponse.getStatus()).thenReturn(500);
-        when(tilgangskontrollResponse.getStatusInfo()).thenReturn(Statuses.from(500, "Sukker i bensinen"));
+        mockSvarFraTilgangTilEnhet(NAV_ENHET, INTERNAL_SERVER_ERROR);
 
-        enhetRessurs.hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(ENHET);
+        enhetRessurs.hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(NAV_ENHET);
     }
 }

@@ -5,6 +5,7 @@ import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
 import no.nav.syfo.service.*;
+import no.nav.syfo.util.Toggle;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +18,13 @@ import static no.nav.syfo.util.ToggleUtil.toggleBatch;
 @Slf4j
 @Service
 public class ProsesserInnkomnePlaner {
-
     private AktoerService aktoerService;
     private BehandleSakService behandleSakService;
     private GodkjentplanDAO godkjentplanDAO;
     private JournalService journalService;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private SakService sakService;
+    private Toggle toggle;
 
     @Inject
     public ProsesserInnkomnePlaner(
@@ -32,7 +33,8 @@ public class ProsesserInnkomnePlaner {
             GodkjentplanDAO godkjentplanDAO,
             JournalService journalService,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
-            SakService sakService
+            SakService sakService,
+            Toggle toggle
     ) {
         this.aktoerService = aktoerService;
         this.behandleSakService = behandleSakService;
@@ -40,11 +42,12 @@ public class ProsesserInnkomnePlaner {
         this.journalService = journalService;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.sakService = sakService;
+        this.toggle = toggle;
     }
 
     @Scheduled(fixedRate = 60000)
     public void opprettSaker() {
-        if (!"true".equals(getProperty(LOCAL_MOCK)) && toggleBatch()) {
+        if (toggle.toggleBatch()) {
             log.info("TRACEBATCH: run {}", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeSaksfoertePlaner()

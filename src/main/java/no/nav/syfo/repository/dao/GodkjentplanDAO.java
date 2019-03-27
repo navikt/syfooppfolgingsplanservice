@@ -1,6 +1,7 @@
 package no.nav.syfo.repository.dao;
 
 import no.nav.syfo.domain.GodkjentPlan;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.domain.PGodkjentPlan;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
-import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper.p2godkjentplan;
 import static no.nav.syfo.repository.DbUtil.*;
 import static no.nav.syfo.util.DatoUtil.dagerMellom;
@@ -27,14 +27,17 @@ public class GodkjentplanDAO {
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private Metrikk metrikk;
 
     @Inject
     public GodkjentplanDAO(
             JdbcTemplate jdbcTemplate,
-            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+            Metrikk metrikk
     ) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.metrikk = metrikk;
     }
 
     public Optional<GodkjentPlan> godkjentPlanByOppfoelgingsdialogId(long oppfoelgingsdialogId) {
@@ -60,7 +63,8 @@ public class GodkjentplanDAO {
     }
 
     public GodkjentPlan create(GodkjentPlan godkjentPlan) {
-        createEvent("godkjentplanlengde").addFieldToReport("dager", dagerMellom(godkjentPlan.gyldighetstidspunkt.fom, godkjentPlan.gyldighetstidspunkt.tom)).report();
+        metrikk.tellAntallDagerMellom("godkjentplanlengde", godkjentPlan.gyldighetstidspunkt.fom, godkjentPlan.gyldighetstidspunkt.tom);
+
         long id = nesteSekvensverdi("GODKJENTPLAN_ID_SEQ", jdbcTemplate);
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("godkjentplan_id", id)

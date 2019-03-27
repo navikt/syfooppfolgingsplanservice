@@ -1,89 +1,81 @@
 package no.nav.syfo.api.intern.ressurs;
 
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
-import no.nav.syfo.service.AktoerService;
-import no.nav.syfo.service.BrukerprofilService;
-import no.nav.syfo.service.OrganisasjonService;
-import no.nav.syfo.service.VeilederOppgaverService;
-import org.glassfish.jersey.message.internal.Statuses;
+import no.nav.syfo.service.*;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
+import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.ClientBuilder;
 
-import static org.mockito.Mockito.when;
+import static no.nav.syfo.testhelper.OidcTestHelper.loggInnVeileder;
+import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
+import static no.nav.syfo.testhelper.UserConstants.VEILEDER_ID;
+import static org.springframework.http.HttpStatus.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ClientBuilder.class)
-public class OppfoelgingsdialogRessursTest extends AbstractRessursTilgangTest{
+public class OppfoelgingsdialogRessursTest extends AbstractRessursTilgangTest {
 
-    @Mock
+    @Inject
+    private OppfoelgingsdialogRessurs oppfoelgingsdialogRessurs;
+
+    @MockBean
     private AktoerService aktoerService;
-    @Mock
+    @MockBean
     private VeilederOppgaverService veilederOppgaverService;
-    @Mock
+    @MockBean
     private BrukerprofilService brukerprofilService;
-    @Mock
+    @MockBean
     private OrganisasjonService organisasjonService;
-    @Mock
+    @MockBean
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
 
-    @InjectMocks
-    private OppfoelgingsdialogRessurs oppfoelgingsdialogRessurs;
+
+    @Before
+    public void setup() {
+        loggInnVeileder(oidcRequestContextHolder, VEILEDER_ID);
+    }
 
     @Test
     public void historikk_har_tilgang() {
-        when(tilgangskontrollResponse.getStatus()).thenReturn(200);
+        mockSvarFraTilgangTilBruker(ARBEIDSTAKER_FNR, OK);
 
-        oppfoelgingsdialogRessurs.historikk(FNR);
-
-        Mockito.verify(tilgangskontrollResponse).getStatus();
+        oppfoelgingsdialogRessurs.historikk(ARBEIDSTAKER_FNR);
     }
 
     @Test(expected = ForbiddenException.class)
     public void historikk_har_ikke_tilgang() {
-        when(tilgangskontrollResponse.getStatus()).thenReturn(403);
+        mockSvarFraTilgangTilBruker(ARBEIDSTAKER_FNR, FORBIDDEN);
 
-        oppfoelgingsdialogRessurs.historikk(FNR);
+        oppfoelgingsdialogRessurs.historikk(ARBEIDSTAKER_FNR);
     }
 
-    @Test(expected = WebApplicationException.class)
+    @Test(expected = RuntimeException.class)
     public void historikk_annen_tilgangsfeil() {
-        when(tilgangskontrollResponse.getStatus()).thenReturn(500);
-        when(tilgangskontrollResponse.getStatusInfo()).thenReturn(Statuses.from(500, "Tau i propellen"));
+        mockSvarFraTilgangTilBruker(ARBEIDSTAKER_FNR, INTERNAL_SERVER_ERROR);
 
-        oppfoelgingsdialogRessurs.historikk(FNR);
+        oppfoelgingsdialogRessurs.historikk(ARBEIDSTAKER_FNR);
     }
 
     @Test
     public void hentDialoger_har_tilgang() {
-        when(tilgangskontrollResponse.getStatus()).thenReturn(200);
+        mockSvarFraTilgangTilBruker(ARBEIDSTAKER_FNR, OK);
 
-        oppfoelgingsdialogRessurs.hentDialoger(FNR);
-
-        Mockito.verify(tilgangskontrollResponse).getStatus();
+        oppfoelgingsdialogRessurs.hentDialoger(ARBEIDSTAKER_FNR);
     }
 
     @Test(expected = ForbiddenException.class)
     public void hentDialoger_har_ikke_tilgang() {
-        when(tilgangskontrollResponse.getStatus()).thenReturn(403);
+        mockSvarFraTilgangTilBruker(ARBEIDSTAKER_FNR, FORBIDDEN);
 
-        oppfoelgingsdialogRessurs.hentDialoger(FNR);
+        oppfoelgingsdialogRessurs.hentDialoger(ARBEIDSTAKER_FNR);
     }
 
-    @Test(expected = WebApplicationException.class)
+    @Test(expected = RuntimeException.class)
     public void hentDialoger_annen_tilgangsfeil() {
-        when(tilgangskontrollResponse.getStatus()).thenReturn(500);
-        when(tilgangskontrollResponse.getStatusInfo()).thenReturn(Statuses.from(500, "Sukker i bensinen"));
+        mockSvarFraTilgangTilBruker(ARBEIDSTAKER_FNR, INTERNAL_SERVER_ERROR);
 
-        oppfoelgingsdialogRessurs.hentDialoger(FNR);
+        oppfoelgingsdialogRessurs.hentDialoger(ARBEIDSTAKER_FNR);
     }
 
 }

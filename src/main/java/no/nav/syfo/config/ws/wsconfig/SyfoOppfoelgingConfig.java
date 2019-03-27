@@ -1,66 +1,66 @@
 package no.nav.syfo.config.ws.wsconfig;
 
-import no.nav.sbl.dialogarena.common.cxf.CXFClient;
-import no.nav.sbl.dialogarena.types.Pingable;
-import no.nav.sbl.dialogarena.types.Pingable.Ping.PingMetadata;
-import no.nav.syfo.mocks.OppfolgingMock;
-import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.SykefravaersoppfoelgingV1;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import no.nav.syfo.service.ws.*;
+import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.*;
+import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.*;
+import org.apache.cxf.frontend.ClientProxy;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.*;
 
-import java.util.UUID;
-
-import static java.lang.System.getProperty;
-import static no.nav.sbl.dialogarena.common.cxf.InstanceSwitcher.createMetricsProxyWithInstanceSwitcher;
-import static no.nav.sbl.dialogarena.types.Pingable.Ping.feilet;
-import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
+import static java.util.Collections.singletonList;
+import static no.nav.syfo.oidc.OIDCUtil.leggTilOnBehalfOfOutInterceptorForOIDC;
 
 @Configuration
 public class SyfoOppfoelgingConfig {
 
-    private static final String MOCK_KEY = "sykefravaersoppfoelging.syfoservice.withmock";
-    private static final String ENDEPUNKT_URL = getProperty("SYKEFRAVAERSOPPFOELGING_V1_ENDPOINTURL");
-    private static final String ENDEPUNKT_NAVN = "SYKEFRAVAERSOPPFOELGING_V1";
-    private static final boolean KRITISK = true;
+    public static final String MOCK_KEY = "sykefravaersoppfoelging.withmock";
+    @Value("${sykefravaersoppfoelging.v1.endpointurl}")
+    private String serviceUrl;
 
-    @Bean
+    private SykefravaersoppfoelgingV1 portUser;
+
+    @Bean(name = "sykefravaersoppfoelgingV1")
+    @Primary
+    @ConditionalOnProperty(value = MOCK_KEY, havingValue = "false", matchIfMissing = true)
     public SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1() {
-        // TODO: JWT eller systemUser(om ikke batch trenger denne, velg JWT
-        SykefravaersoppfoelgingV1 prod = factory()
-                .configureStsForOnBehalfOfWithJWT()
-                .build();
-        SykefravaersoppfoelgingV1 mock = new OppfolgingMock();
-        return createMetricsProxyWithInstanceSwitcher(ENDEPUNKT_NAVN,
-                prod,
-                mock,
-                MOCK_KEY,
-                SykefravaersoppfoelgingV1.class
-        );
+        SykefravaersoppfoelgingV1 port = factory();
+        STSClientConfig.configureRequestSamlTokenOnBehalfOfOidc(port);
+        this.portUser = port;
+        return port;
     }
 
-    @Bean
-    public Pingable sykefravaersoppfoelging() {
-        PingMetadata pingMetadata = new PingMetadata(
-                UUID.randomUUID().toString(),
-                ENDEPUNKT_URL,
-                ENDEPUNKT_NAVN,
-                KRITISK
-        );
-        final SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1Ping = factory()
-                .configureStsForSystemUser()
-                .build();
-        return () -> {
-            try {
-                sykefravaersoppfoelgingV1Ping.ping();
-                return lyktes(pingMetadata);
-            } catch (Exception e) {
-                return feilet(pingMetadata, e);
-            }
-        };
+    @Bean(name = "sykefravaersoppfoelgingV1SystemBruker")
+    @ConditionalOnProperty(value = MOCK_KEY, havingValue = "false", matchIfMissing = true)
+    public SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1Systembruker() {
+        SykefravaersoppfoelgingV1 port = factory();
+        STSClientConfig.configureRequestSamlToken(port);
+        return port;
     }
 
-    private CXFClient<SykefravaersoppfoelgingV1> factory() {
-        return new CXFClient<>(SykefravaersoppfoelgingV1.class)
-                .address(ENDEPUNKT_URL);
+    @SuppressWarnings("unchecked")
+    private SykefravaersoppfoelgingV1 factory() {
+        return new WsClient<SykefravaersoppfoelgingV1>()
+                .createPort(serviceUrl, SykefravaersoppfoelgingV1.class, singletonList(new LogErrorHandler()));
+    }
+
+    public WSHentNaermesteLedersAnsattListeResponse hentNaermesteLedersAnsattListe(WSHentNaermesteLedersAnsattListeRequest request, String OIDCToken) throws HentNaermesteLedersAnsattListeSikkerhetsbegrensning {
+        leggTilOnBehalfOfOutInterceptorForOIDC(ClientProxy.getClient(portUser), OIDCToken);
+        return portUser.hentNaermesteLedersAnsattListe(request);
+    }
+
+    public WSHentNaermesteLederListeResponse hentNaermesteLederListe(WSHentNaermesteLederListeRequest request, String OIDCToken) throws HentNaermesteLederListeSikkerhetsbegrensning {
+        leggTilOnBehalfOfOutInterceptorForOIDC(ClientProxy.getClient(portUser), OIDCToken);
+        return portUser.hentNaermesteLederListe(request);
+    }
+
+    public WSHentNaermesteLederResponse hentNaermesteLeder(WSHentNaermesteLederRequest request, String OIDCToken) throws HentNaermesteLederSikkerhetsbegrensning {
+        leggTilOnBehalfOfOutInterceptorForOIDC(ClientProxy.getClient(portUser), OIDCToken);
+        return portUser.hentNaermesteLeder(request);
+    }
+
+    public WSHentSykeforlopperiodeResponse hentSykeforlopperiode(WSHentSykeforlopperiodeRequest request, String OIDCToken) throws HentSykeforlopperiodeSikkerhetsbegrensning {
+        leggTilOnBehalfOfOutInterceptorForOIDC(ClientProxy.getClient(portUser), OIDCToken);
+        return portUser.hentSykeforlopperiode(request);
     }
 }

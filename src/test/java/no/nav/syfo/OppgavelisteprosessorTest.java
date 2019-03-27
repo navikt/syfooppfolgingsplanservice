@@ -1,18 +1,14 @@
 package no.nav.syfo;
 
 import no.nav.syfo.domain.AsynkOppgave;
-import no.nav.syfo.oppgave.OppgaveIterator;
-import no.nav.syfo.oppgave.Oppgaveelementprosessor;
-import no.nav.syfo.oppgave.Oppgavelisteprosessor;
-import no.nav.syfo.oppgave.Oppgavetype;
+import no.nav.syfo.metric.Metrikk;
+import no.nav.syfo.oppgave.*;
 import no.nav.syfo.oppgave.exceptions.OppgaveFinnerIkkeElementException;
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.*;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static java.lang.System.*;
 import static java.time.LocalDateTime.now;
@@ -22,17 +18,20 @@ import static no.nav.syfo.util.PropertyUtil.ENVIRONMENT_NAME;
 import static no.nav.syfo.util.PropertyUtil.FASIT_ENVIRONMENT_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Strings.isNullOrEmpty;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
 public class OppgavelisteprosessorTest {
+
     @Mock
     private Oppgaveelementprosessor oppgaveelementprosessor;
     @Mock
     private AsynkOppgaveDAO asynkOppgaveDAO;
     @Mock
     private OppgaveIterator oppgaveIterator;
+    @Mock
+    private Metrikk metrikk;
+
     @InjectMocks
     private Oppgavelisteprosessor oppgavelisteprosessor;
 
@@ -55,7 +54,7 @@ public class OppgavelisteprosessorTest {
 
         oppgavelisteprosessor.run();
 
-        verify(oppgaveelementprosessor).runTransactional(any(AsynkOppgave.class));
+        verify(oppgaveelementprosessor, times(1)).runTransactional(any(AsynkOppgave.class));
         verify(asynkOppgaveDAO, never()).create(any(AsynkOppgave.class));
     }
 
