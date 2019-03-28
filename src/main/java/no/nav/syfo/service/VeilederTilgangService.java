@@ -18,7 +18,7 @@ public class VeilederTilgangService {
     public static final String FNR = "fnr";
     public static final String ENHET = "enhet";
     public static final String TILGANG_TIL_BRUKER_PATH = "/tilgangtilbruker";
-    public static final String TILGANG_TIL_ENHET_PATH = "/tilgangtilenhet";
+    public static final String TILGANG_TIL_ENHET_PATH = "/enhet";
     public static final String TILGANG_TIL_TJENESTEN = "/tilgangtiltjenesten";
     private static final String FNR_PLACEHOLDER = "{" + FNR + "}";
     private static final String ENHET_PLACEHOLDER = "{" + ENHET + "}";
