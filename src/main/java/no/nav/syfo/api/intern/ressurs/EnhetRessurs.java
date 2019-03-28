@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static no.nav.syfo.api.intern.domain.RSBrukerPaaEnhet.Skjermingskode.*;
 import static no.nav.syfo.oidc.OIDCIssuer.INTERN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -42,18 +43,21 @@ public class EnhetRessurs {
     @RequestMapping(value = "/{enhet}/oppfolgingsplaner/brukere")
     public List<RSBrukerPaaEnhet> hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(@PathVariable("enhet") String enhet) {
         veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilEnhet(enhet);
+
         return veilederBehandlingService.hentSykmeldteMedUlesteOppfolgingsplaner(enhet)
                 .stream()
                 .map(aktorId -> aktoerService.hentFnrForAktoer(aktorId))
+                .filter(fnr -> veilederTilgangService.harVeilederTilgangTilPerson(fnr))
                 .map(fnr -> new RSBrukerPaaEnhet()
                         .fnr(fnr)
-                        .skjermetEllerEgenAnsatt(sykmeldtErDiskresjonsmerketEllerEgenAnsatt(fnr)))
+                        .skjermetEllerEgenAnsatt(hentBrukersSkjermingskode(fnr)))
                 .collect(toList());
     }
 
-
-    private boolean sykmeldtErDiskresjonsmerketEllerEgenAnsatt(String fnr) {
-        return personService.erDiskresjonsmerket(fnr) || egenAnsattService.erEgenAnsatt(fnr);
+    private RSBrukerPaaEnhet.Skjermingskode hentBrukersSkjermingskode(String fnr) {
+        if (personService.erDiskresjonsmerket(fnr))
+            return personService.erKode6(fnr) ? KODE_6 : KODE_7;
+        return egenAnsattService.erEgenAnsatt(fnr) ? EGEN_ANSATT : INGEN;
     }
 
 }

@@ -42,7 +42,17 @@ public class PersonService {
         }
     }
 
+    public boolean erKode6(String fnr) {
+        String diskresjonskode = hentDiskresjonskodeForBruker(fnr);
+        return KODE6.equals(diskresjonskode);
+    }
+
     public boolean erDiskresjonsmerket(String fnr) {
+        String diskresjonskode = hentDiskresjonskodeForBruker(fnr);
+        return KODE6.equals(diskresjonskode) || KODE7.equals(diskresjonskode);
+    }
+
+    private String hentDiskresjonskodeForBruker(String fnr) {
         try {
             WSPerson wsPerson = personV3.hentPerson(
                     new WSHentPersonRequest()
@@ -50,8 +60,7 @@ public class PersonService {
                                     .withIdent(new WSNorskIdent()
                                             .withIdent(fnr))))
                     .getPerson();
-            String diskresjonskode = ofNullable(wsPerson.getDiskresjonskode()).map(WSDiskresjonskoder::getValue).orElse("");
-            return KODE6.equals(diskresjonskode) || KODE7.equals(diskresjonskode);
+            return ofNullable(wsPerson.getDiskresjonskode()).map(WSDiskresjonskoder::getValue).orElse("");
         } catch (HentPersonSikkerhetsbegrensning e) {
             log.error("Feil ved henting av diskresjonskode fra TPS");
             throw new RuntimeException("Feil ved henting av diskresjonskode fra TPS");
