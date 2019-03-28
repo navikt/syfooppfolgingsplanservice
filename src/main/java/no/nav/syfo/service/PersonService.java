@@ -42,11 +42,6 @@ public class PersonService {
         }
     }
 
-    public boolean erKode6(String fnr) {
-        String diskresjonskode = hentDiskresjonskodeForBruker(fnr);
-        return KODE6.equals(diskresjonskode);
-    }
-
     public boolean erDiskresjonsmerket(String fnr) {
         String diskresjonskode = hentDiskresjonskodeForBruker(fnr);
         return KODE6.equals(diskresjonskode) || KODE7.equals(diskresjonskode);

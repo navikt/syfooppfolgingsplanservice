@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static no.nav.syfo.api.intern.domain.RSBrukerPaaEnhet.Skjermingskode.*;
@@ -56,8 +57,10 @@ public class EnhetRessurs {
 
     private RSBrukerPaaEnhet.Skjermingskode hentBrukersSkjermingskode(String fnr) {
         if (personService.erDiskresjonsmerket(fnr))
-            return personService.erKode6(fnr) ? KODE_6 : KODE_7;
-        return egenAnsattService.erEgenAnsatt(fnr) ? EGEN_ANSATT : INGEN;
+            return DISKRESJONSMERKET;
+        if (egenAnsattService.erEgenAnsatt(fnr))
+            return EGEN_ANSATT;
+        return INGEN;
     }
 
 }
