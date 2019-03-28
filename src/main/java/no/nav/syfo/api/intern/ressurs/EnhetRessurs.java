@@ -9,12 +9,13 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static no.nav.syfo.oidc.OIDCIssuer.INTERN;
+import static no.nav.syfo.api.intern.domain.RSBrukerPaaEnhet.Skjermingskode.*;
+import static no.nav.syfo.oidc.OIDCIssuer.AZURE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(value = "/api/enhet")
-@ProtectedWithClaims(issuer = INTERN)
+@ProtectedWithClaims(issuer = AZURE)
 public class EnhetRessurs {
 
     private AktoerService aktoerService;
@@ -42,18 +43,23 @@ public class EnhetRessurs {
     @RequestMapping(value = "/{enhet}/oppfolgingsplaner/brukere")
     public List<RSBrukerPaaEnhet> hentSykmeldteMedUlesteOppfolgingsdialogerPaaEnhet(@PathVariable("enhet") String enhet) {
         veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilEnhet(enhet);
+
         return veilederBehandlingService.hentSykmeldteMedUlesteOppfolgingsplaner(enhet)
                 .stream()
                 .map(aktorId -> aktoerService.hentFnrForAktoer(aktorId))
+                .filter(fnr -> veilederTilgangService.harVeilederTilgangTilPersonViaAzure(fnr))
                 .map(fnr -> new RSBrukerPaaEnhet()
                         .fnr(fnr)
-                        .skjermetEllerEgenAnsatt(sykmeldtErDiskresjonsmerketEllerEgenAnsatt(fnr)))
+                        .skjermingskode(hentBrukersSkjermingskode(fnr)))
                 .collect(toList());
     }
 
-
-    private boolean sykmeldtErDiskresjonsmerketEllerEgenAnsatt(String fnr) {
-        return personService.erDiskresjonsmerket(fnr) || egenAnsattService.erEgenAnsatt(fnr);
+    private RSBrukerPaaEnhet.Skjermingskode hentBrukersSkjermingskode(String fnr) {
+        if (personService.erDiskresjonsmerket(fnr))
+            return DISKRESJONSMERKET;
+        if (egenAnsattService.erEgenAnsatt(fnr))
+            return EGEN_ANSATT;
+        return INGEN;
     }
 
 }
