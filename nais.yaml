@@ -64,6 +64,11 @@ fasitResources:
     resourceType: credential
   - alias: altinnUser
     resourceType: credential
+  - alias: loginservice_oidc
+    resourceType: azureoidc
+    propertyMap:
+      discoveryUri: NO_NAV_SECURITY_OIDC_ISSUER_VEILEDER_DISCOVERYURL
+      clientId: NO_NAV_SECURITY_OIDC_ISSUER_VEILEDER_ACCEPTEDAUDIENCE
   - alias: Aktoer_v2
     resourceType: webserviceendpoint
   - alias: BehandleJournal_v2
