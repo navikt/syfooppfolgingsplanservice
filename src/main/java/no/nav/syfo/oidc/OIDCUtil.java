@@ -44,6 +44,11 @@ public class OIDCUtil {
                 .orElse(null);
     }
 
+    public static String getSubjectEksternMedThrows(OIDCRequestContextHolder contextHolder) {
+        return Optional.ofNullable(claimSet(contextHolder, OIDCIssuer.EKSTERN))
+                .map(JWTClaimsSet::getSubject).orElseThrow(() -> new RuntimeException("Fant ikke subject for OIDCIssuer Ekstern"));
+    }
+
     public static String getIssuerToken(OIDCRequestContextHolder contextHolder, String issuer) {
         OIDCValidationContext context = (OIDCValidationContext) contextHolder
                 .getRequestAttribute(OIDCConstants.OIDC_VALIDATION_CONTEXT);

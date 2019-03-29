@@ -222,6 +222,13 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
+        <!-- METRICS -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>${micrometer-registry-prometheus.version}</version>
+        </dependency>
+
         <!-- MQ -->
         <dependency>
             <groupId>org.springframework</groupId>
