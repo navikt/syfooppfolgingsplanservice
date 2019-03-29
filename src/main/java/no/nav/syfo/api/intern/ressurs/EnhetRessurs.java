@@ -50,7 +50,7 @@ public class EnhetRessurs {
                 .filter(fnr -> veilederTilgangService.harVeilederTilgangTilPerson(fnr))
                 .map(fnr -> new RSBrukerPaaEnhet()
                         .fnr(fnr)
-                        .skjermetEllerEgenAnsatt(hentBrukersSkjermingskode(fnr)))
+                        .skjermingskode(hentBrukersSkjermingskode(fnr)))
                 .collect(toList());
     }
 

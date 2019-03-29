@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class RSBrukerPaaEnhet {
     public String fnr;
-    public Skjermingskode skjermetEllerEgenAnsatt;
+    public Skjermingskode skjermingskode;
 
     public enum Skjermingskode {
         DISKRESJONSMERKET,
