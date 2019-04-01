@@ -49,10 +49,11 @@ public class KommentarService {
 
         oppfoelingsdialogDAO.sistEndretAv(tiltak.oppfoelgingsdialogId, innloggetAktoerId);
         if (kommentar.id == null) {
-            return kommentarDAO.create(kommentar)
+            return kommentarDAO.create(kommentar
                     .tiltakId(tiltakId)
                     .opprettetAvAktoerId(innloggetAktoerId)
-                    .sistEndretAvAktoerId(innloggetAktoerId).id;
+                    .sistEndretAvAktoerId(innloggetAktoerId)
+            ).id;
         } else {
             return kommentarDAO.update(kommentar).id;
         }
