@@ -18,12 +18,14 @@ public class VeilederTilgangService {
     public static final String FNR = "fnr";
     public static final String ENHET = "enhet";
     public static final String TILGANG_TIL_BRUKER_PATH = "/tilgangtilbruker";
-    public static final String TILGANG_TIL_ENHET_PATH = "/tilgangtilenhet";
+    public static final String TILGANG_TIL_BRUKER_VIA_AZURE_PATH = "/bruker";
+    public static final String TILGANG_TIL_ENHET_PATH = "/enhet";
     public static final String TILGANG_TIL_TJENESTEN = "/tilgangtiltjenesten";
     private static final String FNR_PLACEHOLDER = "{" + FNR + "}";
     private static final String ENHET_PLACEHOLDER = "{" + ENHET + "}";
     private final RestTemplate template;
     private final UriComponentsBuilder tilgangTilBrukerUriTemplate;
+    private final UriComponentsBuilder tilgangTilBrukerViaAzureUriTemplate;
     private final UriComponentsBuilder tilgangTilEnhetUriTemplate;
     private final UriComponentsBuilder tilgangTilTjenesteUriTemplate;
 
@@ -33,6 +35,9 @@ public class VeilederTilgangService {
     ) {
         tilgangTilBrukerUriTemplate = fromHttpUrl(tilgangskontrollUrl)
                 .path(TILGANG_TIL_BRUKER_PATH)
+                .queryParam(FNR, FNR_PLACEHOLDER);
+        tilgangTilBrukerViaAzureUriTemplate = fromHttpUrl(tilgangskontrollUrl)
+                .path(TILGANG_TIL_BRUKER_VIA_AZURE_PATH)
                 .queryParam(FNR, FNR_PLACEHOLDER);
         tilgangTilEnhetUriTemplate = fromHttpUrl(tilgangskontrollUrl)
                 .path(TILGANG_TIL_ENHET_PATH)
@@ -52,6 +57,11 @@ public class VeilederTilgangService {
     public boolean harVeilederTilgangTilPerson(String fnr) {
         URI tilgangTilBrukerUriMedFnr = tilgangTilBrukerUriTemplate.build(singletonMap(FNR, fnr));
         return kallUriMedTemplate(tilgangTilBrukerUriMedFnr);
+    }
+
+    public boolean harVeilederTilgangTilPersonViaAzure(String fnr) {
+        URI tilgangTilBrukerViaAzureUriMedFnr = tilgangTilBrukerViaAzureUriTemplate.build(singletonMap(FNR, fnr));
+        return kallUriMedTemplate(tilgangTilBrukerViaAzureUriMedFnr);
     }
 
     public void kastExceptionHvisIkkeVeilederHarTilgangTilEnhet(String enhet) {

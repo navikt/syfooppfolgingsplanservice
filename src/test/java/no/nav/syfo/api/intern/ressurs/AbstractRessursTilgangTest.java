@@ -75,6 +75,20 @@ public abstract class AbstractRessursTilgangTest {
                 .andRespond(withStatus(status));
     }
 
+    public void mockSvarFraTilgangTilBrukerViaAzure(String fnr, HttpStatus status) {
+        String uriString = fromHttpUrl(tilgangskontrollUrl)
+                .path(TILGANG_TIL_BRUKER_VIA_AZURE_PATH)
+                .queryParam(VeilederTilgangService.FNR, fnr)
+                .toUriString();
+
+        String idToken = oidcRequestContextHolder.getOIDCValidationContext().getToken(OIDCIssuer.AZURE).getIdToken();
+
+        mockRestServiceServer.expect(manyTimes(), requestTo(uriString))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header(AUTHORIZATION, "Bearer " + idToken))
+                .andRespond(withStatus(status));
+    }
+
     public void mockSvarFraTilgangTilEnhet(String enhet, HttpStatus status) {
         String uriString = fromHttpUrl(tilgangskontrollUrl)
                 .path(TILGANG_TIL_ENHET_PATH)
