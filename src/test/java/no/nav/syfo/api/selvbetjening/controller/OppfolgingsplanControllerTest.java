@@ -1,10 +1,11 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
 import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest;
-import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave;
-import no.nav.syfo.api.selvbetjening.domain.RSGjennomfoering;
+import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.domain.Arbeidsoppgave;
+import no.nav.syfo.domain.Tiltak;
 import no.nav.syfo.service.ArbeidsoppgaveService;
+import no.nav.syfo.service.TiltakService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,8 +13,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import javax.inject.Inject;
 
 import static no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.rs2arbeidsoppgave;
+import static no.nav.syfo.api.selvbetjening.mapper.RSTiltakMapper.rs2tiltak;
 import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.KAN;
 import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.TILRETTELEGGING;
+import static no.nav.syfo.mock.MockSelvbetjeningRS.rsTiltakLagreEksisterende;
+import static no.nav.syfo.mock.MockSelvbetjeningRS.rsTiltakLagreNytt;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
@@ -31,6 +35,8 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
     @MockBean
     ArbeidsoppgaveService arbeidsoppgaveService;
+    @MockBean
+    TiltakService tiltakService;
 
     private static Long oppfolgingsplanId = 1L;
 
@@ -90,5 +96,45 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         RSArbeidsoppgave rsArbeidsoppgave = new RSArbeidsoppgave();
 
         oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, rsArbeidsoppgave);
+    }
+
+    @Test
+    public void lagrer_tiltak_ny_som_bruker() {
+        Long ressursId = 1L;
+        RSTiltak rsTiltak = rsTiltakLagreNytt();
+
+        Tiltak tiltak = map(rsTiltak, rs2tiltak);
+
+        when(tiltakService.lagreTiltak(oppfolgingsplanId, tiltak, ARBEIDSTAKER_FNR)).thenReturn(ressursId);
+
+        Long res = oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak);
+
+        verify(tiltakService).lagreTiltak(eq(oppfolgingsplanId), any(Tiltak.class), eq(ARBEIDSTAKER_FNR));
+
+        assertEquals(res, ressursId);
+    }
+
+    @Test
+    public void lagre_tiltak_eksiterende_som_bruker() {
+        Long ressursId = 2L;
+        RSTiltak rsTiltak = rsTiltakLagreEksisterende();
+
+        Tiltak tiltak = map(rsTiltak, rs2tiltak);
+
+        when(tiltakService.lagreTiltak(oppfolgingsplanId, tiltak, ARBEIDSTAKER_FNR)).thenReturn(ressursId);
+
+        Long res = oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak);
+
+        verify(tiltakService).lagreTiltak(eq(oppfolgingsplanId), any(Tiltak.class), eq(ARBEIDSTAKER_FNR));
+
+        assertEquals(res, ressursId);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void lagre_arbeidsoppgavefinner_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+        RSTiltak rsTiltak = new RSTiltak();
+
+        oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak);
     }
 }
