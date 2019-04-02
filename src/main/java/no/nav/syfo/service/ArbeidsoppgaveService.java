@@ -56,13 +56,14 @@ public class ArbeidsoppgaveService {
 
         oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
         if (arbeidsoppgave.id == null) {
-            metrikk.tellHendelse("nyArbeidsoppgave");
+            metrikk.tellHendelse("lagre_arbeidsoppgave_ny");
             return arbeidsoppgaveDAO.create(arbeidsoppgave
                     .oppfoelgingsdialogId(oppfoelgingsdialogId)
                     .erVurdertAvSykmeldt(oppfoelgingsdialog.arbeidstaker.aktoerId.equals(innloggetAktoerId))
                     .opprettetAvAktoerId(innloggetAktoerId)
                     .sistEndretAvAktoerId(innloggetAktoerId)).id;
         } else {
+            metrikk.tellHendelse("lagre_arbeidsoppgave_eksisterende");
             return arbeidsoppgaveDAO.update(arbeidsoppgave
                     .oppfoelgingsdialogId(oppfoelgingsdialogId)
                     .erVurdertAvSykmeldt(oppfoelgingsdialog.arbeidstaker.aktoerId.equals(innloggetAktoerId) || arbeidsoppgaveDAO.finnArbeidsoppgave(arbeidsoppgave.id).erVurdertAvSykmeldt)
