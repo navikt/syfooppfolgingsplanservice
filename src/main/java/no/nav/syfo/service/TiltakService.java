@@ -58,12 +58,13 @@ public class TiltakService {
 
         oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
         if (tiltak.id == null) {
-            metrikk.tellHendelse("nyttTiltak");
+            metrikk.tellHendelse("lagre_tiltak_nytt");
             return tiltakDAO.create(tiltak
                     .oppfoelgingsdialogId(oppfoelgingsdialogId)
                     .opprettetAvAktoerId(innloggetAktoerId)
                     .sistEndretAvAktoerId(innloggetAktoerId)).id;
         } else {
+            metrikk.tellHendelse("lagre_tiltak_eksisterende");
             return tiltakDAO.update(tiltak
                     .oppfoelgingsdialogId(oppfoelgingsdialogId)
                     .sistEndretAvAktoerId(innloggetAktoerId)).id;
