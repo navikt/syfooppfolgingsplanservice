@@ -1,10 +1,12 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
+import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.repository.dao.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +20,10 @@ import java.util.*;
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
+import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
+import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER;
 import static no.nav.syfo.model.Varseltype.*;
+import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
 
 @Slf4j
@@ -106,10 +111,12 @@ public class OppfoelgingsdialogService {
         this.tilgangskontrollService = tilgangskontrollService;
     }
 
-    public List<Oppfoelgingsdialog> hentAktoersOppfoelgingsdialoger(String aktoerId, String brukerkontekst, String innloggetFnr) {
-        if ("ARBEIDSGIVER".equals(brukerkontekst)) {
+    public List<Oppfoelgingsdialog> hentAktoersOppfoelgingsdialoger(BrukerkontekstConstant brukerkontekst, String innloggetFnr) {
+        String aktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+
+        if (ARBEIDSGIVER == brukerkontekst) {
             List<Oppfoelgingsdialog> oppfoelgingsdialoger = new ArrayList<>();
-            List<Ansatt> ansatte = naermesteLederService.hentAnsatte(aktoerId);
+            List<Ansatt> ansatte = naermesteLederService.hentAnsatte(aktoerId, EKSTERN);
 
             ansatte.forEach(ansatt -> oppfoelgingsdialoger.addAll(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(ansatt.aktoerId).stream()
                     .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
@@ -119,7 +126,7 @@ public class OppfoelgingsdialogService {
             return oppfoelgingsdialoger;
         }
 
-        List<Naermesteleder> tidligereLedere = naermesteLederService.hentNaermesteLedere(aktoerId);
+        List<Naermesteleder> tidligereLedere = naermesteLederService.hentNaermesteLedere(aktoerId, EKSTERN);
         List<Naermesteleder> inaktiveLedere = tidligereLedere.stream()
                 .filter(naermesteleder -> !naermesteleder.naermesteLederStatus.erAktiv)
                 .collect(toList());
@@ -127,7 +134,7 @@ public class OppfoelgingsdialogService {
                 .filter(naermesteleder -> naermesteleder.naermesteLederStatus.erAktiv)
                 .collect(toList());
 
-        if ("SYKMELDT".equals(brukerkontekst)) {
+        if (ARBEIDSTAKER == brukerkontekst) {
             return oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktoerId)
                     .stream()
                     .peek(oppfoelgingsdialog -> inaktiveLedere.stream()
@@ -222,7 +229,7 @@ public class OppfoelgingsdialogService {
 
     private void sendVarsler(String innloggetAktoerId, Oppfoelgingsdialog oppfoelgingsdialog) {
         if (innloggetAktoerId.equals(oppfoelgingsdialog.arbeidstaker.aktoerId)) {
-            Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer).get();
+            Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN).get();
             tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanOpprettetNL, naermesteleder, oppfoelgingsdialog.id);
         } else {
             serviceVarselService.sendServiceVarsel(oppfoelgingsdialog.arbeidstaker.aktoerId, SyfoplanOpprettetSyk, oppfoelgingsdialog.id);
@@ -354,7 +361,7 @@ public class OppfoelgingsdialogService {
         }
 
         if (erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId)) {
-            Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer).get();
+            Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN).get();
             tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanRevideringNL, naermesteleder, oppfoelgingsdialog.id);
         } else {
             serviceVarselService.sendServiceVarsel(oppfoelgingsdialog.arbeidstaker.aktoerId, SyfoplanRevideringSyk, oppfoelgingsdialog.id);

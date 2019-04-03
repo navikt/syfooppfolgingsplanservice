@@ -20,20 +20,19 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.time.LocalDateTime.now;
 import static java.util.Optional.ofNullable;
-import static no.nav.syfo.util.time.DateUtil.tilKortDato;
-import static no.nav.syfo.util.time.DateUtil.tilMuntligDatoAarFormat;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.*;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningNl;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningSyk;
+import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
 import static no.nav.syfo.pdf.PdfFabrikk.tilPdf;
 import static no.nav.syfo.util.DatoUtil.antallDagerIPeriode;
-import static no.nav.syfo.util.DatoUtil.dagerMellom;
+import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.*;
+import static no.nav.syfo.util.time.DateUtil.tilKortDato;
+import static no.nav.syfo.util.time.DateUtil.tilMuntligDatoAarFormat;
 
 @Service
 public class GodkjenningService {
@@ -147,7 +146,7 @@ public class GodkjenningService {
             if (erArbeidsgiveren(oppfoelgingsdialog, innloggetAktoerId)) {
                 serviceVarselService.sendServiceVarsel(oppfoelgingsdialog.arbeidstaker.aktoerId, SyfoplangodkjenningSyk, oppfoelgingsdialogId);
             } else {
-                Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer).get();
+                Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN).get();
                 tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplangodkjenningNl, naermesteleder, oppfoelgingsdialogId);
             }
         }
@@ -228,7 +227,7 @@ public class GodkjenningService {
     public void genererNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId) {
         rapporterMetrikkerForNyPlan(oppfoelgingsdialog, false);
 
-        Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer)
+        Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
         Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
@@ -319,7 +318,7 @@ public class GodkjenningService {
     public void genererTvungenPlan(Oppfoelgingsdialog oppfoelgingsdialog, RSGyldighetstidspunkt gyldighetstidspunkt) {
         rapporterMetrikkerForNyPlan(oppfoelgingsdialog, true);
 
-        Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer)
+        Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
         Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);

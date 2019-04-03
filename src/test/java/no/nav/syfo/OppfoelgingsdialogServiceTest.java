@@ -15,8 +15,11 @@ import java.util.List;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
+import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
+import static no.nav.syfo.testhelper.UserConstants.LEDER_FNR;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.fjernEldsteGodkjenning;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -42,13 +45,14 @@ public class OppfoelgingsdialogServiceTest {
     public void oppfoelgingsdialogerFraAndreBedrifterBlirFiltrertBort() {
         Oppfoelgingsdialog dialog1 = new Oppfoelgingsdialog().id(1L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("1"));
         Oppfoelgingsdialog dialog2 = new Oppfoelgingsdialog().id(2L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("2"));
-        when(naermesteLederService.hentAnsatte(anyString())).thenReturn(asList(new Ansatt().aktoerId("sykmeldt").virksomhetsnummer("1")));
+        when(aktoerService.hentAktoerIdForFnr("123")).thenReturn(LEDER_FNR);
+        when(naermesteLederService.hentAnsatte(anyString(), any())).thenReturn(asList(new Ansatt().aktoerId("sykmeldt").virksomhetsnummer("1")));
         when(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(anyString())).thenReturn(asList(
                 dialog1,
                 dialog2
         ));
         when(oppfoelingsdialogDAO.populate(dialog1)).thenReturn(dialog1);
-        List<Oppfoelgingsdialog> dialoger = oppfoelgingsdialogService.hentAktoersOppfoelgingsdialoger("aktoerId", "ARBEIDSGIVER", "123");
+        List<Oppfoelgingsdialog> dialoger = oppfoelgingsdialogService.hentAktoersOppfoelgingsdialoger(ARBEIDSGIVER, "123");
         assertThat(dialoger.size()).isEqualTo(1);
         assertThat(dialoger.get(0).id).isEqualTo(1L);
     }

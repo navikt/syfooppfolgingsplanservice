@@ -96,7 +96,7 @@ public class GodkjenningServiceTest {
 
     @Before
     public void setup() {
-        when(naermesteLederService.hentNaermesteLeder(any(), any())).thenReturn(Optional.of(new Naermesteleder()
+        when(naermesteLederService.hentNaermesteLeder(any(), any(), any())).thenReturn(Optional.of(new Naermesteleder()
                 .epost("epost")
                 .mobil("mobil")
                 .navn("navn")
