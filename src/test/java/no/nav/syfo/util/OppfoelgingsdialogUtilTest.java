@@ -6,7 +6,7 @@ import no.nav.syfo.domain.Person;
 import no.nav.syfo.domain.Tiltak;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
