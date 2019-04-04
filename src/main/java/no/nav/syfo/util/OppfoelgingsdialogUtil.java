@@ -1,5 +1,6 @@
 package no.nav.syfo.util;
 
+import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Godkjenning;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
@@ -97,5 +98,22 @@ public class OppfoelgingsdialogUtil {
 
     public static boolean eksisterendeArbeidsoppgaveHoererTilDialog(Long arbeidsoppgaveId, List<Arbeidsoppgave> arbeidsoppgaveListe) {
         return arbeidsoppgaveId == null || arbeidsoppgaveListe.stream().anyMatch(arbeidsoppgave -> arbeidsoppgave.id.equals(arbeidsoppgaveId));
+    }
+
+    public static List<RSBrukerOppfolgingsplan> populerOppfolgingsplanerMedAvbruttPlanListe(List<RSBrukerOppfolgingsplan> planer) {
+        return planer.stream()
+                .map(rsOppfoelgingsdialog -> rsOppfoelgingsdialog.avbruttPlanListe(planer
+                        .stream()
+                        .filter(oppfoelgingsdialog -> oppfoelgingsdialog.arbeidstaker.fnr.equals(rsOppfoelgingsdialog.arbeidstaker.fnr) &&
+                                oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(rsOppfoelgingsdialog.virksomhet.virksomhetsnummer) &&
+                                oppfoelgingsdialog.godkjentPlan != null)
+                        .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.avbruttPlan != null)
+                        .filter(oppfoelgingsdialog -> oppfoelgingsdialog.opprettetDato.isBefore(rsOppfoelgingsdialog.opprettetDato))
+                        .sorted((o1, o2) -> o2.godkjentPlan.avbruttPlan.tidspunkt.compareTo(o1.godkjentPlan.avbruttPlan.tidspunkt))
+                        .map(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.avbruttPlan
+                                .id(oppfoelgingsdialog.id))
+                        .collect(toList())
+                ))
+                .collect(toList());
     }
 }

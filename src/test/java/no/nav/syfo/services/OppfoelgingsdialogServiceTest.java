@@ -114,7 +114,7 @@ public class OppfoelgingsdialogServiceTest {
                 ));
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
-        when(naermesteLederService.hentNaermesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
+        when(naermesteLederService.hentNaermesteLeder(anyString(), anyString(), any())).thenReturn(of(new Naermesteleder()));
         when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("1234567890123");
         when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));
@@ -149,7 +149,7 @@ public class OppfoelgingsdialogServiceTest {
                 ));
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
-        when(naermesteLederService.hentNaermesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
+        when(naermesteLederService.hentNaermesteLeder(anyString(), anyString(), any())).thenReturn(of(new Naermesteleder()));
         when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("1234567890123");
         when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));

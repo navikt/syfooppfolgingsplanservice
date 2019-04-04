@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 
 import static java.lang.System.getProperty;
+import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 
 @Service
 public class TilgangskontrollService {
@@ -26,11 +27,11 @@ public class TilgangskontrollService {
     }
 
     private boolean erAktoerNaermestelederForBruker(String aktoerId, String sykmeldtAktoerId, String virksomhetsnummer) {
-        return naermesteLederService.hentAnsatte(aktoerId).stream()
+        return naermesteLederService.hentAnsatte(aktoerId, EKSTERN).stream()
                 .anyMatch(ansatt -> virksomhetsnummer.equals(ansatt.virksomhetsnummer) && ansatt.aktoerId.equals(sykmeldtAktoerId));
     }
 
     private boolean aktoerHarNaermesteLederHosVirksomhet(String aktoerId, String virksomhetsnummer) {
-        return naermesteLederService.hentNaermesteLeder(aktoerId, virksomhetsnummer).isPresent();
+        return naermesteLederService.hentNaermesteLeder(aktoerId, virksomhetsnummer, EKSTERN).isPresent();
     }
 }

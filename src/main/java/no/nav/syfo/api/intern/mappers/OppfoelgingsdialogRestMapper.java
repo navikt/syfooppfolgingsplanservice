@@ -29,7 +29,7 @@ public class OppfoelgingsdialogRestMapper {
                     .evalueres(godkjentPlan.gyldighetstidspunkt.evalueres)
             );
 
-    private static Function<Oppfoelgingsdialog, String> status2rs = oppfoelgingsdialog -> {
+    public static Function<Oppfoelgingsdialog, String> status2rs = oppfoelgingsdialog -> {
         if (oppfoelgingsdialog.godkjentPlan.isPresent()) {
             if (oppfoelgingsdialog.godkjentPlan.get().avbruttPlan.isPresent()) {
                 return "AVBRUTT";

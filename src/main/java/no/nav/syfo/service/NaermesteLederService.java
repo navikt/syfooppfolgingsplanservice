@@ -1,6 +1,8 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.syfo.config.ws.wsconfig.SyfoOppfoelgingConfig;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.*;
@@ -15,6 +17,7 @@ import java.util.Optional;
 import static java.util.Optional.of;
 import static no.nav.syfo.mappers.ws.WSAnsattMapper.ws2ansatt;
 import static no.nav.syfo.mappers.ws.WSNaermesteLederMapper.ws2naermesteLeder;
+import static no.nav.syfo.oidc.OIDCUtil.getIssuerToken;
 import static no.nav.syfo.util.MapUtil.map;
 import static no.nav.syfo.util.MapUtil.mapListe;
 
@@ -22,17 +25,25 @@ import static no.nav.syfo.util.MapUtil.mapListe;
 @Service
 public class NaermesteLederService {
 
-    private SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1;
+    private final OIDCRequestContextHolder contextHolder;
+    private final SyfoOppfoelgingConfig sykefravaersoppfoelgingConfig;
 
     @Inject
-    public NaermesteLederService(SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1) {
-        this.sykefravaersoppfoelgingV1 = sykefravaersoppfoelgingV1;
+    public NaermesteLederService(
+            OIDCRequestContextHolder contextHolder,
+            SyfoOppfoelgingConfig sykefravaersoppfoelgingConfig
+    ) {
+        this.contextHolder = contextHolder;
+        this.sykefravaersoppfoelgingConfig = sykefravaersoppfoelgingConfig;
     }
 
-    public List<Ansatt> hentAnsatte(String aktoerId) {
+    public List<Ansatt> hentAnsatte(String aktoerId, String oidcIssuer) {
         try {
-            WSHentNaermesteLedersAnsattListeResponse response = sykefravaersoppfoelgingV1.hentNaermesteLedersAnsattListe(new WSHentNaermesteLedersAnsattListeRequest()
-                    .withAktoerId(aktoerId));
+            WSHentNaermesteLedersAnsattListeRequest request = new WSHentNaermesteLedersAnsattListeRequest()
+                    .withAktoerId(aktoerId);
+
+            String oidcToken = getIssuerToken(this.contextHolder, oidcIssuer);
+            WSHentNaermesteLedersAnsattListeResponse response = sykefravaersoppfoelgingConfig.hentNaermesteLedersAnsattListe(request, oidcToken);
             return mapListe(response.getAnsattListe(), ws2ansatt);
         } catch (HentNaermesteLedersAnsattListeSikkerhetsbegrensning e) {
             log.warn("Fikk sikkerhetsbegrensning ved henting av ansatte for person {}", aktoerId);
@@ -40,10 +51,14 @@ public class NaermesteLederService {
         }
     }
 
-    public List<Naermesteleder> hentNaermesteLedere(String aktoerId) {
+    public List<Naermesteleder> hentNaermesteLedere(String aktoerId, String oidcIssuer) {
         try {
-            WSHentNaermesteLederListeResponse response = sykefravaersoppfoelgingV1.hentNaermesteLederListe(new WSHentNaermesteLederListeRequest()
-                    .withAktoerId(aktoerId));
+            WSHentNaermesteLederListeRequest request = new WSHentNaermesteLederListeRequest()
+                    .withAktoerId(aktoerId);
+
+            String oidcToken = getIssuerToken(this.contextHolder, oidcIssuer);
+            WSHentNaermesteLederListeResponse response = sykefravaersoppfoelgingConfig.hentNaermesteLederListe(request, oidcToken);
+
             return mapListe(response.getNaermesteLederListe(), ws2naermesteLeder);
         } catch (HentNaermesteLederListeSikkerhetsbegrensning e) {
             log.warn("Fikk sikkerhetsbegrensning ved henting av naermeste ledere for person {}", aktoerId);
@@ -51,9 +66,14 @@ public class NaermesteLederService {
         }
     }
 
-    public Optional<Naermesteleder> hentNaermesteLeder(String aktoerId, String virksomhetsnummer) {
+    public Optional<Naermesteleder> hentNaermesteLeder(String aktoerId, String virksomhetsnummer, String oidcIssuer) {
         try {
-            return of(map(sykefravaersoppfoelgingV1.hentNaermesteLeder(new WSHentNaermesteLederRequest().withAktoerId(aktoerId).withOrgnummer(virksomhetsnummer)).getNaermesteLeder(), ws2naermesteLeder));
+            WSHentNaermesteLederRequest request = new WSHentNaermesteLederRequest().withAktoerId(aktoerId).withOrgnummer(virksomhetsnummer);
+
+            String oidcToken = getIssuerToken(this.contextHolder, oidcIssuer);
+            WSHentNaermesteLederResponse response = sykefravaersoppfoelgingConfig.hentNaermesteLeder(request, oidcToken);
+
+            return of(map(response.getNaermesteLeder(), ws2naermesteLeder));
         } catch (HentNaermesteLederSikkerhetsbegrensning e) {
             log.warn("Fikk sikkerhetsbegrensning ved henting av naermeste leder for person {} i virksomhet {}", aktoerId, virksomhetsnummer);
             throw new ForbiddenException();

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.aktoer.v2.*;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.WSHentAktoerIdForIdentRequest;
 import no.nav.tjeneste.virksomhet.aktoer.v2.meldinger.WSHentIdentForAktoerIdRequest;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,18 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @Service
-public class AktoerService {
+public class AktoerService implements InitializingBean {
+
+    private static AktoerService instance;
+
+    @Override
+    public void afterPropertiesSet() {
+        instance = this;
+    }
+
+    public static AktoerService aktoerService() {
+        return instance;
+    }
 
     private AktoerV2 aktoerV2;
 
