@@ -23,9 +23,7 @@ import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
 import static no.nav.syfo.util.MapUtil.map;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -159,7 +157,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     }
 
     @Test
-    public void nullstill_godkjenning_eksisterende_som_bruker() {
+    public void nullstill_godkjenning_som_bruker() {
         oppfolgingsplanController.nullstillGodkjenning(oppfolgingsplanId);
 
         verify(oppfoelgingsdialogService).nullstillGodkjenning(oppfolgingsplanId, ARBEIDSTAKER_FNR);
@@ -171,5 +169,20 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         loggUtAlle(oidcRequestContextHolder);
 
         oppfolgingsplanController.foresporRevidering(oppfolgingsplanId);
+    }
+
+    @Test
+    public void sett_som_bruker() {
+        oppfolgingsplanController.sett(oppfolgingsplanId);
+
+        verify(oppfoelgingsdialogService).oppdaterSistInnlogget(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(metrikk).tellHendelse(anyString());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void sett_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.sett(oppfolgingsplanId);
     }
 }
