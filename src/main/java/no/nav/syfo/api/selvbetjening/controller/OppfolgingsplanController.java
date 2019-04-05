@@ -6,8 +6,8 @@ import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave;
 import no.nav.syfo.api.selvbetjening.domain.RSTiltak;
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Tiltak;
-import no.nav.syfo.service.ArbeidsoppgaveService;
-import no.nav.syfo.service.TiltakService;
+import no.nav.syfo.metric.Metrikk;
+import no.nav.syfo.service.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -24,18 +24,24 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/api/oppfolgingsplan/actions/{id}")
 public class OppfolgingsplanController {
 
+    private final Metrikk metrikk;
     private final OIDCRequestContextHolder contextHolder;
     private final ArbeidsoppgaveService arbeidsoppgaveService;
+    private final OppfoelgingsdialogService oppfoelgingsdialogService;
     private final TiltakService tiltakService;
 
     @Inject
     public OppfolgingsplanController(
+            Metrikk metrikk,
             OIDCRequestContextHolder contextHolder,
             ArbeidsoppgaveService arbeidsoppgaveService,
+            OppfoelgingsdialogService oppfoelgingsdialogService,
             TiltakService tiltakService
     ) {
+        this.metrikk = metrikk;
         this.contextHolder = contextHolder;
         this.arbeidsoppgaveService = arbeidsoppgaveService;
+        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
         this.tiltakService = tiltakService;
     }
 
@@ -59,5 +65,14 @@ public class OppfolgingsplanController {
         Tiltak tiltak = map(rsTiltak, rs2tiltak);
 
         return tiltakService.lagreTiltak(id, tiltak, innloggetIdent);
+    }
+
+    @PostMapping(path = "/foresporRevidering")
+    public void foresporRevidering(@PathVariable("id") Long id) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        oppfoelgingsdialogService.foresporRevidering(id, innloggetIdent);
+
+        metrikk.tellHendelse("forespor_revidering");
     }
 }

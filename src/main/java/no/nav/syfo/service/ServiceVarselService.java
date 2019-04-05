@@ -7,6 +7,7 @@ import no.nav.syfo.model.Varseltype;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.util.JAXB.marshallVarsel;
@@ -14,6 +15,7 @@ import static no.nav.syfo.util.JmsUtil.messageCreator;
 
 @Slf4j
 @Service
+@Transactional
 public class ServiceVarselService {
 
     @Value("${tjenester.url}")

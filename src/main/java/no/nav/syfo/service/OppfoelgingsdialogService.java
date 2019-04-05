@@ -357,7 +357,7 @@ public class OppfoelgingsdialogService {
         return tilgangskontrollService.aktoerTilhoererDialogen(aktoerId, oppfoelgingsdialog);
     }
 
-    public void forespoerRevidering(long oppfoelgingsdialogId, String innloggetFnr) {
+    public void foresporRevidering(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
 
