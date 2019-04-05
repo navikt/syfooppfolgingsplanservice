@@ -157,4 +157,19 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         oppfolgingsplanController.foresporRevidering(oppfolgingsplanId);
     }
+
+    @Test
+    public void nullstill_godkjenning_eksisterende_som_bruker() {
+        oppfolgingsplanController.nullstillGodkjenning(oppfolgingsplanId);
+
+        verify(oppfoelgingsdialogService).nullstillGodkjenning(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(metrikk).tellHendelse(anyString());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void nullstill_godkjenning_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.foresporRevidering(oppfolgingsplanId);
+    }
 }
