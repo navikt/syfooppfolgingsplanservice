@@ -75,4 +75,13 @@ public class OppfolgingsplanController {
 
         metrikk.tellHendelse("forespor_revidering");
     }
+
+    @PostMapping(path = "/nullstillGodkjenning")
+    public void nullstillGodkjenning(@PathVariable("id") Long id) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        oppfoelgingsdialogService.nullstillGodkjenning(id, innloggetIdent);
+
+        metrikk.tellHendelse("nullstill_godkjenning");
+    }
 }
