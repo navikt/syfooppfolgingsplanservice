@@ -2,11 +2,11 @@ package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant;
+import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
-import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.repository.dao.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,8 +164,13 @@ public class OppfoelgingsdialogService {
     }
 
     @Transactional
-    public Long opprettOppfoelgingsdialog(String sykmeldtAktoerId, String virksomhetsnummer, String innloggetFnr) {
+    public Long opprettOppfoelgingsdialog(RSOpprettOppfoelgingsdialog rsOpprettOppfoelgingsdialog, String innloggetFnr) {
+        String virksomhetsnummer = rsOpprettOppfoelgingsdialog.virksomhetsnummer;
         String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String sykmeldtAktoerId = innloggetFnr.equals(rsOpprettOppfoelgingsdialog.sykmeldtFnr)
+                ? innloggetAktoerId
+                : aktoerService.hentAktoerIdForFnr(rsOpprettOppfoelgingsdialog.sykmeldtFnr);
+
         if (brukerprofilService.erKode6eller7(aktoerService.hentFnrForAktoer(sykmeldtAktoerId))) {
             throw new ForbiddenException("Ikke tilgang");
         }

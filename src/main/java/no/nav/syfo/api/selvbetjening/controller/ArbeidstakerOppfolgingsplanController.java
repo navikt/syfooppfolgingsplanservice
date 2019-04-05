@@ -3,6 +3,7 @@ package no.nav.syfo.api.selvbetjening.controller;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
 import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
+import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.service.OppfoelgingsdialogService;
 import org.springframework.web.bind.annotation.*;
@@ -47,5 +48,16 @@ public class ArbeidstakerOppfolgingsplanController {
         metrikk.tellHendelse("hent_oppfolgingsplan_at");
 
         return populerOppfolgingsplanerMedAvbruttPlanListe(liste);
+    }
+
+    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public Long opprettOppfolgingsplanSomArbeidstaker(@RequestBody RSOpprettOppfoelgingsdialog rsOpprettOppfoelgingsdialog) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        Long id = oppfoelgingsdialogService.opprettOppfoelgingsdialog(rsOpprettOppfoelgingsdialog.sykmeldtFnr(innloggetIdent), innloggetIdent);
+
+        metrikk.tellHendelse("opprett_oppfolgingsplan_at");
+
+        return id;
     }
 }
