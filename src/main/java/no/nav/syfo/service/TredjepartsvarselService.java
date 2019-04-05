@@ -6,6 +6,7 @@ import no.nav.syfo.model.Varseltype;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import static no.nav.syfo.util.JAXB.marshallTredjepartsServiceMelding;
 import static no.nav.syfo.util.JmsUtil.messageCreator;
 
 @Service
+@Transactional
 public class TredjepartsvarselService {
 
     @Value("${tjenester.url}")

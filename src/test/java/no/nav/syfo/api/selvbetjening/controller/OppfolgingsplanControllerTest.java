@@ -4,8 +4,8 @@ import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest;
 import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Tiltak;
-import no.nav.syfo.service.ArbeidsoppgaveService;
-import no.nav.syfo.service.TiltakService;
+import no.nav.syfo.metric.Metrikk;
+import no.nav.syfo.service.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,6 +24,7 @@ import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
 import static no.nav.syfo.util.MapUtil.map;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,7 +35,11 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     private OppfolgingsplanController oppfolgingsplanController;
 
     @MockBean
+    Metrikk metrikk;
+    @MockBean
     ArbeidsoppgaveService arbeidsoppgaveService;
+    @MockBean
+    OppfoelgingsdialogService oppfoelgingsdialogService;
     @MockBean
     TiltakService tiltakService;
 
@@ -69,7 +74,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     }
 
     @Test
-    public void lagrer_eksiterende_arbeidsoppgave_som_bruker() {
+    public void lagrer_eksisterende_arbeidsoppgave_som_bruker() {
         Long arbeidsoppgaveId = 2L;
         RSArbeidsoppgave rsArbeidsoppgave = new RSArbeidsoppgave()
                 .arbeidsoppgaveId(arbeidsoppgaveId)
@@ -115,7 +120,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     }
 
     @Test
-    public void lagre_tiltak_eksiterende_som_bruker() {
+    public void lagre_tiltak_eksisterende_som_bruker() {
         Long ressursId = 2L;
         RSTiltak rsTiltak = rsTiltakLagreEksisterende();
 
@@ -131,10 +136,25 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void lagre_arbeidsoppgavefinner_ikke_innlogget_bruker() {
+    public void lagre_tiltak_ikke_innlogget_bruker() {
         loggUtAlle(oidcRequestContextHolder);
         RSTiltak rsTiltak = new RSTiltak();
 
         oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak);
+    }
+
+    @Test
+    public void forespor_revidering_eksisterende_som_bruker() {
+        oppfolgingsplanController.foresporRevidering(oppfolgingsplanId);
+
+        verify(oppfoelgingsdialogService).foresporRevidering(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(metrikk).tellHendelse(anyString());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void forespor_revidering_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.foresporRevidering(oppfolgingsplanId);
     }
 }
