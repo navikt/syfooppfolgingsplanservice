@@ -84,4 +84,13 @@ public class OppfolgingsplanController {
 
         metrikk.tellHendelse("nullstill_godkjenning");
     }
+
+    @PostMapping(path = "/sett")
+    public void sett(@PathVariable("id") Long id) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        oppfoelgingsdialogService.oppdaterSistInnlogget(id, innloggetIdent);
+
+        metrikk.tellHendelse("sett_plan");
+    }
 }
