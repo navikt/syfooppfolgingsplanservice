@@ -52,7 +52,7 @@ public class RSBrukerOppfolgingsplanMapper {
                     .beskrivelse(godkjenning.beskrivelse)
                     .godkjent(godkjenning.godkjent)
                     .godkjentAv(new RSPerson()
-                            .fnr(godkjenning.godkjentAvAktoerId)
+                            .fnr(aktoerService().hentFnrForAktoer(godkjenning.godkjentAvAktoerId))
                     )
                     .godkjenningsTidspunkt(godkjenning.godkjenningsTidspunkt)
                     .gyldighetstidspunkt(mapNullable(godkjenning.gyldighetstidspunkt, gyldighetstidspunkt2rs));
