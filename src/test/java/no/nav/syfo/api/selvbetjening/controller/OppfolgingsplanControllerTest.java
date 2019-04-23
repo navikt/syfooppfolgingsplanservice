@@ -51,6 +51,21 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     }
 
     @Test
+    public void delmednav_som_bruker() {
+        oppfolgingsplanController.delMedNav(oppfolgingsplanId);
+
+        verify(oppfoelgingsdialogService).delMedNav(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(metrikk).tellHendelse(anyString());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void delmednav_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.delMedNav(oppfolgingsplanId);
+    }
+
+    @Test
     public void lagrer_ny_arbeidsoppgave_som_bruker() {
         Long ressursId = 1L;
         RSArbeidsoppgave rsArbeidsoppgave = new RSArbeidsoppgave()
