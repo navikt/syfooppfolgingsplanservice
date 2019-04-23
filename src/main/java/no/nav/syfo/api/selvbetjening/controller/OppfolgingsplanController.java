@@ -48,6 +48,15 @@ public class OppfolgingsplanController {
         this.tiltakService = tiltakService;
     }
 
+    @PostMapping(path = "/delmednav")
+    public void delMedNav(@PathVariable("id") Long id) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        oppfoelgingsdialogService.delMedNav(id, innloggetIdent);
+
+        metrikk.tellHendelse("del_plan_med_nav");
+    }
+
     @PostMapping(path = "/lagreArbeidsoppgave", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public long lagreArbeidsoppgave(
             @PathVariable("id") Long id,
