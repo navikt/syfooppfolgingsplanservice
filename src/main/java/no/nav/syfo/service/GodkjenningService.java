@@ -405,7 +405,7 @@ public class GodkjenningService {
     }
 
     @Transactional
-    public void avvisGodkjenning(long oppfoelgingsdialogId, String innloggetFnr, String begrunnelse) {
+    public void avvisGodkjenning(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
 
@@ -420,7 +420,6 @@ public class GodkjenningService {
         godkjenningerDAO.create(new Godkjenning()
                 .godkjent(false)
                 .oppfoelgingsdialogId(oppfoelgingsdialogId)
-                .beskrivelse(begrunnelse)
                 .godkjentAvAktoerId(innloggetAktoerId)
         );
         oppfoelingsdialogDAO.nullstillSamtykke(oppfoelgingsdialogId);
