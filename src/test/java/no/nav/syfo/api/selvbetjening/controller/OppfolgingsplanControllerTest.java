@@ -39,6 +39,8 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     @MockBean
     OppfoelgingsdialogService oppfoelgingsdialogService;
     @MockBean
+    SamtykkeService samtykkeService;
+    @MockBean
     TiltakService tiltakService;
 
     private static Long oppfolgingsplanId = 1L;
@@ -184,5 +186,20 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         loggUtAlle(oidcRequestContextHolder);
 
         oppfolgingsplanController.sett(oppfolgingsplanId);
+    }
+
+    @Test
+    public void samtykk_som_bruker() {
+        oppfolgingsplanController.samtykk(oppfolgingsplanId, true);
+
+        verify(samtykkeService).giSamtykke(oppfolgingsplanId, ARBEIDSTAKER_FNR, true);
+        verify(metrikk).tellHendelse(anyString());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void samtykk_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.samtykk(oppfolgingsplanId, true);
     }
 }

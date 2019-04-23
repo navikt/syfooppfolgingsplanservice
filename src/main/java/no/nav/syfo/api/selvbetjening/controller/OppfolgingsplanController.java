@@ -28,6 +28,7 @@ public class OppfolgingsplanController {
     private final OIDCRequestContextHolder contextHolder;
     private final ArbeidsoppgaveService arbeidsoppgaveService;
     private final OppfoelgingsdialogService oppfoelgingsdialogService;
+    private final SamtykkeService samtykkeService;
     private final TiltakService tiltakService;
 
     @Inject
@@ -36,12 +37,14 @@ public class OppfolgingsplanController {
             OIDCRequestContextHolder contextHolder,
             ArbeidsoppgaveService arbeidsoppgaveService,
             OppfoelgingsdialogService oppfoelgingsdialogService,
+            SamtykkeService samtykkeService,
             TiltakService tiltakService
     ) {
         this.metrikk = metrikk;
         this.contextHolder = contextHolder;
         this.arbeidsoppgaveService = arbeidsoppgaveService;
         this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.samtykkeService = samtykkeService;
         this.tiltakService = tiltakService;
     }
 
@@ -83,6 +86,18 @@ public class OppfolgingsplanController {
         oppfoelgingsdialogService.nullstillGodkjenning(id, innloggetIdent);
 
         metrikk.tellHendelse("nullstill_godkjenning");
+    }
+
+    @PostMapping(path = "/samtykk")
+    public void samtykk(
+            @PathVariable("id") Long id,
+            @RequestParam("samtykke") Boolean samtykke
+    ) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        samtykkeService.giSamtykke(id, innloggetIdent, samtykke);
+
+        metrikk.tellHendelse("samtykk_plan");
     }
 
     @PostMapping(path = "/sett")
