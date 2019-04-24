@@ -32,9 +32,6 @@
         <commons-io.version>2.5</commons-io.version>
         <saxon.version>9.7.0-8</saxon.version>
 
-        <!-- Egenlagde  -->
-        <common.pdf.version>2.0.3</common.pdf.version>
-
         <!-- Tjenester  -->
         <altinn-correspondence-agency-external-sf-tjenestespesifikasjon.version>1.1</altinn-correspondence-agency-external-sf-tjenestespesifikasjon.version>
         <arbeidsfordeling-v1-tjenestespesifikasjon.version>1.1.0</arbeidsfordeling-v1-tjenestespesifikasjon.version>
@@ -148,14 +145,6 @@
             <groupId>no.nav.sbl.dialogarena</groupId>
             <artifactId>varsel-inn</artifactId>
             <version>${varsel-inn.version}</version>
-        </dependency>
-
-        <!-- NAV Common Modules -->
-        <dependency>
-            <groupId>no.nav.sbl.dialogarena</groupId>
-            <artifactId>common-pdf</artifactId>
-            <version>${common.pdf.version}</version>
-            <scope>runtime</scope>
         </dependency>
 
         <!-- CXF -->
