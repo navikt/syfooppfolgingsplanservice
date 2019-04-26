@@ -37,6 +37,8 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     @MockBean
     ArbeidsoppgaveService arbeidsoppgaveService;
     @MockBean
+    GodkjenningService godkjenningService;
+    @MockBean
     OppfoelgingsdialogService oppfoelgingsdialogService;
     @MockBean
     SamtykkeService samtykkeService;
@@ -49,6 +51,22 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void setup() {
         loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR);
     }
+
+    @Test
+    public void avvis_som_bruker() {
+        oppfolgingsplanController.avvis(oppfolgingsplanId);
+
+        verify(godkjenningService).avvisGodkjenning(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(metrikk).tellHendelse(anyString());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void avvis_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.delMedNav(oppfolgingsplanId);
+    }
+
 
     @Test
     public void delmednav_som_bruker() {

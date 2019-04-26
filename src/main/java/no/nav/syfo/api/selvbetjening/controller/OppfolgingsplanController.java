@@ -27,6 +27,7 @@ public class OppfolgingsplanController {
     private final Metrikk metrikk;
     private final OIDCRequestContextHolder contextHolder;
     private final ArbeidsoppgaveService arbeidsoppgaveService;
+    private final GodkjenningService godkjenningService;
     private final OppfoelgingsdialogService oppfoelgingsdialogService;
     private final SamtykkeService samtykkeService;
     private final TiltakService tiltakService;
@@ -36,6 +37,7 @@ public class OppfolgingsplanController {
             Metrikk metrikk,
             OIDCRequestContextHolder contextHolder,
             ArbeidsoppgaveService arbeidsoppgaveService,
+            GodkjenningService godkjenningService,
             OppfoelgingsdialogService oppfoelgingsdialogService,
             SamtykkeService samtykkeService,
             TiltakService tiltakService
@@ -43,9 +45,19 @@ public class OppfolgingsplanController {
         this.metrikk = metrikk;
         this.contextHolder = contextHolder;
         this.arbeidsoppgaveService = arbeidsoppgaveService;
+        this.godkjenningService = godkjenningService;
         this.oppfoelgingsdialogService = oppfoelgingsdialogService;
         this.samtykkeService = samtykkeService;
         this.tiltakService = tiltakService;
+    }
+
+    @PostMapping(path = "/avvis")
+    public void avvis(@PathVariable("id") Long id) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        godkjenningService.avvisGodkjenning(id, innloggetIdent);
+
+        metrikk.tellHendelse("avvis_plan");
     }
 
     @PostMapping(path = "/delmednav")
