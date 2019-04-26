@@ -9,7 +9,7 @@ import static no.nav.syfo.config.ws.wsconfig.AktoerConfig.MOCK_KEY;
 
 @Service
 @ConditionalOnProperty(value = MOCK_KEY, havingValue = "true")
-public class AktoerMock implements AktoerV2 {
+public class AktoerMock implements Aktoer_v2PortType {
 
     private static final String MOCK_AKTORID_PREFIX = "10";
 

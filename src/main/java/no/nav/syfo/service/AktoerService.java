@@ -29,10 +29,10 @@ public class AktoerService implements InitializingBean {
         return instance;
     }
 
-    private AktoerV2 aktoerV2;
+    private Aktoer_v2PortType aktoerV2;
 
     @Inject
-    public AktoerService(AktoerV2 aktoerV2) {
+    public AktoerService(Aktoer_v2PortType aktoerV2) {
         this.aktoerV2 = aktoerV2;
     }
 

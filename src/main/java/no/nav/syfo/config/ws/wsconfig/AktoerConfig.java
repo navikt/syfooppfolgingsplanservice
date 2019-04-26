@@ -1,7 +1,7 @@
 package no.nav.syfo.config.ws.wsconfig;
 
 import no.nav.syfo.service.ws.*;
-import no.nav.tjeneste.virksomhet.aktoer.v2.AktoerV2;
+import no.nav.tjeneste.virksomhet.aktoer.v2.Aktoer_v2PortType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.*;
@@ -18,15 +18,15 @@ public class AktoerConfig {
     @Bean
     @ConditionalOnProperty(value = MOCK_KEY, havingValue = "false", matchIfMissing = true)
     @Primary
-    public AktoerV2 aktoerV2() {
-        AktoerV2 port = factory();
+    public Aktoer_v2PortType aktoerV2() {
+        Aktoer_v2PortType port = factory();
         STSClientConfig.configureRequestSamlToken(port);
         return port;
     }
 
     @SuppressWarnings("unchecked")
-    private AktoerV2 factory() {
-        return new WsClient<AktoerV2>()
-                .createPort(serviceUrl, AktoerV2.class, singletonList(new LogErrorHandler()));
+    private Aktoer_v2PortType factory() {
+        return new WsClient<Aktoer_v2PortType>()
+                .createPort(serviceUrl, Aktoer_v2PortType.class, singletonList(new LogErrorHandler()));
     }
 }
