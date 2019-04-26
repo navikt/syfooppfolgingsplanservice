@@ -51,6 +51,15 @@ public class OppfolgingsplanController {
         this.tiltakService = tiltakService;
     }
 
+    @PostMapping(path = "/avbryt")
+    public void avbryt(@PathVariable("id") Long id) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        oppfoelgingsdialogService.avbrytPlan(id, innloggetIdent);
+
+        metrikk.tellHendelse("avbryt_plan");
+    }
+
     @PostMapping(path = "/avvis")
     public void avvis(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
