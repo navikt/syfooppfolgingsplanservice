@@ -53,6 +53,21 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     }
 
     @Test
+    public void avbryt_som_bruker() {
+        oppfolgingsplanController.avbryt(oppfolgingsplanId);
+
+        verify(oppfoelgingsdialogService).avbrytPlan(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(metrikk).tellHendelse(anyString());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void avbryt_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.avbryt(oppfolgingsplanId);
+    }
+
+    @Test
     public void avvis_som_bruker() {
         oppfolgingsplanController.avvis(oppfolgingsplanId);
 
@@ -66,7 +81,6 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         oppfolgingsplanController.delMedNav(oppfolgingsplanId);
     }
-
 
     @Test
     public void delmednav_som_bruker() {
