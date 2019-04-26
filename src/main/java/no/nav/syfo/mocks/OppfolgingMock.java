@@ -63,6 +63,11 @@ public class OppfolgingMock implements SykefravaersoppfoelgingV1 {
     }
 
     @Override
+    public WSBerikNaermesteLedersAnsattBolkResponse berikNaermesteLedersAnsattBolk(WSBerikNaermesteLedersAnsattBolkRequest wsBerikNaermesteLedersAnsattBolkRequest) throws BerikNaermesteLedersAnsattBolkSikkerhetsbegrensning {
+        return null;
+    }
+
+    @Override
     public void ping() {
     }
 
