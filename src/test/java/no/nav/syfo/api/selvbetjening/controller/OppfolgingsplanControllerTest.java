@@ -83,6 +83,21 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     }
 
     @Test
+    public void delmedfastlege_som_bruker() {
+        oppfolgingsplanController.delMedFastlege(oppfolgingsplanId);
+
+        verify(oppfoelgingsdialogService).delMedFastlege(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(metrikk).tellHendelse(anyString());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void delmedfastlege_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.delMedFastlege(oppfolgingsplanId);
+    }
+
+    @Test
     public void delmednav_som_bruker() {
         oppfolgingsplanController.delMedNav(oppfolgingsplanId);
 
