@@ -1,4 +1,4 @@
-package no.nav.syfo.services;
+package no.nav.syfo.service;
 
 import no.nav.syfo.api.intern.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.domain.*;
@@ -7,7 +7,6 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.repository.dao.*;
-import no.nav.syfo.service.*;
 import no.nav.syfo.util.ToggleUtil;
 import org.junit.Before;
 import org.junit.Test;
