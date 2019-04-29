@@ -1,4 +1,4 @@
-package no.nav.syfo.services;
+package no.nav.syfo.service;
 
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.syfo.LocalApplication;
@@ -6,7 +6,6 @@ import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.repository.dao.*;
-import no.nav.syfo.service.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;

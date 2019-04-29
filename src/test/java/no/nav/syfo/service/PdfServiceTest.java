@@ -1,9 +1,8 @@
-package no.nav.syfo.services;
+package no.nav.syfo.service;
 
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.DokumentDAO;
-import no.nav.syfo.service.PdfService;
 import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;

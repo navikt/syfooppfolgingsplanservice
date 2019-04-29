@@ -1,8 +1,6 @@
-package no.nav.syfo.services;
+package no.nav.syfo.service;
 
 import no.nav.syfo.model.Stilling;
-import no.nav.syfo.service.AktoerService;
-import no.nav.syfo.service.ArbeidsforholdService;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.ArbeidsforholdV3;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.*;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.meldinger.FinnArbeidsforholdPrArbeidstakerResponse;
