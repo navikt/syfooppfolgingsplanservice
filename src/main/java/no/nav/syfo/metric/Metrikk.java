@@ -30,6 +30,16 @@ public class Metrikk {
         ).increment();
     }
 
+    public void tellHendelseMedTag(String navn, String tagKey, Object tagValue) {
+        registry.counter(
+                addPrefix(navn),
+                Tags.of(
+                        "type", "info",
+                        tagKey, tagValue.toString()
+                )
+        ).increment();
+    }
+
     public void tellHendelseMedAntall(String navn, long antall) {
         registry.counter(
                 addPrefix(navn),

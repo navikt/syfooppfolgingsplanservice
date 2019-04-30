@@ -69,6 +69,15 @@ public class OppfolgingsplanController {
         metrikk.tellHendelse("avvis_plan");
     }
 
+    @PostMapping(path = "/delmedfastlege")
+    public void delMedFastlege(@PathVariable("id") Long id) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        oppfoelgingsdialogService.delMedFastlege(id, innloggetIdent);
+
+        metrikk.tellHendelse("del_plan_med_fastlege");
+    }
+
     @PostMapping(path = "/delmednav")
     public void delMedNav(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
