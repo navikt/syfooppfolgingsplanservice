@@ -98,6 +98,26 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     }
 
     @Test
+    public void kopier_som_bruker() {
+        long nyPlanId = 1L;
+
+        when(oppfoelgingsdialogService.kopierOppfoelgingsdialog(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(nyPlanId);
+
+        long res = oppfolgingsplanController.kopier(oppfolgingsplanId);
+
+        verify(metrikk).tellHendelse(anyString());
+
+        assertEquals(res, nyPlanId);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void kopier_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.kopier(oppfolgingsplanId);
+    }
+
+    @Test
     public void lagrer_ny_arbeidsoppgave_som_bruker() {
         Long ressursId = 1L;
         RSArbeidsoppgave rsArbeidsoppgave = new RSArbeidsoppgave()

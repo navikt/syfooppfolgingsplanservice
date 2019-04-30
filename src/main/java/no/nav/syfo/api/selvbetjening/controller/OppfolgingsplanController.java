@@ -78,6 +78,17 @@ public class OppfolgingsplanController {
         metrikk.tellHendelse("del_plan_med_nav");
     }
 
+    @PostMapping(path = "/kopier", produces = APPLICATION_JSON_VALUE)
+    public long kopier(@PathVariable("id") Long id) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        long nyPlanId = oppfoelgingsdialogService.kopierOppfoelgingsdialog(id, innloggetIdent);
+
+        metrikk.tellHendelse("kopier_plan");
+
+        return nyPlanId;
+    }
+
     @PostMapping(path = "/lagreArbeidsoppgave", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public long lagreArbeidsoppgave(
             @PathVariable("id") Long id,
