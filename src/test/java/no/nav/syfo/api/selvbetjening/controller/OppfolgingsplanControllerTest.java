@@ -21,6 +21,7 @@ import static no.nav.syfo.mock.MockSelvbetjeningRS.rsTiltakLagreNytt;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
+import static no.nav.syfo.testhelper.UserConstants.LEDER_FNR;
 import static no.nav.syfo.util.MapUtil.map;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
@@ -110,6 +111,80 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         loggUtAlle(oidcRequestContextHolder);
 
         oppfolgingsplanController.delMedNav(oppfolgingsplanId);
+    }
+
+    @Test
+    public void godkjenn_plan_som_bruker() {
+        RSGyldighetstidspunkt gyldighetstidspunkt = new RSGyldighetstidspunkt();
+
+        RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "true", "arbeidstaker");
+
+        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, ARBEIDSTAKER_FNR, false);
+        verify(metrikk).tellHendelse(anyString());
+
+        assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
+    }
+
+    @Test
+    public void godkjenn_plan_som_bruker_tvungen() {
+        loggUtAlle(oidcRequestContextHolder);
+        loggInnBruker(oidcRequestContextHolder, LEDER_FNR);
+
+        RSGyldighetstidspunkt gyldighetstidspunkt = new RSGyldighetstidspunkt();
+
+        RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "tvungengodkjenning", "arbeidsgiver");
+
+        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true);
+        verify(metrikk).tellHendelse(anyString());
+
+        assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void godkjenn_plan_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.godkjenn(oppfolgingsplanId, new RSGyldighetstidspunkt(), "true", "arbeidsgiver");
+    }
+
+    @Test
+    public void godkjennsist_plan_som_bruker() {
+        RSGyldighetstidspunkt gyldighetstidspunkt = new RSGyldighetstidspunkt();
+
+        when(oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR)).thenReturn(gyldighetstidspunkt);
+
+        RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidstaker");
+
+        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, ARBEIDSTAKER_FNR, false);
+        verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR);
+        verify(metrikk).tellHendelse(anyString());
+
+        assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
+    }
+
+    @Test
+    public void godkjennsist_plan_som_arbeidsgiver() {
+        loggUtAlle(oidcRequestContextHolder);
+        loggInnBruker(oidcRequestContextHolder, LEDER_FNR);
+
+        RSGyldighetstidspunkt gyldighetstidspunkt = new RSGyldighetstidspunkt();
+
+        when(oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR)).thenReturn(gyldighetstidspunkt);
+
+        RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver");
+
+        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false);
+        verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR);
+        verify(metrikk).tellHendelse(anyString());
+
+        assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void godkjennsist_plan_ikke_innlogget_bruker() {
+        loggUtAlle(oidcRequestContextHolder);
+
+        oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver");
     }
 
     @Test

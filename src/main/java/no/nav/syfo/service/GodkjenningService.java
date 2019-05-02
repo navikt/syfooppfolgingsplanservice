@@ -1,6 +1,6 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.api.intern.domain.RSGyldighetstidspunkt;
+import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Kontaktinfo;
@@ -107,7 +107,7 @@ public class GodkjenningService {
     }
 
     @Transactional
-    public void godkjennOppfoelgingsdialog(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning) {
+    public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
 

@@ -445,7 +445,7 @@
                         <xsl:if test="kanGjennomfoeresArbeidsoppgaveListe">
                             <div class="blokk--l">
                                 <div class="bildeTittel">
-                                    <img class="ikon" src="img/kan.jpg" />
+                                    <img class="ikon" src="pdf/img/kan.jpg" />
                                     <h3 class="ikon-tittel">Arbeidsoppgaver som kan gjøres</h3>
                                 </div>
                                 <xsl:for-each select="kanGjennomfoeresArbeidsoppgaveListe">
@@ -460,7 +460,7 @@
                         <xsl:if test="kanGjennomfoeresMedTilretteleggingArbeidsoppgaveListe">
                             <div class="blokk--l">
                                 <div class="bildeTittel">
-                                    <img class="ikon" src="img/kanskje.jpg" />
+                                    <img class="ikon" src="pdf/img/kanskje.jpg" />
                                     <h3 class="ikon-tittel">Arbeidsoppgaver som kan gjøres med tilrettelegging</h3>
                                 </div>
                                 <xsl:for-each select="kanGjennomfoeresMedTilretteleggingArbeidsoppgaveListe">
@@ -492,7 +492,7 @@
                         <xsl:if test="kanIkkeGjennomfoeresArbeidsoppgaveListe">
                             <div class="blokk--l">
                                 <div class="bildeTittel">
-                                    <img class="ikon" src="img/kan_ikke.jpg" />
+                                    <img class="ikon" src="pdf/img/kan_ikke.jpg" />
                                     <h3>Arbeidsoppgaver som ikke kan gjøres</h3>
                                 </div>
                                 <xsl:for-each select="kanIkkeGjennomfoeresArbeidsoppgaveListe">
@@ -512,7 +512,7 @@
                         <xsl:if test="ikkeTattStillingTilArbeidsoppgaveListe">
                             <div class="blokk--l">
                                 <div class="bildeTittel">
-                                    <img class="ikon" src="img/varseltrekant.jpg" />
+                                    <img class="ikon" src="pdf/img/varseltrekant.jpg" />
                                     <h3 class="ikon-tittel">Arbeidsoppgaver som ikke er blitt vurdert</h3>
                                 </div>
                                 <xsl:for-each select="ikkeTattStillingTilArbeidsoppgaveListe">

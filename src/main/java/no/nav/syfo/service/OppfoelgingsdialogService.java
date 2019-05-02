@@ -1,8 +1,7 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant;
-import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
+import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Ansatt;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -22,8 +22,10 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER;
+import static no.nav.syfo.api.selvbetjening.mapper.RSBrukerOppfolgingsplanMapper.oppfolgingsplan2rs;
 import static no.nav.syfo.model.Varseltype.*;
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
+import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
 
 @Slf4j
@@ -349,6 +351,13 @@ public class OppfoelgingsdialogService {
         oppfoelingsdialogDAO.avbryt(oppfoelgingsdialog.id, innloggetAktoerId);
         long nyOppfoelgingsdialogId = opprettDialog(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, innloggetAktoerId);
         overfoerDataFraDialogTilNyDialog(oppfoelgingsdialogId, nyOppfoelgingsdialogId);
+    }
+    public RSGyldighetstidspunkt hentGyldighetstidspunktForGodkjentPlan(Long id, BrukerkontekstConstant arbeidsgiver, String innloggetIdent) {
+        RSBrukerOppfolgingsplan oppfoelgingsdialog = mapListe(hentAktoersOppfoelgingsdialoger(arbeidsgiver, innloggetIdent), oppfolgingsplan2rs)
+                .stream()
+                .filter(plan -> plan.id.equals(id))
+                .findFirst().orElseThrow(NotFoundException::new);
+        return oppfoelgingsdialog.godkjentPlan != null ? oppfoelgingsdialog.godkjentPlan.gyldighetstidspunkt : null;
     }
 
     public boolean harBrukerTilgangTilDialog(long oppfoelgingsdialogId, String fnr) {
