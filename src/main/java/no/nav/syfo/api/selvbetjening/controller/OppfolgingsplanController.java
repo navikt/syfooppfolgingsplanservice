@@ -2,8 +2,7 @@ package no.nav.syfo.api.selvbetjening.controller;
 
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
-import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave;
-import no.nav.syfo.api.selvbetjening.domain.RSTiltak;
+import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Tiltak;
 import no.nav.syfo.metric.Metrikk;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 
+import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
+import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER;
 import static no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.rs2arbeidsoppgave;
 import static no.nav.syfo.api.selvbetjening.mapper.RSTiltakMapper.rs2tiltak;
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
@@ -86,6 +87,52 @@ public class OppfolgingsplanController {
 
         metrikk.tellHendelse("del_plan_med_nav");
     }
+
+    @PostMapping(path = "/godkjenn", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public RSGyldighetstidspunkt godkjenn(
+            @PathVariable("id") Long id,
+            @RequestBody RSGyldighetstidspunkt rsGyldighetstidspunkt,
+            @RequestParam("status") String status,
+            @RequestParam("aktoer") String aktor
+
+    ) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, "tvungengodkjenning".equals(status));
+
+        metrikk.tellHendelse("godkjenn_plan");
+
+        if (rsGyldighetstidspunkt != null) {
+            return rsGyldighetstidspunkt;
+        }
+
+        return hentGyldighetstidspunktForPlan(id, aktor, innloggetIdent);
+    }
+
+    @PostMapping(path = "/godkjennsist",  produces = APPLICATION_JSON_VALUE)
+    public RSGyldighetstidspunkt godkjenn(
+            @PathVariable("id") Long id,
+            @RequestParam("status") String status,
+            @RequestParam("aktoer") String aktor
+
+    ) {
+        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+
+        godkjenningService.godkjennOppfolgingsplan(id, null, innloggetIdent, "tvungengodkjenning".equals(status));
+
+        metrikk.tellHendelse("godkjenn_plan_svar");
+
+        return hentGyldighetstidspunktForPlan(id, aktor, innloggetIdent);
+    }
+
+    private RSGyldighetstidspunkt hentGyldighetstidspunktForPlan(@PathVariable("id") Long id, @RequestParam("aktoer") String aktor, String innloggetIdent) {
+        if ("arbeidsgiver".equals(aktor)) {
+            return oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSGIVER, innloggetIdent);
+        } else {
+            return oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSTAKER, innloggetIdent);
+        }
+    }
+
 
     @PostMapping(path = "/kopier", produces = APPLICATION_JSON_VALUE)
     public long kopier(@PathVariable("id") Long id) {

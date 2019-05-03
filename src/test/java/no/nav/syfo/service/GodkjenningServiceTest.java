@@ -1,6 +1,6 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.api.intern.domain.RSGyldighetstidspunkt;
+import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.sykmelding.Periode;
 import no.nav.syfo.metric.Metrikk;
