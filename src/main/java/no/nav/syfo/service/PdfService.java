@@ -45,13 +45,13 @@ public class PdfService {
         this.metrikk = metrikk;
     }
 
-    public byte[] hentPdf(long oppfoelgingsdialogId, String fnr) {
-        if (!oppfoelgingsdialogService.harBrukerTilgangTilDialog(oppfoelgingsdialogId, fnr)) {
+    public byte[] hentPdf(long oppfolgingsplanId, String innloggetFnr) {
+        if (!oppfoelgingsdialogService.harBrukerTilgangTilDialog(oppfolgingsplanId, innloggetFnr)) {
             throw new ForbiddenException("Ikke tilgang");
         }
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        metrikk.tellAntallDagerSiden(oppfoelgingsdialog.opprettet, "antallDagerFraOpprettetTilPdf");
-        String dokumentUuid = godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(oppfoelgingsdialogId).get().dokumentUuid;
+        Oppfoelgingsdialog oppfolgingsplan = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfolgingsplanId);
+        metrikk.tellAntallDagerSiden(oppfolgingsplan.opprettet, "antallDagerFraOpprettetTilPdf");
+        String dokumentUuid = godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(oppfolgingsplanId).get().dokumentUuid;
 
         return dokumentDAO.hent(dokumentUuid);
     }
