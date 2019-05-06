@@ -2,11 +2,12 @@ package no.nav.syfo.api.selvbetjening.mapper;
 
 import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave;
 import no.nav.syfo.domain.Arbeidsoppgave;
+import no.nav.syfo.domain.Gjennomfoering;
 
 import java.util.function.Function;
 
+import static java.util.Optional.ofNullable;
 import static no.nav.syfo.api.selvbetjening.mapper.RSGjennomfoeringMapper.rs2gjennomfoering;
-import static no.nav.syfo.util.MapUtil.mapNullable;
 
 public class RSArbeidsoppgaveMapper {
 
@@ -14,5 +15,5 @@ public class RSArbeidsoppgaveMapper {
             new Arbeidsoppgave()
                     .id(rsArbeidsoppgave.arbeidsoppgaveId)
                     .navn(rsArbeidsoppgave.arbeidsoppgavenavn)
-                    .gjennomfoering(mapNullable(rsArbeidsoppgave.gjennomfoering, rs2gjennomfoering));
+                    .gjennomfoering(ofNullable(rsArbeidsoppgave.gjennomfoering).map(rs2gjennomfoering).orElse(new Gjennomfoering()));
 }
