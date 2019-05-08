@@ -98,7 +98,7 @@ public class OppfolgingsplanController {
     ) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, "tvungengodkjenning".equals(status));
+        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, "tvungenGodkjenning".equals(status));
 
         metrikk.tellHendelse("godkjenn_plan");
 
