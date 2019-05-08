@@ -2,6 +2,7 @@ package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.config.ws.wsconfig.SyfoOppfoelgingConfig;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
@@ -15,8 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Optional.of;
+import static java.util.stream.Collectors.toList;
 import static no.nav.syfo.mappers.ws.WSAnsattMapper.ws2ansatt;
 import static no.nav.syfo.mappers.ws.WSNaermesteLederMapper.ws2naermesteLeder;
+import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.oidc.OIDCUtil.getIssuerToken;
 import static no.nav.syfo.util.MapUtil.map;
 import static no.nav.syfo.util.MapUtil.mapListe;
@@ -82,5 +85,13 @@ public class NaermesteLederService {
                     "Parametere: aktoerId: {} virksomhetsnummer: {} av bruker ", aktoerId, virksomhetsnummer, e);
             throw e;
         }
+    }
+
+    public boolean erAktorLederForAktor(String naermesteLederAktorId, String ansattAktorId, String oidcIssuer) {
+        List<String> ansatteAktorId = hentAnsatte(naermesteLederAktorId, oidcIssuer).stream()
+                .map(Ansatt::aktoerId)
+                .collect(toList());
+
+        return ansatteAktorId.contains(ansattAktorId);
     }
 }
