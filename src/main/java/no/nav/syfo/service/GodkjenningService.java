@@ -5,6 +5,7 @@ import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Naermesteleder;
+import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.pdf.domain.*;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.repository.domain.Dokument;
@@ -242,7 +243,7 @@ public class GodkjenningService {
                 .withEvalueres(tilMuntligDatoAarFormat(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.evalueres))
                 .withGyldigfra(tilMuntligDatoAarFormat(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.fom))
                 .withGyldigtil(tilMuntligDatoAarFormat(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.tom))
-                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer), periode -> new SykeforloepsperioderXML()
+                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN), periode -> new SykeforloepsperioderXML()
                         .withFom(tilKortDato(periode.fom))
                         .withTom(tilKortDato(periode.tom))
                         .withAntallDager(antallDagerIPeriode(periode.fom, periode.tom))
@@ -333,7 +334,7 @@ public class GodkjenningService {
                 .withEvalueres(tilMuntligDatoAarFormat(gyldighetstidspunkt.evalueres()))
                 .withGyldigfra(tilMuntligDatoAarFormat(gyldighetstidspunkt.fom))
                 .withGyldigtil(tilMuntligDatoAarFormat(gyldighetstidspunkt.tom))
-                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer), periode -> new SykeforloepsperioderXML()
+                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN), periode -> new SykeforloepsperioderXML()
                         .withFom(tilKortDato(periode.fom))
                         .withTom(tilKortDato(periode.tom))
                         .withAntallDager(antallDagerIPeriode(periode.fom, periode.tom))

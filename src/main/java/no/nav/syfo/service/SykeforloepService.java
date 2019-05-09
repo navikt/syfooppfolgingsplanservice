@@ -1,9 +1,9 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.config.ws.wsconfig.SyfoOppfoelgingConfig;
 import no.nav.syfo.domain.sykmelding.Periode;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentSykeforlopperiodeSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.SykefravaersoppfoelgingV1;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.informasjon.WSSykeforlopperiode;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.WSHentSykeforlopperiodeRequest;
 import org.springframework.stereotype.Service;
@@ -16,20 +16,19 @@ import java.util.List;
 @Service
 public class SykeforloepService {
 
-    private SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1;
+    private final SyfoOppfoelgingConfig sykefravaersoppfoelgingConfig;
 
     @Inject
-    public SykeforloepService(SykefravaersoppfoelgingV1 sykefravaersoppfoelgingV1) {
-        this.sykefravaersoppfoelgingV1 = sykefravaersoppfoelgingV1;
+    public SykeforloepService(SyfoOppfoelgingConfig sykefravaersoppfoelgingConfig) {
+        this.sykefravaersoppfoelgingConfig = sykefravaersoppfoelgingConfig;
     }
 
-
-    public List<Periode> hentSykeforlopperiode(String aktoerid, String orgnr) {
+    public List<Periode> hentSykeforlopperiode(String aktoerid, String orgnr, String oidcIssuer) {
         try {
             List<Periode> sammenslaattePerioder = new ArrayList<>();
-            sykefravaersoppfoelgingV1.hentSykeforlopperiode(new WSHentSykeforlopperiodeRequest().withAktoerId(aktoerid).withOrgnummer(orgnr)).getSykeforlopperiodeListe()
+            sykefravaersoppfoelgingConfig.hentSykeforlopperiode(new WSHentSykeforlopperiodeRequest().withAktoerId(aktoerid).withOrgnummer(orgnr), oidcIssuer).getSykeforlopperiodeListe()
                     .stream()
-                    .map(wsSykeforlopperiode -> tilSykeforloepsPeriode(wsSykeforlopperiode))
+                    .map(this::tilSykeforloepsPeriode)
                     .forEach(periode -> {
                         Periode sistePeriode = !sammenslaattePerioder.isEmpty() ? sammenslaattePerioder.get(sammenslaattePerioder.size() - 1) : null;
                         if (sistePeriode == null || !skalSlaaesSammen(sistePeriode, periode)) {
