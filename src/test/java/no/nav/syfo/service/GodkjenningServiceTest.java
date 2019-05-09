@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
+import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.util.PropertyUtil.ENVIRONMENT_NAME;
 import static org.mockito.Mockito.*;
 
@@ -105,7 +106,7 @@ public class GodkjenningServiceTest {
         when(aktoerService.hentFnrForAktoer(anyString())).thenReturn("fnr");
         when(organisasjonService.finnVirksomhetsnavn(anyString())).thenReturn("Virksomhet");
         when(arbeidsforholdService.hentArbeidsforholdMedAktoerId(anyString(), any(), anyString())).thenReturn(Collections.emptyList());
-        when(sykeforloepService.hentSykeforlopperiode(anyString(), anyString())).thenReturn(
+        when(sykeforloepService.hentSykeforlopperiode(anyString(), anyString(), anyString())).thenReturn(
                 asList(new Periode()
                         .withFom(now().minusDays(2))
                         .withTom(now().plusDays(2))
