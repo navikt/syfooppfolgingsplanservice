@@ -7,13 +7,12 @@ import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.service.*;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
-import java.io.*;
+import java.io.IOException;
 
 import static java.lang.System.getProperty;
 import static no.nav.syfo.mockdata.MockData.mockPdf;
@@ -76,7 +75,7 @@ public class DokumentRessurs {
             return new Dokumentinfo().antallSider(2);
         }
         byte[] pdf = getPdf(oppfoelgingsdialogId);
-        return new Dokumentinfo().antallSider(hentAntallSiderIDokument(pdf));
+        return new Dokumentinfo().antallSider(pdfService.hentAntallSiderIDokument(pdf));
     }
 
     @Data
@@ -104,14 +103,4 @@ public class DokumentRessurs {
                 .map(dokumentService::hentDokument)
                 .orElseThrow(() -> new NotFoundException("Klarte ikke å hente ut godkjent plan for oppfølgingsdialogId " + oppfoelgingsdialogId));
     }
-
-    private int hentAntallSiderIDokument(byte[] pdf) {
-        InputStream is = new ByteArrayInputStream(pdf);
-        try {
-            return PDDocument.load(is).getNumberOfPages();
-        } catch (IOException e) {
-            return 1;
-        }
-    }
-
 }
