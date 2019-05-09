@@ -132,7 +132,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         RSGyldighetstidspunkt gyldighetstidspunkt = new RSGyldighetstidspunkt();
 
-        RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "tvungengodkjenning", "arbeidsgiver");
+        RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "tvungenGodkjenning", "arbeidsgiver");
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true);
         verify(metrikk).tellHendelse(anyString());
