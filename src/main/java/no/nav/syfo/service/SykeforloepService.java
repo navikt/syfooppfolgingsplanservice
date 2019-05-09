@@ -1,6 +1,7 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.syfo.config.ws.wsconfig.SyfoOppfoelgingConfig;
 import no.nav.syfo.domain.sykmelding.Periode;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentSykeforlopperiodeSikkerhetsbegrensning;
@@ -12,21 +13,29 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.syfo.oidc.OIDCUtil.getIssuerToken;
+
 @Slf4j
 @Service
 public class SykeforloepService {
 
+    private final OIDCRequestContextHolder contextHolder;
     private final SyfoOppfoelgingConfig sykefravaersoppfoelgingConfig;
 
     @Inject
-    public SykeforloepService(SyfoOppfoelgingConfig sykefravaersoppfoelgingConfig) {
+    public SykeforloepService(
+            OIDCRequestContextHolder contextHolder,
+            SyfoOppfoelgingConfig sykefravaersoppfoelgingConfig
+    ) {
+        this.contextHolder = contextHolder;
         this.sykefravaersoppfoelgingConfig = sykefravaersoppfoelgingConfig;
     }
 
     public List<Periode> hentSykeforlopperiode(String aktoerid, String orgnr, String oidcIssuer) {
         try {
             List<Periode> sammenslaattePerioder = new ArrayList<>();
-            sykefravaersoppfoelgingConfig.hentSykeforlopperiode(new WSHentSykeforlopperiodeRequest().withAktoerId(aktoerid).withOrgnummer(orgnr), oidcIssuer).getSykeforlopperiodeListe()
+            String oidcToken = getIssuerToken(this.contextHolder, oidcIssuer);
+            sykefravaersoppfoelgingConfig.hentSykeforlopperiode(new WSHentSykeforlopperiodeRequest().withAktoerId(aktoerid).withOrgnummer(orgnr), oidcToken).getSykeforlopperiodeListe()
                     .stream()
                     .map(this::tilSykeforloepsPeriode)
                     .forEach(periode -> {
