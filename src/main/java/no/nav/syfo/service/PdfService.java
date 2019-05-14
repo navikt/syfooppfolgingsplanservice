@@ -78,6 +78,15 @@ public class PdfService {
         return byteArrayOutputStream.toByteArray();
     }
 
+    public int hentAntallSiderIDokument(byte[] pdf) {
+        InputStream is = new ByteArrayInputStream(pdf);
+        try {
+            return PDDocument.load(is).getNumberOfPages();
+        } catch (IOException e) {
+            return 1;
+        }
+    }
+
     private RuntimeException throwOppfoelgingsplanUtenGodkjenPlan(Oppfoelgingsdialog oppfoelgingsdialog) {
         log.error("Oppfoelgingsplan med id {} har ikke godkjentPlan", oppfoelgingsdialog.id);
         return new RuntimeException("Oppfoelgingsplan har ikke godkjentPlan");
