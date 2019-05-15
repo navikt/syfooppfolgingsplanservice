@@ -1,7 +1,9 @@
 package no.nav.syfo.util;
 
 import static java.lang.System.getProperty;
+import static java.lang.System.getenv;
 import static no.nav.syfo.util.PropertyUtil.ENVIRONMENT_NAME;
+import static no.nav.syfo.util.PropertyUtil.FASIT_ENVIRONMENT_NAME;
 
 public final class ToggleUtil {
 
@@ -48,8 +50,7 @@ public final class ToggleUtil {
      * */
 
     public static boolean kjorerIProduksjon() {
-        return getProperty(ENVIRONMENT_NAME, ENVIRONMENT_MODE.p.name()).equalsIgnoreCase(ENVIRONMENT_MODE.p.name()) ||
-                getProperty(ENVIRONMENT_NAME).equalsIgnoreCase(ENVIRONMENT_MODE.q0.name());
+        return getProperty(FASIT_ENVIRONMENT_NAME).equalsIgnoreCase(ENVIRONMENT_MODE.p.name());
     }
 
     public static boolean kjorerLokalt() {

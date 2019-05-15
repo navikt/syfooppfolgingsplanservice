@@ -5,22 +5,24 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.*;
 import no.nav.syfo.oppgave.exceptions.OppgaveFinnerIkkeElementException;
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO;
+import no.nav.syfo.util.Toggle;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static java.lang.System.*;
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
-import static no.nav.syfo.util.PropertyUtil.ENVIRONMENT_NAME;
-import static no.nav.syfo.util.PropertyUtil.FASIT_ENVIRONMENT_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.util.Strings.isNullOrEmpty;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
+@SpringBootTest(classes = LocalApplication.class)
+@DirtiesContext
 public class OppgavelisteprosessorTest {
 
     @Mock
@@ -31,9 +33,16 @@ public class OppgavelisteprosessorTest {
     private OppgaveIterator oppgaveIterator;
     @Mock
     private Metrikk metrikk;
+    @Mock
+    private Toggle toggle;
 
     @InjectMocks
     private Oppgavelisteprosessor oppgavelisteprosessor;
+
+    @Before
+    public void setup() {
+        when(toggle.erPreprod()).thenReturn(true);
+    }
 
     @Test
     public void runIngenOppgaver() throws Exception {
@@ -109,7 +118,6 @@ public class OppgavelisteprosessorTest {
 
     @Test
     public void utfoererMaksLimitOppgaverIEnIterasjon() {
-
         final AsynkOppgave oppgave1 = new AsynkOppgave()
                 .id(1L)
                 .oppgavetype(Oppgavetype.OPPFOELGINGSDIALOG_SEND.name());
@@ -124,9 +132,6 @@ public class OppgavelisteprosessorTest {
 
     @Test
     public void sletterOppgaverSomHarFeilet100ganger() {
-        final String environmentName = getProperty(FASIT_ENVIRONMENT_NAME);
-        setProperty(ENVIRONMENT_NAME, "q1");
-
         final AsynkOppgave oppgave1 = new AsynkOppgave()
                 .id(1L)
                 .oppgavetype(OPPFOELGINGSDIALOG_SEND.name())
@@ -139,20 +144,13 @@ public class OppgavelisteprosessorTest {
         doThrow(OppgaveFinnerIkkeElementException.class).when(oppgaveelementprosessor).runTransactional(oppgave1);
 
         oppgavelisteprosessor.run();
-
-        if (isNullOrEmpty(environmentName)) {
-            clearProperty(ENVIRONMENT_NAME);
-        } else {
-            setProperty(ENVIRONMENT_NAME, environmentName);
-        }
 
         verify(asynkOppgaveDAO, times(1)).delete(any());
     }
 
     @Test
     public void sletterIkkeOppgaverHvisViKjorerIProduksjon() {
-        final String environmentName = getProperty(FASIT_ENVIRONMENT_NAME);
-        setProperty(ENVIRONMENT_NAME, "p");
+        when(toggle.erPreprod()).thenReturn(false);
 
         final AsynkOppgave oppgave1 = new AsynkOppgave()
                 .id(1L)
@@ -167,20 +165,11 @@ public class OppgavelisteprosessorTest {
 
         oppgavelisteprosessor.run();
 
-        if (isNullOrEmpty(environmentName)) {
-            clearProperty(ENVIRONMENT_NAME);
-        } else {
-            setProperty(ENVIRONMENT_NAME, environmentName);
-        }
-
         verify(asynkOppgaveDAO, never()).delete(any());
     }
 
     @Test
     public void sletterIkkeOppgaverSomHarFeiletMindreEnn100Ganger() {
-        final String environmentName = getProperty(ENVIRONMENT_NAME);
-        setProperty(ENVIRONMENT_NAME, "q1");
-
         final AsynkOppgave oppgave1 = new AsynkOppgave()
                 .id(1L)
                 .oppgavetype(OPPFOELGINGSDIALOG_SEND.name())
@@ -193,12 +182,6 @@ public class OppgavelisteprosessorTest {
         doThrow(OppgaveFinnerIkkeElementException.class).when(oppgaveelementprosessor).runTransactional(oppgave1);
 
         oppgavelisteprosessor.run();
-
-        if (isNullOrEmpty(environmentName)) {
-            clearProperty(ENVIRONMENT_NAME);
-        } else {
-            setProperty(ENVIRONMENT_NAME, environmentName);
-        }
 
         verify(asynkOppgaveDAO, never()).delete(any());
     }

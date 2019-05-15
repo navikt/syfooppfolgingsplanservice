@@ -121,7 +121,6 @@ fasitResources:
     resourceType: baseurl
     propertyMap:
       url: NO_NAV_SECURITY_OIDC_ISSUER_INTERN_DISCOVERYURL
-    resourceType: baseurl
   - alias: isso-host
     resourceType: baseurl
   - alias: isso-jwks

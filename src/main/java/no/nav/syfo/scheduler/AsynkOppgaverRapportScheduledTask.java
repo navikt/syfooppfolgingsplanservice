@@ -6,12 +6,15 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO;
 import no.nav.syfo.util.Toggle;
 import org.slf4j.Logger;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.List;
 
 @Slf4j
-public class AsynkOppgaverRapportScheduledTask implements ScheduledTask {
+@Component
+public class AsynkOppgaverRapportScheduledTask {
 
     private AsynkOppgaveDAO asynkOppgaveDAO;
 
@@ -21,12 +24,7 @@ public class AsynkOppgaverRapportScheduledTask implements ScheduledTask {
     @Inject
     private Toggle toggle;
 
-    @Override
-    public Logger getLog() {
-        return log;
-    }
-
-    @Override
+    @Scheduled(cron = "0 0 0 * * *")
     public void run() {
         if (toggle.toggleBatch()) {
             log.info("TRACEBATCH: run {}", this.getClass().getName());

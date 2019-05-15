@@ -48,7 +48,7 @@ public class ProsesserInnkomnePlaner {
     @Scheduled(fixedRate = 60000)
     public void opprettSaker() {
         if (toggle.toggleBatch()) {
-            log.info("TRACEBATCH: run {}", this.getClass().getName());
+            log.info("TRACEBATCH: run {} opprettSaker", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeSaksfoertePlaner()
                     .forEach(godkjentPlan -> {
@@ -62,8 +62,8 @@ public class ProsesserInnkomnePlaner {
 
     @Scheduled(fixedRate = 60000)
     public void opprettJournalposter() {
-        if (!"true".equals(getProperty(LOCAL_MOCK)) && toggleBatch()) {
-            log.info("TRACEBATCH: run {}", this.getClass().getName());
+        if (!"true".equals(getProperty(LOCAL_MOCK)) && toggle.toggleBatch()) {
+            log.info("TRACEBATCH: run {} opprettJournalposter", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeJournalfoertePlaner()
                     .forEach(godkjentPlan -> godkjentplanDAO.journalpostId(godkjentPlan.oppfoelgingsdialogId, journalService.opprettJournalpost(godkjentPlan.sakId, godkjentPlan))
