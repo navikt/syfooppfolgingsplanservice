@@ -73,6 +73,7 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
                     .orElse(now());
 
             metrikk.tellAntallDagerSiden(dato, "antallDagerOpprettetOppfoelgingsdialog");
+            metrikk.tellHendelse("plan_sendt_til_altinn");
         }
     }
 }

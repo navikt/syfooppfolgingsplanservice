@@ -2,6 +2,7 @@ package no.nav.syfo.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
 import no.nav.syfo.service.*;
@@ -13,7 +14,6 @@ import javax.inject.Inject;
 
 import static java.lang.System.getProperty;
 import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
-import static no.nav.syfo.util.ToggleUtil.toggleBatch;
 
 @Slf4j
 @Service
@@ -24,6 +24,7 @@ public class ProsesserInnkomnePlaner {
     private JournalService journalService;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private SakService sakService;
+    private final Metrikk metrikk;
     private Toggle toggle;
 
     @Inject
@@ -34,6 +35,7 @@ public class ProsesserInnkomnePlaner {
             JournalService journalService,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             SakService sakService,
+            Metrikk metrikk,
             Toggle toggle
     ) {
         this.aktoerService = aktoerService;
@@ -42,6 +44,7 @@ public class ProsesserInnkomnePlaner {
         this.journalService = journalService;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.sakService = sakService;
+        this.metrikk = metrikk;
         this.toggle = toggle;
     }
 
@@ -57,6 +60,8 @@ public class ProsesserInnkomnePlaner {
                         String sakId = sakService.finnSak(fnr).orElse(behandleSakService.opprettSak(fnr));
                         godkjentplanDAO.sakId(oppfoelgingsdialog.id, sakId);
                     });
+
+            metrikk.tellHendelse("plan_opprettet_sak_gosys");
         }
     }
 
@@ -68,6 +73,8 @@ public class ProsesserInnkomnePlaner {
             godkjentplanDAO.hentIkkeJournalfoertePlaner()
                     .forEach(godkjentPlan -> godkjentplanDAO.journalpostId(godkjentPlan.oppfoelgingsdialogId, journalService.opprettJournalpost(godkjentPlan.sakId, godkjentPlan))
                     );
+
+            metrikk.tellHendelse("plan_opprettet_journal_gosys");
         }
     }
 }

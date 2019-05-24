@@ -3,6 +3,7 @@ package no.nav.syfo.oppgave.oppfoelgingsdialog;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
 import no.nav.syfo.oppgave.Oppgavetype;
 import no.nav.syfo.service.*;
@@ -20,6 +21,7 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
     private final JuridiskLoggService juridiskLoggService;
     private final OppfoelgingsdialogService oppfoelgingsdialogService;
     private final PdfService pdfService;
+    private final Metrikk metrikk;
     private final Toggle toggle;
 
     @Inject
@@ -27,11 +29,13 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
             JuridiskLoggService juridiskLoggService,
             OppfoelgingsdialogService oppfoelgingsdialogService,
             PdfService pdfService,
+            Metrikk metrikk,
             Toggle toggle
     ) {
         this.juridiskLoggService = juridiskLoggService;
         this.oppfoelgingsdialogService = oppfoelgingsdialogService;
         this.pdfService = pdfService;
+        this.metrikk = metrikk;
         this.toggle = toggle;
     }
 
@@ -52,6 +56,8 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
             OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn = new OppfoelgingsdialogAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
 
             juridiskLoggService.loggSendOppfoelgingsdialogTilAltinn(oppfoelgingsdialogAltinn);
+
+            metrikk.tellHendelse("logget_plan_sendt_til_altinn");
         }
     }
 }
