@@ -1,6 +1,7 @@
 package no.nav.syfo;
 
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbLoggSendOppfoelgingsdialogTilAltinn;
 import no.nav.syfo.service.*;
 import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
@@ -24,6 +25,8 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinnTest {
     private OppfoelgingsdialogService oppfoelgingsdialogService;
     @Mock
     private JuridiskLoggService juridiskLoggService;
+    @Mock
+    private Metrikk metrikk;
     @Mock
     private Toggle toggle;
     @Mock
