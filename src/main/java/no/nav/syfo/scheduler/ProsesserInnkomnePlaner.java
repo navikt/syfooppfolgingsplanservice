@@ -59,9 +59,8 @@ public class ProsesserInnkomnePlaner {
                         String fnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.arbeidstaker.aktoerId);
                         String sakId = sakService.finnSak(fnr).orElse(behandleSakService.opprettSak(fnr));
                         godkjentplanDAO.sakId(oppfoelgingsdialog.id, sakId);
+                        metrikk.tellHendelse("plan_opprettet_sak_gosys");
                     });
-
-            metrikk.tellHendelse("plan_opprettet_sak_gosys");
         }
     }
 
@@ -71,10 +70,10 @@ public class ProsesserInnkomnePlaner {
             log.info("TRACEBATCH: run {} opprettJournalposter", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeJournalfoertePlaner()
-                    .forEach(godkjentPlan -> godkjentplanDAO.journalpostId(godkjentPlan.oppfoelgingsdialogId, journalService.opprettJournalpost(godkjentPlan.sakId, godkjentPlan))
-                    );
-
-            metrikk.tellHendelse("plan_opprettet_journal_gosys");
+                    .forEach(godkjentPlan -> {
+                        godkjentplanDAO.journalpostId(godkjentPlan.oppfoelgingsdialogId, journalService.opprettJournalpost(godkjentPlan.sakId, godkjentPlan));
+                        metrikk.tellHendelse("plan_opprettet_journal_gosys");
+                    });
         }
     }
 }
