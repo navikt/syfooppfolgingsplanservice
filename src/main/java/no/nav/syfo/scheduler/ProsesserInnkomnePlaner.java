@@ -50,7 +50,7 @@ public class ProsesserInnkomnePlaner {
 
     @Scheduled(fixedRate = 60000)
     public void opprettSaker() {
-        if (toggle.toggleBatch()) {
+        if (toggle.toggleBatchSak()) {
             log.info("TRACEBATCH: run {} opprettSaker", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeSaksfoertePlaner()
@@ -66,7 +66,7 @@ public class ProsesserInnkomnePlaner {
 
     @Scheduled(fixedRate = 60000)
     public void opprettJournalposter() {
-        if (!"true".equals(getProperty(LOCAL_MOCK)) && toggle.toggleBatch()) {
+        if (!"true".equals(getProperty(LOCAL_MOCK)) && toggle.toggleBatchSak()) {
             log.info("TRACEBATCH: run {} opprettJournalposter", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeJournalfoertePlaner()
