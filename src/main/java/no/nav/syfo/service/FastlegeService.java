@@ -56,6 +56,9 @@ public class FastlegeService {
             } else {
                 throw e;
             }
+        } catch (Exception e) {
+            tellPlanDeltMedFastlegeKall(false);
+            throw e;
         }
     }
 
