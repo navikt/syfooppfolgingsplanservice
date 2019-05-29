@@ -1,4 +1,4 @@
-image: docker.adeo.no:5000/digisyfo/syfooppfolgingsplanservice
+image: "repo.adeo.no:5443/syfooppfolgingsplanservice"
 name: syfooppfolgingsplanservice
 team: teamsykefravr
 replicas:

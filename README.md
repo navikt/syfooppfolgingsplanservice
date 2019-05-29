@@ -7,7 +7,7 @@ Start opp via `LocalApplication.main`. Kjører på port 8583.
 
 
 ## Veien til prod
-Bygg og Pipeline jobber ligger i jenkins: https://ci.adeo.no/job/digisyfo/job/syfooppfolgingsplanservice/
+Bygg og Pipeline jobber ligger i jenkins: https://jenkins-digisyfo.adeo.no/job/digisyfo/job/syfooppfolgingsplanservice/
 
 
 ## Database
