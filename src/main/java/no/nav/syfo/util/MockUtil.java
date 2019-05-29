@@ -19,6 +19,6 @@ public class MockUtil {
                 .map(whitelist -> whitelist.contains(orgnummer))
                 .filter(Boolean::booleanValue)
                 .map(b -> orgnummer)
-                .orElse("910067494");
+                .orElse(ofNullable(getenv(ALTINN_TEST_WHITELIST_ORGNR)).orElse(orgnummer));
     }
 }
