@@ -109,7 +109,8 @@ public class ControllerExceptionHandler {
         metrikk.tellHttpKall(status.value());
 
         if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
-            log.error("Det skjedde en uventet feil: ", ex);
+            log.error("Uventet feil: {} : {}", ex.getClass().toString(), ex.getMessage(), ex);
+            ex.getLocalizedMessage();
             request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
         }
 
