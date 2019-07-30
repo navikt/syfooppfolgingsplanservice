@@ -7,6 +7,7 @@ import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.repository.dao.*;
+import no.nav.syfo.util.ConflictException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -182,7 +183,8 @@ public class OppfoelgingsdialogService {
         }
 
         if (parteneHarEkisterendeAktivDialog(sykmeldtAktoerId, virksomhetsnummer)) {
-            throw new RuntimeException("Kan ikke opprette en dialog når det allerede eksisterer en mellom partene!");
+            log.warn("Kan ikke opprette en plan når det allerede eksisterer en aktiv plan mellom partene!");
+            throw new ConflictException();
         }
 
         return opprettDialog(sykmeldtAktoerId, virksomhetsnummer, innloggetAktoerId);
@@ -352,6 +354,7 @@ public class OppfoelgingsdialogService {
         long nyOppfoelgingsdialogId = opprettDialog(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, innloggetAktoerId);
         overfoerDataFraDialogTilNyDialog(oppfoelgingsdialogId, nyOppfoelgingsdialogId);
     }
+
     public RSGyldighetstidspunkt hentGyldighetstidspunktForGodkjentPlan(Long id, BrukerkontekstConstant arbeidsgiver, String innloggetIdent) {
         RSBrukerOppfolgingsplan oppfoelgingsdialog = mapListe(hentAktoersOppfoelgingsdialoger(arbeidsgiver, innloggetIdent), oppfolgingsplan2rs)
                 .stream()
