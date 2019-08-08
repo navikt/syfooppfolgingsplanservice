@@ -26,6 +26,7 @@ srvsyfooppfolgingsplanservice:
   username: "username"
   password: "1234"
 
+elector.path: "www.kanskje.no"
 
 #no.nav.security.oidc:
 #  issuers: selvbetjening,intern

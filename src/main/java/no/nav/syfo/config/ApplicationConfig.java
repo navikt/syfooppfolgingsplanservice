@@ -37,19 +37,25 @@ public class ApplicationConfig {
     }
 
     @Bean
+    @Primary
     public RestTemplate restTemplate(ClientHttpRequestInterceptor... interceptors) {
         RestTemplate template = new RestTemplate();
         template.setInterceptors(asList(interceptors));
         return template;
     }
 
+    @Bean(name = "kubernetes")
+    public RestTemplate restTemplateKubernetes() {
+        return new RestTemplate();
+    }
+
     @Bean
     FilterRegistrationBean<AuthorizationFilterFeed> feedFilter() {
-        FilterRegistrationBean<AuthorizationFilterFeed> registrationBean =  new FilterRegistrationBean<>();
+        FilterRegistrationBean<AuthorizationFilterFeed> registrationBean = new FilterRegistrationBean<>();
 
         registrationBean.setFilter(new AuthorizationFilterFeed());
         registrationBean.addUrlPatterns("/api/system/feed/*");
 
-        return  registrationBean;
+        return registrationBean;
     }
 }
