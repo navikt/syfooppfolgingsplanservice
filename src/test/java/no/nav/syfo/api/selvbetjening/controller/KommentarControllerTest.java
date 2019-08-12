@@ -37,7 +37,7 @@ public class KommentarControllerTest extends AbstractRessursTilgangTest {
         kommentarController.slettKommentar(kommentarId);
 
         verify(kommentarService).slettKommentar(kommentarId, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("slett_kommentar");
     }
 
     @Test(expected = RuntimeException.class)

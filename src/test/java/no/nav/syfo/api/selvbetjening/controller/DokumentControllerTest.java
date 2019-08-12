@@ -71,7 +71,7 @@ public class DokumentControllerTest extends AbstractRessursTilgangTest {
             e.printStackTrace();
         }
 
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("hent_sidebilde");
 
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(pdf, response.getBody());
@@ -99,7 +99,7 @@ public class DokumentControllerTest extends AbstractRessursTilgangTest {
 
         String forventetUrl = "https://syfoapi.nav.no/syfooppfolgingsplanservice/api/dokument/" + oppfolgingsplanId + "/side/";
 
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("hent_pdfurler");
 
         assertEquals(sideantall, returnertListe.size());
 

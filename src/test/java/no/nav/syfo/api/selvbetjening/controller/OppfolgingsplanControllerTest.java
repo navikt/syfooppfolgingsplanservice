@@ -195,7 +195,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         long res = oppfolgingsplanController.kopier(oppfolgingsplanId);
 
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("kopier_plan");
 
         assertEquals(res, nyPlanId);
     }
@@ -305,7 +305,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         oppfolgingsplanController.foresporRevidering(oppfolgingsplanId);
 
         verify(oppfoelgingsdialogService).foresporRevidering(oppfolgingsplanId, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("forespor_revidering");
     }
 
     @Test(expected = RuntimeException.class)
@@ -320,7 +320,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         oppfolgingsplanController.nullstillGodkjenning(oppfolgingsplanId);
 
         verify(oppfoelgingsdialogService).nullstillGodkjenning(oppfolgingsplanId, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("nullstill_godkjenning");
     }
 
     @Test(expected = RuntimeException.class)
@@ -335,7 +335,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         oppfolgingsplanController.sett(oppfolgingsplanId);
 
         verify(oppfoelgingsdialogService).oppdaterSistInnlogget(oppfolgingsplanId, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("sett_plan");
     }
 
     @Test(expected = RuntimeException.class)
@@ -350,7 +350,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         oppfolgingsplanController.samtykk(oppfolgingsplanId, true);
 
         verify(samtykkeService).giSamtykke(oppfolgingsplanId, ARBEIDSTAKER_FNR, true);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("samtykk_plan");
     }
 
     @Test(expected = RuntimeException.class)

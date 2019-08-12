@@ -68,7 +68,7 @@ public class TiltakControllerTest extends AbstractRessursTilgangTest {
 
 
         verify(kommentarService).lagreKommentar(eq(tiltakId), any(Kommentar.class), eq(ARBEIDSTAKER_FNR));
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("lagre_kommentar");
 
         assertEquals(res, kommentarId);
     }

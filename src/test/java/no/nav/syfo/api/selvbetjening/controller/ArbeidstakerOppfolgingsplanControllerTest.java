@@ -40,7 +40,7 @@ public class ArbeidstakerOppfolgingsplanControllerTest extends AbstractRessursTi
         arbeidstakerOppfolgingsplanController.hentArbeidstakersOppfolgingsplaner();
 
         verify(oppfoelgingsdialogService).hentAktoersOppfoelgingsdialoger(ARBEIDSTAKER, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("hent_oppfolgingsplan_at");
     }
 
     @Test(expected = RuntimeException.class)
@@ -62,7 +62,7 @@ public class ArbeidstakerOppfolgingsplanControllerTest extends AbstractRessursTi
         Long res = arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(rsOpprettOppfoelgingsdialog);
 
         verify(oppfoelgingsdialogService).opprettOppfoelgingsdialog(rsOpprettOppfoelgingsdialog, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("opprett_oppfolgingsplan_at");
 
         assertEquals(res, ressursId);
     }
