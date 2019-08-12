@@ -58,7 +58,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         oppfolgingsplanController.avbryt(oppfolgingsplanId);
 
         verify(oppfoelgingsdialogService).avbrytPlan(oppfolgingsplanId, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("avbryt_plan");
     }
 
     @Test(expected = RuntimeException.class)
@@ -73,7 +73,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         oppfolgingsplanController.avvis(oppfolgingsplanId);
 
         verify(godkjenningService).avvisGodkjenning(oppfolgingsplanId, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("avvis_plan");
     }
 
     @Test(expected = RuntimeException.class)
@@ -88,7 +88,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         oppfolgingsplanController.delMedFastlege(oppfolgingsplanId);
 
         verify(oppfoelgingsdialogService).delMedFastlege(oppfolgingsplanId, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("del_plan_med_fastlege");
     }
 
     @Test(expected = RuntimeException.class)
@@ -103,7 +103,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         oppfolgingsplanController.delMedNav(oppfolgingsplanId);
 
         verify(oppfoelgingsdialogService).delMedNav(oppfolgingsplanId, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("del_plan_med_nav");
     }
 
     @Test(expected = RuntimeException.class)
@@ -120,7 +120,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "true", "arbeidstaker");
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, ARBEIDSTAKER_FNR, false);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("godkjenn_plan");
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -135,7 +135,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "tvungenGodkjenning", "arbeidsgiver");
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("godkjenn_plan");
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -157,7 +157,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, ARBEIDSTAKER_FNR, false);
         verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("godkjenn_plan_svar");
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -175,7 +175,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false);
         verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR);
-        verify(metrikk).tellHendelse(anyString());
+        verify(metrikk).tellHendelse("godkjenn_plan_svar");
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
