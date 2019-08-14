@@ -22,6 +22,7 @@ public class ProsesserInnkomnePlaner {
     private BehandleSakService behandleSakService;
     private GodkjentplanDAO godkjentplanDAO;
     private JournalService journalService;
+    private LeaderElectionService leaderElectionService;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private SakService sakService;
     private final Metrikk metrikk;
@@ -33,6 +34,7 @@ public class ProsesserInnkomnePlaner {
             BehandleSakService behandleSakService,
             GodkjentplanDAO godkjentplanDAO,
             JournalService journalService,
+            LeaderElectionService leaderElectionService,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             SakService sakService,
             Metrikk metrikk,
@@ -42,6 +44,7 @@ public class ProsesserInnkomnePlaner {
         this.behandleSakService = behandleSakService;
         this.godkjentplanDAO = godkjentplanDAO;
         this.journalService = journalService;
+        this.leaderElectionService = leaderElectionService;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.sakService = sakService;
         this.metrikk = metrikk;
@@ -50,7 +53,7 @@ public class ProsesserInnkomnePlaner {
 
     @Scheduled(fixedRate = 60000)
     public void opprettSaker() {
-        if (toggle.toggleBatchSak()) {
+        if (leaderElectionService.isLeader() && toggle.toggleBatchSak()) {
             log.info("TRACEBATCH: run {} opprettSaker", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeSaksfoertePlaner()
@@ -66,7 +69,7 @@ public class ProsesserInnkomnePlaner {
 
     @Scheduled(fixedRate = 60000)
     public void opprettJournalposter() {
-        if (!"true".equals(getProperty(LOCAL_MOCK)) && toggle.toggleBatchSak()) {
+        if (leaderElectionService.isLeader() && !"true".equals(getProperty(LOCAL_MOCK)) && toggle.toggleBatchSak()) {
             log.info("TRACEBATCH: run {} opprettJournalposter", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeJournalfoertePlaner()

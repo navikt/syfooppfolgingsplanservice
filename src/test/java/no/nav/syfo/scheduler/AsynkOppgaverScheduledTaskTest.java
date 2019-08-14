@@ -1,6 +1,8 @@
 package no.nav.syfo.scheduler;
 
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Oppgavelisteprosessor;
+import no.nav.syfo.service.LeaderElectionService;
 import no.nav.syfo.util.Toggle;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +21,10 @@ public class AsynkOppgaverScheduledTaskTest {
     private Toggle toggle;
     @Mock
     private Oppgavelisteprosessor oppgavelisteprosessor;
+    @Mock
+    private LeaderElectionService leaderElectionService;
+    @Mock
+    private Metrikk metrikk;
 
     @InjectMocks
     private AsynkOppgaverScheduledTask asynkOppgaverScheduledTask;
@@ -26,6 +32,7 @@ public class AsynkOppgaverScheduledTaskTest {
     @Before
     public void setup() {
         when(toggle.toggleBatch()).thenReturn(true);
+        when(leaderElectionService.isLeader()).thenReturn(true);
     }
 
     @Test
@@ -33,5 +40,7 @@ public class AsynkOppgaverScheduledTaskTest {
         asynkOppgaverScheduledTask.run();
 
         verify(oppgavelisteprosessor).run();
+        verify(metrikk).tellHendelse("kanskje_AsynkOppgave");
+        verify(metrikk).tellHendelse("kjorer_AsynkOppgave");
     }
 }
