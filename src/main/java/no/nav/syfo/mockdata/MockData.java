@@ -1,17 +1,14 @@
 package no.nav.syfo.mockdata;
 
 import no.nav.syfo.api.intern.domain.*;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static javax.ws.rs.core.Response.ok;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.http.MediaType.APPLICATION_PDF;
 
