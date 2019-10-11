@@ -17,8 +17,8 @@ public class LocalApplicationConfig {
 
     public LocalApplicationConfig(Environment environment) {
         System.setProperty("SECURITYTOKENSERVICE_URL", requireNonNull(environment.getProperty("securitytokenservice.url")));
-        System.setProperty("SRVSYFOOPPFOLGINGSPLANSERVICE_USERNAME", requireNonNull(environment.getProperty("srvsyfooppfolgingsplanservice.username")));
-        System.setProperty("SRVSYFOOPPFOLGINGSPLANSERVICE_PASSWORD", requireNonNull(environment.getProperty("srvsyfooppfolgingsplanservice.password")));
+        System.setProperty("SRV_USERNAME", requireNonNull(environment.getProperty("srvsyfooppfolgingsplanservice.username")));
+        System.setProperty("SRV_PASSWORD", requireNonNull(environment.getProperty("srvsyfooppfolgingsplanservice.password")));
 
         System.setProperty(FASIT_ENVIRONMENT_NAME, ToggleUtil.ENVIRONMENT_MODE.q1.name());
 

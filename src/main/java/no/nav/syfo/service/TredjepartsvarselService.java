@@ -31,11 +31,11 @@ public class TredjepartsvarselService {
     }
 
     public void sendVarselTilNaermesteLeder(Varseltype varseltype, Naermesteleder naermesteleder, Long oppfoelgingsdialogId) {
-        List<Parameter> parametere = asList(
+        List<WSParameter> parametere = asList(
                 createParameter("url", tjenesterUrl + "/sykefravaerarbeidsgiver/"),
                 createParameter("dittnavUrl", tjenesterUrl + "/sykefravaerarbeidsgiver/" + naermesteleder.naermesteLederAktoerId + "/oppfolgingsplaner/" + oppfoelgingsdialogId)
         );
-        ServicemeldingMedKontaktinformasjon melding = new ServicemeldingMedKontaktinformasjon();
+        WSServicemeldingMedKontaktinformasjon melding = new WSServicemeldingMedKontaktinformasjon();
         populerServiceMelding(melding, kontaktinformasjon(naermesteleder), naermesteleder, varseltype, parametere);
 
 
@@ -43,18 +43,18 @@ public class TredjepartsvarselService {
         tredjepartsvarselqueue.send(messageCreator(xml, randomUUID().toString()));
     }
 
-    private List<Kontaktinformasjon> kontaktinformasjon(Naermesteleder tredjepartsKontaktinfo) {
+    private List<WSKontaktinformasjon> kontaktinformasjon(Naermesteleder tredjepartsKontaktinfo) {
         return asList(
                 opprettKontaktinformasjon(tredjepartsKontaktinfo.epost, "EPOST"),
                 opprettKontaktinformasjon(tredjepartsKontaktinfo.mobil, "SMS")
         );
     }
 
-    private void populerServiceMelding(ServicemeldingMedKontaktinformasjon servicemeldingMedKontaktinformasjon,
-                                       List<Kontaktinformasjon> kontaktinformasjon,
+    private void populerServiceMelding(WSServicemeldingMedKontaktinformasjon servicemeldingMedKontaktinformasjon,
+                                       List<WSKontaktinformasjon> kontaktinformasjon,
                                        Naermesteleder naermesteleder,
                                        Varseltype varseltype,
-                                       List<Parameter> parametere) {
+                                       List<WSParameter> parametere) {
         servicemeldingMedKontaktinformasjon.setMottaker(aktoer(naermesteleder.naermesteLederAktoerId));
         servicemeldingMedKontaktinformasjon.setTilhoerendeOrganisasjon(organisasjon(naermesteleder.orgnummer));
         servicemeldingMedKontaktinformasjon.setVarseltypeId(varseltype.name());
@@ -62,33 +62,33 @@ public class TredjepartsvarselService {
         servicemeldingMedKontaktinformasjon.getKontaktinformasjonListe().addAll(kontaktinformasjon);
     }
 
-    private Kontaktinformasjon opprettKontaktinformasjon(String kontaktinfo, String type) {
-        Kommunikasjonskanaler kanal = new Kommunikasjonskanaler();
+    private WSKontaktinformasjon opprettKontaktinformasjon(String kontaktinfo, String type) {
+        WSKommunikasjonskanaler kanal = new WSKommunikasjonskanaler();
         kanal.setValue(type);
 
-        Kontaktinformasjon kontaktinformasjon = new Kontaktinformasjon();
+        WSKontaktinformasjon kontaktinformasjon = new WSKontaktinformasjon();
         kontaktinformasjon.setKanal(kanal);
         kontaktinformasjon.setKontaktinformasjon(kontaktinfo);
 
         return kontaktinformasjon;
     }
 
-    private Organisasjon organisasjon(String orgnummer) {
-        Organisasjon organisasjon = new Organisasjon();
+    private WSOrganisasjon organisasjon(String orgnummer) {
+        WSOrganisasjon organisasjon = new WSOrganisasjon();
         organisasjon.setOrgnummer(orgnummer);
 
         return organisasjon;
     }
 
-    private Aktoer aktoer(String aktoerId) {
-        AktoerId aktoer = new AktoerId();
+    private WSAktoer aktoer(String aktoerId) {
+        WSAktoerId aktoer = new WSAktoerId();
         aktoer.setAktoerId(aktoerId);
 
         return aktoer;
     }
 
-    private Parameter createParameter(String key, String value) {
-        Parameter urlParameter = new Parameter();
+    private WSParameter createParameter(String key, String value) {
+        WSParameter urlParameter = new WSParameter();
         urlParameter.setKey(key);
         urlParameter.setValue(value);
         return urlParameter;

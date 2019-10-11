@@ -1,12 +1,9 @@
 package no.nav.syfo.mq.mock;
 
-import lombok.extern.slf4j.Slf4j;
-
 import javax.jms.*;
 import java.io.Serializable;
 import java.util.Enumeration;
 
-@Slf4j
 public class SessionMock implements Session {
     private String textMessage;
     private String callId;

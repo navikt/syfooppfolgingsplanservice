@@ -1,11 +1,14 @@
 package no.nav.syfo.util;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static no.nav.syfo.repository.DbUtil.sanitizeUserInput;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(SpringRunner.class)
 public class DbUtilTest {
 
     @Test

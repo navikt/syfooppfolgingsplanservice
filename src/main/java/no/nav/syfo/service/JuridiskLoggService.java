@@ -20,10 +20,10 @@ public class JuridiskLoggService {
     @Value("${lagrejuridisklogg.rest.url}")
     private String altinnUrl;
 
-    @Value("${srvsyfooppfolgingsplanservice.username}")
+    @Value("${srv.username}")
     private String altinnUsername;
 
-    @Value("${srvsyfooppfolgingsplanservice.password}")
+    @Value("${srv.password}")
     private String systemPassword;
 
     public void loggSendOppfoelgingsdialogTilAltinn(OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn) {

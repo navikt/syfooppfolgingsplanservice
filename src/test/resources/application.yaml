@@ -61,11 +61,13 @@ virksomhet:
   person.v3.endpointurl: "personv3.url"
   sak.v1.endpointurl: "sak.url"
 
-fasit.environment.name: 'local'
+nais.cluster.name: 'local'
 environment.name: 'dev'
 
 altinnUser.username: altinnusr
 altinnUser.password: altinnpassword
+srv.username: srvusr
+srv.password: srvpassword
 srvsyfooppfolgingsplanservice.username: srvusr
 srvsyfooppfolgingsplanservice.password: srvpassword
 
