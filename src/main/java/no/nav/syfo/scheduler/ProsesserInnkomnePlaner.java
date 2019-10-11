@@ -6,7 +6,6 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
 import no.nav.syfo.service.*;
-import no.nav.syfo.util.Toggle;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,6 @@ public class ProsesserInnkomnePlaner {
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private SakService sakService;
     private final Metrikk metrikk;
-    private Toggle toggle;
 
     @Inject
     public ProsesserInnkomnePlaner(
@@ -37,8 +35,7 @@ public class ProsesserInnkomnePlaner {
             LeaderElectionService leaderElectionService,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             SakService sakService,
-            Metrikk metrikk,
-            Toggle toggle
+            Metrikk metrikk
     ) {
         this.aktoerService = aktoerService;
         this.behandleSakService = behandleSakService;
@@ -48,12 +45,11 @@ public class ProsesserInnkomnePlaner {
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.sakService = sakService;
         this.metrikk = metrikk;
-        this.toggle = toggle;
     }
 
     @Scheduled(fixedRate = 60000)
     public void opprettSaker() {
-        if (leaderElectionService.isLeader() && toggle.toggleBatchSak()) {
+        if (leaderElectionService.isLeader()) {
             log.info("TRACEBATCH: run {} opprettSaker", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeSaksfoertePlaner()
@@ -69,7 +65,7 @@ public class ProsesserInnkomnePlaner {
 
     @Scheduled(fixedRate = 60000)
     public void opprettJournalposter() {
-        if (leaderElectionService.isLeader() && !"true".equals(getProperty(LOCAL_MOCK)) && toggle.toggleBatchSak()) {
+        if (leaderElectionService.isLeader() && !"true".equals(getProperty(LOCAL_MOCK))) {
             log.info("TRACEBATCH: run {} opprettJournalposter", this.getClass().getName());
 
             godkjentplanDAO.hentIkkeJournalfoertePlaner()

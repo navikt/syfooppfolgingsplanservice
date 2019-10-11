@@ -5,7 +5,6 @@ import no.nav.syfo.domain.AsynkOppgave;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO;
 import no.nav.syfo.service.LeaderElectionService;
-import no.nav.syfo.util.Toggle;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -22,14 +21,11 @@ public class AsynkOppgaverRapportScheduledTask {
     private Metrikk metrikk;
 
     @Inject
-    private Toggle toggle;
-
-    @Inject
     private LeaderElectionService leaderElectionService;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void run() {
-        if (leaderElectionService.isLeader() && toggle.toggleBatch()) {
+        if (leaderElectionService.isLeader()) {
             log.info("TRACEBATCH: run {}", this.getClass().getName());
 
             final List<AsynkOppgave> asynkOppgaver = asynkOppgaveDAO.finnOppgaver();

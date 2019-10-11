@@ -5,9 +5,7 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbSendOppfoelgingsdialogTilAltinn;
 import no.nav.syfo.service.*;
 import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
-import no.nav.syfo.util.Toggle;
 import no.nav.syfo.ws.AltinnConsumer;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -34,15 +32,8 @@ public class JobbSendOppfoelgingsdialogTilAltinnTest {
     private AltinnConsumer altinnConsumer;
     @Mock
     private AktoerService aktoerService;
-    @Mock
-    private Toggle toggle;
     @InjectMocks
     private JobbSendOppfoelgingsdialogTilAltinn jobbSendOppfoelgingsdialogTilAltinn;
-
-    @Before
-    public void setup() {
-        when(toggle.toggleBatch()).thenReturn(true);
-    }
 
     @Test
     public void utfoerOppgaveSendOppfoelgingsdialogOppgave() throws Exception {

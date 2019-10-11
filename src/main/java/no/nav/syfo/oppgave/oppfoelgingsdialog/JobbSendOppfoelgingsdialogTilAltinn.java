@@ -7,7 +7,6 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
 import no.nav.syfo.oppgave.Oppgavetype;
 import no.nav.syfo.service.*;
-import no.nav.syfo.util.Toggle;
 import no.nav.syfo.ws.AltinnConsumer;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +27,6 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
     private final Metrikk metrikk;
     private final OppfoelgingsdialogService oppfoelgingsdialogService;
     private final PdfService pdfService;
-    private final Toggle toggle;
 
     @Override
     public Oppgavetype oppgavetype() {
@@ -41,39 +39,35 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
             AltinnConsumer altinnConsumer,
             Metrikk metrikk,
             OppfoelgingsdialogService oppfoelgingsdialogService,
-            PdfService pdfService,
-            Toggle toggle
+            PdfService pdfService
     ) {
         this.aktoerService = aktoerService;
         this.altinnConsumer = altinnConsumer;
         this.metrikk = metrikk;
         this.oppfoelgingsdialogService = oppfoelgingsdialogService;
         this.pdfService = pdfService;
-        this.toggle = toggle;
     }
 
 
     @Override
     public void utfoerOppgave(String oppfoelgingsdialogId) {
-        if (toggle.toggleBatch()) {
-            log.info("TRACEBATCH: run {}", this.getClass().getName());
+        log.info("TRACEBATCH: run {}", this.getClass().getName());
 
-            Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(Long.valueOf(oppfoelgingsdialogId));
-            oppfoelgingsdialog.arbeidstaker.fnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.arbeidstaker.aktoerId);
+        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(Long.valueOf(oppfoelgingsdialogId));
+        oppfoelgingsdialog.arbeidstaker.fnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.arbeidstaker.aktoerId);
 
-            byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
+        byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
 
-            OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn = new OppfoelgingsdialogAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
+        OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn = new OppfoelgingsdialogAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
 
-            altinnConsumer.sendOppfoelgingsplanTilArbeidsgiver(oppfoelgingsdialogAltinn);
+        altinnConsumer.sendOppfoelgingsplanTilArbeidsgiver(oppfoelgingsdialogAltinn);
 
 
-            LocalDateTime dato = Optional.ofNullable(Objects.requireNonNull(oppfoelgingsdialog.godkjentPlan
-                    .orElse(null)).opprettetTidspunkt)
-                    .orElse(now());
+        LocalDateTime dato = Optional.ofNullable(Objects.requireNonNull(oppfoelgingsdialog.godkjentPlan
+                .orElse(null)).opprettetTidspunkt)
+                .orElse(now());
 
-            metrikk.tellAntallDagerSiden(dato, "antallDagerOpprettetOppfoelgingsdialog");
-            metrikk.tellHendelse("plan_sendt_til_altinn");
-        }
+        metrikk.tellAntallDagerSiden(dato, "antallDagerOpprettetOppfoelgingsdialog");
+        metrikk.tellHendelse("plan_sendt_til_altinn");
     }
 }

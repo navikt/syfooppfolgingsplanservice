@@ -46,18 +46,16 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
 
     @Override
     public void utfoerOppgave(String oppfoelgingsdialogId) {
-        if (toggle.toggleBatch()) {
-            log.info("TRACEBATCH: run {}", this.getClass().getName());
+        log.info("TRACEBATCH: run {}", this.getClass().getName());
 
-            Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(Long.valueOf(oppfoelgingsdialogId));
+        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(Long.valueOf(oppfoelgingsdialogId));
 
-            byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
+        byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
 
-            OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn = new OppfoelgingsdialogAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
+        OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn = new OppfoelgingsdialogAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
 
-            juridiskLoggService.loggSendOppfoelgingsdialogTilAltinn(oppfoelgingsdialogAltinn);
+        juridiskLoggService.loggSendOppfoelgingsdialogTilAltinn(oppfoelgingsdialogAltinn);
 
-            metrikk.tellHendelse("logget_plan_sendt_til_altinn");
-        }
+        metrikk.tellHendelse("logget_plan_sendt_til_altinn");
     }
 }

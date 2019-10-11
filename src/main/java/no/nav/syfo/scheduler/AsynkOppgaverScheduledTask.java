@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Oppgavelisteprosessor;
 import no.nav.syfo.service.LeaderElectionService;
-import no.nav.syfo.util.Toggle;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +14,6 @@ import javax.inject.Inject;
 public class AsynkOppgaverScheduledTask {
 
     private Oppgavelisteprosessor oppgavelisteprosessor;
-    @Inject
-    private Toggle toggle;
 
     @Inject
     private LeaderElectionService leaderElectionService;
@@ -27,7 +24,7 @@ public class AsynkOppgaverScheduledTask {
     @Scheduled(fixedRate = 2000)
     public void run() {
         metrikk.tellHendelse("kanskje_AsynkOppgave");
-        if (leaderElectionService.isLeader() && toggle.toggleBatch()) {
+        if (leaderElectionService.isLeader()) {
             metrikk.tellHendelse("kjorer_AsynkOppgave");
             log.info("TRACEBATCH: run {}", this.getClass().getName());
 

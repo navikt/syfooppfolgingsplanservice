@@ -5,8 +5,6 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbLoggSendOppfoelgingsdialogTilAltinn;
 import no.nav.syfo.service.*;
 import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
-import no.nav.syfo.util.Toggle;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,16 +26,9 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinnTest {
     @Mock
     private Metrikk metrikk;
     @Mock
-    private Toggle toggle;
-    @Mock
     private PdfService pdfService;
     @InjectMocks
     private JobbLoggSendOppfoelgingsdialogTilAltinn jobbLoggSendOppfoelgingsdialogTilAltinn;
-
-    @Before
-    public void setup() {
-        when(toggle.toggleBatch()).thenReturn(true);
-    }
 
     @Test
     public void skalUtfoereOppgaveArkiverOppgave() throws Exception {
