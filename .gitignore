@@ -1,11 +1,17 @@
 activemq-data
 
+pom.xml
 *.iml
 .idea
 target
 
 # Compiled class file
 *.class
+
+# Gradle files
+out/
+build/
+.gradle/
 
 # Log file
 *.log
@@ -17,7 +23,6 @@ target
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -29,3 +34,4 @@ target
 hs_err_pid*
 .DS_Store
 transaction-logs
+

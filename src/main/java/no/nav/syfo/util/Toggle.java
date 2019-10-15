@@ -13,7 +13,7 @@ public class Toggle {
     public Toggle(
             @Value("${toggle.enable.batch:false}") boolean toggleBatch,
             @Value("${toggle.enable.batch.sak:true}") boolean toggleBatchSak,
-            @Value("${fasit.environment.name:p}") String envName
+            @Value("${nais.cluster.name:prod-fss}") String envName
     ) {
         this.toggleBatch = toggleBatch;
         this.toggleBatchSak = toggleBatchSak;
@@ -29,6 +29,6 @@ public class Toggle {
     }
 
     public boolean erPreprod() {
-        return envName.contains("q");
+        return envName.contains("dev-fss");
     }
 }

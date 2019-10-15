@@ -20,9 +20,9 @@ import static no.nav.syfo.ws.mappers.OppfoelgingsdialogAltinnMapper.oppfoelgings
 @Service
 public class AltinnConsumer {
 
-    @Value("${altinnUser.username}")
+    @Value("${altinnuser.username}")
     private String alltinnUsername;
-    @Value("${altinnUser.password}")
+    @Value("${altinnuser.password}")
     private String altinnPassword;
 
     public static final String SYSTEM_USER_CODE = "NAV_DIGISYFO";

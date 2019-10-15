@@ -1,8 +1,8 @@
 package no.nav.syfo.domain;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class LeaderPod {
-    String name;
+    public String name;
 }

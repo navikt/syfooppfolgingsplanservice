@@ -126,7 +126,7 @@ public class DokumentControllerTest extends AbstractRessursTilgangTest {
 
     @Test
     public void hentSyfoapiUrl_prod() {
-        String returnertVerdi = dokumentController.hentSyfoapiUrl("p");
+        String returnertVerdi = dokumentController.hentSyfoapiUrl("prod-fss");
 
         String forventetVerdi = "https://syfoapi.nav.no";
 
@@ -135,7 +135,7 @@ public class DokumentControllerTest extends AbstractRessursTilgangTest {
 
     @Test
     public void hentSyfoapiUrl_preprod() {
-        String returnertVerdi = dokumentController.hentSyfoapiUrl("q");
+        String returnertVerdi = dokumentController.hentSyfoapiUrl("dev-fss");
 
         String forventetVerdi = "https://syfoapi-q.nav.no";
 

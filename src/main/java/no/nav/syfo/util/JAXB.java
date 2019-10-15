@@ -1,7 +1,6 @@
 package no.nav.syfo.util;
 
-
-import no.nav.melding.virksomhet.servicemeldingmedkontaktinformasjon.v1.servicemeldingmedkontaktinformasjon.ServicemeldingMedKontaktinformasjon;
+import no.nav.melding.virksomhet.servicemeldingmedkontaktinformasjon.v1.servicemeldingmedkontaktinformasjon.WSServicemeldingMedKontaktinformasjon;
 import no.nav.melding.virksomhet.varsel.v1.varsel.XMLVarsel;
 import no.nav.melding.virksomhet.varsel.v1.varsel.XMLVarslingstyper;
 import no.nav.syfo.pdf.domain.OppfoelgingsdialogXML;
@@ -33,7 +32,7 @@ public class JAXB {
                     OppfoelgingsdialogXML.class
             );
             TREDJEPARTS_SERVICEMELDING_CONTEXT = newInstance(
-                    ServicemeldingMedKontaktinformasjon.class
+                    WSServicemeldingMedKontaktinformasjon.class
             );
         } catch (JAXBException e) {
             throw new RuntimeException(e);

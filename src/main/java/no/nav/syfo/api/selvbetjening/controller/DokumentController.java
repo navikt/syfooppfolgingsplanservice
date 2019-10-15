@@ -25,7 +25,7 @@ import static org.springframework.http.MediaType.IMAGE_PNG;
 @RequestMapping(value = "/api/dokument/{oppfolgingsplanId}/ekstern")
 public class DokumentController {
 
-    @Value("${fasit.environment.name}")
+    @Value("${nais.cluster.name}")
     private String envName;
     private final OIDCRequestContextHolder contextHolder;
     private final PdfService pdfService;
@@ -98,7 +98,7 @@ public class DokumentController {
     }
 
     String hentSyfoapiUrl(String env) {
-        boolean erDev = env.contains("q");
+        boolean erDev = env.contains("dev-fss");
 
         String envTekst = erDev ? "-q" : "";
         return "https://syfoapi" + envTekst + ".nav.no";
