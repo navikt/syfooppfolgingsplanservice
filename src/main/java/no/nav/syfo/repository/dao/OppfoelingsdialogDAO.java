@@ -120,10 +120,6 @@ public class OppfoelingsdialogDAO {
 
     }
 
-    public String aktorIdByOppfolgingsplanId(long oppfolgingsplanId) {
-        return jdbcTemplate.queryForObject("SELECT aktoer_id FROM oppfoelgingsdialog WHERE oppfoelgingsdialog_id = ?", (rs, rowNum) -> rs.getString("aktoer_id"), oppfolgingsplanId);
-    }
-
     public void sistEndretAv(Long oppfoelgingsdialogId, String innloggetAktoerId) {
         Oppfoelgingsdialog oppfoelgingsdialog = finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         if (erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId)) {
