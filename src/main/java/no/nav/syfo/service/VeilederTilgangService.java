@@ -21,6 +21,7 @@ public class VeilederTilgangService {
     public static final String TILGANG_TIL_BRUKER_VIA_AZURE_PATH = "/bruker";
     public static final String TILGANG_TIL_ENHET_PATH = "/enhet";
     public static final String TILGANG_TIL_TJENESTEN = "/tilgangtiltjenesten";
+    public static final String TILGANG_TIL_TJENESTEN_VIA_AZURE_PATH = "/syfo";
     private static final String FNR_PLACEHOLDER = "{" + FNR + "}";
     private static final String ENHET_PLACEHOLDER = "{" + ENHET + "}";
     private final RestTemplate template;
@@ -28,6 +29,7 @@ public class VeilederTilgangService {
     private final UriComponentsBuilder tilgangTilBrukerViaAzureUriTemplate;
     private final UriComponentsBuilder tilgangTilEnhetUriTemplate;
     private final UriComponentsBuilder tilgangTilTjenesteUriTemplate;
+    private final UriComponentsBuilder tilgangTilTjenesteViaAzureUriTemplate;
 
     public VeilederTilgangService(
             @Value("${tilgangskontrollapi.url}") String tilgangskontrollUrl,
@@ -44,6 +46,8 @@ public class VeilederTilgangService {
                 .queryParam(ENHET, ENHET_PLACEHOLDER);
         tilgangTilTjenesteUriTemplate = fromHttpUrl(tilgangskontrollUrl)
                 .path(TILGANG_TIL_TJENESTEN);
+        tilgangTilTjenesteViaAzureUriTemplate = fromHttpUrl(tilgangskontrollUrl)
+                .path(TILGANG_TIL_TJENESTEN_VIA_AZURE_PATH);
         this.template = template;
     }
 
@@ -85,6 +89,18 @@ public class VeilederTilgangService {
 
     public boolean harVeilederTilgangTilTjenesten() {
         URI tilgangTilTjenesterUri = tilgangTilTjenesteUriTemplate.build().toUri();
+        return kallUriMedTemplate(tilgangTilTjenesterUri);
+    }
+
+    public void kastExceptionHvisIkkeVeilederHarTilgangTilTjenestenViaAzure() {
+        boolean harTilgang = harVeilederTilgangTilTjenestenViaAzure();
+        if (!harTilgang) {
+            throw new ForbiddenException();
+        }
+    }
+
+    public boolean harVeilederTilgangTilTjenestenViaAzure() {
+        URI tilgangTilTjenesterUri = tilgangTilTjenesteViaAzureUriTemplate.build().toUri();
         return kallUriMedTemplate(tilgangTilTjenesterUri);
     }
 
