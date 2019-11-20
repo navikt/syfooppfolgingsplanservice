@@ -19,7 +19,6 @@ import java.util.Optional;
 import static java.time.LocalDateTime.now;
 import static no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper.p2godkjentplan;
 import static no.nav.syfo.repository.DbUtil.*;
-import static no.nav.syfo.util.DatoUtil.dagerMellom;
 import static no.nav.syfo.util.MapUtil.mapListe;
 
 @Repository
@@ -70,13 +69,14 @@ public class GodkjentplanDAO {
                 .addValue("tom", convert(godkjentPlan.gyldighetstidspunkt.tom.atStartOfDay()))
                 .addValue("evalueres", convert(godkjentPlan.gyldighetstidspunkt.evalueres.atStartOfDay()))
                 .addValue("tvungen_godkjenning", godkjentPlan.tvungenGodkjenning)
-                .addValue("delt_med_nav", false)
+                .addValue("delt_med_nav", godkjentPlan.deltMedNAV)
+                .addValue("delt_med_nav_tidspunkt", convert(godkjentPlan.deltMedNAVTidspunkt))
                 .addValue("delt_med_fastlege", false);
         namedParameterJdbcTemplate.update("INSERT INTO godkjentplan " +
                 "(godkjentplan_id, oppfoelgingsdialog_id, dokument_uuid, created, fom, tom, evalueres, tvungen_godkjenning, " +
-                "delt_med_nav, delt_med_fastlege) " +
+                "delt_med_nav, delt_med_nav_tidspunkt, delt_med_fastlege) " +
                 "VALUES(:godkjentplan_id, :oppfoelgingsdialog_id, :dokument_uuid, :created, :fom, :tom, :evalueres, :tvungen_godkjenning, " +
-                ":delt_med_nav, :delt_med_fastlege)", namedParameters);
+                ":delt_med_nav, :delt_med_nav_tidspunkt, :delt_med_fastlege)", namedParameters);
         return godkjentPlan.id(id);
     }
 

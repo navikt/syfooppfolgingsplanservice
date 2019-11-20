@@ -14,6 +14,7 @@ public class PGodkjenning {
     public String aktoerId;
     public String beskrivelse;
     public boolean godkjent;
+    public boolean delMedNav;
     public LocalDateTime fom;
     public LocalDateTime tom;
     public LocalDateTime evalueres;

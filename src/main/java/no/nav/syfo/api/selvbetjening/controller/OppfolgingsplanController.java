@@ -10,6 +10,7 @@ import no.nav.syfo.service.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER;
@@ -93,12 +94,11 @@ public class OppfolgingsplanController {
             @PathVariable("id") Long id,
             @RequestBody RSGyldighetstidspunkt rsGyldighetstidspunkt,
             @RequestParam("status") String status,
-            @RequestParam("aktoer") String aktor
-
+            @RequestParam("aktoer") String aktor,
+            @RequestParam(value = "delmednav", required = false) Boolean delMedNav
     ) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
-
-        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, "tvungenGodkjenning".equals(status));
+        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, "tvungenGodkjenning".equals(status), Optional.ofNullable(delMedNav).orElse(false));
 
         metrikk.tellHendelse("godkjenn_plan");
 
@@ -109,16 +109,16 @@ public class OppfolgingsplanController {
         return hentGyldighetstidspunktForPlan(id, aktor, innloggetIdent);
     }
 
-    @PostMapping(path = "/godkjennsist",  produces = APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/godkjennsist", produces = APPLICATION_JSON_VALUE)
     public RSGyldighetstidspunkt godkjenn(
             @PathVariable("id") Long id,
             @RequestParam("status") String status,
-            @RequestParam("aktoer") String aktor
-
+            @RequestParam("aktoer") String aktor,
+            @RequestParam(value = "delmednav", required = false) Boolean delMedNav
     ) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        godkjenningService.godkjennOppfolgingsplan(id, null, innloggetIdent, "tvungengodkjenning".equals(status));
+        godkjenningService.godkjennOppfolgingsplan(id, null, innloggetIdent, "tvungengodkjenning".equals(status), Optional.ofNullable(delMedNav).orElse(false));
 
         metrikk.tellHendelse("godkjenn_plan_svar");
 
@@ -132,7 +132,6 @@ public class OppfolgingsplanController {
             return oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSTAKER, innloggetIdent);
         }
     }
-
 
     @PostMapping(path = "/kopier", produces = APPLICATION_JSON_VALUE)
     public long kopier(@PathVariable("id") Long id) {
