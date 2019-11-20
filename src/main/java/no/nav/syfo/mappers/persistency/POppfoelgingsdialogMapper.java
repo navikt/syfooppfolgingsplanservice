@@ -54,6 +54,7 @@ public class POppfoelgingsdialogMapper {
                     .godkjentAvAktoerId(pGodkjenning.aktoerId)
                     .godkjent(pGodkjenning.godkjent)
                     .beskrivelse(pGodkjenning.beskrivelse)
+                    .delMedNav(pGodkjenning.delMedNav)
                     .gyldighetstidspunkt(new Gyldighetstidspunkt()
                             .fom(ofNullable(pGodkjenning.fom).map(LocalDateTime::toLocalDate).orElse(null))
                             .tom(ofNullable(pGodkjenning.tom).map(LocalDateTime::toLocalDate).orElse(null))

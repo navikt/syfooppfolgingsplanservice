@@ -52,10 +52,11 @@ public class GodkjenningerDAO {
                 .addValue("fom", convert(godkjenning.gyldighetstidspunkt.fom))
                 .addValue("tom", convert(godkjenning.gyldighetstidspunkt.tom))
                 .addValue("evalueres", convert(godkjenning.gyldighetstidspunkt.evalueres))
+                .addValue("del_med_nav", godkjenning.delMedNav)
                 .addValue("created", convert(now()));
         namedParameterJdbcTemplate.update("insert into godkjenning " +
-                "(godkjenning_id, oppfoelgingsdialog_id, aktoer_id, godkjent, beskrivelse, fom, tom, evalueres, created) values" +
-                "(:godkjenning_id, :oppfoelgingsdialog_id, :aktoer_id, :godkjent, :beskrivelse, :fom, :tom, :evalueres, :created)", namedParameters);
+                "(godkjenning_id, oppfoelgingsdialog_id, aktoer_id, godkjent, beskrivelse, fom, tom, evalueres, del_med_nav, created) values" +
+                "(:godkjenning_id, :oppfoelgingsdialog_id, :aktoer_id, :godkjent, :beskrivelse, :fom, :tom, :evalueres, :del_med_nav, :created)", namedParameters);
     }
 
     private class GodkjenningerRowMapper implements RowMapper<PGodkjenning> {
@@ -69,6 +70,7 @@ public class GodkjenningerDAO {
                     .fom(convert(rs.getTimestamp("fom")))
                     .tom(convert(rs.getTimestamp("tom")))
                     .evalueres(convert(rs.getTimestamp("evalueres")))
+                    .delMedNav(rs.getBoolean("del_med_nav"))
                     .created(convert(rs.getTimestamp("created")));
         }
     }

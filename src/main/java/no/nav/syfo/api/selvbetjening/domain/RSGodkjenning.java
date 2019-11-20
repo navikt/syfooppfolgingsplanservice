@@ -14,4 +14,5 @@ public class RSGodkjenning {
     public String beskrivelse;
     public LocalDateTime godkjenningsTidspunkt;
     public RSGyldighetstidspunkt gyldighetstidspunkt;
+    public boolean delMedNav;
 }

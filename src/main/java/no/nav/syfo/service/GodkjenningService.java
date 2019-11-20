@@ -5,7 +5,6 @@ import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Naermesteleder;
-import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.pdf.domain.*;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.repository.domain.Dokument;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -108,7 +108,7 @@ public class GodkjenningService {
     }
 
     @Transactional
-    public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning) {
+    public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning, boolean delMedNav) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
 
@@ -125,18 +125,21 @@ public class GodkjenningService {
         }
 
         oppfoelgingsdialog = oppfoelingsdialogDAO.populate(oppfoelgingsdialog);
+
         if (erArbeidsgiveren(oppfoelgingsdialog, innloggetAktoerId) && tvungenGodkjenning) {
-            genererTvungenPlan(oppfoelgingsdialog, gyldighetstidspunkt);
+            genererTvungenPlan(oppfoelgingsdialog, gyldighetstidspunkt, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
             sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
+
         } else if (erGodkjentAvAnnenPart(oppfoelingsdialogDAO.populate(oppfoelgingsdialog), innloggetAktoerId)) {
-            genererNyPlan(oppfoelgingsdialog, innloggetAktoerId);
+            genererNyPlan(oppfoelgingsdialog, innloggetAktoerId, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
             sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
         } else {
             godkjenningerDAO.create(new Godkjenning()
                     .oppfoelgingsdialogId(oppfoelgingsdialogId)
                     .godkjent(true)
+                    .delMedNav(delMedNav)
                     .godkjentAvAktoerId(innloggetAktoerId)
                     .gyldighetstidspunkt(new Gyldighetstidspunkt()
                             .fom(gyldighetstidspunkt.fom)
@@ -144,6 +147,7 @@ public class GodkjenningService {
                             .evalueres(gyldighetstidspunkt.evalueres)
                     )
             );
+
             if (erArbeidsgiveren(oppfoelgingsdialog, innloggetAktoerId)) {
                 serviceVarselService.sendServiceVarsel(oppfoelgingsdialog.arbeidstaker.aktoerId, SyfoplangodkjenningSyk, oppfoelgingsdialogId);
             } else {
@@ -225,7 +229,7 @@ public class GodkjenningService {
         metrikk.tellHendelseMedAntall("tiltakKommentarerFraNL", antallKommentarerNL);
     }
 
-    public void genererNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId) {
+    public void genererNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId, boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfoelgingsdialog, false);
 
         Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN)
@@ -296,10 +300,14 @@ public class GodkjenningService {
         );
 
         String dokumentUuid = UUID.randomUUID().toString();
+
+        boolean skalDeleMedNav = delMedNav || oppfoelgingsdialog.godkjenninger.stream()
+                .anyMatch(godkjenning -> godkjenning.delMedNav);
+
         godkjentplanDAO.create(new GodkjentPlan()
                 .oppfoelgingsdialogId(oppfoelgingsdialog.id)
-                .deltMedNAV(false)
-                .deltMedFastlege(false)
+                .deltMedNAV(skalDeleMedNav)
+                .deltMedNAVTidspunkt((skalDeleMedNav) ? LocalDateTime.now() : null)
                 .tvungenGodkjenning(false)
                 .dokumentUuid(dokumentUuid)
                 .gyldighetstidspunkt(new Gyldighetstidspunkt()
@@ -316,7 +324,7 @@ public class GodkjenningService {
         );
     }
 
-    public void genererTvungenPlan(Oppfoelgingsdialog oppfoelgingsdialog, RSGyldighetstidspunkt gyldighetstidspunkt) {
+    public void genererTvungenPlan(Oppfoelgingsdialog oppfoelgingsdialog, RSGyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfoelgingsdialog, true);
 
         Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN)
@@ -388,7 +396,8 @@ public class GodkjenningService {
         String dokumentUuid = UUID.randomUUID().toString();
         godkjentplanDAO.create(new GodkjentPlan()
                 .oppfoelgingsdialogId(oppfoelgingsdialog.id)
-                .deltMedNAV(false)
+                .deltMedNAV(delMedNav)
+                .deltMedNAVTidspunkt(delMedNav ? LocalDateTime.now() : null)
                 .deltMedFastlege(false)
                 .tvungenGodkjenning(true)
                 .dokumentUuid(dokumentUuid)

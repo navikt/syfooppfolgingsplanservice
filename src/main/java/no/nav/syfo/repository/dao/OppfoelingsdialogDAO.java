@@ -83,7 +83,6 @@ public class OppfoelingsdialogDAO {
         return oppfoelgingsdialog.id(id);
     }
 
-
     public Oppfoelgingsdialog oppfoelgingsdialogByTiltakId(Long tiltakId) {
         return map(jdbcTemplate.queryForObject("select * from oppfoelgingsdialog join tiltak " +
                 "on tiltak.oppfoelgingsdialog_id = oppfoelgingsdialog.oppfoelgingsdialog_id " +

@@ -12,9 +12,9 @@ public class Godkjenning {
     public long oppfoelgingsdialogId;
 
     public boolean godkjent;
+    public boolean delMedNav;
     public String godkjentAvAktoerId;
     public String beskrivelse;
     public LocalDateTime godkjenningsTidspunkt;
     public Gyldighetstidspunkt gyldighetstidspunkt = new Gyldighetstidspunkt();
-
 }

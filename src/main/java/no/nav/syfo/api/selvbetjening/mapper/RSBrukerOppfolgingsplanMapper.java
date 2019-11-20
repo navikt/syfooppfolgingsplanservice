@@ -51,6 +51,7 @@ public class RSBrukerOppfolgingsplanMapper {
             new RSGodkjenning()
                     .beskrivelse(godkjenning.beskrivelse)
                     .godkjent(godkjenning.godkjent)
+                    .delMedNav(godkjenning.delMedNav)
                     .godkjentAv(new RSPerson()
                             .fnr(aktoerService().hentFnrForAktoer(godkjenning.godkjentAvAktoerId))
                     )

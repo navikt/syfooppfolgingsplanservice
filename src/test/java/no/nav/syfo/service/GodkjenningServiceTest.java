@@ -21,7 +21,6 @@ import java.util.Optional;
 
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
-import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.util.PropertyUtil.ENVIRONMENT_NAME;
 import static org.mockito.Mockito.*;
 
@@ -121,7 +120,7 @@ public class GodkjenningServiceTest {
     @Test
     public void genererNyPlanKompatibelMedVersjon1Avplanen() {
         when(godkjentplanDAO.create(any())).thenReturn(new GodkjentPlan().id(1));
-        godkjenningService.genererNyPlan(oppfoelgingsdialog, "sykmeldtAktoerId");
+        godkjenningService.genererNyPlan(oppfoelgingsdialog, "sykmeldtAktoerId", false);
         verify(godkjentplanDAO, times(1)).create(any());
     }
 
@@ -137,7 +136,7 @@ public class GodkjenningServiceTest {
                 .fom(now())
                 .tom(now())
         );
-        godkjenningService.genererNyPlan(oppfoelgingsdialog, "sykmeldtAktoerId");
+        godkjenningService.genererNyPlan(oppfoelgingsdialog, "sykmeldtAktoerId", false);
         verify(godkjentplanDAO, times(1)).create(any());
     }
 
@@ -147,7 +146,9 @@ public class GodkjenningServiceTest {
         godkjenningService.genererTvungenPlan(oppfoelgingsdialog, new RSGyldighetstidspunkt()
                 .tom(now())
                 .fom(now())
-                .evalueres(now()));
+                .evalueres(now()
+                ), false
+        );
         verify(godkjentplanDAO, times(1)).create(any());
     }
 
@@ -166,7 +167,8 @@ public class GodkjenningServiceTest {
         godkjenningService.genererTvungenPlan(oppfoelgingsdialog, new RSGyldighetstidspunkt()
                 .tom(now())
                 .fom(now())
-                .evalueres(now())
+                .evalueres(now()
+                ), false
         );
         verify(godkjentplanDAO, times(1)).create(any());
     }
