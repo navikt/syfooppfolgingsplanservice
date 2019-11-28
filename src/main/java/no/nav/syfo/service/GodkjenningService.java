@@ -175,6 +175,10 @@ public class GodkjenningService {
             metrikk.tellHendelse("genererNyPlan");
         }
 
+        if (oppfoelgingsdialog.godkjentPlan.isPresent() && oppfoelgingsdialog.godkjentPlan.get().deltMedNAV) {
+            metrikk.tellHendelse("del_plan_med_nav_ved_generer_godkjent_plan");
+        }
+
         metrikk.tellHendelseMedAntall("tiltak", oppfoelgingsdialog.tiltakListe.size());
         metrikk.tellHendelseMedAntall("arbeidsoppgaver", oppfoelgingsdialog.arbeidsoppgaveListe.size());
 
