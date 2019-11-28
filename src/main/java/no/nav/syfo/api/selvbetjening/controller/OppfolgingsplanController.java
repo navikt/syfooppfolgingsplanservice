@@ -26,6 +26,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/api/oppfolgingsplan/actions/{id}")
 public class OppfolgingsplanController {
 
+    final static String METRIC_SHARE_WITH_NAV_AT_APPROVAL = "del_plan_med_nav_ved_godkjenning";
+
     private final Metrikk metrikk;
     private final OIDCRequestContextHolder contextHolder;
     private final ArbeidsoppgaveService arbeidsoppgaveService;
@@ -98,7 +100,11 @@ public class OppfolgingsplanController {
             @RequestParam(value = "delmednav", required = false) Boolean delMedNav
     ) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
-        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, "tvungenGodkjenning".equals(status), Optional.ofNullable(delMedNav).orElse(false));
+
+        boolean isPlanSharedWithNAV = Optional.ofNullable(delMedNav).orElse(false);
+        if (isPlanSharedWithNAV) { countShareWithNAVAtApproval(); }
+
+        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, "tvungenGodkjenning".equals(status), isPlanSharedWithNAV);
 
         metrikk.tellHendelse("godkjenn_plan");
 
@@ -118,7 +124,10 @@ public class OppfolgingsplanController {
     ) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        godkjenningService.godkjennOppfolgingsplan(id, null, innloggetIdent, "tvungengodkjenning".equals(status), Optional.ofNullable(delMedNav).orElse(false));
+        boolean isPlanSharedWithNAV = Optional.ofNullable(delMedNav).orElse(false);
+        if (isPlanSharedWithNAV) { countShareWithNAVAtApproval(); }
+
+        godkjenningService.godkjennOppfolgingsplan(id, null, innloggetIdent, "tvungengodkjenning".equals(status), isPlanSharedWithNAV);
 
         metrikk.tellHendelse("godkjenn_plan_svar");
 
@@ -203,5 +212,9 @@ public class OppfolgingsplanController {
         oppfoelgingsdialogService.oppdaterSistInnlogget(id, innloggetIdent);
 
         metrikk.tellHendelse("sett_plan");
+    }
+
+    private void countShareWithNAVAtApproval() {
+        metrikk.tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
     }
 }

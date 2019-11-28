@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import javax.inject.Inject;
 
+import static no.nav.syfo.api.selvbetjening.controller.OppfolgingsplanController.METRIC_SHARE_WITH_NAV_AT_APPROVAL;
 import static no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.rs2arbeidsoppgave;
 import static no.nav.syfo.api.selvbetjening.mapper.RSTiltakMapper.rs2tiltak;
 import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.KAN;
@@ -26,8 +27,7 @@ import static no.nav.syfo.util.MapUtil.map;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
@@ -122,6 +122,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, ARBEIDSTAKER_FNR, false, false);
         verify(metrikk).tellHendelse("godkjenn_plan");
+        verify(metrikk, never()).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -134,6 +135,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, ARBEIDSTAKER_FNR, false, true);
         verify(metrikk).tellHendelse("godkjenn_plan");
+        verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -149,6 +151,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true, false);
         verify(metrikk).tellHendelse("godkjenn_plan");
+        verify(metrikk, never()).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -164,6 +167,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true, true);
         verify(metrikk).tellHendelse("godkjenn_plan");
+        verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -186,6 +190,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, ARBEIDSTAKER_FNR, false, false);
         verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("godkjenn_plan_svar");
+        verify(metrikk, never()).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -201,6 +206,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, ARBEIDSTAKER_FNR, false, true);
         verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("godkjenn_plan_svar");
+        verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -219,6 +225,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, false);
         verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR);
         verify(metrikk).tellHendelse("godkjenn_plan_svar");
+        verify(metrikk, never()).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
@@ -237,6 +244,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, true);
         verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR);
         verify(metrikk).tellHendelse("godkjenn_plan_svar");
+        verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
         assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt);
     }
