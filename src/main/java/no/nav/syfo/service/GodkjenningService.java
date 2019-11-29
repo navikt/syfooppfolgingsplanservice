@@ -168,14 +168,14 @@ public class GodkjenningService {
                 .findFirst().orElseThrow(() -> new RuntimeException("Fant ikke godkjenning"));
     }
 
-    private void rapporterMetrikkerForNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, boolean erPlanTvungenGodkjent) {
+    private void rapporterMetrikkerForNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, boolean erPlanTvungenGodkjent, boolean delMedNav) {
         if (erPlanTvungenGodkjent) {
             metrikk.tellHendelse("genererTvungenPlan");
         } else {
             metrikk.tellHendelse("genererNyPlan");
         }
 
-        if (oppfoelgingsdialog.godkjentPlan.isPresent() && oppfoelgingsdialog.godkjentPlan.get().deltMedNAV) {
+        if (delMedNav) {
             metrikk.tellHendelse("del_plan_med_nav_ved_generer_godkjent_plan");
         }
 
@@ -234,7 +234,7 @@ public class GodkjenningService {
     }
 
     public void genererNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId, boolean delMedNav) {
-        rapporterMetrikkerForNyPlan(oppfoelgingsdialog, false);
+        rapporterMetrikkerForNyPlan(oppfoelgingsdialog, false, delMedNav);
 
         Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
@@ -329,7 +329,7 @@ public class GodkjenningService {
     }
 
     public void genererTvungenPlan(Oppfoelgingsdialog oppfoelgingsdialog, RSGyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
-        rapporterMetrikkerForNyPlan(oppfoelgingsdialog, true);
+        rapporterMetrikkerForNyPlan(oppfoelgingsdialog, true, delMedNav);
 
         Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
