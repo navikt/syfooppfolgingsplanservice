@@ -24,4 +24,8 @@ public class RestUtils {
     public static String basicCredentials(String credentialUsername, String credentialPassword) {
         return "Basic " + Base64.getEncoder().encodeToString(format("%s:%s", credentialUsername, credentialPassword).getBytes());
     }
+
+    public static String bearerHeader(String token) {
+        return "Bearer " + token;
+    }
 }
