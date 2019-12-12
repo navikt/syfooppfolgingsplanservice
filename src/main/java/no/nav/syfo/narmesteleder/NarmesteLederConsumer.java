@@ -40,11 +40,11 @@ public class NarmesteLederConsumer {
         this.syfonarmestelederId = syfonarmestelederId;
     }
 
-    public List<Ansatt> ansatte(String aktoerId) {
+    public List<Ansatt> ansatte(String aktorId) {
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
-                getAnsatteUrl(aktoerId),
+                getAnsatteUrl(aktorId),
                 HttpMethod.GET,
                 entity(token),
                 new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
