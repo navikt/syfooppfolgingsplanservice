@@ -1,6 +1,7 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -12,10 +13,15 @@ import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 public class TilgangskontrollService {
 
     private NaermesteLederService naermesteLederService;
+    private NarmesteLederConsumer narmesteLederConsumer;
 
     @Inject
-    public TilgangskontrollService(NaermesteLederService naermesteLederService) {
+    public TilgangskontrollService(
+            NaermesteLederService naermesteLederService,
+            NarmesteLederConsumer narmesteLederConsumer
+    ) {
         this.naermesteLederService = naermesteLederService;
+        this.narmesteLederConsumer = narmesteLederConsumer;
     }
 
     public boolean aktoerTilhoererDialogen(String aktoerId, Oppfoelgingsdialog oppfoelgingsdialog) {
@@ -27,7 +33,7 @@ public class TilgangskontrollService {
     }
 
     private boolean erAktoerNaermestelederForBruker(String aktoerId, String sykmeldtAktoerId, String virksomhetsnummer) {
-        return naermesteLederService.hentAnsatte(aktoerId, EKSTERN).stream()
+        return narmesteLederConsumer.ansatte(aktoerId).stream()
                 .anyMatch(ansatt -> virksomhetsnummer.equals(ansatt.virksomhetsnummer) && ansatt.aktoerId.equals(sykmeldtAktoerId));
     }
 
