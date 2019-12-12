@@ -5,6 +5,7 @@ import no.nav.syfo.model.Ansatt;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.function.Function;
 
+import static no.nav.syfo.config.cache.CacheConfig.CACHENAME_ANSATTE;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -40,6 +42,7 @@ public class NarmesteLederConsumer {
         this.syfonarmestelederId = syfonarmestelederId;
     }
 
+    @Cacheable(value = CACHENAME_ANSATTE, key = "#aktorId", condition = "#aktorId != null")
     public List<Ansatt> ansatte(String aktorId) {
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
 
