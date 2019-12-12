@@ -15,13 +15,15 @@ public class CacheConfig {
 
     public static final String CACHENAME_AKTOR_ID = "aktoerid";
     public static final String CACHENAME_AKTOR_FNR = "aktoerfnr";
+    public static final String CACHENAME_ANSATTE = "ansatte";
 
     @Bean
     public CacheManager cacheManager() {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         cacheManager.setCaches(asList(
                 new ConcurrentMapCache(CACHENAME_AKTOR_ID),
-                new ConcurrentMapCache(CACHENAME_AKTOR_FNR)
+                new ConcurrentMapCache(CACHENAME_AKTOR_FNR),
+                new ConcurrentMapCache(CACHENAME_ANSATTE)
         ));
         return cacheManager;
     }
