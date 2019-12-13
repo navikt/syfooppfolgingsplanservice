@@ -1,6 +1,7 @@
 package no.nav.syfo.narmesteleder;
 
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Ansatt;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +26,27 @@ public class NarmesteLederConsumer {
     private static final Logger LOG = getLogger(NarmesteLederConsumer.class);
 
     private final AzureAdTokenConsumer azureAdTokenConsumer;
+    private final Metrikk metrikk;
     private final RestTemplate restTemplate;
     private final String url;
     private final String syfonarmestelederId;
 
+    public static final String HENT_ANSATTE_SYFONARMESTELEDER = "hent_ansatte_syfonarmesteleder";
+    public static final String HENT_ANSATTE_SYFONARMESTELEDER_FEILET = "hent_ansatte_syfonarmesteleder_feilet";
+    public static final String HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET = "hent_ansatte_syfonarmesteleder_vellykket";
+
+    public static final String ERROR_MESSAGE_BASE = "Kall mot syfonarmesteleder feiler med HTTP-";
+
     @Autowired
     public NarmesteLederConsumer(
             AzureAdTokenConsumer azureAdTokenConsumer,
+            Metrikk metrikk,
             RestTemplate restTemplateMedProxy,
             @Value("${syfonarmesteleder.url}") String url,
             @Value("${syfonarmesteleder.id}") String syfonarmestelederId
     ) {
         this.azureAdTokenConsumer = azureAdTokenConsumer;
+        this.metrikk = metrikk;
         this.restTemplate = restTemplateMedProxy;
         this.url = url;
         this.syfonarmestelederId = syfonarmestelederId;
@@ -44,6 +54,7 @@ public class NarmesteLederConsumer {
 
     @Cacheable(value = CACHENAME_ANSATTE, key = "#aktorId", condition = "#aktorId != null")
     public List<Ansatt> ansatte(String aktorId) {
+        metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
@@ -55,11 +66,13 @@ public class NarmesteLederConsumer {
         );
 
         if (response.getStatusCode() != OK) {
-            final String message = "Kall mot syfonarmesteleder feiler med HTTP-" + response.getStatusCode();
+            metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_FEILET);
+            final String message = ERROR_MESSAGE_BASE + response.getStatusCode();
             LOG.error(message);
             throw new RuntimeException(message);
         }
 
+        metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET);
         return mapListe(response.getBody(), narmestelederRelasjon2Ansatt);
     }
 
