@@ -6,6 +6,7 @@ import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,8 @@ public class OppfoelgingsdialogService {
     private GodkjentplanDAO godkjentplanDAO;
 
     private TiltakDAO tiltakDAO;
+
+    private NarmesteLederConsumer narmesteLederConsumer;
 
     private NaermesteLederService naermesteLederService;
 
@@ -86,6 +89,7 @@ public class OppfoelgingsdialogService {
             BrukerprofilService brukerprofilService,
             FastlegeService fastlegeService,
             EgenAnsattService egenAnsattService,
+            NarmesteLederConsumer narmesteLederConsumer,
             NaermesteLederService naermesteLederService,
             NorgService norgService,
             PersonService personService,
@@ -106,6 +110,7 @@ public class OppfoelgingsdialogService {
         this.brukerprofilService = brukerprofilService;
         this.fastlegeService = fastlegeService;
         this.egenAnsattService = egenAnsattService;
+        this.narmesteLederConsumer = narmesteLederConsumer;
         this.naermesteLederService = naermesteLederService;
         this.norgService = norgService;
         this.personService = personService;
@@ -119,7 +124,7 @@ public class OppfoelgingsdialogService {
 
         if (ARBEIDSGIVER == brukerkontekst) {
             List<Oppfoelgingsdialog> oppfoelgingsdialoger = new ArrayList<>();
-            List<Ansatt> ansatte = naermesteLederService.hentAnsatte(aktoerId, EKSTERN);
+            List<Ansatt> ansatte = narmesteLederConsumer.ansatte(aktoerId);
 
             ansatte.forEach(ansatt -> oppfoelgingsdialoger.addAll(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(ansatt.aktoerId).stream()
                     .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))

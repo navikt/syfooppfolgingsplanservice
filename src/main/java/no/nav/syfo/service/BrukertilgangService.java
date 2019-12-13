@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.model.Ansatt;
-import no.nav.syfo.oidc.OIDCIssuer;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,15 +10,15 @@ public class BrukertilgangService {
 
     private AktoerService aktoerService;
 
-    private NaermesteLederService naermesteLederService;
+    private NarmesteLederConsumer narmesteLederConsumer;
 
     @Autowired
     public BrukertilgangService(
             AktoerService aktoerService,
-            NaermesteLederService naermesteLederService
+            NarmesteLederConsumer narmesteLederConsumer
     ) {
         this.aktoerService = aktoerService;
-        this.naermesteLederService = naermesteLederService;
+        this.narmesteLederConsumer = narmesteLederConsumer;
     }
 
     public boolean sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(String innloggetIdent, String oppslaattFnr) {
@@ -28,7 +28,7 @@ public class BrukertilgangService {
     private boolean sporInnloggetBrukerOmEnAnsatt(String innloggetIdent, String oppslaattFnr) {
         String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetIdent);
         String oppslaattAktoerId = aktoerService.hentAktoerIdForFnr(oppslaattFnr);
-        return naermesteLederService.hentAnsatte(innloggetAktoerId, OIDCIssuer.EKSTERN)
+        return narmesteLederConsumer.ansatte(innloggetAktoerId)
                 .stream()
                 .map(Ansatt::aktoerId)
                 .anyMatch(oppslaattAktoerId::equals);

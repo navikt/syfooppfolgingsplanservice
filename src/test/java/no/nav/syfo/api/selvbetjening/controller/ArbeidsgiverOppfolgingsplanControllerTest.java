@@ -3,7 +3,7 @@ package no.nav.syfo.api.selvbetjening.controller;
 import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest;
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.service.NaermesteLederService;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.service.OppfoelgingsdialogService;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,19 +14,17 @@ import javax.ws.rs.ForbiddenException;
 
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
 import static no.nav.syfo.mocks.AktoerMock.mockAktorId;
-import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.*;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ArbeidsgiverOppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
     @MockBean
-    NaermesteLederService naermesteLederService;
+    NarmesteLederConsumer narmesteLederConsumer;
     @MockBean
     OppfoelgingsdialogService oppfoelgingsdialogService;
     @MockBean
@@ -63,7 +61,7 @@ public class ArbeidsgiverOppfolgingsplanControllerTest extends AbstractRessursTi
                 .sykmeldtFnr(ARBEIDSTAKER_FNR)
                 .virksomhetsnummer(VIRKSOMHETSNUMMER);
 
-        when(naermesteLederService.erAktorLederForAktor(mockAktorId(LEDER_FNR), mockAktorId(ARBEIDSTAKER_FNR), EKSTERN)).thenReturn(true);
+        when(narmesteLederConsumer.erAktorLederForAktor(mockAktorId(LEDER_FNR), mockAktorId(ARBEIDSTAKER_FNR))).thenReturn(true);
         when(oppfoelgingsdialogService.opprettOppfoelgingsdialog(rsOpprettOppfoelgingsdialog, LEDER_FNR)).thenReturn(ressursId);
 
         Long res = arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog);
@@ -79,7 +77,7 @@ public class ArbeidsgiverOppfolgingsplanControllerTest extends AbstractRessursTi
                 .sykmeldtFnr(LEDER_FNR)
                 .virksomhetsnummer(VIRKSOMHETSNUMMER);
 
-        when(naermesteLederService.erAktorLederForAktor(LEDER_AKTORID, ARBEIDSTAKER_AKTORID, EKSTERN)).thenReturn(false);
+        when(narmesteLederConsumer.erAktorLederForAktor(LEDER_AKTORID, ARBEIDSTAKER_AKTORID)).thenReturn(false);
 
         arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog);
     }

@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.model.Ansatt;
-import no.nav.syfo.oidc.OIDCIssuer;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +20,7 @@ public class BrukertilgangServiceTest {
     @Mock
     private AktoerService aktoerService;
     @Mock
-    private NaermesteLederService naermesteLederService;
+    private NarmesteLederConsumer narmesteLederConsumer;
     @InjectMocks
     private BrukertilgangService brukertilgangService;
 
@@ -43,7 +43,7 @@ public class BrukertilgangServiceTest {
 
     @Test
     public void sporOmNoenAndreEnnSegSelvGirFalseNaarManSporOmEnAnsatt() {
-        when(naermesteLederService.hentAnsatte(INNLOGGET_AKTOERID, OIDCIssuer.EKSTERN)).thenReturn(Collections.singletonList(
+        when(narmesteLederConsumer.ansatte(INNLOGGET_AKTOERID)).thenReturn(Collections.singletonList(
                 new Ansatt().aktoerId(SPOR_OM_AKTOERID)
         ));
         boolean tilgang = brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(INNLOGGET_FNR, SPOR_OM_FNR);
@@ -52,7 +52,7 @@ public class BrukertilgangServiceTest {
 
     @Test
     public void sporOmNoenAndreEnnSegSelvGirTrueNaarManSporOmEnSomIkkeErSegSelvOgIkkeAnsatt() {
-        when(naermesteLederService.hentAnsatte(INNLOGGET_AKTOERID, OIDCIssuer.EKSTERN)).thenReturn(Collections.emptyList());
+        when(narmesteLederConsumer.ansatte(INNLOGGET_AKTOERID)).thenReturn(Collections.emptyList());
         boolean tilgang = brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(INNLOGGET_FNR, SPOR_OM_FNR);
         assertThat(tilgang).isTrue();
     }
