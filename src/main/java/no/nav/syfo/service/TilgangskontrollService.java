@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-import static java.lang.System.getProperty;
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 
 @Service
@@ -25,11 +24,13 @@ public class TilgangskontrollService {
     }
 
     public boolean aktoerTilhoererDialogen(String aktoerId, Oppfoelgingsdialog oppfoelgingsdialog) {
-        return "true".equals(getProperty("disable.tilgangskontroll")) || oppfoelgingsdialog.arbeidstaker.aktoerId.equals(aktoerId) || erAktoerNaermestelederForBruker(aktoerId, oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer);
+        return oppfoelgingsdialog.arbeidstaker.aktoerId.equals(aktoerId)
+                || erAktoerNaermestelederForBruker(aktoerId, oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer);
     }
 
     public boolean kanOppretteDialog(String sykmeldtAktoerId, String aktoerId, String virksomhetsnummer) {
-        return "true".equals(getProperty("disable.tilgangskontroll")) || (aktoerId.equals(sykmeldtAktoerId) && aktoerHarNaermesteLederHosVirksomhet(aktoerId, virksomhetsnummer)) || erAktoerNaermestelederForBruker(aktoerId, sykmeldtAktoerId, virksomhetsnummer);
+        return (aktoerId.equals(sykmeldtAktoerId) && aktoerHarNaermesteLederHosVirksomhet(aktoerId, virksomhetsnummer))
+                || erAktoerNaermestelederForBruker(aktoerId, sykmeldtAktoerId, virksomhetsnummer);
     }
 
     private boolean erAktoerNaermestelederForBruker(String aktoerId, String sykmeldtAktoerId, String virksomhetsnummer) {
