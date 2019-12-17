@@ -5,7 +5,9 @@ import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
 import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.service.*;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
+import no.nav.syfo.service.AktoerService;
+import no.nav.syfo.service.OppfoelgingsdialogService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -27,7 +29,7 @@ public class ArbeidsgiverOppfolgingsplanController {
 
     private final OIDCRequestContextHolder contextHolder;
     private final AktoerService aktorService;
-    private final NaermesteLederService naermesteLederService;
+    private final NarmesteLederConsumer narmesteLederConsumer;
     private final OppfoelgingsdialogService oppfoelgingsdialogService;
     private final Metrikk metrikk;
 
@@ -35,13 +37,13 @@ public class ArbeidsgiverOppfolgingsplanController {
     public ArbeidsgiverOppfolgingsplanController(
             OIDCRequestContextHolder contextHolder,
             AktoerService aktorService,
-            NaermesteLederService naermesteLederService,
+            NarmesteLederConsumer narmesteLederConsumer,
             OppfoelgingsdialogService oppfoelgingsdialogService,
             Metrikk metrikk
     ) {
         this.contextHolder = contextHolder;
         this.aktorService = aktorService;
-        this.naermesteLederService = naermesteLederService;
+        this.narmesteLederConsumer = narmesteLederConsumer;
         this.oppfoelgingsdialogService = oppfoelgingsdialogService;
         this.metrikk = metrikk;
     }
@@ -64,7 +66,7 @@ public class ArbeidsgiverOppfolgingsplanController {
         String innloggetAktorId = aktorService.hentAktoerIdForFnr(innloggetIdent);
         String sykmeldtAktorId = aktorService.hentAktoerIdForFnr(rsOpprettOppfolgingsplan.sykmeldtFnr);
 
-        if (naermesteLederService.erAktorLederForAktor(innloggetAktorId, sykmeldtAktorId, EKSTERN)) {
+        if (narmesteLederConsumer.erAktorLederForAktor(innloggetAktorId, sykmeldtAktorId)) {
             Long id = oppfoelgingsdialogService.opprettOppfoelgingsdialog(rsOpprettOppfolgingsplan, innloggetIdent);
 
             metrikk.tellHendelse("opprett_oppfolgingsplan_ag");

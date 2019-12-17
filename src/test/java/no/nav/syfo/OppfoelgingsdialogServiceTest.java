@@ -2,6 +2,7 @@ package no.nav.syfo;
 
 import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Ansatt;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
 import no.nav.syfo.service.*;
@@ -19,7 +20,6 @@ import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEID
 import static no.nav.syfo.testhelper.UserConstants.LEDER_FNR;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.fjernEldsteGodkjenning;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +28,8 @@ public class OppfoelgingsdialogServiceTest {
 
     @Mock
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    @Mock
+    private NarmesteLederConsumer narmesteLederConsumer;
     @Mock
     private NaermesteLederService naermesteLederService;
     @Mock
@@ -46,7 +48,7 @@ public class OppfoelgingsdialogServiceTest {
         Oppfoelgingsdialog dialog1 = new Oppfoelgingsdialog().id(1L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("1"));
         Oppfoelgingsdialog dialog2 = new Oppfoelgingsdialog().id(2L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("2"));
         when(aktoerService.hentAktoerIdForFnr("123")).thenReturn(LEDER_FNR);
-        when(naermesteLederService.hentAnsatte(anyString(), any())).thenReturn(asList(new Ansatt().aktoerId("sykmeldt").virksomhetsnummer("1")));
+        when(narmesteLederConsumer.ansatte(anyString())).thenReturn(asList(new Ansatt().aktoerId("sykmeldt").virksomhetsnummer("1")));
         when(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(anyString())).thenReturn(asList(
                 dialog1,
                 dialog2

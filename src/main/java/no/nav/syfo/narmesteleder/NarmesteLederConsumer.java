@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.function.Function;
 
+import static java.util.stream.Collectors.toList;
 import static no.nav.syfo.config.cache.CacheConfig.CACHENAME_ANSATTE;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
@@ -90,4 +91,12 @@ public class NarmesteLederConsumer {
             new Ansatt()
                     .aktoerId(narmesteLederRelasjon.aktorId)
                     .virksomhetsnummer(narmesteLederRelasjon.orgnummer);
+
+    public boolean erAktorLederForAktor(String naermesteLederAktorId, String ansattAktorId) {
+        List<String> ansatteAktorId = ansatte(naermesteLederAktorId).stream()
+                .map(Ansatt::aktoerId)
+                .collect(toList());
+
+        return ansatteAktorId.contains(ansattAktorId);
+    }
 }
