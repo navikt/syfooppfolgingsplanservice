@@ -66,16 +66,17 @@ public class PdfService {
         return dokumentDAO.hent(godkjentPlan.dokumentUuid);
     }
 
-    public byte[] pdf2image(byte[] pdfBytes, int side) throws IOException {
-        PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes));
-        PDFRenderer pdfRenderer = new PDFRenderer(document);
-
-
-        BufferedImage image = pdfRenderer.renderImageWithDPI(side - 1, 300, ImageType.RGB);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIOUtil.writeImage(image, "png", byteArrayOutputStream);
-        document.close();
-        return byteArrayOutputStream.toByteArray();
+    public byte[] pdf2image(byte[] pdfBytes, int side) {
+        try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
+            PDFRenderer pdfRenderer = new PDFRenderer(document);
+            BufferedImage image = pdfRenderer.renderImageWithDPI(side - 1, 300, ImageType.RGB);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIOUtil.writeImage(image, "png", byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            log.error("Fikk feil ved konvertering fra PDF til PNG");
+            throw new RuntimeException("Klarte ikke å konvertere fra PDF til PNG");
+        }
     }
 
     public int hentAntallSiderIDokument(byte[] pdf) {
