@@ -81,7 +81,10 @@ public class PdfService {
     public int hentAntallSiderIDokument(byte[] pdf) {
         InputStream is = new ByteArrayInputStream(pdf);
         try {
-            return PDDocument.load(is).getNumberOfPages();
+            PDDocument document = PDDocument.load(is);
+            int antallSider = document.getNumberOfPages();
+            document.close();
+            return antallSider;
         } catch (IOException e) {
             return 1;
         }
