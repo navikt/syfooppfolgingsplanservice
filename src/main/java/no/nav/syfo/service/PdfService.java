@@ -30,6 +30,10 @@ public class PdfService {
 
     private Metrikk metrikk;
 
+    private float pngDpiResolution = 150.0f;
+
+    private ImageType pngImageType = ImageType.RGB;
+
     @Inject
     public PdfService(
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
@@ -69,7 +73,7 @@ public class PdfService {
     public byte[] pdf2image(byte[] pdfBytes, int side) {
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
             PDFRenderer pdfRenderer = new PDFRenderer(document);
-            BufferedImage image = pdfRenderer.renderImageWithDPI(side - 1, 300, ImageType.RGB);
+            BufferedImage image = pdfRenderer.renderImageWithDPI(side - 1, pngDpiResolution, pngImageType);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIOUtil.writeImage(image, "png", byteArrayOutputStream);
             return byteArrayOutputStream.toByteArray();
