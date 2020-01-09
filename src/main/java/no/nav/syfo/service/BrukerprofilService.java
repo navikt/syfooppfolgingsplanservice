@@ -1,6 +1,7 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.tjeneste.virksomhet.brukerprofil.v3.*;
 import no.nav.tjeneste.virksomhet.brukerprofil.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.brukerprofil.v3.meldinger.WSHentKontaktinformasjonOgPreferanserRequest;
@@ -20,15 +21,15 @@ import static org.apache.commons.lang3.text.WordUtils.capitalize;
 public class BrukerprofilService {
 
     private BrukerprofilV3 brukerprofilV3;
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
 
     @Inject
     public BrukerprofilService(
             BrukerprofilV3 brukerprofilV3,
-            AktoerService aktoerService
+            AktorregisterConsumer aktorregisterConsumer
     ) {
         this.brukerprofilV3 = brukerprofilV3;
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
     }
 
     public String hentNavnByFnr(String fnr) {
@@ -77,7 +78,7 @@ public class BrukerprofilService {
         if (!aktoerId.matches("\\d{13}$")) {
             throw new RuntimeException();
         }
-        return hentNavnByFnr(aktoerService.hentFnrForAktoer(aktoerId));
+        return hentNavnByFnr(aktorregisterConsumer.hentFnrForAktor(aktoerId));
     }
 
     public boolean erKode6eller7(String fnr) {

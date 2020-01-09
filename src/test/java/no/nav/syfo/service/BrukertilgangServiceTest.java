@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import org.junit.Before;
@@ -18,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class BrukertilgangServiceTest {
 
     @Mock
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
     @Mock
     private NarmesteLederConsumer narmesteLederConsumer;
     @InjectMocks
@@ -31,8 +32,8 @@ public class BrukertilgangServiceTest {
 
     @Before
     public void setup() {
-        when(aktoerService.hentAktoerIdForFnr(INNLOGGET_FNR)).thenReturn(INNLOGGET_AKTOERID);
-        when(aktoerService.hentAktoerIdForFnr(SPOR_OM_FNR)).thenReturn(SPOR_OM_AKTOERID);
+        when(aktorregisterConsumer.hentAktorIdForFnr(INNLOGGET_FNR)).thenReturn(INNLOGGET_AKTOERID);
+        when(aktorregisterConsumer.hentAktorIdForFnr(SPOR_OM_FNR)).thenReturn(SPOR_OM_AKTOERID);
     }
 
     @Test
