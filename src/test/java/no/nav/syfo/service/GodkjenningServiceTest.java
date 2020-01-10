@@ -6,6 +6,7 @@ import no.nav.syfo.domain.sykmelding.Periode;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Naermesteleder;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ToggleUtil;
 import org.junit.Before;
@@ -32,7 +33,7 @@ public class GodkjenningServiceTest {
     @Mock
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     @Mock
-    private NaermesteLederService naermesteLederService;
+    private NarmesteLederConsumer narmesteLederConsumer;
     @Mock
     private TilgangskontrollService tilgangskontrollService;
     @Mock
@@ -95,7 +96,7 @@ public class GodkjenningServiceTest {
 
     @Before
     public void setup() {
-        when(naermesteLederService.hentNaermesteLeder(any(), any(), any())).thenReturn(Optional.of(new Naermesteleder()
+        when(narmesteLederConsumer.narmesteLeder(any(), any())).thenReturn(Optional.of(new Naermesteleder()
                 .epost("epost")
                 .mobil("mobil")
                 .navn("navn")

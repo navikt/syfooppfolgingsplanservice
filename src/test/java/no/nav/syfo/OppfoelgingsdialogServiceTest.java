@@ -31,8 +31,6 @@ public class OppfoelgingsdialogServiceTest {
     @Mock
     private NarmesteLederConsumer narmesteLederConsumer;
     @Mock
-    private NaermesteLederService naermesteLederService;
-    @Mock
     private TilgangskontrollService tilgangskontrollService;
     @Mock
     private AktoerService aktoerService;

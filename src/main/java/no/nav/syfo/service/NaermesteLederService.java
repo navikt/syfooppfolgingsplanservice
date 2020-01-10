@@ -5,19 +5,16 @@ import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.syfo.config.ws.wsconfig.SyfoOppfoelgingConfig;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentNaermesteLederListeSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentNaermesteLederSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.*;
+import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.WSHentNaermesteLederListeRequest;
+import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.WSHentNaermesteLederListeResponse;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.util.List;
-import java.util.Optional;
 
-import static java.util.Optional.of;
 import static no.nav.syfo.mappers.ws.WSNaermesteLederMapper.ws2naermesteLeder;
 import static no.nav.syfo.oidc.OIDCUtil.getIssuerToken;
-import static no.nav.syfo.util.MapUtil.map;
 import static no.nav.syfo.util.MapUtil.mapListe;
 
 @Slf4j
@@ -48,24 +45,6 @@ public class NaermesteLederService {
         } catch (HentNaermesteLederListeSikkerhetsbegrensning e) {
             log.warn("Fikk sikkerhetsbegrensning ved henting av naermeste ledere for person {}", aktoerId);
             throw new ForbiddenException();
-        }
-    }
-
-    public Optional<Naermesteleder> hentNaermesteLeder(String aktoerId, String virksomhetsnummer, String oidcIssuer) {
-        try {
-            WSHentNaermesteLederRequest request = new WSHentNaermesteLederRequest().withAktoerId(aktoerId).withOrgnummer(virksomhetsnummer);
-
-            String oidcToken = getIssuerToken(this.contextHolder, oidcIssuer);
-            WSHentNaermesteLederResponse response = sykefravaersoppfoelgingConfig.hentNaermesteLeder(request, oidcToken);
-
-            return of(map(response.getNaermesteLeder(), ws2naermesteLeder));
-        } catch (HentNaermesteLederSikkerhetsbegrensning e) {
-            log.warn("Fikk sikkerhetsbegrensning ved henting av naermeste leder for person {} i virksomhet {}", aktoerId, virksomhetsnummer);
-            throw new ForbiddenException();
-        } catch (RuntimeException e) {
-            log.error("Runtime-feil mot SyfoService. Trolig restart av syfoservice eller at datapower er nede e.l. " +
-                    "Parametere: aktoerId: {} virksomhetsnummer: {} av bruker ", aktoerId, virksomhetsnummer, e);
-            throw e;
         }
     }
 }

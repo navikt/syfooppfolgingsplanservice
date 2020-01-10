@@ -11,15 +11,12 @@ import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 @Service
 public class TilgangskontrollService {
 
-    private NaermesteLederService naermesteLederService;
     private NarmesteLederConsumer narmesteLederConsumer;
 
     @Inject
     public TilgangskontrollService(
-            NaermesteLederService naermesteLederService,
             NarmesteLederConsumer narmesteLederConsumer
     ) {
-        this.naermesteLederService = naermesteLederService;
         this.narmesteLederConsumer = narmesteLederConsumer;
     }
 
@@ -39,6 +36,6 @@ public class TilgangskontrollService {
     }
 
     private boolean aktoerHarNaermesteLederHosVirksomhet(String aktoerId, String virksomhetsnummer) {
-        return naermesteLederService.hentNaermesteLeder(aktoerId, virksomhetsnummer, EKSTERN).isPresent();
+        return narmesteLederConsumer.narmesteLeder(aktoerId, virksomhetsnummer).isPresent();
     }
 }
