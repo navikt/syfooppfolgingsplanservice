@@ -3,6 +3,7 @@ package no.nav.syfo.config;
 import no.nav.syfo.api.system.authorization.AuthorizationFilterFeed;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.*;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,6 +19,7 @@ import static java.util.Arrays.asList;
 @Configuration
 @EnableTransactionManagement
 @EnableScheduling
+@EnableCaching
 @EnableAspectJAutoProxy
 public class ApplicationConfig {
 
