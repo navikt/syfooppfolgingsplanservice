@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache>
     <defaultCache eternal="true" maxElementsInMemory="1000" overflowToDisk="false"/>
-    <cache name="aktoerid" maxElementsInMemory="10000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
-    <cache name="aktoerfnr" maxElementsInMemory="10000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
-    <cache name="ansatte" maxElementsInMemory="5000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
-    <cache name="personPdl" maxElementsInMemory="5000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
+    <cache name="aktoerid" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
+    <cache name="aktoerfnr" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
+    <cache name="ansatte" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
+    <cache name="personPdl" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
 </ehcache>
