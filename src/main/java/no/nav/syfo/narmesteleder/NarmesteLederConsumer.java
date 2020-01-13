@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
-import static no.nav.syfo.config.cache.CacheConfig.CACHENAME_ANSATTE;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -53,7 +52,7 @@ public class NarmesteLederConsumer {
         this.syfonarmestelederId = syfonarmestelederId;
     }
 
-    @Cacheable(value = CACHENAME_ANSATTE, key = "#aktorId", condition = "#aktorId != null")
+    @Cacheable(value = "ansatte", key = "#aktorId", condition = "#aktorId != null")
     public List<Ansatt> ansatte(String aktorId) {
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static no.nav.syfo.config.cache.CacheConfig.CACHENAME_PERSON_PDL;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -51,7 +50,7 @@ public class PdlConsumer {
         this.url = url;
     }
 
-    @Cacheable(cacheNames = CACHENAME_PERSON_PDL, key = "#ident", condition = "#ident != null")
+    @Cacheable(cacheNames = "personPdl", key = "#ident", condition = "#ident != null")
     public PdlHentPerson person(String ident) {
         metrikk.tellHendelse("call_pdl");
 

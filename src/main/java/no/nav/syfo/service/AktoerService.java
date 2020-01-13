@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-import static no.nav.syfo.config.cache.CacheConfig.CACHENAME_AKTOR_FNR;
-import static no.nav.syfo.config.cache.CacheConfig.CACHENAME_AKTOR_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
@@ -36,7 +34,7 @@ public class AktoerService implements InitializingBean {
         this.aktoerV2 = aktoerV2;
     }
 
-    @Cacheable(value = CACHENAME_AKTOR_ID, key = "#fnr", condition = "#fnr != null")
+    @Cacheable(value = "aktoerid", key = "#fnr", condition = "#fnr != null")
     public String hentAktoerIdForFnr(String fnr) {
         if (isBlank(fnr) || !fnr.matches("\\d{11}$")) {
             log.error("Prøvde å hente aktoerId");
@@ -54,7 +52,7 @@ public class AktoerService implements InitializingBean {
         }
     }
 
-    @Cacheable(value = CACHENAME_AKTOR_FNR, key = "#aktoerId", condition = "#aktoerId != null")
+    @Cacheable(value = "aktoerfnr", key = "#aktoerId", condition = "#aktoerId != null")
     public String hentFnrForAktoer(String aktoerId) {
         if (isBlank(aktoerId) || !aktoerId.matches("\\d{13}$")) {
             log.error("Prøvde å hente fnr med aktoerId {}", aktoerId);
