@@ -5,6 +5,7 @@ import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Naermesteleder;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.pdf.domain.*;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.repository.domain.Dokument;
@@ -42,7 +43,7 @@ public class GodkjenningService {
 
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
 
-    private NaermesteLederService naermesteLederService;
+    private NarmesteLederConsumer narmesteLederConsumer;
 
     private TilgangskontrollService tilgangskontrollService;
 
@@ -83,7 +84,7 @@ public class GodkjenningService {
             BrukerprofilService brukerprofilService,
             DkifService dkifService,
             OrganisasjonService organisasjonService,
-            NaermesteLederService naermesteLederService,
+            NarmesteLederConsumer narmesteLederConsumer,
             ServiceVarselService serviceVarselService,
             SykeforloepService sykeforloepService,
             TredjepartsvarselService tredjepartsvarselService,
@@ -100,7 +101,7 @@ public class GodkjenningService {
         this.brukerprofilService = brukerprofilService;
         this.dkifService = dkifService;
         this.organisasjonService = organisasjonService;
-        this.naermesteLederService = naermesteLederService;
+        this.narmesteLederConsumer = narmesteLederConsumer;
         this.serviceVarselService = serviceVarselService;
         this.sykeforloepService = sykeforloepService;
         this.tredjepartsvarselService = tredjepartsvarselService;
@@ -151,7 +152,7 @@ public class GodkjenningService {
             if (erArbeidsgiveren(oppfoelgingsdialog, innloggetAktoerId)) {
                 serviceVarselService.sendServiceVarsel(oppfoelgingsdialog.arbeidstaker.aktoerId, SyfoplangodkjenningSyk, oppfoelgingsdialogId);
             } else {
-                Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN).get();
+                Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer).get();
                 tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplangodkjenningNl, naermesteleder, oppfoelgingsdialogId);
             }
         }
@@ -236,7 +237,7 @@ public class GodkjenningService {
     public void genererNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId, boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfoelgingsdialog, false, delMedNav);
 
-        Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN)
+        Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
         Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
@@ -331,7 +332,7 @@ public class GodkjenningService {
     public void genererTvungenPlan(Oppfoelgingsdialog oppfoelgingsdialog, RSGyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfoelgingsdialog, true, delMedNav);
 
-        Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN)
+        Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
         Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);

@@ -46,7 +46,7 @@ behandlejournal.v2.endpointurl: "behandlejournal.url"
 brukeroppgave.v1.endpointurl: "brukeroppgavev1.url"
 lagrejuridisklogg.rest.url: "juridisklogg-lagre.url"
 sykefravaersoppfoelging.v1.endpointurl: "sykefravaeroppfoelgingv1.url"
-syfonarmesteleder.url: "syfonarmesteleder.url"
+syfonarmesteleder.url: "http://syfonarmesteleder.url"
 syfonarmesteleder.id: "syfonarmestelederID"
 pdl.url: "https://pdl.url"
 virksomhet:

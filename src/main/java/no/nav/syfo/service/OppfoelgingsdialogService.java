@@ -243,7 +243,7 @@ public class OppfoelgingsdialogService {
 
     private void sendVarsler(String innloggetAktoerId, Oppfoelgingsdialog oppfoelgingsdialog) {
         if (innloggetAktoerId.equals(oppfoelgingsdialog.arbeidstaker.aktoerId)) {
-            Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN).get();
+            Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer).get();
             tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanOpprettetNL, naermesteleder, oppfoelgingsdialog.id);
         } else {
             serviceVarselService.sendServiceVarsel(oppfoelgingsdialog.arbeidstaker.aktoerId, SyfoplanOpprettetSyk, oppfoelgingsdialog.id);
@@ -383,7 +383,7 @@ public class OppfoelgingsdialogService {
         }
 
         if (erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId)) {
-            Naermesteleder naermesteleder = naermesteLederService.hentNaermesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN).get();
+            Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer).get();
             tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanRevideringNL, naermesteleder, oppfoelgingsdialog.id);
         } else {
             serviceVarselService.sendServiceVarsel(oppfoelgingsdialog.arbeidstaker.aktoerId, SyfoplanRevideringSyk, oppfoelgingsdialog.id);

@@ -4,6 +4,7 @@ import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.syfo.LocalApplication;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Naermesteleder;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.repository.dao.*;
 import org.junit.*;
@@ -53,7 +54,7 @@ public class OppfoelgingsdialogServiceTest {
     @MockBean
     private KommentarDAO kommentarDAO;
     @MockBean
-    private NaermesteLederService naermesteLederService;
+    private NarmesteLederConsumer narmesteLederConsumer;
     @MockBean
     private TilgangskontrollService tilgangskontrollService;
     @MockBean
@@ -113,7 +114,7 @@ public class OppfoelgingsdialogServiceTest {
                 ));
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
-        when(naermesteLederService.hentNaermesteLeder(anyString(), anyString(), any())).thenReturn(of(new Naermesteleder()));
+        when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
         when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("1234567890123");
         when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));
@@ -148,7 +149,7 @@ public class OppfoelgingsdialogServiceTest {
                 ));
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
-        when(naermesteLederService.hentNaermesteLeder(anyString(), anyString(), any())).thenReturn(of(new Naermesteleder()));
+        when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
         when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("1234567890123");
         when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));
