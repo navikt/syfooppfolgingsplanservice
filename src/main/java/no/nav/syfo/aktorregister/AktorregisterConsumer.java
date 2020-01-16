@@ -15,8 +15,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.inject.Inject;
 
 import static no.nav.syfo.aktorregister.AktorregisterUtils.currentIdentFromAktorregisterResponse;
-import static no.nav.syfo.config.cache.CacheConfig.CACHENAME_AKTOR_FNR;
-import static no.nav.syfo.config.cache.CacheConfig.CACHENAME_AKTOR_ID;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -26,6 +24,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class AktorregisterConsumer implements InitializingBean {
 
     private static AktorregisterConsumer instance;
+    public static final String CACHENAME_AKTOR_ID = "aktoerid";
+    public static final String CACHENAME_AKTOR_FNR = "aktoerfnr";
 
     @Override
     public void afterPropertiesSet() {
