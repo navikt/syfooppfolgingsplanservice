@@ -49,6 +49,7 @@ sykefravaersoppfoelging.v1.endpointurl: "sykefravaeroppfoelgingv1.url"
 syfonarmesteleder.url: "http://syfonarmesteleder.url"
 syfonarmesteleder.id: "syfonarmestelederID"
 pdl.url: "https://pdl.url"
+aareg.services.url: "http://aareg-services.url"
 aktorregister.rest.url: "http://aktorregister.url"
 virksomhet:
   arbeidsfordeling.v1.endpointurl: "arbeidsfordelingv1.url"

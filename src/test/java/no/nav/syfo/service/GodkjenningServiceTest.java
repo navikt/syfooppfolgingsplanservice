@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aareg.AaregConsumer;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.domain.*;
@@ -30,6 +31,8 @@ import static org.mockito.Mockito.*;
 public class GodkjenningServiceTest {
 
     @Mock
+    private AaregConsumer aaregConsumer;
+    @Mock
     private Metrikk metrikk;
     @Mock
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
@@ -49,8 +52,6 @@ public class GodkjenningServiceTest {
     private BrukerprofilService brukerprofilService;
     @Mock
     private OrganisasjonService organisasjonService;
-    @Mock
-    private ArbeidsforholdService arbeidsforholdService;
     @Mock
     private ServiceVarselService serviceVarselService;
     @Mock
@@ -106,7 +107,7 @@ public class GodkjenningServiceTest {
         when(brukerprofilService.hentNavnByAktoerId(anyString())).thenReturn("navn");
         when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn("fnr");
         when(organisasjonService.finnVirksomhetsnavn(anyString())).thenReturn("Virksomhet");
-        when(arbeidsforholdService.hentArbeidsforholdMedAktoerId(anyString(), any(), anyString())).thenReturn(Collections.emptyList());
+        when(aaregConsumer.arbeidstakersStillingerForOrgnummer(anyString(), any(), anyString())).thenReturn(Collections.emptyList());
         when(sykeforloepService.hentSykeforlopperiode(anyString(), anyString(), anyString())).thenReturn(
                 asList(new Periode()
                         .withFom(now().minusDays(2))
