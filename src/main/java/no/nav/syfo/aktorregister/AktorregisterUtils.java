@@ -2,9 +2,11 @@ package no.nav.syfo.aktorregister;
 
 import no.nav.syfo.aktorregister.exceptions.*;
 
+import java.util.Map;
+
 public class AktorregisterUtils {
-    public static String currentIdentFromAktorregisterResponse(AktorregisterResponse response, String desiredUsersIdent, String desiredIdentGroup) {
-        IdentinfoForAktoer identinfoForAktoer = response.aktorMap.get(desiredUsersIdent);
+    public static String currentIdentFromAktorregisterResponse(Map<String, IdentinfoForAktoer> response, String desiredUsersIdent, String desiredIdentGroup) {
+        IdentinfoForAktoer identinfoForAktoer = response.get(desiredUsersIdent);
         throwExceptionIfErrorOrNoUser(identinfoForAktoer);
 
         Identinfo currentIdentinfo = identinfoForAktoer.identer.stream()

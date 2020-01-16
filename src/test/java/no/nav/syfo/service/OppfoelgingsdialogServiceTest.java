@@ -115,10 +115,9 @@ public class OppfoelgingsdialogServiceTest {
                 ));
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
-        when(naermesteLederService.hentNaermesteLeder(anyString(), anyString(), any())).thenReturn(of(new Naermesteleder()));
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
         when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
-        when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("1234567890123");
+        when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
         when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));
         when(arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(anyLong())).thenReturn(Arrays.asList(new Arbeidsoppgave().id(1L)));
@@ -152,10 +151,8 @@ public class OppfoelgingsdialogServiceTest {
                 ));
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
-        when(naermesteLederService.hentNaermesteLeder(anyString(), anyString(), any())).thenReturn(of(new Naermesteleder()));
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
         when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
-        when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("1234567890123");
         when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));
         when(arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(anyLong())).thenReturn(Arrays.asList(new Arbeidsoppgave().id(1L)));
