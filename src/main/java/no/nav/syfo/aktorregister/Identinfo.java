@@ -7,6 +7,6 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class Identinfo {
     public String ident;
-    public String identGruppe;
+    public String identgruppe;
     public boolean gjeldende;
 }

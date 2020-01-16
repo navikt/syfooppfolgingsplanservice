@@ -10,7 +10,7 @@ public class AktorregisterUtils {
         throwExceptionIfErrorOrNoUser(identinfoForAktoer);
 
         Identinfo currentIdentinfo = identinfoForAktoer.identer.stream()
-                .filter(identinfo -> identinfo.gjeldende && desiredIdentGroup.equals(identinfo.identGruppe))
+                .filter(identinfo -> identinfo.gjeldende && desiredIdentGroup.equals(identinfo.identgruppe))
                 .findAny()
                 .orElse(null);
 
