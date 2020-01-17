@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 import static no.nav.syfo.api.intern.mappers.OppfoelgingsdialogRestMapper.status2rs;
 import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.*;
-import static no.nav.syfo.service.AktoerService.aktoerService;
+import static no.nav.syfo.aktorregister.AktorregisterConsumer.aktorregisterConsumer;
 import static no.nav.syfo.util.MapUtil.*;
 
 public class RSBrukerOppfolgingsplanMapper {
@@ -27,7 +27,7 @@ public class RSBrukerOppfolgingsplanMapper {
     private static Function<GodkjentPlan, RSAvbruttplan> avbruttplan2rs = godkjentPlan ->
             godkjentPlan.avbruttPlan
                     .map(avbruttPlan -> new RSAvbruttplan()
-                            .av(new RSPerson().fnr(avbruttPlan.avAktoerId != null ? aktoerService().hentFnrForAktoer(avbruttPlan.avAktoerId()) : null))
+                            .av(new RSPerson().fnr(avbruttPlan.avAktoerId != null ? aktorregisterConsumer().hentFnrForAktor(avbruttPlan.avAktoerId()) : null))
                             .tidspunkt(avbruttPlan.tidspunkt)
                     )
                     .orElse(null);
@@ -53,7 +53,7 @@ public class RSBrukerOppfolgingsplanMapper {
                     .godkjent(godkjenning.godkjent)
                     .delMedNav(godkjenning.delMedNav)
                     .godkjentAv(new RSPerson()
-                            .fnr(aktoerService().hentFnrForAktoer(godkjenning.godkjentAvAktoerId))
+                            .fnr(aktorregisterConsumer().hentFnrForAktor(godkjenning.godkjentAvAktoerId))
                     )
                     .godkjenningsTidspunkt(godkjenning.godkjenningsTidspunkt)
                     .gyldighetstidspunkt(mapNullable(godkjenning.gyldighetstidspunkt, gyldighetstidspunkt2rs));
@@ -63,9 +63,9 @@ public class RSBrukerOppfolgingsplanMapper {
                     .id(kommentar.id)
                     .tekst(kommentar.tekst)
                     .opprettetAv(new RSPerson()
-                            .fnr(aktoerService().hentFnrForAktoer(kommentar.opprettetAvAktoerId)))
+                            .fnr(aktorregisterConsumer().hentFnrForAktor(kommentar.opprettetAvAktoerId)))
                     .opprettetTidspunkt(kommentar.opprettetDato)
-                    .sistEndretAv(new RSPerson().fnr(aktoerService().hentFnrForAktoer(kommentar.sistEndretAvAktoerId)))
+                    .sistEndretAv(new RSPerson().fnr(aktorregisterConsumer().hentFnrForAktor(kommentar.sistEndretAvAktoerId)))
                     .sistEndretDato(kommentar.sistEndretDato);
 
     private static Function<Tiltak, RSTiltak> tiltak2rs = tiltak ->
@@ -79,9 +79,9 @@ public class RSBrukerOppfolgingsplanMapper {
                     .gjennomfoering(tiltak.gjennomfoering)
                     .beskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
                     .opprettetAv(new RSPerson()
-                            .fnr(aktoerService().hentFnrForAktoer(tiltak.opprettetAvAktoerId)))
+                            .fnr(aktorregisterConsumer().hentFnrForAktor(tiltak.opprettetAvAktoerId)))
                     .opprettetDato(tiltak.opprettetDato)
-                    .sistEndretAv(new RSPerson().fnr(aktoerService().hentFnrForAktoer(tiltak.sistEndretAvAktoerId)))
+                    .sistEndretAv(new RSPerson().fnr(aktorregisterConsumer().hentFnrForAktor(tiltak.sistEndretAvAktoerId)))
                     .sistEndretDato(tiltak.sistEndretDato)
                     .kommentarer(mapListe(tiltak.kommentarer, kommentar2rs));
 
@@ -110,9 +110,9 @@ public class RSBrukerOppfolgingsplanMapper {
                     .arbeidsoppgavenavn(arbeidsoppgave.navn)
                     .erVurdertAvSykmeldt(arbeidsoppgave.erVurdertAvSykmeldt)
                     .gjennomfoering(mapNullable(arbeidsoppgave.gjennomfoering, gjennomfoering2rs))
-                    .opprettetAv(new RSPerson().fnr(aktoerService().hentFnrForAktoer(arbeidsoppgave.opprettetAvAktoerId)))
+                    .opprettetAv(new RSPerson().fnr(aktorregisterConsumer().hentFnrForAktor(arbeidsoppgave.opprettetAvAktoerId)))
                     .opprettetDato(arbeidsoppgave.opprettetDato)
-                    .sistEndretAv(new RSPerson().fnr(aktoerService().hentFnrForAktoer(arbeidsoppgave.sistEndretAvAktoerId)))
+                    .sistEndretAv(new RSPerson().fnr(aktorregisterConsumer().hentFnrForAktor(arbeidsoppgave.sistEndretAvAktoerId)))
                     .sistEndretDato(arbeidsoppgave.sistEndretDato);
 
     private static Function<Oppfoelgingsdialog, RSEvaluering> evalueringSykmeldt2rs = oppfolgingsplan ->
@@ -131,13 +131,13 @@ public class RSBrukerOppfolgingsplanMapper {
             .arbeidsoppgaveListe(mapListe(oppfolgingsplan.arbeidsoppgaveListe, arbeidsoppgave2rs))
             .tiltakListe(mapListe(oppfolgingsplan.tiltakListe, tiltak2rs))
             .godkjenninger(mapListe(oppfolgingsplan.godkjenninger, godkjenning2rs))
-            .sistEndretAv(new RSPerson().fnr(aktoerService().hentFnrForAktoer(oppfolgingsplan.sistEndretAvAktoerId)))
+            .sistEndretAv(new RSPerson().fnr(aktorregisterConsumer().hentFnrForAktor(oppfolgingsplan.sistEndretAvAktoerId)))
             .sistEndretDato(oppfolgingsplan.sistEndretDato)
             .godkjentPlan(mapNullable(oppfolgingsplan, godkjentplan2rs))
             .status(map(oppfolgingsplan, status2rs))
             .opprettetDato(LocalDate.from(oppfolgingsplan.opprettet))
             .arbeidstaker(new RSPerson()
-                    .fnr(aktoerService().hentFnrForAktoer(oppfolgingsplan.arbeidstaker.aktoerId))
+                    .fnr(aktorregisterConsumer().hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId))
                     .sistInnlogget(oppfolgingsplan.arbeidstaker.sistInnlogget)
                     .evaluering(mapNullable(oppfolgingsplan, evalueringSykmeldt2rs))
                     .samtykke(oppfolgingsplan.arbeidstaker.samtykke)

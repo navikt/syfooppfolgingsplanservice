@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
@@ -47,7 +48,7 @@ public class GodkjenningService {
 
     private TilgangskontrollService tilgangskontrollService;
 
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
 
     private DkifService dkifService;
 
@@ -79,7 +80,7 @@ public class GodkjenningService {
             GodkjenningerDAO godkjenningerDAO,
             GodkjentplanDAO godkjentplanDAO,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
-            AktoerService aktoerService,
+            AktorregisterConsumer aktorregisterConsumer,
             ArbeidsforholdService arbeidsforholdService,
             BrukerprofilService brukerprofilService,
             DkifService dkifService,
@@ -96,7 +97,7 @@ public class GodkjenningService {
         this.godkjenningerDAO = godkjenningerDAO;
         this.godkjentplanDAO = godkjentplanDAO;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.arbeidsforholdService = arbeidsforholdService;
         this.brukerprofilService = brukerprofilService;
         this.dkifService = dkifService;
@@ -111,7 +112,7 @@ public class GodkjenningService {
     @Transactional
     public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning, boolean delMedNav) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
             throw new ForbiddenException("Ikke tilgang");
@@ -241,7 +242,7 @@ public class GodkjenningService {
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
         Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
-        String sykmeldtFnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.arbeidstaker.aktoerId);
+        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
         String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfoelgingsdialog.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
                 .withArbeidsgiverEpost(naermesteleder.epost)
@@ -336,7 +337,7 @@ public class GodkjenningService {
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
         Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
-        String sykmeldtFnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.arbeidstaker.aktoerId);
+        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
         String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfoelgingsdialog.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
                 .withArbeidsgiverEpost(naermesteleder.epost)
@@ -422,7 +423,7 @@ public class GodkjenningService {
     @Transactional
     public void avvisGodkjenning(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
             throw new ForbiddenException("Ikke tilgang");

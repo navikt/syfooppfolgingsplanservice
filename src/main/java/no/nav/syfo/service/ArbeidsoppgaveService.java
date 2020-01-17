@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
@@ -16,7 +17,7 @@ import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeArbeidsoppgave
 @Service
 public class ArbeidsoppgaveService {
 
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
     private GodkjenningerDAO godkjenningerDAO;
     private Metrikk metrikk;
@@ -25,14 +26,14 @@ public class ArbeidsoppgaveService {
 
     @Inject
     public ArbeidsoppgaveService(
-            AktoerService aktoerService,
+            AktorregisterConsumer aktorregisterConsumer,
             ArbeidsoppgaveDAO arbeidsoppgaveDAO,
             GodkjenningerDAO godkjenningerDAO,
             Metrikk metrikk,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             TilgangskontrollService tilgangskontrollService
     ) {
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
         this.godkjenningerDAO = godkjenningerDAO;
         this.metrikk = metrikk;
@@ -43,7 +44,7 @@ public class ArbeidsoppgaveService {
     @Transactional
     public Long lagreArbeidsoppgave(Long oppfoelgingsdialogId, Arbeidsoppgave arbeidsoppgave, String fnr) throws ConflictException {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(fnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
         if (!eksisterendeArbeidsoppgaveHoererTilDialog(arbeidsoppgave.id, arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(oppfoelgingsdialogId))
                 || !tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
@@ -73,7 +74,7 @@ public class ArbeidsoppgaveService {
 
     @Transactional
     public void slettArbeidsoppgave(Long arbeidsoppgaveId, String fnr) throws ConflictException {
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(fnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
         Arbeidsoppgave arbeidsoppgave = arbeidsoppgaveDAO.finnArbeidsoppgave(arbeidsoppgaveId);
 
         if (!arbeidsoppgave.opprettetAvAktoerId.equals(innloggetAktoerId)) {

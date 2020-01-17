@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.sykmelding.Periode;
@@ -37,7 +38,7 @@ public class GodkjenningServiceTest {
     @Mock
     private TilgangskontrollService tilgangskontrollService;
     @Mock
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
     @Mock
     private DkifService dkifService;
     @Mock
@@ -103,7 +104,7 @@ public class GodkjenningServiceTest {
         ));
         when(dkifService.hentKontaktinfoAktoerId(anyString())).thenReturn(new Kontaktinfo().epost("epost").tlf("tlf"));
         when(brukerprofilService.hentNavnByAktoerId(anyString())).thenReturn("navn");
-        when(aktoerService.hentFnrForAktoer(anyString())).thenReturn("fnr");
+        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn("fnr");
         when(organisasjonService.finnVirksomhetsnavn(anyString())).thenReturn("Virksomhet");
         when(arbeidsforholdService.hentArbeidsforholdMedAktoerId(anyString(), any(), anyString())).thenReturn(Collections.emptyList());
         when(sykeforloepService.hentSykeforlopperiode(anyString(), anyString(), anyString())).thenReturn(

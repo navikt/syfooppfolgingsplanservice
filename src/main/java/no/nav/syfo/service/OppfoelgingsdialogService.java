@@ -1,6 +1,7 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
@@ -48,7 +49,7 @@ public class OppfoelgingsdialogService {
 
     private TilgangskontrollService tilgangskontrollService;
 
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
 
     private ArbeidsfordelingService arbeidsfordelingService;
 
@@ -84,7 +85,7 @@ public class OppfoelgingsdialogService {
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             TiltakDAO tiltakDAO,
             VeilederBehandlingDAO veilederBehandlingDAO,
-            AktoerService aktoerService,
+            AktorregisterConsumer aktorregisterConsumer,
             ArbeidsfordelingService arbeidsfordelingService,
             BrukerprofilService brukerprofilService,
             FastlegeService fastlegeService,
@@ -105,7 +106,7 @@ public class OppfoelgingsdialogService {
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.tiltakDAO = tiltakDAO;
         this.veilederBehandlingDAO = veilederBehandlingDAO;
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.arbeidsfordelingService = arbeidsfordelingService;
         this.brukerprofilService = brukerprofilService;
         this.fastlegeService = fastlegeService;
@@ -120,7 +121,7 @@ public class OppfoelgingsdialogService {
     }
 
     public List<Oppfoelgingsdialog> hentAktoersOppfoelgingsdialoger(BrukerkontekstConstant brukerkontekst, String innloggetFnr) {
-        String aktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String aktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (ARBEIDSGIVER == brukerkontekst) {
             List<Oppfoelgingsdialog> oppfoelgingsdialoger = new ArrayList<>();
@@ -174,12 +175,12 @@ public class OppfoelgingsdialogService {
     @Transactional
     public Long opprettOppfoelgingsdialog(RSOpprettOppfoelgingsdialog rsOpprettOppfoelgingsdialog, String innloggetFnr) {
         String virksomhetsnummer = rsOpprettOppfoelgingsdialog.virksomhetsnummer;
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
         String sykmeldtAktoerId = innloggetFnr.equals(rsOpprettOppfoelgingsdialog.sykmeldtFnr)
                 ? innloggetAktoerId
-                : aktoerService.hentAktoerIdForFnr(rsOpprettOppfoelgingsdialog.sykmeldtFnr);
+                : aktorregisterConsumer.hentAktorIdForFnr(rsOpprettOppfoelgingsdialog.sykmeldtFnr);
 
-        if (brukerprofilService.erKode6eller7(aktoerService.hentFnrForAktoer(sykmeldtAktoerId))) {
+        if (brukerprofilService.erKode6eller7(aktorregisterConsumer.hentFnrForAktor(sykmeldtAktoerId))) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
@@ -198,7 +199,7 @@ public class OppfoelgingsdialogService {
     @Transactional
     public long kopierOppfoelgingsdialog(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
             throw new RuntimeException();
@@ -265,7 +266,7 @@ public class OppfoelgingsdialogService {
     }
 
     private Enhet finnBehandlendeEnhetForGeografiskTilknytting(Oppfoelgingsdialog oppfoelgingsdialog) {
-        String sykmeldtFnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.arbeidstaker.aktoerId);
+        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
         String geografiskTilknytning = personService.hentGeografiskTilknytning(sykmeldtFnr);
         Enhet tildeltEnhet = arbeidsfordelingService.finnBehandlendeEnhet(geografiskTilknytning);
         if (egenAnsattService.erEgenAnsatt(sykmeldtFnr)) {
@@ -277,7 +278,7 @@ public class OppfoelgingsdialogService {
     @Transactional
     public void delMedNav(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
         LocalDateTime deltMedNavTidspunkt = now();
         Enhet sykmeldtBehandlendeEnhet = finnBehandlendeEnhetForGeografiskTilknytting(oppfoelgingsdialog);
 
@@ -302,14 +303,14 @@ public class OppfoelgingsdialogService {
     @Transactional
     public void delMedFastlege(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
             throw new ForbiddenException();
         }
 
         String sendesTilAktoerId = oppfoelgingsdialog.arbeidstaker.aktoerId;
-        String sendesTilFnr = aktoerService.hentFnrForAktoer(sendesTilAktoerId);
+        String sendesTilFnr = aktorregisterConsumer.hentFnrForAktor(sendesTilAktoerId);
 
         byte[] pdf = godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(oppfoelgingsdialogId)
                 .map(GodkjentPlan::dokumentUuid)
@@ -324,7 +325,7 @@ public class OppfoelgingsdialogService {
     @Transactional
     public void nullstillGodkjenning(long oppfoelgingsdialogId, String fnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(fnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
             throw new RuntimeException();
@@ -337,7 +338,7 @@ public class OppfoelgingsdialogService {
 
     public void oppdaterSistInnlogget(long oppfoelgingsdialogId, String fnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(fnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
             throw new RuntimeException();
@@ -349,7 +350,7 @@ public class OppfoelgingsdialogService {
     @Transactional
     public void avbrytPlan(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
             throw new RuntimeException();
@@ -370,13 +371,13 @@ public class OppfoelgingsdialogService {
 
     public boolean harBrukerTilgangTilDialog(long oppfoelgingsdialogId, String fnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String aktoerId = aktoerService.hentAktoerIdForFnr(fnr);
+        String aktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
         return tilgangskontrollService.aktoerTilhoererDialogen(aktoerId, oppfoelgingsdialog);
     }
 
     public void foresporRevidering(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetFnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
             throw new RuntimeException();
