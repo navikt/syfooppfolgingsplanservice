@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
@@ -23,7 +22,7 @@ public class JournalService {
 
     private static final String GOSYS = "FS22";
 
-    private AktorregisterConsumer aktorregisterConsumer;
+    private AktoerService aktoerService;
     private BehandleJournalV2 behandleJournalV2;
     private BrukerprofilService brukerprofilService;
     private DokumentService dokumentService;
@@ -32,14 +31,14 @@ public class JournalService {
 
     @Inject
     public JournalService(
-            AktorregisterConsumer aktorregisterConsumer,
+            AktoerService aktoerService,
             BehandleJournalV2 behandleJournalV2,
             BrukerprofilService brukerprofilService,
             DokumentService dokumentService,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             OrganisasjonService organisasjonService
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.aktoerService = aktoerService;
         this.behandleJournalV2 = behandleJournalV2;
         this.brukerprofilService = brukerprofilService;
         this.dokumentService = dokumentService;
@@ -51,7 +50,7 @@ public class JournalService {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(godkjentPlan.oppfoelgingsdialogId);
         String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfoelgingsdialog.virksomhet.virksomhetsnummer);
         String dokumentNavn = format("Oppfølgingsplan %s", virksomhetsnavn);
-        String fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.sistEndretAvAktoerId);
+        String fnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.sistEndretAvAktoerId);
 
         return behandleJournalV2.journalfoerInngaaendeHenvendelse(
                 new WSJournalfoerInngaaendeHenvendelseRequest()

@@ -1,10 +1,10 @@
 package no.nav.syfo.narmesteleder;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.*;
 import no.nav.syfo.pdl.PdlConsumer;
+import no.nav.syfo.service.AktoerService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +30,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class NarmesteLederConsumer {
     private static final Logger LOG = getLogger(NarmesteLederConsumer.class);
 
-    private final AktorregisterConsumer aktorregisterConsumer;
+    private final AktoerService aktoerService;
     private final AzureAdTokenConsumer azureAdTokenConsumer;
     private final Metrikk metrikk;
     private final PdlConsumer pdlConsumer;
@@ -49,7 +49,7 @@ public class NarmesteLederConsumer {
 
     @Autowired
     public NarmesteLederConsumer(
-            AktorregisterConsumer aktorregisterConsumer,
+            AktoerService aktoerService,
             AzureAdTokenConsumer azureAdTokenConsumer,
             Metrikk metrikk,
             PdlConsumer pdlConsumer,
@@ -57,7 +57,7 @@ public class NarmesteLederConsumer {
             @Value("${syfonarmesteleder.url}") String url,
             @Value("${syfonarmesteleder.id}") String syfonarmestelederId
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.aktoerService = aktoerService;
         this.azureAdTokenConsumer = azureAdTokenConsumer;
         this.metrikk = metrikk;
         this.pdlConsumer = pdlConsumer;
@@ -116,7 +116,7 @@ public class NarmesteLederConsumer {
         NarmesteLederRelasjon relasjon = response.getBody().narmesteLederRelasjon;
 
         String lederAktorId = relasjon.narmesteLederAktorId;
-        String lederFnr = aktorregisterConsumer.hentFnrForAktor(lederAktorId);
+        String lederFnr = aktoerService.hentFnrForAktoer(lederAktorId);
         String lederNavn = pdlConsumer.person(lederFnr).getName();
 
         metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER_VELLYKKET);

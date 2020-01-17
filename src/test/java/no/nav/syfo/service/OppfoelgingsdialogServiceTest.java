@@ -2,7 +2,6 @@ package no.nav.syfo.service;
 
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.syfo.LocalApplication;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
@@ -59,7 +58,7 @@ public class OppfoelgingsdialogServiceTest {
     @MockBean
     private TilgangskontrollService tilgangskontrollService;
     @MockBean
-    private AktorregisterConsumer aktorregisterConsumer;
+    private AktoerService aktoerService;
     @MockBean
     private BrukerprofilService brukerprofilService;
     @MockBean
@@ -115,9 +114,8 @@ public class OppfoelgingsdialogServiceTest {
                 ));
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
-        when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
         when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
-        when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
+        when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("1234567890123");
         when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));
         when(arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(anyLong())).thenReturn(Arrays.asList(new Arbeidsoppgave().id(1L)));
@@ -151,8 +149,8 @@ public class OppfoelgingsdialogServiceTest {
                 ));
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
-        when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
         when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
+        when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("1234567890123");
         when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));
         when(arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(anyLong())).thenReturn(Arrays.asList(new Arbeidsoppgave().id(1L)));
@@ -173,7 +171,7 @@ public class OppfoelgingsdialogServiceTest {
         mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.OK);
 
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
-        when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
+        when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("aktoerId");
         when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
         when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
         when(dokumentDAO.hent(anyString())).thenReturn(new byte[]{0, 1, 2});
@@ -188,7 +186,7 @@ public class OppfoelgingsdialogServiceTest {
     @Test(expected = ForbiddenException.class)
     public void delMedFastlegeIkkeTilgang() throws Exception {
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
-        when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
+        when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("aktoerId");
         when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(false);
 
         oppfoelgingsdialogService.delMedFastlege(1L, "fnr");
@@ -197,7 +195,7 @@ public class OppfoelgingsdialogServiceTest {
     @Test(expected = RuntimeException.class)
     public void delMedFastlegeFinnerIkkeGodkjentPlan() throws Exception {
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
-        when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
+        when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("aktoerId");
         when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
         when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(empty());
 
@@ -209,7 +207,7 @@ public class OppfoelgingsdialogServiceTest {
         mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.INTERNAL_SERVER_ERROR);
 
         when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
-        when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
+        when(aktoerService.hentAktoerIdForFnr(anyString())).thenReturn("aktoerId");
         when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
         when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
         when(dokumentDAO.hent(anyString())).thenReturn(new byte[]{0, 1, 2});
