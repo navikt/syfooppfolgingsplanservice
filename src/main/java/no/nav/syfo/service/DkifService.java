@@ -2,7 +2,6 @@ package no.nav.syfo.service;
 
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.*;
 import no.nav.tjeneste.virksomhet.digitalkontaktinformasjon.v1.informasjon.*;
@@ -21,15 +20,15 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class DkifService {
 
     private DigitalKontaktinformasjonV1 dkifV1;
-    private AktorregisterConsumer aktorregisterConsumer;
+    private AktoerService aktoerService;
 
     @Inject
     public DkifService(
             DigitalKontaktinformasjonV1 dkifV1,
-            AktorregisterConsumer aktorregisterConsumer
+            AktoerService aktoerService
     ) {
         this.dkifV1 = dkifV1;
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.aktoerService = aktoerService;
     }
 
     public Kontaktinfo hentKontaktinfoFnr(String fnr) {
@@ -83,6 +82,6 @@ public class DkifService {
     }
 
     public Kontaktinfo hentKontaktinfoAktoerId(String aktoerId) {
-        return hentKontaktinfoFnr(aktorregisterConsumer.hentFnrForAktor(aktoerId));
+        return hentKontaktinfoFnr(aktoerService.hentFnrForAktoer(aktoerId));
     }
 }

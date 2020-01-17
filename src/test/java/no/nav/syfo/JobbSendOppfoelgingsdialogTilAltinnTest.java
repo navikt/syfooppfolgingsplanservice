@@ -1,6 +1,5 @@
 package no.nav.syfo;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbSendOppfoelgingsdialogTilAltinn;
@@ -32,7 +31,7 @@ public class JobbSendOppfoelgingsdialogTilAltinnTest {
     @Mock
     private AltinnConsumer altinnConsumer;
     @Mock
-    private AktorregisterConsumer aktorregisterConsumer;
+    private AktoerService aktoerService;
     @InjectMocks
     private JobbSendOppfoelgingsdialogTilAltinn jobbSendOppfoelgingsdialogTilAltinn;
 

@@ -1,7 +1,6 @@
 package no.nav.syfo.api.intern.ressurs;
 
 import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.intern.domain.RSHistorikk;
 import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
@@ -29,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ProtectedWithClaims(issuer = INTERN)
 public class OppfoelgingsdialogRessurs {
 
-    private AktorregisterConsumer aktorregisterConsumer;
+    private AktoerService aktoerService;
     private BrukerprofilService brukerprofilService;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private OrganisasjonService organisasjonService;
@@ -38,14 +37,14 @@ public class OppfoelgingsdialogRessurs {
 
     @Inject
     public OppfoelgingsdialogRessurs(
-            final AktorregisterConsumer aktorregisterConsumer,
+            final AktoerService aktoerService,
             final BrukerprofilService brukerprofilService,
             final OppfoelingsdialogDAO oppfoelingsdialogDAO,
             final OrganisasjonService organisasjonService,
             final VeilederTilgangService veilederTilgangService,
             final VeilederOppgaverService veilederOppgaverService
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.aktoerService = aktoerService;
         this.brukerprofilService = brukerprofilService;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.organisasjonService = organisasjonService;
@@ -65,7 +64,7 @@ public class OppfoelgingsdialogRessurs {
     public List<RSHistorikk> historikk(@PathVariable("fnr") String fnr) {
         veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilPerson(fnr);
 
-        List<Oppfoelgingsdialog> oppfoelgingsplaner = oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(fnr))
+        List<Oppfoelgingsdialog> oppfoelgingsplaner = oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktoerService.hentAktoerIdForFnr(fnr))
                 .stream()
                 .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
                 .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())
@@ -96,7 +95,7 @@ public class OppfoelgingsdialogRessurs {
         if ("true".equals(getProperty(LOCAL_MOCK))) {
             return mockedOppfoelgingsdialoger();
         }
-        return mapListe(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(fnr))
+        return mapListe(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktoerService.hentAktoerIdForFnr(fnr))
                         .stream()
                         .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
                         .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())

@@ -1,6 +1,5 @@
 package no.nav.syfo.api.intern.ressurs;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
 import no.nav.syfo.service.*;
 import org.junit.Before;
@@ -21,7 +20,7 @@ public class OppfoelgingsdialogRessursTest extends AbstractRessursTilgangTest {
     private OppfoelgingsdialogRessurs oppfoelgingsdialogRessurs;
 
     @MockBean
-    private AktorregisterConsumer aktorregisterConsumer;
+    private AktoerService aktoerService;
     @MockBean
     private VeilederOppgaverService veilederOppgaverService;
     @MockBean

@@ -1,6 +1,5 @@
 package no.nav.syfo;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
@@ -34,7 +33,7 @@ public class OppfoelgingsdialogServiceTest {
     @Mock
     private TilgangskontrollService tilgangskontrollService;
     @Mock
-    private AktorregisterConsumer aktorregisterConsumer;
+    private AktoerService aktoerService;
     @Mock
     private GodkjentplanDAO godkjentplanDAO;
     @Mock
@@ -46,7 +45,7 @@ public class OppfoelgingsdialogServiceTest {
     public void oppfoelgingsdialogerFraAndreBedrifterBlirFiltrertBort() {
         Oppfoelgingsdialog dialog1 = new Oppfoelgingsdialog().id(1L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("1"));
         Oppfoelgingsdialog dialog2 = new Oppfoelgingsdialog().id(2L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("2"));
-        when(aktorregisterConsumer.hentAktorIdForFnr("123")).thenReturn(LEDER_FNR);
+        when(aktoerService.hentAktoerIdForFnr("123")).thenReturn(LEDER_FNR);
         when(narmesteLederConsumer.ansatte(anyString())).thenReturn(asList(new Ansatt().aktoerId("sykmeldt").virksomhetsnummer("1")));
         when(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(anyString())).thenReturn(asList(
                 dialog1,

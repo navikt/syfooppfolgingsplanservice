@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,16 +8,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class BrukertilgangService {
 
-    private AktorregisterConsumer aktorregisterConsumer;
+    private AktoerService aktoerService;
 
     private NarmesteLederConsumer narmesteLederConsumer;
 
     @Autowired
     public BrukertilgangService(
-            AktorregisterConsumer aktorregisterConsumer,
+            AktoerService aktoerService,
             NarmesteLederConsumer narmesteLederConsumer
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.aktoerService = aktoerService;
         this.narmesteLederConsumer = narmesteLederConsumer;
     }
 
@@ -27,8 +26,8 @@ public class BrukertilgangService {
     }
 
     private boolean sporInnloggetBrukerOmEnAnsatt(String innloggetIdent, String oppslaattFnr) {
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
-        String oppslaattAktoerId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattFnr);
+        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(innloggetIdent);
+        String oppslaattAktoerId = aktoerService.hentAktoerIdForFnr(oppslaattFnr);
         return narmesteLederConsumer.ansatte(innloggetAktoerId)
                 .stream()
                 .map(Ansatt::aktoerId)

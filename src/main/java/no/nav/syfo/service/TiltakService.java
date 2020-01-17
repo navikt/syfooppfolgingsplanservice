@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.*;
@@ -17,7 +16,7 @@ import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeTiltakHoererTi
 @Service
 public class TiltakService {
 
-    private AktorregisterConsumer aktorregisterConsumer;
+    private AktoerService aktoerService;
     private GodkjenningerDAO godkjenningerDAO;
     private KommentarDAO kommentarDAO;
     private Metrikk metrikk;
@@ -27,7 +26,7 @@ public class TiltakService {
 
     @Inject
     public TiltakService(
-            AktorregisterConsumer aktorregisterConsumer,
+            AktoerService aktoerService,
             GodkjenningerDAO godkjenningerDAO,
             KommentarDAO kommentarDAO,
             Metrikk metrikk,
@@ -35,7 +34,7 @@ public class TiltakService {
             TilgangskontrollService tilgangskontrollService,
             TiltakDAO tiltakDAO
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.aktoerService = aktoerService;
         this.godkjenningerDAO = godkjenningerDAO;
         this.kommentarDAO = kommentarDAO;
         this.metrikk = metrikk;
@@ -47,7 +46,7 @@ public class TiltakService {
     @Transactional
     public Long lagreTiltak(Long oppfoelgingsdialogId, Tiltak tiltak, String fnr) {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
+        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(fnr);
 
         if (!eksisterendeTiltakHoererTilDialog(tiltak.id, tiltakDAO.finnTiltakByOppfoelgingsdialogId(oppfoelgingsdialogId)) || !tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
             throw new ForbiddenException("Ikke tilgang");
@@ -74,7 +73,7 @@ public class TiltakService {
 
     @Transactional
     public void slettTiltak(Long tiltakId, String fnr) {
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
+        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(fnr);
         Tiltak tiltak = tiltakDAO.finnTiltakById(tiltakId);
 
         if (!tiltak.opprettetAvAktoerId.equals(innloggetAktoerId)) {
