@@ -1,7 +1,6 @@
 package no.nav.syfo.aktorregister;
 
 import no.nav.syfo.aktorregister.exceptions.*;
-
 import java.util.Map;
 
 public class AktorregisterUtils {

@@ -6,6 +6,7 @@ import no.nav.syfo.sts.StsConsumer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -13,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
+
+import java.util.Map;
 
 import static no.nav.syfo.aktorregister.AktorregisterUtils.currentIdentFromAktorregisterResponse;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
@@ -49,6 +52,8 @@ public class AktorregisterConsumer implements InitializingBean {
     public static final String IDENT_GROUP_FNR = "NorskIdent";
     public static final String IDENT_GROUP_AKTOR_ID = "AktoerId";
 
+    private final ParameterizedTypeReference<Map<String, IdentinfoForAktoer>> RESPONSE_MAP_STRING = new ParameterizedTypeReference<Map<String, IdentinfoForAktoer>>() {};
+
     @Inject
     public AktorregisterConsumer(
             @Value("${client.id}") String clientId,
@@ -73,7 +78,7 @@ public class AktorregisterConsumer implements InitializingBean {
             throw new RuntimeException();
         }
 
-        AktorregisterResponse response = getIdenterFromAktorregister(fnr);
+        Map<String, IdentinfoForAktoer> response = getIdentFromAktorregister(fnr);
 
         return currentIdentFromAktorregisterResponse(response, fnr, IDENT_GROUP_AKTOR_ID);
     }
@@ -85,22 +90,22 @@ public class AktorregisterConsumer implements InitializingBean {
             throw new RuntimeException();
         }
 
-        AktorregisterResponse response = getIdenterFromAktorregister(aktorId);
+        Map<String, IdentinfoForAktoer> response = getIdentFromAktorregister(aktorId);
 
         return currentIdentFromAktorregisterResponse(response, aktorId, IDENT_GROUP_FNR);
     }
 
-    private AktorregisterResponse getIdenterFromAktorregister(String ident) {
+    private Map<String, IdentinfoForAktoer> getIdentFromAktorregister(String ident) {
         HttpEntity<String> entity = createRequestEntity(ident);
 
         final String uriString = UriComponentsBuilder.fromHttpUrl(url + "/identer").queryParam("gjeldende", true).toUriString();
 
         try {
-            ResponseEntity<AktorregisterResponse> response = restTemplate.exchange(
+            ResponseEntity<Map<String, IdentinfoForAktoer>> response = restTemplate.exchange(
                     uriString,
                     HttpMethod.GET,
                     entity,
-                    AktorregisterResponse.class
+                    RESPONSE_MAP_STRING
             );
             metrikk.tellHendelse("aktorregister_suksess");
             return response.getBody();
@@ -111,7 +116,7 @@ public class AktorregisterConsumer implements InitializingBean {
         } catch (Exception e) {
             metrikk.tellHendelse("aktorregister_feil");
             log.error("Uventet feil fra Aktorregisteret! med url: " + url, e);
-            throw new RuntimeException("Uventet feil fra PDL!", e);
+            throw new RuntimeException("Failed to get ident from aktorregisteret", e);
         }
     }
 
