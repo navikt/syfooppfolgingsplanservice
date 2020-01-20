@@ -5,6 +5,7 @@ import no.nav.syfo.aktorregister.exceptions.IncorrectFNRFormat;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -42,7 +43,7 @@ public class AktorregisterConsumer implements InitializingBean {
 
     private final String clientId;
     private final Metrikk metrikk;
-    private final RestTemplate restTemplate;
+    private final RestTemplate restTemplateKubernetes;
     private final StsConsumer stsConsumer;
     private final String url;
 
@@ -59,13 +60,13 @@ public class AktorregisterConsumer implements InitializingBean {
     public AktorregisterConsumer(
             @Value("${client.id}") String clientId,
             Metrikk metrikk,
-            RestTemplate restTemplate,
+            @Qualifier("kubernetes") RestTemplate restTemplateKubernetes,
             StsConsumer stsConsumer,
             @Value("${aktorregister.rest.url}") String url
     ) {
         this.clientId = clientId;
         this.metrikk = metrikk;
-        this.restTemplate = restTemplate;
+        this.restTemplateKubernetes = restTemplateKubernetes;
         this.stsConsumer = stsConsumer;
         this.url = url;
     }
@@ -101,7 +102,7 @@ public class AktorregisterConsumer implements InitializingBean {
         final String uriString = UriComponentsBuilder.fromHttpUrl(url + "/identer").queryParam("gjeldende", true).toUriString();
 
         try {
-            ResponseEntity<Map<String, IdentinfoForAktoer>> response = restTemplate.exchange(
+            ResponseEntity<Map<String, IdentinfoForAktoer>> response = restTemplateKubernetes.exchange(
                     uriString,
                     HttpMethod.GET,
                     entity,
