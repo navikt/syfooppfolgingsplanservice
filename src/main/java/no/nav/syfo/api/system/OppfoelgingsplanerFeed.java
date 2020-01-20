@@ -6,7 +6,7 @@ import no.nav.syfo.api.system.domain.VeilederOppgaveFeedItem;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
-import no.nav.syfo.service.AktoerService;
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -23,17 +23,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/api/system/feed/oppfoelgingsdialoger")
 public class OppfoelgingsplanerFeed {
 
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
     private GodkjentplanDAO godkjentplanDAO;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
 
     @Inject
     public OppfoelgingsplanerFeed(
-            AktoerService aktoerService,
+            AktorregisterConsumer aktorregisterConsumer,
             GodkjentplanDAO godkjentplanDAO,
             OppfoelingsdialogDAO oppfoelingsdialogDAO
     ) {
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.godkjentplanDAO = godkjentplanDAO;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
     }
@@ -45,7 +45,7 @@ public class OppfoelgingsplanerFeed {
                 .stream()
                 .map(godkjentPlan -> {
                     Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(godkjentPlan.oppfoelgingsdialogId);
-                    String fnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.arbeidstaker.aktoerId);
+                    String fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
                     return new VeilederOppgaveFeedItem()
                             .uuid(oppfoelgingsdialog.uuid)
                             .fnr(fnr)

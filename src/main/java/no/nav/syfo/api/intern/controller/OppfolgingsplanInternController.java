@@ -1,6 +1,7 @@
 package no.nav.syfo.api.intern.controller;
 
 import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.intern.domain.RSHistorikk;
 import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
 import no.nav.syfo.domain.Fnr;
@@ -26,7 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/api/internad/v1/oppfolgingsplan/{fnr}")
 public class OppfolgingsplanInternController {
 
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
     private BrukerprofilService brukerprofilService;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private OrganisasjonService organisasjonService;
@@ -35,14 +36,14 @@ public class OppfolgingsplanInternController {
 
     @Inject
     public OppfolgingsplanInternController(
-            final AktoerService aktoerService,
+            final AktorregisterConsumer aktorregisterConsumer,
             final BrukerprofilService brukerprofilService,
             final OppfoelingsdialogDAO oppfoelingsdialogDAO,
             final OrganisasjonService organisasjonService,
             final VeilederTilgangService veilederTilgangService,
             final VeilederOppgaverService veilederOppgaverService
     ) {
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukerprofilService = brukerprofilService;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.organisasjonService = organisasjonService;
@@ -64,7 +65,7 @@ public class OppfolgingsplanInternController {
 
         veilederTilgangService.throwExceptionIfVeilederWithoutAccess(personFnr);
 
-        List<Oppfoelgingsdialog> oppfoelgingsplaner = oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktoerService.hentAktoerIdForFnr(personFnr.getFnr()))
+        List<Oppfoelgingsdialog> oppfoelgingsplaner = oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getFnr()))
                 .stream()
                 .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
                 .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())
@@ -94,7 +95,7 @@ public class OppfolgingsplanInternController {
 
         veilederTilgangService.throwExceptionIfVeilederWithoutAccess(personFnr);
 
-        return mapListe(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktoerService.hentAktoerIdForFnr(personFnr.getFnr()))
+        return mapListe(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getFnr()))
                         .stream()
                         .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
                         .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())

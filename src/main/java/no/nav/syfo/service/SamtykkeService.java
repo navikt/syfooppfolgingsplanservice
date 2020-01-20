@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
@@ -13,19 +14,19 @@ import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
 @Service
 public class SamtykkeService {
 
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
     private Metrikk metrikk;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private TilgangskontrollService tilgangskontrollService;
 
     @Inject
     public SamtykkeService(
-            AktoerService aktoerService,
+            AktorregisterConsumer aktorregisterConsumer,
             Metrikk metrikk,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             TilgangskontrollService tilgangskontrollService
     ) {
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.metrikk = metrikk;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.tilgangskontrollService = tilgangskontrollService;
@@ -33,7 +34,7 @@ public class SamtykkeService {
     }
 
     public void giSamtykke(Long oppfoelgingsdialogId, String fnr, boolean giSamtykke) {
-        String aktoerId = aktoerService.hentAktoerIdForFnr(fnr);
+        String aktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(aktoerId, oppfoelgingsdialog)) {

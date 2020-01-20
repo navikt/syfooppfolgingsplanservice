@@ -1,6 +1,7 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.model.Stilling;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.*;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.*;
@@ -27,15 +28,15 @@ public class ArbeidsforholdService {
 
     private ArbeidsforholdV3 arbeidsforholdV3;
 
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
 
     @Inject
     public ArbeidsforholdService(
             ArbeidsforholdV3 arbeidsforholdV3,
-            AktoerService aktoerService
+            AktorregisterConsumer aktorregisterConsumer
     ) {
         this.arbeidsforholdV3 = arbeidsforholdV3;
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
     }
 
     private List<Stilling> hentArbeidsforholdMedFnr(String fnr, LocalDate fom, String orgnr) {
@@ -62,7 +63,7 @@ public class ArbeidsforholdService {
     }
 
     public List<Stilling> hentArbeidsforholdMedAktoerId(String aktoerId, LocalDate oppfoelgingsdialogStartDato, String orgnr) {
-        return hentArbeidsforholdMedFnr(aktoerService.hentFnrForAktoer(aktoerId), oppfoelgingsdialogStartDato, orgnr);
+        return hentArbeidsforholdMedFnr(aktorregisterConsumer.hentFnrForAktor(aktoerId), oppfoelgingsdialogStartDato, orgnr);
     }
 
     private LocalDate tilLocalDate(XMLGregorianCalendar xmlGregorianCalendar) {

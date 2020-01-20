@@ -1,6 +1,7 @@
 package no.nav.syfo.oppgave.oppfoelgingsdialog;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
 import no.nav.syfo.metric.Metrikk;
@@ -22,7 +23,7 @@ import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
 @Service
 public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 
-    private final AktoerService aktoerService;
+    private final AktorregisterConsumer aktorregisterConsumer;
     private final AltinnConsumer altinnConsumer;
     private final Metrikk metrikk;
     private final OppfoelgingsdialogService oppfoelgingsdialogService;
@@ -35,13 +36,13 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 
     @Inject
     public JobbSendOppfoelgingsdialogTilAltinn(
-            AktoerService aktoerService,
+            AktorregisterConsumer aktorregisterConsumer,
             AltinnConsumer altinnConsumer,
             Metrikk metrikk,
             OppfoelgingsdialogService oppfoelgingsdialogService,
             PdfService pdfService
     ) {
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.altinnConsumer = altinnConsumer;
         this.metrikk = metrikk;
         this.oppfoelgingsdialogService = oppfoelgingsdialogService;
@@ -54,7 +55,7 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
         log.info("TRACEBATCH: run {}", this.getClass().getName());
 
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(Long.valueOf(oppfoelgingsdialogId));
-        oppfoelgingsdialog.arbeidstaker.fnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.arbeidstaker.aktoerId);
+        oppfoelgingsdialog.arbeidstaker.fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
 
         byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
 
