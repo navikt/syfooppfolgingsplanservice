@@ -1,6 +1,7 @@
 package no.nav.syfo.aktorregister;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.aktorregister.exceptions.IncorrectFNRFormat;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
 import org.springframework.beans.factory.InitializingBean;
@@ -74,8 +75,7 @@ public class AktorregisterConsumer implements InitializingBean {
         metrikk.tellHendelse("kall_aktorregister");
         if (isBlank(fnr) || !fnr.matches("\\d{11}$")) {
             metrikk.tellHendelse("kall_aktorregister_feil");
-            log.error("Prøvde å hente aktorId");
-            throw new RuntimeException();
+            throw new IncorrectFNRFormat("Tried to fetch aktorId");
         }
 
         Map<String, IdentinfoForAktoer> response = getIdentFromAktorregister(fnr);
