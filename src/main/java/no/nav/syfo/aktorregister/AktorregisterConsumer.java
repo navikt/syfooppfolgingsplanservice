@@ -1,6 +1,7 @@
 package no.nav.syfo.aktorregister;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.aktorregister.exceptions.IncorrectAktorIDFormat;
 import no.nav.syfo.aktorregister.exceptions.IncorrectFNRFormat;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
@@ -43,7 +44,7 @@ public class AktorregisterConsumer implements InitializingBean {
 
     private final String clientId;
     private final Metrikk metrikk;
-    private final RestTemplate restTemplateKubernetes;
+    private final RestTemplate restTemplateScheduler;
     private final StsConsumer stsConsumer;
     private final String url;
 
@@ -60,23 +61,21 @@ public class AktorregisterConsumer implements InitializingBean {
     public AktorregisterConsumer(
             @Value("${client.id}") String clientId,
             Metrikk metrikk,
-            @Qualifier("kubernetes") RestTemplate restTemplateKubernetes,
+            @Qualifier("scheduler") RestTemplate restTemplateScheduler,
             StsConsumer stsConsumer,
             @Value("${aktorregister.rest.url}") String url
     ) {
         this.clientId = clientId;
         this.metrikk = metrikk;
-        this.restTemplateKubernetes = restTemplateKubernetes;
+        this.restTemplateScheduler = restTemplateScheduler;
         this.stsConsumer = stsConsumer;
         this.url = url;
     }
 
     @Cacheable(value = CACHENAME_AKTOR_ID, key = "#fnr", condition = "#fnr != null")
     public String hentAktorIdForFnr(String fnr) {
-        metrikk.tellHendelse("kall_aktorregister");
         if (isBlank(fnr) || !fnr.matches("\\d{11}$")) {
-            metrikk.tellHendelse("kall_aktorregister_feil");
-            throw new IncorrectFNRFormat("Tried to fetch aktorId");
+            throw new IncorrectFNRFormat("Want to get aktorId from Aktorregister");
         }
 
         Map<String, IdentinfoForAktoer> response = getIdentFromAktorregister(fnr);
@@ -87,8 +86,7 @@ public class AktorregisterConsumer implements InitializingBean {
     @Cacheable(value = CACHENAME_AKTOR_FNR, key = "#aktorId", condition = "#aktorId != null")
     public String hentFnrForAktor(String aktorId) {
         if (isBlank(aktorId) || !aktorId.matches("\\d{13}$")) {
-            log.error("Prøvde å hente fnr med aktorId {}", aktorId);
-            throw new RuntimeException();
+            throw new IncorrectAktorIDFormat("Want to get fnr from Aktorregister");
         }
 
         Map<String, IdentinfoForAktoer> response = getIdentFromAktorregister(aktorId);
@@ -97,12 +95,13 @@ public class AktorregisterConsumer implements InitializingBean {
     }
 
     private Map<String, IdentinfoForAktoer> getIdentFromAktorregister(String ident) {
-        HttpEntity<String> entity = createRequestEntity(ident);
+        metrikk.tellHendelse("kall_aktorregister");
+        HttpEntity<String> entity = createRequestEntityWithAuth(ident);
 
         final String uriString = UriComponentsBuilder.fromHttpUrl(url + "/identer").queryParam("gjeldende", true).toUriString();
 
         try {
-            ResponseEntity<Map<String, IdentinfoForAktoer>> response = restTemplateKubernetes.exchange(
+            ResponseEntity<Map<String, IdentinfoForAktoer>> response = restTemplateScheduler.exchange(
                     uriString,
                     HttpMethod.GET,
                     entity,
@@ -121,7 +120,7 @@ public class AktorregisterConsumer implements InitializingBean {
         }
     }
 
-    private HttpEntity<String> createRequestEntity(String ident) {
+    private HttpEntity<String> createRequestEntityWithAuth(String ident) {
         String stsToken = stsConsumer.token();
 
         HttpHeaders headers = new HttpHeaders();

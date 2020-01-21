@@ -18,17 +18,17 @@ import java.net.InetAddress;
 public class LeaderElectionService {
 
     private final Metrikk metrikk;
-    private final RestTemplate restTemplateKubernetes;
+    private final RestTemplate restTemplateScheduler;
     private final String electorpath;
 
     @Inject
     public LeaderElectionService(
             Metrikk metrikk,
-            @Qualifier("kubernetes") RestTemplate restTemplateKubernetes,
+            @Qualifier("scheduler") RestTemplate restTemplateScheduler,
             @Value("${elector.path}") String electorpath
     ) {
         this.metrikk = metrikk;
-        this.restTemplateKubernetes = restTemplateKubernetes;
+        this.restTemplateScheduler = restTemplateScheduler;
         this.electorpath = electorpath;
     }
 
@@ -37,7 +37,7 @@ public class LeaderElectionService {
         ObjectMapper objectMapper = new ObjectMapper();
         String url = "http://" + electorpath;
 
-        String response = restTemplateKubernetes.getForObject(url, String.class);
+        String response = restTemplateScheduler.getForObject(url, String.class);
 
         try {
             LeaderPod leader = objectMapper.readValue(response, LeaderPod.class);

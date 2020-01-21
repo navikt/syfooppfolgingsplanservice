@@ -46,8 +46,8 @@ public class ApplicationConfig {
         return template;
     }
 
-    @Bean(name = "kubernetes")
-    public RestTemplate restTemplateKubernetes() {
+    @Bean(name = "scheduler")
+    public RestTemplate restTemplateScheduler() {
         return new RestTemplate();
     }
 
