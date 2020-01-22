@@ -4,11 +4,11 @@ import no.nav.syfo.aktorregister.exceptions.*;
 import java.util.Map;
 
 public class AktorregisterUtils {
-    public static String currentIdentFromAktorregisterResponse(Map<String, IdentinfoForAktoer> response, String desiredUsersIdent, String desiredIdentGroup) {
-        IdentinfoForAktoer identinfoForAktoer = response.get(desiredUsersIdent);
-        throwExceptionIfErrorOrNoUser(identinfoForAktoer);
+    public static String currentIdentFromAktorregisterResponse(Map<String, IdentinfoListe> response, String desiredUsersIdent, String desiredIdentGroup) {
+        IdentinfoListe identinfoListe = response.get(desiredUsersIdent);
+        throwExceptionIfErrorOrNoUser(identinfoListe);
 
-        Identinfo currentIdentinfo = identinfoForAktoer.identer.stream()
+        Identinfo currentIdentinfo = identinfoListe.identer.stream()
                 .filter(identinfo -> identinfo.gjeldende && desiredIdentGroup.equals(identinfo.identgruppe))
                 .findAny()
                 .orElse(null);
@@ -19,12 +19,12 @@ public class AktorregisterUtils {
         return currentIdentinfo.ident;
     }
 
-    private static void throwExceptionIfErrorOrNoUser(IdentinfoForAktoer identinfoForAktoer) {
-        if (identinfoForAktoer == null) {
+    private static void throwExceptionIfErrorOrNoUser(IdentinfoListe identinfoListe) {
+        if (identinfoListe == null) {
             throw new NoResponseForDesiredUser("Tried getting info about user from aktorregisteret. Tremendous FAIL!");
         }
-        if (identinfoForAktoer.feilmelding != null) {
-            throw new AktorGotError(identinfoForAktoer.feilmelding);
+        if (identinfoListe.feilmelding != null) {
+            throw new AktorGotError(identinfoListe.feilmelding);
         }
     }
 }

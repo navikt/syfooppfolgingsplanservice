@@ -55,7 +55,7 @@ public class AktorregisterConsumer implements InitializingBean {
     public static final String IDENT_GROUP_FNR = "NorskIdent";
     public static final String IDENT_GROUP_AKTOR_ID = "AktoerId";
 
-    private final ParameterizedTypeReference<Map<String, IdentinfoForAktoer>> RESPONSE_MAP_STRING = new ParameterizedTypeReference<Map<String, IdentinfoForAktoer>>() {};
+    private final ParameterizedTypeReference<Map<String, IdentinfoListe>> RESPONSE_MAP_STRING = new ParameterizedTypeReference<Map<String, IdentinfoListe>>() {};
 
     @Inject
     public AktorregisterConsumer(
@@ -78,7 +78,7 @@ public class AktorregisterConsumer implements InitializingBean {
             throw new IncorrectFNRFormat("Want to get aktorId from Aktorregister");
         }
 
-        Map<String, IdentinfoForAktoer> response = getIdentFromAktorregister(fnr);
+        Map<String, IdentinfoListe> response = getIdentFromAktorregister(fnr);
 
         return currentIdentFromAktorregisterResponse(response, fnr, IDENT_GROUP_AKTOR_ID);
     }
@@ -89,19 +89,19 @@ public class AktorregisterConsumer implements InitializingBean {
             throw new IncorrectAktorIDFormat("Want to get fnr from Aktorregister");
         }
 
-        Map<String, IdentinfoForAktoer> response = getIdentFromAktorregister(aktorId);
+        Map<String, IdentinfoListe> response = getIdentFromAktorregister(aktorId);
 
         return currentIdentFromAktorregisterResponse(response, aktorId, IDENT_GROUP_FNR);
     }
 
-    private Map<String, IdentinfoForAktoer> getIdentFromAktorregister(String ident) {
+    private Map<String, IdentinfoListe> getIdentFromAktorregister(String ident) {
         metrikk.tellHendelse("kall_aktorregister");
         HttpEntity<String> entity = createRequestEntityWithAuth(ident);
 
         final String uriString = UriComponentsBuilder.fromHttpUrl(url + "/identer").queryParam("gjeldende", true).toUriString();
 
         try {
-            ResponseEntity<Map<String, IdentinfoForAktoer>> response = restTemplateScheduler.exchange(
+            ResponseEntity<Map<String, IdentinfoListe>> response = restTemplateScheduler.exchange(
                     uriString,
                     HttpMethod.GET,
                     entity,

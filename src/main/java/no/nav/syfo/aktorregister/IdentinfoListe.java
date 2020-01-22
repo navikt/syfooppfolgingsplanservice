@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Accessors(fluent = true)
-public class IdentinfoForAktoer {
+public class IdentinfoListe {
     public List<Identinfo> identer;
     public String feilmelding;
 }
