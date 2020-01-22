@@ -1,6 +1,7 @@
 package no.nav.syfo.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
@@ -17,7 +18,7 @@ import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
 @Slf4j
 @Service
 public class ProsesserInnkomnePlaner {
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
     private BehandleSakService behandleSakService;
     private GodkjentplanDAO godkjentplanDAO;
     private JournalService journalService;
@@ -28,7 +29,7 @@ public class ProsesserInnkomnePlaner {
 
     @Inject
     public ProsesserInnkomnePlaner(
-            AktoerService aktoerService,
+            AktorregisterConsumer aktorregisterConsumer,
             BehandleSakService behandleSakService,
             GodkjentplanDAO godkjentplanDAO,
             JournalService journalService,
@@ -37,7 +38,7 @@ public class ProsesserInnkomnePlaner {
             SakService sakService,
             Metrikk metrikk
     ) {
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.behandleSakService = behandleSakService;
         this.godkjentplanDAO = godkjentplanDAO;
         this.journalService = journalService;
@@ -55,7 +56,7 @@ public class ProsesserInnkomnePlaner {
             godkjentplanDAO.hentIkkeSaksfoertePlaner()
                     .forEach(godkjentPlan -> {
                         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(godkjentPlan.oppfoelgingsdialogId);
-                        String fnr = aktoerService.hentFnrForAktoer(oppfoelgingsdialog.arbeidstaker.aktoerId);
+                        String fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
                         String sakId = sakService.finnSak(fnr).orElse(behandleSakService.opprettSak(fnr));
                         godkjentplanDAO.sakId(oppfoelgingsdialog.id, sakId);
                         metrikk.tellHendelse("plan_opprettet_sak_gosys");

@@ -6,7 +6,7 @@ import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
-import no.nav.syfo.service.AktoerService;
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.service.OppfoelgingsdialogService;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ArbeidsgiverOppfolgingsplanController {
 
     private final OIDCRequestContextHolder contextHolder;
-    private final AktoerService aktorService;
+    private final AktorregisterConsumer aktorService;
     private final NarmesteLederConsumer narmesteLederConsumer;
     private final OppfoelgingsdialogService oppfoelgingsdialogService;
     private final Metrikk metrikk;
@@ -36,7 +36,7 @@ public class ArbeidsgiverOppfolgingsplanController {
     @Inject
     public ArbeidsgiverOppfolgingsplanController(
             OIDCRequestContextHolder contextHolder,
-            AktoerService aktorService,
+            AktorregisterConsumer aktorService,
             NarmesteLederConsumer narmesteLederConsumer,
             OppfoelgingsdialogService oppfoelgingsdialogService,
             Metrikk metrikk
@@ -63,8 +63,8 @@ public class ArbeidsgiverOppfolgingsplanController {
     public Long opprettOppfolgingsplanSomArbeidsgiver(@RequestBody RSOpprettOppfoelgingsdialog rsOpprettOppfolgingsplan) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        String innloggetAktorId = aktorService.hentAktoerIdForFnr(innloggetIdent);
-        String sykmeldtAktorId = aktorService.hentAktoerIdForFnr(rsOpprettOppfolgingsplan.sykmeldtFnr);
+        String innloggetAktorId = aktorService.hentAktorIdForFnr(innloggetIdent);
+        String sykmeldtAktorId = aktorService.hentAktorIdForFnr(rsOpprettOppfolgingsplan.sykmeldtFnr);
 
         if (narmesteLederConsumer.erAktorLederForAktor(innloggetAktorId, sykmeldtAktorId)) {
             Long id = oppfoelgingsdialogService.opprettOppfoelgingsdialog(rsOpprettOppfolgingsplan, innloggetIdent);

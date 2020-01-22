@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
@@ -12,7 +13,7 @@ import javax.ws.rs.ForbiddenException;
 @Service
 public class KommentarService {
 
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
     private GodkjenningerDAO godkjenningerDAO;
     private KommentarDAO kommentarDAO;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
@@ -20,13 +21,13 @@ public class KommentarService {
 
     @Inject
     public KommentarService(
-            AktoerService aktoerService,
+            AktorregisterConsumer aktorregisterConsumer,
             GodkjenningerDAO godkjenningerDAO,
             KommentarDAO kommentarDAO,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             TiltakDAO tiltakDAO
     ) {
-        this.aktoerService = aktoerService;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.godkjenningerDAO = godkjenningerDAO;
         this.kommentarDAO = kommentarDAO;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
@@ -36,7 +37,7 @@ public class KommentarService {
     @Transactional
     public Long lagreKommentar(Long tiltakId, Kommentar kommentar, String fnr) {
         Tiltak tiltak = tiltakDAO.finnTiltakById(tiltakId);
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(fnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(tiltak.oppfoelgingsdialogId);
         if (kommentarenErIkkeOpprettetAvNoenAndre(kommentar, innloggetAktoerId, oppfoelgingsdialog)) {
@@ -65,7 +66,7 @@ public class KommentarService {
 
     @Transactional
     public void slettKommentar(Long kommentarId, String fnr) {
-        String innloggetAktoerId = aktoerService.hentAktoerIdForFnr(fnr);
+        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
         Kommentar kommentar = kommentarDAO.finnKommentar(kommentarId);
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.oppfoelgingsdialogByTiltakId(kommentar.tiltakId);
 

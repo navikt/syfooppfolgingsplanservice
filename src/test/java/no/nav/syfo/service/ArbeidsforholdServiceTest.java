@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.model.Stilling;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.binding.ArbeidsforholdV3;
 import no.nav.tjeneste.virksomhet.arbeidsforhold.v3.informasjon.arbeidsforhold.*;
@@ -30,14 +31,14 @@ public class ArbeidsforholdServiceTest {
     @Mock
     private ArbeidsforholdV3 arbeidsforholdV3;
     @Mock
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
 
     @InjectMocks
     private ArbeidsforholdService arbeidsforholdService;
 
     @Before
     public void setup() {
-        when(aktoerService.hentFnrForAktoer(anyString())).thenReturn("12345678901");
+        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn("12345678901");
     }
 
     @Test

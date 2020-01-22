@@ -1,11 +1,11 @@
 package no.nav.syfo.narmesteleder;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.*;
-import no.nav.syfo.service.AktoerService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,7 +32,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class NarmesteLederConsumerTest {
 
     @Mock
-    private AktoerService aktoerService;
+    private AktorregisterConsumer aktorregisterConsumer;
 
     @Mock
     private AzureAdTokenConsumer azureAdTokenConsumer;
@@ -106,7 +106,7 @@ public class NarmesteLederConsumerTest {
         PdlHentPerson pdlHentPerson = mockPdlHentPerson();
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(NarmestelederResponse.class))).thenReturn(new ResponseEntity<>(narmestelederResponse, OK));
-        when(aktoerService.hentFnrForAktoer(anyString())).thenReturn(FNR);
+        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn(FNR);
         when(pdlConsumer.person(anyString())).thenReturn(pdlHentPerson);
 
         Optional<Naermesteleder> naermestelederOptional = narmesteLederConsumer.narmesteLeder(SYKMELDT_AKTOR_ID, VIRKSOMHETSNUMMER);
@@ -133,7 +133,7 @@ public class NarmesteLederConsumerTest {
         Optional<Naermesteleder> naermestelederOptional = narmesteLederConsumer.narmesteLeder(SYKMELDT_AKTOR_ID, VIRKSOMHETSNUMMER);
         assertThat(naermestelederOptional.isPresent()).isFalse();
 
-        verify(aktoerService, never()).hentAktoerIdForFnr(anyString());
+        verify(aktorregisterConsumer, never()).hentAktorIdForFnr(anyString());
         verify(pdlConsumer, never()).person(anyString());
     }
 
