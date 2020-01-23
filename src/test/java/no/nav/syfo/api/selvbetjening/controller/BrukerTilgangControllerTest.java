@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 
 import static no.nav.syfo.api.selvbetjening.controller.BrukerTilgangController.IKKE_TILGANG_GRUNN_DISKRESJONSMERKET;
-import static no.nav.syfo.mocks.AktoerMock.mockAktorId;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
@@ -34,7 +33,7 @@ public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
         loggInnBruker(oidcRequestContextHolder, LEDER_FNR);
 
         when(personService.erDiskresjonsmerket(ARBEIDSTAKER_FNR)).thenReturn(false);
-        when(brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(false);
+        when(brukertilgangService.tilgangTilOppslattIdent(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true);
 
         RSTilgang exp = new RSTilgang()
                 .harTilgang(true);
@@ -48,7 +47,7 @@ public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
         loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR);
 
         when(personService.erDiskresjonsmerket(ARBEIDSTAKER_FNR)).thenReturn(false);
-        when(brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(ARBEIDSTAKER_FNR, ARBEIDSTAKER_FNR)).thenReturn(false);
+        when(brukertilgangService.tilgangTilOppslattIdent(ARBEIDSTAKER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true);
 
         RSTilgang exp = new RSTilgang()
                 .harTilgang(true);
@@ -62,7 +61,7 @@ public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
         loggInnBruker(oidcRequestContextHolder, LEDER_FNR);
 
         when(personService.erDiskresjonsmerket(ARBEIDSTAKER_FNR)).thenReturn(true);
-        when(brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(false);
+        when(brukertilgangService.tilgangTilOppslattIdent(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true);
 
         RSTilgang exp = new RSTilgang()
                 .harTilgang(false)
@@ -77,7 +76,7 @@ public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
         loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR);
 
         when(personService.erDiskresjonsmerket(ARBEIDSTAKER_FNR)).thenReturn(true);
-        when(brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(ARBEIDSTAKER_FNR, ARBEIDSTAKER_FNR)).thenReturn(false);
+        when(brukertilgangService.tilgangTilOppslattIdent(ARBEIDSTAKER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true);
 
         RSTilgang exp = new RSTilgang()
                 .harTilgang(false)
@@ -92,7 +91,7 @@ public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
     public void sjekk_tilgang_til_bruker_ikke_tilgang() {
         loggInnBruker(oidcRequestContextHolder, LEDER_FNR);
 
-        when(brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true);
+        when(brukertilgangService.tilgangTilOppslattIdent(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(false);
 
         brukerTilgangController.harTilgang(ARBEIDSTAKER_FNR);
     }
@@ -101,7 +100,7 @@ public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
     public void sjekk_tilgang_til_seg_selv_ikke_tilgang() {
         loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR);
 
-        when(brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(ARBEIDSTAKER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true);
+        when(brukertilgangService.tilgangTilOppslattIdent(ARBEIDSTAKER_FNR, ARBEIDSTAKER_FNR)).thenReturn(false);
 
         brukerTilgangController.harTilgang(null);
     }

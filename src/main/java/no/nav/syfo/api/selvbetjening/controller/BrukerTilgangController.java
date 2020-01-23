@@ -47,7 +47,7 @@ public class BrukerTilgangController {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
         String oppslaattIdent = StringUtils.isEmpty(oppslaattFnr) ? innloggetIdent : oppslaattFnr;
 
-        if (brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(innloggetIdent, oppslaattIdent)) {
+        if (!brukertilgangService.tilgangTilOppslattIdent(innloggetIdent, oppslaattIdent)) {
             log.error("Ikke tilgang: Bruker spør om noen andre enn seg selv eller egne ansatte");
             throw new ForbiddenException();
         }

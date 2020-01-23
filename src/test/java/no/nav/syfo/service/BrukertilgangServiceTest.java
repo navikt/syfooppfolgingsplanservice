@@ -1,16 +1,12 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.model.Ansatt;
-import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
+import no.nav.syfo.brukertilgang.BrukertilgangConsumer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -19,9 +15,7 @@ import static org.mockito.Mockito.when;
 public class BrukertilgangServiceTest {
 
     @Mock
-    private AktorregisterConsumer aktorregisterConsumer;
-    @Mock
-    private NarmesteLederConsumer narmesteLederConsumer;
+    private BrukertilgangConsumer brukertilgangConsumer;
     @InjectMocks
     private BrukertilgangService brukertilgangService;
 
@@ -32,29 +26,25 @@ public class BrukertilgangServiceTest {
 
     @Before
     public void setup() {
-        when(aktorregisterConsumer.hentAktorIdForFnr(INNLOGGET_FNR)).thenReturn(INNLOGGET_AKTOERID);
-        when(aktorregisterConsumer.hentAktorIdForFnr(SPOR_OM_FNR)).thenReturn(SPOR_OM_AKTOERID);
     }
 
     @Test
     public void sporOmNoenAndreEnnSegSelvGirFalseNaarManSporOmSegSelv() {
-        boolean tilgang = brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(INNLOGGET_FNR, INNLOGGET_FNR);
-        assertThat(tilgang).isFalse();
+        boolean tilgang = brukertilgangService.tilgangTilOppslattIdent(INNLOGGET_FNR, INNLOGGET_FNR);
+        assertThat(tilgang).isTrue();
     }
 
     @Test
     public void sporOmNoenAndreEnnSegSelvGirFalseNaarManSporOmEnAnsatt() {
-        when(narmesteLederConsumer.ansatte(INNLOGGET_AKTOERID)).thenReturn(Collections.singletonList(
-                new Ansatt().aktoerId(SPOR_OM_AKTOERID)
-        ));
-        boolean tilgang = brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(INNLOGGET_FNR, SPOR_OM_FNR);
-        assertThat(tilgang).isFalse();
+        when(brukertilgangConsumer.hasAccessToAnsatt(SPOR_OM_FNR)).thenReturn(true);
+        boolean tilgang = brukertilgangService.tilgangTilOppslattIdent(INNLOGGET_FNR, SPOR_OM_FNR);
+        assertThat(tilgang).isTrue();
     }
 
     @Test
     public void sporOmNoenAndreEnnSegSelvGirTrueNaarManSporOmEnSomIkkeErSegSelvOgIkkeAnsatt() {
-        when(narmesteLederConsumer.ansatte(INNLOGGET_AKTOERID)).thenReturn(Collections.emptyList());
-        boolean tilgang = brukertilgangService.sporOmNoenAndreEnnSegSelvEllerEgneAnsatte(INNLOGGET_FNR, SPOR_OM_FNR);
-        assertThat(tilgang).isTrue();
+        when(brukertilgangConsumer.hasAccessToAnsatt(SPOR_OM_FNR)).thenReturn(false);
+        boolean tilgang = brukertilgangService.tilgangTilOppslattIdent(INNLOGGET_FNR, SPOR_OM_FNR);
+        assertThat(tilgang).isFalse();
     }
 }

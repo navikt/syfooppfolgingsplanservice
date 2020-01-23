@@ -7,4 +7,5 @@
     <cache name="leder" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" timeToIdleSeconds="600" />
     <cache name="personPdl" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" timeToIdleSeconds="600" />
     <cache name="arbeidsforholdAT" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" timeToIdleSeconds="600" />
+    <cache name="tilgangtilident" maxElementsInMemory="10000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
 </ehcache>
