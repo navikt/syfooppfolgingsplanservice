@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aareg.AaregConsumer;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.domain.*;
@@ -40,6 +41,8 @@ import static no.nav.syfo.util.time.DateUtil.tilMuntligDatoAarFormat;
 @Service
 public class GodkjenningService {
 
+    private AaregConsumer aaregConsumer;
+
     private Metrikk metrikk;
 
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
@@ -60,8 +63,6 @@ public class GodkjenningService {
 
     private OrganisasjonService organisasjonService;
 
-    private ArbeidsforholdService arbeidsforholdService;
-
     private ServiceVarselService serviceVarselService;
 
     private TredjepartsvarselService tredjepartsvarselService;
@@ -74,6 +75,7 @@ public class GodkjenningService {
 
     @Inject
     public GodkjenningService(
+            AaregConsumer aaregConsumer,
             Metrikk metrikk,
             AsynkOppgaveDAO asynkOppgaveDAO,
             DokumentDAO dokumentDAO,
@@ -81,7 +83,6 @@ public class GodkjenningService {
             GodkjentplanDAO godkjentplanDAO,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             AktorregisterConsumer aktorregisterConsumer,
-            ArbeidsforholdService arbeidsforholdService,
             BrukerprofilService brukerprofilService,
             DkifService dkifService,
             OrganisasjonService organisasjonService,
@@ -91,6 +92,7 @@ public class GodkjenningService {
             TredjepartsvarselService tredjepartsvarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
+        this.aaregConsumer = aaregConsumer;
         this.metrikk = metrikk;
         this.asynkOppgaveDAO = asynkOppgaveDAO;
         this.dokumentDAO = dokumentDAO;
@@ -98,7 +100,6 @@ public class GodkjenningService {
         this.godkjentplanDAO = godkjentplanDAO;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.aktorregisterConsumer = aktorregisterConsumer;
-        this.arbeidsforholdService = arbeidsforholdService;
         this.brukerprofilService = brukerprofilService;
         this.dkifService = dkifService;
         this.organisasjonService = organisasjonService;
@@ -290,7 +291,7 @@ public class GodkjenningService {
                         .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.tom)))
                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
                 ))
-                .withStillingListe(mapListe(arbeidsforholdService.hentArbeidsforholdMedAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId, finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.fom, oppfoelgingsdialog.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfoelgingsdialog.arbeidstaker.aktoerId, finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.fom, oppfoelgingsdialog.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
                         .withYrke(stilling.yrke)
                         .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)
@@ -385,7 +386,7 @@ public class GodkjenningService {
                         .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(gyldighetstidspunkt.tom)))
                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
                 ))
-                .withStillingListe(mapListe(arbeidsforholdService.hentArbeidsforholdMedAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfoelgingsdialog.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfoelgingsdialog.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfoelgingsdialog.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
                         .withYrke(stilling.yrke)
                         .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)
