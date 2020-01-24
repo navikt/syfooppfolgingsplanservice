@@ -1,5 +1,7 @@
 package no.nav.syfo.narmesteleder;
 
+import no.nav.syfo.aareg.AaregConsumer;
+import no.nav.syfo.aareg.Arbeidsforhold;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
@@ -8,21 +10,22 @@ import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Collections.singletonList;
+import static no.nav.syfo.aareg.utils.AaregConsumerTestUtils.*;
 import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.AdditionalMatchers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
@@ -30,6 +33,9 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NarmesteLederConsumerTest {
+
+    @Mock
+    private AaregConsumer aaregConsumer;
 
     @Mock
     private AktorregisterConsumer aktorregisterConsumer;
@@ -51,7 +57,7 @@ public class NarmesteLederConsumerTest {
 
     private final String SYKMELDT_AKTOR_ID = "1234567890987";
     private final String LEDER_AKTOR_ID = "7890987654321";
-    private final String VIRKSOMHETSNUMMER = "1234";
+    private final String VIRKSOMHETSNUMMER = "123456789";
     private final String FNR = "12345678901";
     private final String FIRSTNAME = "Firstname";
     private final String MIDDLENAME = "Middlename";

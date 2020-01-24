@@ -1,5 +1,7 @@
 package no.nav.syfo.narmesteleder;
 
+import no.nav.syfo.aareg.AaregConsumer;
+import no.nav.syfo.aareg.Arbeidsforhold;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
@@ -15,11 +17,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static no.nav.syfo.aareg.OpplysningspliktigArbeidsgiver.Type.Organisasjon;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -30,6 +34,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class NarmesteLederConsumer {
     private static final Logger LOG = getLogger(NarmesteLederConsumer.class);
 
+    private final AaregConsumer aaregConsumer;
     private final AktorregisterConsumer aktorregisterConsumer;
     private final AzureAdTokenConsumer azureAdTokenConsumer;
     private final Metrikk metrikk;
@@ -49,6 +54,7 @@ public class NarmesteLederConsumer {
 
     @Autowired
     public NarmesteLederConsumer(
+            AaregConsumer aaregConsumer,
             AktorregisterConsumer aktorregisterConsumer,
             AzureAdTokenConsumer azureAdTokenConsumer,
             Metrikk metrikk,
@@ -57,6 +63,7 @@ public class NarmesteLederConsumer {
             @Value("${syfonarmesteleder.url}") String url,
             @Value("${syfonarmesteleder.id}") String syfonarmestelederId
     ) {
+        this.aaregConsumer = aaregConsumer;
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.azureAdTokenConsumer = azureAdTokenConsumer;
         this.metrikk = metrikk;
@@ -162,5 +169,9 @@ public class NarmesteLederConsumer {
                 .collect(toList());
 
         return ansatteAktorId.contains(ansattAktorId);
+    }
+
+    private LocalDate tilLocalDate(String date) {
+        return LocalDate.parse(date);
     }
 }

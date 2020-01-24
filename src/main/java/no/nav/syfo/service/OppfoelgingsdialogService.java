@@ -10,6 +10,7 @@ import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +28,14 @@ import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEID
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER;
 import static no.nav.syfo.api.selvbetjening.mapper.RSBrukerOppfolgingsplanMapper.oppfolgingsplan2rs;
 import static no.nav.syfo.model.Varseltype.*;
-import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Slf4j
 @Service
 public class OppfoelgingsdialogService {
+    private static final Logger LOG = getLogger(OppfoelgingsdialogService.class);
 
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
 
@@ -44,8 +46,6 @@ public class OppfoelgingsdialogService {
     private TiltakDAO tiltakDAO;
 
     private NarmesteLederConsumer narmesteLederConsumer;
-
-    private NaermesteLederService naermesteLederService;
 
     private TilgangskontrollService tilgangskontrollService;
 
@@ -91,7 +91,6 @@ public class OppfoelgingsdialogService {
             FastlegeService fastlegeService,
             EgenAnsattService egenAnsattService,
             NarmesteLederConsumer narmesteLederConsumer,
-            NaermesteLederService naermesteLederService,
             NorgService norgService,
             PersonService personService,
             ServiceVarselService serviceVarselService,
@@ -112,7 +111,6 @@ public class OppfoelgingsdialogService {
         this.fastlegeService = fastlegeService;
         this.egenAnsattService = egenAnsattService;
         this.narmesteLederConsumer = narmesteLederConsumer;
-        this.naermesteLederService = naermesteLederService;
         this.norgService = norgService;
         this.personService = personService;
         this.serviceVarselService = serviceVarselService;
@@ -121,46 +119,36 @@ public class OppfoelgingsdialogService {
     }
 
     public List<Oppfoelgingsdialog> hentAktoersOppfoelgingsdialoger(BrukerkontekstConstant brukerkontekst, String innloggetFnr) {
-        String aktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
+        String innloggetAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (ARBEIDSGIVER == brukerkontekst) {
-            List<Oppfoelgingsdialog> oppfoelgingsdialoger = new ArrayList<>();
-            List<Ansatt> ansatte = narmesteLederConsumer.ansatte(aktoerId);
-
-            ansatte.forEach(ansatt -> oppfoelgingsdialoger.addAll(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(ansatt.aktoerId).stream()
-                    .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
-                    .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
-                    .peek(oppfoelgingsdialog -> oppfoelingsdialogDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktoerId))
-                    .collect(toList())));
-            return oppfoelgingsdialoger;
+            return arbeidsgiversOppfolgingsplaner(innloggetAktorId);
         }
 
-        List<Naermesteleder> tidligereLedere = naermesteLederService.hentNaermesteLedere(aktoerId, EKSTERN);
-        List<Naermesteleder> inaktiveLedere = tidligereLedere.stream()
-                .filter(naermesteleder -> !naermesteleder.naermesteLederStatus.erAktiv)
-                .collect(toList());
-        List<Naermesteleder> aktiveLedere = tidligereLedere.stream()
-                .filter(naermesteleder -> naermesteleder.naermesteLederStatus.erAktiv)
-                .collect(toList());
-
         if (ARBEIDSTAKER == brukerkontekst) {
-            return oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktoerId)
-                    .stream()
-                    .peek(oppfoelgingsdialog -> inaktiveLedere.stream()
-                            .filter(tidligereleder -> tidligereleder.orgnummer.equals(oppfoelgingsdialog.virksomhet.virksomhetsnummer))
-                            .filter(tidligereleder -> oppfoelgingsdialog.godkjenninger.stream()
-                                    .anyMatch(pGodkjenning -> pGodkjenning.godkjentAvAktoerId.equals(tidligereleder.naermesteLederAktoerId)))
-                            .filter(tidligereleder -> aktiveLedere.stream()
-                                    .filter(aktivleder -> aktivleder.orgnummer.equals(tidligereleder.orgnummer))
-                                    .noneMatch(aktivleder -> aktivleder.naermesteLederAktoerId.equals(tidligereleder.naermesteLederAktoerId))
-                            )
-                            .forEach(naermesteleder -> nullstillGodkjenning(oppfoelgingsdialog.id, innloggetFnr)))
-                    .peek(oppfoelgingsdialog -> oppfoelingsdialogDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktoerId))
-                    .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
-                    .collect(toList());
+            return arbeidstakersOppfolgingsplaner(innloggetAktorId);
         }
 
         return emptyList();
+    }
+
+    private List<Oppfoelgingsdialog> arbeidsgiversOppfolgingsplaner(String aktorId) {
+        List<Oppfoelgingsdialog> oppfoelgingsdialoger = new ArrayList<>();
+        List<Ansatt> ansatte = narmesteLederConsumer.ansatte(aktorId);
+
+        ansatte.forEach(ansatt -> oppfoelgingsdialoger.addAll(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(ansatt.aktoerId).stream()
+                .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
+                .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
+                .peek(oppfoelgingsdialog -> oppfoelingsdialogDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktorId))
+                .collect(toList())));
+        return oppfoelgingsdialoger;
+    }
+
+    private List<Oppfoelgingsdialog> arbeidstakersOppfolgingsplaner(String aktorId) {
+        return oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktorId).stream()
+                .peek(oppfoelgingsdialog -> oppfoelingsdialogDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktorId))
+                .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
+                .collect(toList());
     }
 
     public Oppfoelgingsdialog hentOppfoelgingsdialog(Long oppfoelgingsdialogId) {
