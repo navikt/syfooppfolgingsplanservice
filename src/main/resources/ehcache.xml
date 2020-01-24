@@ -3,8 +3,8 @@
     <defaultCache eternal="true" maxElementsInMemory="1000" overflowToDisk="false"/>
     <cache name="aktoerid" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
     <cache name="aktoerfnr" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
-    <cache name="ansatte" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
-    <cache name="leder" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
-    <cache name="personPdl" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
-    <cache name="arbeidsforholdAT" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" />
+    <cache name="ansatte" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" timeToIdleSeconds="600" />
+    <cache name="leder" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" timeToIdleSeconds="600" />
+    <cache name="personPdl" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" timeToIdleSeconds="600" />
+    <cache name="arbeidsforholdAT" maxElementsInMemory="1000" overflowToDisk="false" eternal="false" timeToLiveSeconds="3600" timeToIdleSeconds="600" />
 </ehcache>
