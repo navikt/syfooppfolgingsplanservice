@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
 import no.nav.syfo.api.selvbetjening.domain.RSTilgang;
+import no.nav.syfo.brukertilgang.BrukerTilgang;
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.service.BrukertilgangService;
@@ -69,7 +70,8 @@ public class BrukerTilgangController {
     }
 
     @GetMapping(path = "/ansatt")
-    public Boolean accessToAnsatt(@RequestHeader MultiValueMap<String, String> headers) {
+    @ResponseBody
+    public BrukerTilgang accessToAnsatt(@RequestHeader MultiValueMap<String, String> headers) {
         headers.forEach((key, value) -> log.info("JTRACE key {}, value {}", key, value));
         String oppslaattIdent = headers.getFirst(NAV_PERSONIDENT.toLowerCase());
 
@@ -78,7 +80,7 @@ public class BrukerTilgangController {
         } else {
             metrikk.tellHendelse("accessToIdent");
 
-            return brukertilgangConsumer.hasAccessToAnsatt(oppslaattIdent);
+            return new BrukerTilgang().tilgang(brukertilgangConsumer.hasAccessToAnsatt(oppslaattIdent));
         }
     }
 }

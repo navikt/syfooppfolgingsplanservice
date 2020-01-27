@@ -2,6 +2,7 @@ package no.nav.syfo.api.selvbetjening.controller;
 
 import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest;
 import no.nav.syfo.api.selvbetjening.domain.RSTilgang;
+import no.nav.syfo.brukertilgang.BrukerTilgang;
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer;
 import no.nav.syfo.service.BrukertilgangService;
 import no.nav.syfo.service.PersonService;
@@ -134,9 +135,9 @@ public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
 
         when(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false);
 
-        Boolean res = brukerTilgangController.accessToAnsatt(headers);
+        BrukerTilgang res = brukerTilgangController.accessToAnsatt(headers);
 
-        assertFalse(res);
+        assertFalse(res.tilgang);
     }
 
     @Test
@@ -148,8 +149,8 @@ public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
 
         when(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true);
 
-        Boolean res = brukerTilgangController.accessToAnsatt(headers);
+        BrukerTilgang res = brukerTilgangController.accessToAnsatt(headers);
 
-        assertTrue(res);
+        assertTrue(res.tilgang);
     }
 }
