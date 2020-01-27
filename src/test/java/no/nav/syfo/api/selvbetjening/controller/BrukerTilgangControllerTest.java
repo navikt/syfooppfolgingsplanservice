@@ -2,10 +2,13 @@ package no.nav.syfo.api.selvbetjening.controller;
 
 import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest;
 import no.nav.syfo.api.selvbetjening.domain.RSTilgang;
+import no.nav.syfo.brukertilgang.BrukertilgangConsumer;
 import no.nav.syfo.service.BrukertilgangService;
 import no.nav.syfo.service.PersonService;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
@@ -15,11 +18,14 @@ import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
 import static no.nav.syfo.testhelper.UserConstants.LEDER_FNR;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static no.nav.syfo.util.HeaderUtil.NAV_PERSONIDENT;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
 
+    @MockBean
+    BrukertilgangConsumer brukertilgangConsumer;
     @MockBean
     BrukertilgangService brukertilgangService;
     @MockBean
@@ -117,5 +123,33 @@ public class BrukerTilgangControllerTest extends AbstractRessursTilgangTest {
         loggUtAlle(oidcRequestContextHolder);
 
         brukerTilgangController.harTilgang("");
+    }
+
+    @Test
+    public void accessToIdent_granted() {
+        loggInnBruker(oidcRequestContextHolder, LEDER_FNR);
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(NAV_PERSONIDENT, ARBEIDSTAKER_FNR);
+
+        when(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false);
+
+        Boolean res = brukerTilgangController.accessToAnsatt(headers);
+
+        assertFalse(res);
+    }
+
+    @Test
+    public void accessToIdent_denied() {
+        loggInnBruker(oidcRequestContextHolder, LEDER_FNR);
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(NAV_PERSONIDENT, ARBEIDSTAKER_FNR);
+
+        when(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true);
+
+        Boolean res = brukerTilgangController.accessToAnsatt(headers);
+
+        assertTrue(res);
     }
 }
