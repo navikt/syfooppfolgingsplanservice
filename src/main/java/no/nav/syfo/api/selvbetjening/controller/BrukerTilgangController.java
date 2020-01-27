@@ -72,7 +72,6 @@ public class BrukerTilgangController {
     @GetMapping(path = "/ansatt")
     @ResponseBody
     public BrukerTilgang accessToAnsatt(@RequestHeader MultiValueMap<String, String> headers) {
-        headers.forEach((key, value) -> log.info("JTRACE key {}, value {}", key, value));
         String oppslaattIdent = headers.getFirst(NAV_PERSONIDENT.toLowerCase());
 
         if (StringUtils.isEmpty(oppslaattIdent)) {
