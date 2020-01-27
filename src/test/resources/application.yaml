@@ -41,6 +41,7 @@ elector.path: "www.kanskje.no"
 #      cookie_name: localhost-idtoken
 
 aktoer.v2.endpointurl: "aktoerv2.url"
+syfobrukertilgang.url: "http://syfobrukertilgang"
 ekstern.altinn.behandlealtinnmelding.v1.endpointurl: "behandlealtinnmelding.url"
 behandlejournal.v2.endpointurl: "behandlejournal.url"
 brukeroppgave.v1.endpointurl: "brukeroppgavev1.url"
