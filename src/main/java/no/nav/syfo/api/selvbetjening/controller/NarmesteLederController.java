@@ -80,7 +80,7 @@ public class NarmesteLederController {
                         .body(narmesteLeder.get());
             } else {
                 metrikk.tellHendelse("get_narmesteleder_no_content");
-                LOG.error("Fant ikke naermeste leder for oppslaatt Ident");
+                LOG.warn("Fant ikke naermeste leder for oppslaatt Ident");
                 return ResponseEntity
                         .status(HttpStatus.NO_CONTENT)
                         .build();
