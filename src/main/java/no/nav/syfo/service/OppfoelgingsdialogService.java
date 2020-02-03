@@ -187,7 +187,7 @@ public class OppfoelgingsdialogService {
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
-            throw new RuntimeException();
+            throw new ForbiddenException();
         }
 
         long nyOppfoelgingsdialogId = opprettDialog(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, innloggetAktoerId);
@@ -273,10 +273,7 @@ public class OppfoelgingsdialogService {
                 .opprettetDato(deltMedNavTidspunkt)
                 .sistEndret(deltMedNavTidspunkt);
 
-        if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
-            throw new RuntimeException();
-        }
-
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog);
 
         godkjentplanDAO.delMedNav(oppfoelgingsdialogId, deltMedNavTidspunkt);
         veilederBehandlingDAO.opprett(veilederBehandling);
@@ -290,9 +287,7 @@ public class OppfoelgingsdialogService {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
-        if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
-            throw new ForbiddenException();
-        }
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog);
 
         String sendesTilAktoerId = oppfoelgingsdialog.arbeidstaker.aktoerId;
         String sendesTilFnr = aktorregisterConsumer.hentFnrForAktor(sendesTilAktoerId);
@@ -312,9 +307,7 @@ public class OppfoelgingsdialogService {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
-        if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
-            throw new RuntimeException();
-        }
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog);
 
         oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
         oppfoelingsdialogDAO.nullstillSamtykke(oppfoelgingsdialogId);
@@ -325,9 +318,7 @@ public class OppfoelgingsdialogService {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
-        if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
-            throw new RuntimeException();
-        }
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog);
 
         oppfoelingsdialogDAO.oppdaterSistInnlogget(oppfoelgingsdialog, innloggetAktoerId);
     }
@@ -337,9 +328,7 @@ public class OppfoelgingsdialogService {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
-        if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
-            throw new RuntimeException();
-        }
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog);
 
         oppfoelingsdialogDAO.avbryt(oppfoelgingsdialog.id, innloggetAktoerId);
         long nyOppfoelgingsdialogId = opprettDialog(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, innloggetAktoerId);
@@ -364,9 +353,7 @@ public class OppfoelgingsdialogService {
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
-        if (!tilgangskontrollService.aktoerTilhoererDialogen(innloggetAktoerId, oppfoelgingsdialog)) {
-            throw new RuntimeException();
-        }
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog);
 
         if (erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId)) {
             Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer).get();
@@ -376,4 +363,9 @@ public class OppfoelgingsdialogService {
         }
     }
 
+    private void throwExceptionWithoutAccessToOppfolgingsplan(String loggedInAktorId, Oppfoelgingsdialog oppfolgingsplan) {
+        if (!tilgangskontrollService.aktoerTilhoererDialogen(loggedInAktorId, oppfolgingsplan)) {
+            throw new ForbiddenException();
+        }
+    }
 }
