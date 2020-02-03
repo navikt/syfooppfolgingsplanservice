@@ -35,9 +35,9 @@ public class SamtykkeService {
 
     public void giSamtykke(Long oppfoelgingsdialogId, String fnr, boolean giSamtykke) {
         String aktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
+        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
 
-        if (!tilgangskontrollService.aktoerTilhoererDialogen(aktoerId, oppfoelgingsdialog)) {
+        if (!tilgangskontrollService.aktorTilhorerOppfolgingsplan(aktoerId, oppfoelgingsdialog)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 

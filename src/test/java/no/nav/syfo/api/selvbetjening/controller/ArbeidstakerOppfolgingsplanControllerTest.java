@@ -3,7 +3,7 @@ package no.nav.syfo.api.selvbetjening.controller;
 import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest;
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.service.OppfoelgingsdialogService;
+import no.nav.syfo.service.OppfolgingsplanService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 public class ArbeidstakerOppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
     @MockBean
-    OppfoelgingsdialogService oppfoelgingsdialogService;
+    OppfolgingsplanService oppfolgingsplanService;
     @MockBean
     Metrikk metrikk;
 
@@ -38,7 +38,7 @@ public class ArbeidstakerOppfolgingsplanControllerTest extends AbstractRessursTi
     public void henter_oppfolgingsplaner_som_arbeidstaker() {
         arbeidstakerOppfolgingsplanController.hentArbeidstakersOppfolgingsplaner();
 
-        verify(oppfoelgingsdialogService).hentAktoersOppfoelgingsdialoger(ARBEIDSTAKER, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).hentAktorsOppfolgingsplaner(ARBEIDSTAKER, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("hent_oppfolgingsplan_at");
     }
 
@@ -56,11 +56,11 @@ public class ArbeidstakerOppfolgingsplanControllerTest extends AbstractRessursTi
         RSOpprettOppfoelgingsdialog rsOpprettOppfoelgingsdialog = new RSOpprettOppfoelgingsdialog()
                 .virksomhetsnummer(VIRKSOMHETSNUMMER);
 
-        when(oppfoelgingsdialogService.opprettOppfoelgingsdialog(rsOpprettOppfoelgingsdialog, ARBEIDSTAKER_FNR)).thenReturn(ressursId);
+        when(oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog, ARBEIDSTAKER_FNR)).thenReturn(ressursId);
 
         Long res = arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(rsOpprettOppfoelgingsdialog);
 
-        verify(oppfoelgingsdialogService).opprettOppfoelgingsdialog(rsOpprettOppfoelgingsdialog, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("opprett_oppfolgingsplan_at");
 
         assertEquals(res, ressursId);

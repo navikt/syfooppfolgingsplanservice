@@ -2,7 +2,7 @@ package no.nav.syfo.oppgave.oppfoelgingsdialog;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
+import no.nav.syfo.domain.OppfolgingsplanAltinn;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
 import no.nav.syfo.oppgave.Oppgavetype;
@@ -19,7 +19,7 @@ import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
 public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
 
     private final JuridiskLoggService juridiskLoggService;
-    private final OppfoelgingsdialogService oppfoelgingsdialogService;
+    private final OppfolgingsplanService oppfolgingsplanService;
     private final PdfService pdfService;
     private final Metrikk metrikk;
     private final Toggle toggle;
@@ -27,13 +27,13 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
     @Inject
     public JobbLoggSendOppfoelgingsdialogTilAltinn(
             JuridiskLoggService juridiskLoggService,
-            OppfoelgingsdialogService oppfoelgingsdialogService,
+            OppfolgingsplanService oppfolgingsplanService,
             PdfService pdfService,
             Metrikk metrikk,
             Toggle toggle
     ) {
         this.juridiskLoggService = juridiskLoggService;
-        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.oppfolgingsplanService = oppfolgingsplanService;
         this.pdfService = pdfService;
         this.metrikk = metrikk;
         this.toggle = toggle;
@@ -48,13 +48,13 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
     public void utfoerOppgave(String oppfoelgingsdialogId) {
         log.info("TRACEBATCH: run {}", this.getClass().getName());
 
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(Long.valueOf(oppfoelgingsdialogId));
+        Oppfoelgingsdialog oppfoelgingsdialog = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
 
         byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
 
-        OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn = new OppfoelgingsdialogAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
+        OppfolgingsplanAltinn oppfolgingsplanAltinn = new OppfolgingsplanAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
 
-        juridiskLoggService.loggSendOppfoelgingsdialogTilAltinn(oppfoelgingsdialogAltinn);
+        juridiskLoggService.loggSendOppfoelgingsdialogTilAltinn(oppfolgingsplanAltinn);
 
         metrikk.tellHendelse("logget_plan_sendt_til_altinn");
     }

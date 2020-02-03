@@ -48,7 +48,7 @@ public class JournalService {
     }
 
     public String opprettJournalpost(String saksId, GodkjentPlan godkjentPlan) {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(godkjentPlan.oppfoelgingsdialogId);
+        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
         String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfoelgingsdialog.virksomhet.virksomhetsnummer);
         String dokumentNavn = format("Oppfølgingsplan %s", virksomhetsnavn);
         String fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.sistEndretAvAktoerId);

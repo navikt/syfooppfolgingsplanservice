@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
-
 @Service
 public class TilgangskontrollService {
 
@@ -20,12 +18,12 @@ public class TilgangskontrollService {
         this.narmesteLederConsumer = narmesteLederConsumer;
     }
 
-    public boolean aktoerTilhoererDialogen(String aktoerId, Oppfoelgingsdialog oppfoelgingsdialog) {
-        return oppfoelgingsdialog.arbeidstaker.aktoerId.equals(aktoerId)
-                || erAktoerNaermestelederForBruker(aktoerId, oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer);
+    public boolean aktorTilhorerOppfolgingsplan(String aktoerId, Oppfoelgingsdialog oppfolgingsplan) {
+        return oppfolgingsplan.arbeidstaker.aktoerId.equals(aktoerId)
+                || erAktoerNaermestelederForBruker(aktoerId, oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer);
     }
 
-    public boolean kanOppretteDialog(String sykmeldtAktoerId, String aktoerId, String virksomhetsnummer) {
+    public boolean kanOppretteOppfolgingsplan(String sykmeldtAktoerId, String aktoerId, String virksomhetsnummer) {
         return (aktoerId.equals(sykmeldtAktoerId) && aktoerHarNaermesteLederHosVirksomhet(aktoerId, virksomhetsnummer))
                 || erAktoerNaermestelederForBruker(aktoerId, sykmeldtAktoerId, virksomhetsnummer);
     }

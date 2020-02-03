@@ -5,7 +5,7 @@ import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptExternal
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage;
-import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
+import no.nav.syfo.domain.OppfolgingsplanAltinn;
 import no.nav.syfo.service.BrukerprofilService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,15 +40,15 @@ public class AltinnConsumer {
         this.insertCorrespondenceBasic = insertCorrespondenceBasic;
     }
 
-    public Integer sendOppfoelgingsplanTilArbeidsgiver(OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn) {
-        Optional<String> brukersNavn = brukerprofilService.hentNavnByFnrForAsynkOppgave(oppfoelgingsdialogAltinn.oppfoelgingsdialog.arbeidstaker.fnr);
+    public Integer sendOppfolgingsplanTilArbeidsgiver(OppfolgingsplanAltinn oppfolgingplanAltinn) {
+        Optional<String> brukersNavn = brukerprofilService.hentNavnByFnrForAsynkOppgave(oppfolgingplanAltinn.oppfoelgingsdialog.arbeidstaker.fnr);
         try {
             ReceiptExternal receiptExternal = insertCorrespondenceBasic.insertCorrespondenceBasicV2(
                     alltinnUsername,
                     altinnPassword,
                     SYSTEM_USER_CODE,
-                    oppfoelgingsdialogAltinn.oppfoelgingsdialog.uuid,
-                    oppfoelgingsdialogTilCorrespondence(oppfoelgingsdialogAltinn, brukersNavn.orElseThrow(() -> {
+                    oppfolgingplanAltinn.oppfoelgingsdialog.uuid,
+                    oppfoelgingsdialogTilCorrespondence(oppfolgingplanAltinn, brukersNavn.orElseThrow(() -> {
                         log.error("Fikk uventet feil fra TPS");
                         return new RuntimeException(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN);
                     }))

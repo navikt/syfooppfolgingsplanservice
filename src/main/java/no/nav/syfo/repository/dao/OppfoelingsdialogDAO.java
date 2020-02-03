@@ -52,23 +52,23 @@ public class OppfoelingsdialogDAO {
         this.tiltakDAO = tiltakDAO;
     }
 
-    public Oppfoelgingsdialog create(Oppfoelgingsdialog oppfoelgingsdialog) {
+    public Oppfoelgingsdialog create(Oppfoelgingsdialog oppfolgingsplan) {
         long id = nesteSekvensverdi("OPPFOELGINGSDIALOG_ID_SEQ", jdbcTemplate);
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("oppfoelgingsdialog_id", id)
                 .addValue("uuid", UUID.randomUUID().toString())
-                .addValue("aktoer_id", oppfoelgingsdialog.arbeidstaker.aktoerId)
-                .addValue("virksomhetsnummer", oppfoelgingsdialog.virksomhet.virksomhetsnummer)
-                .addValue("opprettet_av", oppfoelgingsdialog.opprettetAvAktoerId)
+                .addValue("aktoer_id", oppfolgingsplan.arbeidstaker.aktoerId)
+                .addValue("virksomhetsnummer", oppfolgingsplan.virksomhet.virksomhetsnummer)
+                .addValue("opprettet_av", oppfolgingsplan.opprettetAvAktoerId)
                 .addValue("created", convert(now()))
-                .addValue("arbeidsgiver_sist_innlogget", convert(oppfoelgingsdialog.arbeidsgiver.sistInnlogget))
-                .addValue("sykmeldt_sist_innlogget", convert(oppfoelgingsdialog.arbeidstaker.sistInnlogget))
-                .addValue("sist_endret_av", oppfoelgingsdialog.sistEndretAvAktoerId)
+                .addValue("arbeidsgiver_sist_innlogget", convert(oppfolgingsplan.arbeidsgiver.sistInnlogget))
+                .addValue("sykmeldt_sist_innlogget", convert(oppfolgingsplan.arbeidstaker.sistInnlogget))
+                .addValue("sist_endret_av", oppfolgingsplan.sistEndretAvAktoerId)
                 .addValue("sist_endret", convert(now()))
-                .addValue("arbeidsgiver_sist_aksessert", convert(oppfoelgingsdialog.arbeidsgiver.sistAksessert))
-                .addValue("sykmeldt_sist_aksessert", convert(oppfoelgingsdialog.arbeidstaker.sistInnlogget))
-                .addValue("arbeidsgiver_sist_endret", convert(oppfoelgingsdialog.arbeidsgiver.sisteEndring))
-                .addValue("sykmeldt_sist_endret", convert(oppfoelgingsdialog.arbeidstaker.sisteEndring))
+                .addValue("arbeidsgiver_sist_aksessert", convert(oppfolgingsplan.arbeidsgiver.sistAksessert))
+                .addValue("sykmeldt_sist_aksessert", convert(oppfolgingsplan.arbeidstaker.sistInnlogget))
+                .addValue("arbeidsgiver_sist_endret", convert(oppfolgingsplan.arbeidsgiver.sisteEndring))
+                .addValue("sykmeldt_sist_endret", convert(oppfolgingsplan.arbeidstaker.sisteEndring))
                 .addValue("samtykke_sykmeldt", null)
                 .addValue("samtykke_arbeidsgiver", null);
 
@@ -80,88 +80,88 @@ public class OppfoelingsdialogDAO {
                 ":sykmeldt_sist_innlogget, :sist_endret_av, :sist_endret, :arbeidsgiver_sist_aksessert, :sykmeldt_sist_aksessert, " +
                 ":arbeidsgiver_sist_endret, :sykmeldt_sist_endret, :samtykke_sykmeldt, :samtykke_arbeidsgiver)", namedParameters);
 
-        return oppfoelgingsdialog.id(id);
+        return oppfolgingsplan.id(id);
     }
 
-    public Oppfoelgingsdialog oppfoelgingsdialogByTiltakId(Long tiltakId) {
+    public Oppfoelgingsdialog oppfolgingsplanByTiltakId(Long tiltakId) {
         return map(jdbcTemplate.queryForObject("select * from oppfoelgingsdialog join tiltak " +
                 "on tiltak.oppfoelgingsdialog_id = oppfoelgingsdialog.oppfoelgingsdialog_id " +
                 "where tiltak_id = ?", new OppfoelgingsdialogRowMapper(), tiltakId), p2oppfoelgingsdialog);
     }
 
-    public Oppfoelgingsdialog finnOppfoelgingsdialogMedId(Long oppfoelgingsdialogId) {
+    public Oppfoelgingsdialog finnOppfolgingsplanMedId(Long oppfoelgingsdialogId) {
         return map(jdbcTemplate.queryForObject("select * from oppfoelgingsdialog where oppfoelgingsdialog_id = ?", new OppfoelgingsdialogRowMapper(), oppfoelgingsdialogId), p2oppfoelgingsdialog);
     }
 
-    public List<Oppfoelgingsdialog> oppfoelgingsdialogerKnyttetTilSykmeldt(String aktoerId) {
+    public List<Oppfoelgingsdialog> oppfolgingsplanerKnyttetTilSykmeldt(String aktoerId) {
         return mapListe(jdbcTemplate.query("select * from oppfoelgingsdialog where aktoer_id = ?", new OppfoelgingsdialogRowMapper(), aktoerId), p2oppfoelgingsdialog);
     }
 
-    public List<Oppfoelgingsdialog> oppfoelgingsdialogerKnyttetTilSykmeldtogVirksomhet(String sykmeldtAktoerId, String virksomhetsnummer) {
+    public List<Oppfoelgingsdialog> oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(String sykmeldtAktoerId, String virksomhetsnummer) {
         return mapListe(jdbcTemplate.query("select * from oppfoelgingsdialog where aktoer_id = ? and virksomhetsnummer = ?", new OppfoelgingsdialogRowMapper(), sykmeldtAktoerId, virksomhetsnummer), p2oppfoelgingsdialog);
     }
 
-    public Oppfoelgingsdialog populate(Oppfoelgingsdialog oppfoelgingsdialog) {
-        oppfoelgingsdialog.arbeidsoppgaveListe = arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(oppfoelgingsdialog.id);
-        oppfoelgingsdialog.tiltakListe = tiltakDAO.finnTiltakByOppfoelgingsdialogId(oppfoelgingsdialog.id);
-        oppfoelgingsdialog.godkjenninger = godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(oppfoelgingsdialog.id);
-        oppfoelgingsdialog.godkjentPlan = godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(oppfoelgingsdialog.id);
+    public Oppfoelgingsdialog populate(Oppfoelgingsdialog oppfolgingplan) {
+        oppfolgingplan.arbeidsoppgaveListe = arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(oppfolgingplan.id);
+        oppfolgingplan.tiltakListe = tiltakDAO.finnTiltakByOppfoelgingsdialogId(oppfolgingplan.id);
+        oppfolgingplan.godkjenninger = godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(oppfolgingplan.id);
+        oppfolgingplan.godkjentPlan = godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingplan.id);
 
-        oppfoelgingsdialog.godkjentPlan
-                .filter(godkjentPlan -> !oppfoelgingsdialog.godkjenninger.isEmpty())
+        oppfolgingplan.godkjentPlan
+                .filter(godkjentPlan -> !oppfolgingplan.godkjenninger.isEmpty())
                 .ifPresent(godkjentPlan -> {
                     log.warn("Sletter godkjenning som finnes selv om oppfølgingsplanen allerede er godkjent");
                     godkjenningerDAO.deleteAllByOppfoelgingsdialogId(godkjentPlan.oppfoelgingsdialogId);
-                    oppfoelgingsdialog.godkjenninger = emptyList();
+                    oppfolgingplan.godkjenninger = emptyList();
                 });
 
-        return oppfoelgingsdialog;
+        return oppfolgingplan;
 
     }
 
-    public void sistEndretAv(Long oppfoelgingsdialogId, String innloggetAktoerId) {
-        Oppfoelgingsdialog oppfoelgingsdialog = finnOppfoelgingsdialogMedId(oppfoelgingsdialogId);
+    public void sistEndretAv(Long oppfoelgingsplanId, String innloggetAktoerId) {
+        Oppfoelgingsdialog oppfoelgingsdialog = finnOppfolgingsplanMedId(oppfoelgingsplanId);
         if (erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId)) {
             jdbcTemplate.update("update oppfoelgingsdialog set sykmeldt_sist_endret = ?, sist_endret = ?, sist_endret_av = ? where oppfoelgingsdialog_id = ?",
-                    convert(now()), convert(now()), innloggetAktoerId, oppfoelgingsdialogId);
+                    convert(now()), convert(now()), innloggetAktoerId, oppfoelgingsplanId);
         } else {
             jdbcTemplate.update("update oppfoelgingsdialog set arbeidsgiver_sist_endret = ?, sist_endret = ?, sist_endret_av = ? where oppfoelgingsdialog_id = ?",
-                    convert(now()), convert(now()), innloggetAktoerId, oppfoelgingsdialogId);
+                    convert(now()), convert(now()), innloggetAktoerId, oppfoelgingsplanId);
         }
     }
 
-    public void lagreSamtykkeArbeidsgiver(long oppfoelgingsdialogId, boolean samtykke) {
-        jdbcTemplate.update("update oppfoelgingsdialog set samtykke_arbeidsgiver = ? where oppfoelgingsdialog_id = ?", samtykke, oppfoelgingsdialogId);
+    public void lagreSamtykkeArbeidsgiver(long oppfolgingplanId, boolean samtykke) {
+        jdbcTemplate.update("update oppfoelgingsdialog set samtykke_arbeidsgiver = ? where oppfoelgingsdialog_id = ?", samtykke, oppfolgingplanId);
     }
 
-    public void lagreSamtykkeSykmeldt(long oppfoelgingsdialogId, boolean samtykke) {
-        jdbcTemplate.update("update oppfoelgingsdialog set samtykke_sykmeldt = ? where oppfoelgingsdialog_id = ?", samtykke, oppfoelgingsdialogId);
+    public void lagreSamtykkeSykmeldt(long oppfolgingsplanId, boolean samtykke) {
+        jdbcTemplate.update("update oppfoelgingsdialog set samtykke_sykmeldt = ? where oppfoelgingsdialog_id = ?", samtykke, oppfolgingsplanId);
     }
 
-    public void oppdaterSistInnlogget(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId) {
-        if (innloggetAktoerId.equals(oppfoelgingsdialog.arbeidstaker.aktoerId)) {
-            jdbcTemplate.update("update oppfoelgingsdialog set sykmeldt_sist_innlogget = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfoelgingsdialog.id);
+    public void oppdaterSistInnlogget(Oppfoelgingsdialog oppfolgingsplan, String innloggetAktoerId) {
+        if (innloggetAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
+            jdbcTemplate.update("update oppfoelgingsdialog set sykmeldt_sist_innlogget = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfolgingsplan.id);
         } else {
-            jdbcTemplate.update("update oppfoelgingsdialog set arbeidsgiver_sist_innlogget = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfoelgingsdialog.id);
+            jdbcTemplate.update("update oppfoelgingsdialog set arbeidsgiver_sist_innlogget = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfolgingsplan.id);
         }
     }
 
-    public void oppdaterSistAksessert(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId) {
-        if (innloggetAktoerId.equals(oppfoelgingsdialog.arbeidstaker.aktoerId)) {
-            jdbcTemplate.update("update oppfoelgingsdialog set sykmeldt_sist_aksessert = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfoelgingsdialog.id);
+    public void oppdaterSistAksessert(Oppfoelgingsdialog oppfolgingsplan, String innloggetAktoerId) {
+        if (innloggetAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
+            jdbcTemplate.update("update oppfoelgingsdialog set sykmeldt_sist_aksessert = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfolgingsplan.id);
         } else {
-            jdbcTemplate.update("update oppfoelgingsdialog set arbeidsgiver_sist_aksessert = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfoelgingsdialog.id);
+            jdbcTemplate.update("update oppfoelgingsdialog set arbeidsgiver_sist_aksessert = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfolgingsplan.id);
         }
     }
 
-    public void avbryt(long oppfoelgingsdialogId, String innloggetAktoerId) {
+    public void avbryt(long oppfolgingsplanId, String innloggetAktoerId) {
         jdbcTemplate.update("update godkjentplan set avbrutt_av = ?, avbrutt_tidspunkt = ? where oppfoelgingsdialog_id = ?",
-                innloggetAktoerId, convert(now()), oppfoelgingsdialogId);
+                innloggetAktoerId, convert(now()), oppfolgingsplanId);
     }
 
-    public void nullstillSamtykke(long oppfoelgingsdialogId) {
-        jdbcTemplate.update("update oppfoelgingsdialog set samtykke_sykmeldt = ? where oppfoelgingsdialog_id = ?", null, oppfoelgingsdialogId);
-        jdbcTemplate.update("update oppfoelgingsdialog set samtykke_arbeidsgiver = ? where oppfoelgingsdialog_id = ?", null, oppfoelgingsdialogId);
+    public void nullstillSamtykke(long oppfolgingsplanId) {
+        jdbcTemplate.update("update oppfoelgingsdialog set samtykke_sykmeldt = ? where oppfoelgingsdialog_id = ?", null, oppfolgingsplanId);
+        jdbcTemplate.update("update oppfoelgingsdialog set samtykke_arbeidsgiver = ? where oppfoelgingsdialog_id = ?", null, oppfolgingsplanId);
     }
 
     private class OppfoelgingsdialogRowMapper implements RowMapper<POppfoelgingsdialog> {

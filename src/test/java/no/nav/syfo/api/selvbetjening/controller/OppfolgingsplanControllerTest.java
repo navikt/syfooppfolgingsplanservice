@@ -41,7 +41,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     @MockBean
     GodkjenningService godkjenningService;
     @MockBean
-    OppfoelgingsdialogService oppfoelgingsdialogService;
+    OppfolgingsplanService oppfolgingsplanService;
     @MockBean
     SamtykkeService samtykkeService;
     @MockBean
@@ -58,7 +58,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void avbryt_som_bruker() {
         oppfolgingsplanController.avbryt(oppfolgingsplanId);
 
-        verify(oppfoelgingsdialogService).avbrytPlan(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).avbrytPlan(oppfolgingsplanId, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("avbryt_plan");
     }
 
@@ -88,7 +88,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void delmedfastlege_som_bruker() {
         oppfolgingsplanController.delMedFastlege(oppfolgingsplanId);
 
-        verify(oppfoelgingsdialogService).delMedFastlege(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).delMedFastlege(oppfolgingsplanId, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("del_plan_med_fastlege");
     }
 
@@ -103,7 +103,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void delmednav_som_bruker() {
         oppfolgingsplanController.delMedNav(oppfolgingsplanId);
 
-        verify(oppfoelgingsdialogService).delMedNav(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).delMedNav(oppfolgingsplanId, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("del_plan_med_nav");
     }
 
@@ -183,12 +183,12 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void godkjennsist_plan_som_bruker() {
         RSGyldighetstidspunkt gyldighetstidspunkt = new RSGyldighetstidspunkt();
 
-        when(oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR)).thenReturn(gyldighetstidspunkt);
+        when(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR)).thenReturn(gyldighetstidspunkt);
 
         RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidstaker", null);
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, ARBEIDSTAKER_FNR, false, false);
-        verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("godkjenn_plan_svar");
         verify(metrikk, never()).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
@@ -199,12 +199,12 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void godkjennsist_plan_som_bruker_del_med_nav() {
         RSGyldighetstidspunkt gyldighetstidspunkt = new RSGyldighetstidspunkt();
 
-        when(oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR)).thenReturn(gyldighetstidspunkt);
+        when(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR)).thenReturn(gyldighetstidspunkt);
 
         RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidstaker", true);
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, ARBEIDSTAKER_FNR, false, true);
-        verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("godkjenn_plan_svar");
         verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
@@ -218,12 +218,12 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         RSGyldighetstidspunkt gyldighetstidspunkt = new RSGyldighetstidspunkt();
 
-        when(oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR)).thenReturn(gyldighetstidspunkt);
+        when(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR)).thenReturn(gyldighetstidspunkt);
 
         RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver", null);
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, false);
-        verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR);
+        verify(oppfolgingsplanService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR);
         verify(metrikk).tellHendelse("godkjenn_plan_svar");
         verify(metrikk, never()).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
@@ -237,12 +237,12 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
 
         RSGyldighetstidspunkt gyldighetstidspunkt = new RSGyldighetstidspunkt();
 
-        when(oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR)).thenReturn(gyldighetstidspunkt);
+        when(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR)).thenReturn(gyldighetstidspunkt);
 
         RSGyldighetstidspunkt rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver", true);
 
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, true);
-        verify(oppfoelgingsdialogService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR);
+        verify(oppfolgingsplanService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR);
         verify(metrikk).tellHendelse("godkjenn_plan_svar");
         verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL);
 
@@ -260,7 +260,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void kopier_som_bruker() {
         long nyPlanId = 1L;
 
-        when(oppfoelgingsdialogService.kopierOppfoelgingsdialog(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(nyPlanId);
+        when(oppfolgingsplanService.kopierOppfoelgingsdialog(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(nyPlanId);
 
         long res = oppfolgingsplanController.kopier(oppfolgingsplanId);
 
@@ -373,7 +373,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void forespor_revidering_eksisterende_som_bruker() {
         oppfolgingsplanController.foresporRevidering(oppfolgingsplanId);
 
-        verify(oppfoelgingsdialogService).foresporRevidering(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).foresporRevidering(oppfolgingsplanId, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("forespor_revidering");
     }
 
@@ -388,7 +388,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void nullstill_godkjenning_som_bruker() {
         oppfolgingsplanController.nullstillGodkjenning(oppfolgingsplanId);
 
-        verify(oppfoelgingsdialogService).nullstillGodkjenning(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).nullstillGodkjenning(oppfolgingsplanId, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("nullstill_godkjenning");
     }
 
@@ -403,7 +403,7 @@ public class OppfolgingsplanControllerTest extends AbstractRessursTilgangTest {
     public void sett_som_bruker() {
         oppfolgingsplanController.sett(oppfolgingsplanId);
 
-        verify(oppfoelgingsdialogService).oppdaterSistInnlogget(oppfolgingsplanId, ARBEIDSTAKER_FNR);
+        verify(oppfolgingsplanService).oppdaterSistInnlogget(oppfolgingsplanId, ARBEIDSTAKER_FNR);
         verify(metrikk).tellHendelse("sett_plan");
     }
 

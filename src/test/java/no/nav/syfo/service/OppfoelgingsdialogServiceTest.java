@@ -83,7 +83,7 @@ public class OppfoelgingsdialogServiceTest {
     private MockRestServiceServer mockRestServiceServer;
 
     @Inject
-    private OppfoelgingsdialogService oppfoelgingsdialogService;
+    private OppfolgingsplanService oppfolgingsplanService;
 
     @Before
     public void setUp() {
@@ -113,12 +113,12 @@ public class OppfoelgingsdialogServiceTest {
                                         new Kommentar()
                                 ))
                 ));
-        when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
+        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
         when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
-        when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));
         when(arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(anyLong())).thenReturn(Arrays.asList(new Arbeidsoppgave().id(1L)));
         when(tiltakDAO.finnTiltakByOppfoelgingsdialogId(anyLong())).thenReturn(Arrays.asList(new Tiltak()
@@ -126,7 +126,7 @@ public class OppfoelgingsdialogServiceTest {
                 .kommentarer(Arrays.asList(
                         new Kommentar()
                 ))));
-        oppfoelgingsdialogService.avbrytPlan(1L, "12345678901");
+        oppfolgingsplanService.avbrytPlan(1L, "12345678901");
 
         verify(arbeidsoppgaveDAO).create(any());
         verify(tiltakDAO).create(any());
@@ -149,11 +149,11 @@ public class OppfoelgingsdialogServiceTest {
                                         new Kommentar()
                                 ))
                 ));
-        when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(oppfoelgingsdialog);
+        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(oppfoelgingsdialog);
         when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
         when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
-        when(tilgangskontrollService.aktoerTilhoererDialogen(anyString(), any())).thenReturn(true);
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(anyString(), any())).thenReturn(true);
         when(tiltakDAO.create(any())).thenReturn(new Tiltak().id(1L));
         when(arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(anyLong())).thenReturn(Arrays.asList(new Arbeidsoppgave().id(1L)));
         when(tiltakDAO.finnTiltakByOppfoelgingsdialogId(anyLong())).thenReturn(Arrays.asList(new Tiltak()
@@ -161,7 +161,7 @@ public class OppfoelgingsdialogServiceTest {
                 .kommentarer(Arrays.asList(
                         new Kommentar()
                 ))));
-        oppfoelgingsdialogService.kopierOppfoelgingsdialog(1L, "12345678901");
+        oppfolgingsplanService.kopierOppfoelgingsdialog(1L, "12345678901");
 
         verify(arbeidsoppgaveDAO).create(any());
         verify(tiltakDAO).create(any());
@@ -172,13 +172,13 @@ public class OppfoelgingsdialogServiceTest {
     public void delMedFastlege() throws Exception {
         mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.OK);
 
-        when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
+        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
-        when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
-        when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
+        when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
         when(dokumentDAO.hent(anyString())).thenReturn(new byte[]{0, 1, 2});
 
-        oppfoelgingsdialogService.delMedFastlege(1L, "fnr");
+        oppfolgingsplanService.delMedFastlege(1L, "fnr");
 
         verify(godkjentplanDAO).delMedFastlege(1L);
 
@@ -187,34 +187,34 @@ public class OppfoelgingsdialogServiceTest {
 
     @Test(expected = ForbiddenException.class)
     public void delMedFastlegeIkkeTilgang() throws Exception {
-        when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
+        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
-        when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(false);
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(false);
 
-        oppfoelgingsdialogService.delMedFastlege(1L, "fnr");
+        oppfolgingsplanService.delMedFastlege(1L, "fnr");
     }
 
     @Test(expected = RuntimeException.class)
     public void delMedFastlegeFinnerIkkeGodkjentPlan() throws Exception {
-        when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
+        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
-        when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
-        when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(empty());
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
+        when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(empty());
 
-        oppfoelgingsdialogService.delMedFastlege(1L, "fnr");
+        oppfolgingsplanService.delMedFastlege(1L, "fnr");
     }
 
     @Test(expected = RuntimeException.class)
     public void delMedFastlegeFeilFraFastlegerest() throws Exception {
         mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        when(oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
+        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
-        when(tilgangskontrollService.aktoerTilhoererDialogen(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
-        when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
+        when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
         when(dokumentDAO.hent(anyString())).thenReturn(new byte[]{0, 1, 2});
 
-        oppfoelgingsdialogService.delMedFastlege(1L, "fnr");
+        oppfolgingsplanService.delMedFastlege(1L, "fnr");
 
         mockRestServiceServer.verify();
     }

@@ -3,7 +3,7 @@ package no.nav.syfo.oppgave.oppfoelgingsdialog;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
+import no.nav.syfo.domain.OppfolgingsplanAltinn;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
 import no.nav.syfo.oppgave.Oppgavetype;
@@ -26,7 +26,7 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
     private final AktorregisterConsumer aktorregisterConsumer;
     private final AltinnConsumer altinnConsumer;
     private final Metrikk metrikk;
-    private final OppfoelgingsdialogService oppfoelgingsdialogService;
+    private final OppfolgingsplanService oppfolgingsplanService;
     private final PdfService pdfService;
 
     @Override
@@ -39,13 +39,13 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
             AktorregisterConsumer aktorregisterConsumer,
             AltinnConsumer altinnConsumer,
             Metrikk metrikk,
-            OppfoelgingsdialogService oppfoelgingsdialogService,
+            OppfolgingsplanService oppfolgingsplanService,
             PdfService pdfService
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.altinnConsumer = altinnConsumer;
         this.metrikk = metrikk;
-        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.oppfolgingsplanService = oppfolgingsplanService;
         this.pdfService = pdfService;
     }
 
@@ -54,14 +54,14 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
     public void utfoerOppgave(String oppfoelgingsdialogId) {
         log.info("TRACEBATCH: run {}", this.getClass().getName());
 
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(Long.valueOf(oppfoelgingsdialogId));
+        Oppfoelgingsdialog oppfoelgingsdialog = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
         oppfoelgingsdialog.arbeidstaker.fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
 
         byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
 
-        OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn = new OppfoelgingsdialogAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
+        OppfolgingsplanAltinn oppfolgingsplanAltinn = new OppfolgingsplanAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
 
-        altinnConsumer.sendOppfoelgingsplanTilArbeidsgiver(oppfoelgingsdialogAltinn);
+        altinnConsumer.sendOppfolgingsplanTilArbeidsgiver(oppfolgingsplanAltinn);
 
 
         LocalDateTime dato = Optional.ofNullable(Objects.requireNonNull(oppfoelgingsdialog.godkjentPlan

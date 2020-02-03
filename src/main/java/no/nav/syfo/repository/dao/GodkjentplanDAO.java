@@ -39,13 +39,13 @@ public class GodkjentplanDAO {
         this.metrikk = metrikk;
     }
 
-    public Optional<GodkjentPlan> godkjentPlanByOppfoelgingsdialogId(long oppfoelgingsdialogId) {
-        return queryOptional(jdbcTemplate, "SELECT * FROM godkjentplan WHERE oppfoelgingsdialog_id = ?", new GodkjentPlanRowMapper(), oppfoelgingsdialogId)
+    public Optional<GodkjentPlan> godkjentPlanByOppfolgingsplanId(long oppfolgingsplanId) {
+        return queryOptional(jdbcTemplate, "SELECT * FROM godkjentplan WHERE oppfoelgingsdialog_id = ?", new GodkjentPlanRowMapper(), oppfolgingsplanId)
                 .map(p2godkjentplan);
     }
 
-    public Long godkjentPlanIdByOppfoelgingsdialogId(long oppfoelgingsdialogId) {
-        return jdbcTemplate.queryForObject("SELECT godkjentplan_id FROM godkjentplan WHERE oppfoelgingsdialog_id = ?", (rs, rowNum) -> rs.getLong("godkjentplan_id"), oppfoelgingsdialogId);
+    public Long godkjentPlanIdByOppfolgingsplanId(long oppfolgingsplanId) {
+        return jdbcTemplate.queryForObject("SELECT godkjentplan_id FROM godkjentplan WHERE oppfoelgingsdialog_id = ?", (rs, rowNum) -> rs.getLong("godkjentplan_id"), oppfolgingsplanId);
     }
 
     public List<GodkjentPlan> hentIkkeSaksfoertePlaner() {
@@ -80,24 +80,24 @@ public class GodkjentplanDAO {
         return godkjentPlan.id(id);
     }
 
-    public void sakId(long oppfoelgingsdialogId, String sakId) {
-        jdbcTemplate.update("UPDATE godkjentplan SET sak_id = ? WHERE oppfoelgingsdialog_id = ?", sakId, oppfoelgingsdialogId);
+    public void sakId(long oppfolgingsplanId, String sakId) {
+        jdbcTemplate.update("UPDATE godkjentplan SET sak_id = ? WHERE oppfoelgingsdialog_id = ?", sakId, oppfolgingsplanId);
     }
 
-    public void journalpostId(long oppfoelgingsdialogId, String journalpostId) {
-        jdbcTemplate.update("UPDATE godkjentplan SET journalpost_id = ? WHERE oppfoelgingsdialog_id = ?", journalpostId, oppfoelgingsdialogId);
+    public void journalpostId(long oppfolgingsplanId, String journalpostId) {
+        jdbcTemplate.update("UPDATE godkjentplan SET journalpost_id = ? WHERE oppfoelgingsdialog_id = ?", journalpostId, oppfolgingsplanId);
     }
 
-    public void delMedNav(long oppfoelgingsdialogId, LocalDateTime deltMedNavTidspunkt) {
-        jdbcTemplate.update("UPDATE godkjentplan SET delt_med_nav = 1, delt_med_nav_tidspunkt = ? WHERE oppfoelgingsdialog_id = ?", convert(deltMedNavTidspunkt), oppfoelgingsdialogId);
+    public void delMedNav(long oppfolgingsplanId, LocalDateTime deltMedNavTidspunkt) {
+        jdbcTemplate.update("UPDATE godkjentplan SET delt_med_nav = 1, delt_med_nav_tidspunkt = ? WHERE oppfoelgingsdialog_id = ?", convert(deltMedNavTidspunkt), oppfolgingsplanId);
     }
 
-    public void delMedNavTildelEnhet(long oppfoelgingsdialogId, String tildeltEnhet) {
-        jdbcTemplate.update("UPDATE godkjentplan SET tildelt_enhet = ? WHERE oppfoelgingsdialog_id = ?", tildeltEnhet, oppfoelgingsdialogId);
+    public void delMedNavTildelEnhet(long oppfolgingsplanId, String tildeltEnhet) {
+        jdbcTemplate.update("UPDATE godkjentplan SET tildelt_enhet = ? WHERE oppfoelgingsdialog_id = ?", tildeltEnhet, oppfolgingsplanId);
     }
 
-    public void delMedFastlege(long oppfoelgingsdialogId) {
-        jdbcTemplate.update("UPDATE godkjentplan SET delt_med_fastlege = 1, delt_med_fastlege_tidspunkt = ? WHERE oppfoelgingsdialog_id = ?", convert(now()), oppfoelgingsdialogId);
+    public void delMedFastlege(long oppfolgingsplanId) {
+        jdbcTemplate.update("UPDATE godkjentplan SET delt_med_fastlege = 1, delt_med_fastlege_tidspunkt = ? WHERE oppfoelgingsdialog_id = ?", convert(now()), oppfolgingsplanId);
     }
 
     public List<GodkjentPlan> godkjentePlanerSiden(LocalDateTime timestamp) {

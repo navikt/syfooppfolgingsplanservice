@@ -84,7 +84,7 @@ public class DokumentADController {
     }
 
     private byte[] getPdf(long oppfoelgingsdialogId) {
-        return godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(oppfoelgingsdialogId)
+        return godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfoelgingsdialogId)
                 .map(GodkjentPlan::dokumentUuid)
                 .map(dokumentService::hentDokument)
                 .orElseThrow(() -> new NotFoundException("Klarte ikke å hente ut godkjent plan for oppfølgingsdialogId " + oppfoelgingsdialogId));

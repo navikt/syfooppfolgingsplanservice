@@ -38,7 +38,7 @@ public class OppfoelingsdialogDAOTest {
     public void populateMedGodkjenningerIngenGodkjent() {
         List<Godkjenning> godkjenningListe = singletonList(new Godkjenning());
         when(godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(anyLong())).thenReturn(godkjenningListe);
-        when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(empty());
+        when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(empty());
 
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.populate(new Oppfoelgingsdialog().id(1L));
 
@@ -51,7 +51,7 @@ public class OppfoelingsdialogDAOTest {
     public void populateIngenGodkjenningerMedGodkjent() {
         List<Godkjenning> godkjenningListe = emptyList();
         when(godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(anyLong())).thenReturn(godkjenningListe);
-        when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(of(new GodkjentPlan()));
+        when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(of(new GodkjentPlan()));
 
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.populate(new Oppfoelgingsdialog().id(1L));
 
@@ -64,7 +64,7 @@ public class OppfoelingsdialogDAOTest {
     public void populateMedGodkjenningerMedGodkjent() {
         List<Godkjenning> godkjenningListe = singletonList(new Godkjenning());
         when(godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(anyLong())).thenReturn(godkjenningListe);
-        when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(anyLong())).thenReturn(of(new GodkjentPlan()));
+        when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(of(new GodkjentPlan()));
 
         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.populate(new Oppfoelgingsdialog().id(1L));
 

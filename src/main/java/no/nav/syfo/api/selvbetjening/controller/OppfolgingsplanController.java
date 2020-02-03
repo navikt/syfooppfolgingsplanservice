@@ -32,7 +32,7 @@ public class OppfolgingsplanController {
     private final OIDCRequestContextHolder contextHolder;
     private final ArbeidsoppgaveService arbeidsoppgaveService;
     private final GodkjenningService godkjenningService;
-    private final OppfoelgingsdialogService oppfoelgingsdialogService;
+    private final OppfolgingsplanService oppfolgingsplanService;
     private final SamtykkeService samtykkeService;
     private final TiltakService tiltakService;
 
@@ -42,7 +42,7 @@ public class OppfolgingsplanController {
             OIDCRequestContextHolder contextHolder,
             ArbeidsoppgaveService arbeidsoppgaveService,
             GodkjenningService godkjenningService,
-            OppfoelgingsdialogService oppfoelgingsdialogService,
+            OppfolgingsplanService oppfolgingsplanService,
             SamtykkeService samtykkeService,
             TiltakService tiltakService
     ) {
@@ -50,7 +50,7 @@ public class OppfolgingsplanController {
         this.contextHolder = contextHolder;
         this.arbeidsoppgaveService = arbeidsoppgaveService;
         this.godkjenningService = godkjenningService;
-        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.oppfolgingsplanService = oppfolgingsplanService;
         this.samtykkeService = samtykkeService;
         this.tiltakService = tiltakService;
     }
@@ -59,7 +59,7 @@ public class OppfolgingsplanController {
     public void avbryt(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        oppfoelgingsdialogService.avbrytPlan(id, innloggetIdent);
+        oppfolgingsplanService.avbrytPlan(id, innloggetIdent);
 
         metrikk.tellHendelse("avbryt_plan");
     }
@@ -77,7 +77,7 @@ public class OppfolgingsplanController {
     public void delMedFastlege(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        oppfoelgingsdialogService.delMedFastlege(id, innloggetIdent);
+        oppfolgingsplanService.delMedFastlege(id, innloggetIdent);
 
         metrikk.tellHendelse("del_plan_med_fastlege");
     }
@@ -86,7 +86,7 @@ public class OppfolgingsplanController {
     public void delMedNav(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        oppfoelgingsdialogService.delMedNav(id, innloggetIdent);
+        oppfolgingsplanService.delMedNav(id, innloggetIdent);
 
         metrikk.tellHendelse("del_plan_med_nav");
     }
@@ -136,9 +136,9 @@ public class OppfolgingsplanController {
 
     private RSGyldighetstidspunkt hentGyldighetstidspunktForPlan(@PathVariable("id") Long id, @RequestParam("aktoer") String aktor, String innloggetIdent) {
         if ("arbeidsgiver".equals(aktor)) {
-            return oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSGIVER, innloggetIdent);
+            return oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSGIVER, innloggetIdent);
         } else {
-            return oppfoelgingsdialogService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSTAKER, innloggetIdent);
+            return oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSTAKER, innloggetIdent);
         }
     }
 
@@ -146,7 +146,7 @@ public class OppfolgingsplanController {
     public long kopier(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        long nyPlanId = oppfoelgingsdialogService.kopierOppfoelgingsdialog(id, innloggetIdent);
+        long nyPlanId = oppfolgingsplanService.kopierOppfoelgingsdialog(id, innloggetIdent);
 
         metrikk.tellHendelse("kopier_plan");
 
@@ -179,7 +179,7 @@ public class OppfolgingsplanController {
     public void foresporRevidering(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        oppfoelgingsdialogService.foresporRevidering(id, innloggetIdent);
+        oppfolgingsplanService.foresporRevidering(id, innloggetIdent);
 
         metrikk.tellHendelse("forespor_revidering");
     }
@@ -188,7 +188,7 @@ public class OppfolgingsplanController {
     public void nullstillGodkjenning(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        oppfoelgingsdialogService.nullstillGodkjenning(id, innloggetIdent);
+        oppfolgingsplanService.nullstillGodkjenning(id, innloggetIdent);
 
         metrikk.tellHendelse("nullstill_godkjenning");
     }
@@ -209,7 +209,7 @@ public class OppfolgingsplanController {
     public void sett(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        oppfoelgingsdialogService.oppdaterSistInnlogget(id, innloggetIdent);
+        oppfolgingsplanService.oppdaterSistInnlogget(id, innloggetIdent);
 
         metrikk.tellHendelse("sett_plan");
     }

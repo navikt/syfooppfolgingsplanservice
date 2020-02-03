@@ -40,20 +40,20 @@ public class OppfoelgingsdialogServiceTest {
     @Mock
     private BrukerprofilService brukerprofilService;
     @InjectMocks
-    private OppfoelgingsdialogService oppfoelgingsdialogService;
+    private OppfolgingsplanService oppfolgingsplanService;
 
     @Test
-    public void oppfoelgingsdialogerFraAndreBedrifterBlirFiltrertBort() {
+    public void oppfolgingsplanerFraAndreBedrifterBlirFiltrertBort() {
         Oppfoelgingsdialog dialog1 = new Oppfoelgingsdialog().id(1L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("1"));
         Oppfoelgingsdialog dialog2 = new Oppfoelgingsdialog().id(2L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("2"));
         when(aktorregisterConsumer.hentAktorIdForFnr("123")).thenReturn(LEDER_FNR);
         when(narmesteLederConsumer.ansatte(anyString())).thenReturn(asList(new Ansatt().aktoerId("sykmeldt").virksomhetsnummer("1")));
-        when(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(anyString())).thenReturn(asList(
+        when(oppfoelingsdialogDAO.oppfolgingsplanerKnyttetTilSykmeldt(anyString())).thenReturn(asList(
                 dialog1,
                 dialog2
         ));
         when(oppfoelingsdialogDAO.populate(dialog1)).thenReturn(dialog1);
-        List<Oppfoelgingsdialog> dialoger = oppfoelgingsdialogService.hentAktoersOppfoelgingsdialoger(ARBEIDSGIVER, "123");
+        List<Oppfoelgingsdialog> dialoger = oppfolgingsplanService.hentAktorsOppfolgingsplaner(ARBEIDSGIVER, "123");
         assertThat(dialoger.size()).isEqualTo(1);
         assertThat(dialoger.get(0).id).isEqualTo(1L);
     }

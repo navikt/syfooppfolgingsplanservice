@@ -15,7 +15,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
-import static no.nav.syfo.util.OppfoelgingsdialogTestUtils.oppfoelgingsdialogGodkjentTvang;
+import static no.nav.syfo.util.OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -26,7 +26,7 @@ public class JobbSendOppfoelgingsdialogTilAltinnTest {
     @Mock
     private Metrikk metrikk;
     @Mock
-    private OppfoelgingsdialogService oppfoelgingsdialogService;
+    private OppfolgingsplanService oppfolgingsplanService;
     @Mock
     private PdfService pdfService;
     @Mock
@@ -48,16 +48,16 @@ public class JobbSendOppfoelgingsdialogTilAltinnTest {
 
     @Test
     public void utfoerOppgaveSendOppfoelgingsdialog() throws Exception {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogGodkjentTvang();
-        when(oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(1L)).thenReturn(oppfoelgingsdialogGodkjentTvang());
+        Oppfoelgingsdialog oppfoelgingsplan = oppfolgingsplanGodkjentTvang();
+        when(oppfolgingsplanService.hentGodkjentOppfolgingsplan(1L)).thenReturn(oppfolgingsplanGodkjentTvang());
 
         jobbSendOppfoelgingsdialogTilAltinn.utfoerOppgave("1");
 
-        verify(altinnConsumer, times(1)).sendOppfoelgingsplanTilArbeidsgiver(any());
+        verify(altinnConsumer, times(1)).sendOppfolgingsplanTilArbeidsgiver(any());
     }
 
     private Oppfoelgingsdialog hentOppfoelgingsdialog() {
-        return OppfoelgingsdialogTestUtils.oppfoelgingsdialogGodkjentTvang();
+        return OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang();
     }
 
     private byte[] hentOppfoelgingsdialogPdf() {

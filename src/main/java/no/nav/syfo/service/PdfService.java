@@ -22,7 +22,7 @@ public class PdfService {
 
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
 
-    private OppfoelgingsdialogService oppfoelgingsdialogService;
+    private OppfolgingsplanService oppfolgingsplanService;
 
     private DokumentDAO dokumentDAO;
 
@@ -37,25 +37,25 @@ public class PdfService {
     @Inject
     public PdfService(
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
-            OppfoelgingsdialogService oppfoelgingsdialogService,
+            OppfolgingsplanService oppfolgingsplanService,
             DokumentDAO dokumentDAO,
             GodkjentplanDAO godkjentplanDAO,
             Metrikk metrikk
     ) {
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
-        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.oppfolgingsplanService = oppfolgingsplanService;
         this.dokumentDAO = dokumentDAO;
         this.godkjentplanDAO = godkjentplanDAO;
         this.metrikk = metrikk;
     }
 
     public byte[] hentPdf(long oppfolgingsplanId, String innloggetFnr) {
-        if (!oppfoelgingsdialogService.harBrukerTilgangTilDialog(oppfolgingsplanId, innloggetFnr)) {
+        if (!oppfolgingsplanService.harBrukerTilgangTilDialog(oppfolgingsplanId, innloggetFnr)) {
             throw new ForbiddenException("Ikke tilgang");
         }
-        Oppfoelgingsdialog oppfolgingsplan = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(oppfolgingsplanId);
+        Oppfoelgingsdialog oppfolgingsplan = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         metrikk.tellAntallDagerSiden(oppfolgingsplan.opprettet, "antallDagerFraOpprettetTilPdf");
-        String dokumentUuid = godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(oppfolgingsplanId).get().dokumentUuid;
+        String dokumentUuid = godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingsplanId).get().dokumentUuid;
 
         return dokumentDAO.hent(dokumentUuid);
     }

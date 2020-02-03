@@ -97,10 +97,10 @@ public class DokumentRessurs {
                 .body(pdf);
     }
 
-    private byte[] getPdf(long oppfoelgingsdialogId) {
-        return godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(oppfoelgingsdialogId)
+    private byte[] getPdf(long oppfolgingsplanId) {
+        return godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingsplanId)
                 .map(GodkjentPlan::dokumentUuid)
                 .map(dokumentService::hentDokument)
-                .orElseThrow(() -> new NotFoundException("Klarte ikke å hente ut godkjent plan for oppfølgingsdialogId " + oppfoelgingsdialogId));
+                .orElseThrow(() -> new NotFoundException("Klarte ikke å hente ut godkjent plan for oppfølgingsdialogId " + oppfolgingsplanId));
     }
 }

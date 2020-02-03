@@ -7,7 +7,7 @@ import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.service.OppfoelgingsdialogService;
+import no.nav.syfo.service.OppfolgingsplanService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -30,7 +30,7 @@ public class ArbeidsgiverOppfolgingsplanController {
     private final OIDCRequestContextHolder contextHolder;
     private final AktorregisterConsumer aktorService;
     private final NarmesteLederConsumer narmesteLederConsumer;
-    private final OppfoelgingsdialogService oppfoelgingsdialogService;
+    private final OppfolgingsplanService oppfolgingsplanService;
     private final Metrikk metrikk;
 
     @Inject
@@ -38,13 +38,13 @@ public class ArbeidsgiverOppfolgingsplanController {
             OIDCRequestContextHolder contextHolder,
             AktorregisterConsumer aktorService,
             NarmesteLederConsumer narmesteLederConsumer,
-            OppfoelgingsdialogService oppfoelgingsdialogService,
+            OppfolgingsplanService oppfolgingsplanService,
             Metrikk metrikk
     ) {
         this.contextHolder = contextHolder;
         this.aktorService = aktorService;
         this.narmesteLederConsumer = narmesteLederConsumer;
-        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.oppfolgingsplanService = oppfolgingsplanService;
         this.metrikk = metrikk;
     }
 
@@ -52,7 +52,7 @@ public class ArbeidsgiverOppfolgingsplanController {
     public List<RSBrukerOppfolgingsplan> hentArbeidsgiversOppfolgingsplaner() {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        List<RSBrukerOppfolgingsplan> liste = mapListe(oppfoelgingsdialogService.hentAktoersOppfoelgingsdialoger(ARBEIDSGIVER, innloggetIdent), oppfolgingsplan2rs);
+        List<RSBrukerOppfolgingsplan> liste = mapListe(oppfolgingsplanService.hentAktorsOppfolgingsplaner(ARBEIDSGIVER, innloggetIdent), oppfolgingsplan2rs);
 
         metrikk.tellHendelse("hent_oppfolgingsplan_ag");
 
@@ -67,7 +67,7 @@ public class ArbeidsgiverOppfolgingsplanController {
         String sykmeldtAktorId = aktorService.hentAktorIdForFnr(rsOpprettOppfolgingsplan.sykmeldtFnr);
 
         if (narmesteLederConsumer.erAktorLederForAktor(innloggetAktorId, sykmeldtAktorId)) {
-            Long id = oppfoelgingsdialogService.opprettOppfoelgingsdialog(rsOpprettOppfolgingsplan, innloggetIdent);
+            Long id = oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfolgingsplan, innloggetIdent);
 
             metrikk.tellHendelse("opprett_oppfolgingsplan_ag");
 

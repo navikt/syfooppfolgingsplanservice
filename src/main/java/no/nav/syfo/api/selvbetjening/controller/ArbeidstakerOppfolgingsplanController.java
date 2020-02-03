@@ -5,7 +5,7 @@ import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
 import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.service.OppfoelgingsdialogService;
+import no.nav.syfo.service.OppfolgingsplanService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -25,17 +25,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ArbeidstakerOppfolgingsplanController {
 
     private final OIDCRequestContextHolder contextHolder;
-    private final OppfoelgingsdialogService oppfoelgingsdialogService;
+    private final OppfolgingsplanService oppfolgingsplanService;
     private final Metrikk metrikk;
 
     @Inject
     public ArbeidstakerOppfolgingsplanController(
             OIDCRequestContextHolder contextHolder,
-            OppfoelgingsdialogService oppfoelgingsdialogService,
+            OppfolgingsplanService oppfolgingsplanService,
             Metrikk metrikk
     ) {
         this.contextHolder = contextHolder;
-        this.oppfoelgingsdialogService = oppfoelgingsdialogService;
+        this.oppfolgingsplanService = oppfolgingsplanService;
         this.metrikk = metrikk;
     }
 
@@ -43,7 +43,7 @@ public class ArbeidstakerOppfolgingsplanController {
     public List<RSBrukerOppfolgingsplan> hentArbeidstakersOppfolgingsplaner() {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        List<RSBrukerOppfolgingsplan> liste = mapListe(oppfoelgingsdialogService.hentAktoersOppfoelgingsdialoger(ARBEIDSTAKER, innloggetIdent), oppfolgingsplan2rs);
+        List<RSBrukerOppfolgingsplan> liste = mapListe(oppfolgingsplanService.hentAktorsOppfolgingsplaner(ARBEIDSTAKER, innloggetIdent), oppfolgingsplan2rs);
 
         metrikk.tellHendelse("hent_oppfolgingsplan_at");
 
@@ -54,7 +54,7 @@ public class ArbeidstakerOppfolgingsplanController {
     public Long opprettOppfolgingsplanSomArbeidstaker(@RequestBody RSOpprettOppfoelgingsdialog rsOpprettOppfoelgingsdialog) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        Long id = oppfoelgingsdialogService.opprettOppfoelgingsdialog(rsOpprettOppfoelgingsdialog.sykmeldtFnr(innloggetIdent), innloggetIdent);
+        Long id = oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog.sykmeldtFnr(innloggetIdent), innloggetIdent);
 
         metrikk.tellHendelse("opprett_oppfolgingsplan_at");
 

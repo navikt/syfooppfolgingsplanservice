@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class JobbLoggSendOppfoelgingsdialogTilAltinnTest {
 
     @Mock
-    private OppfoelgingsdialogService oppfoelgingsdialogService;
+    private OppfolgingsplanService oppfolgingsplanService;
     @Mock
     private JuridiskLoggService juridiskLoggService;
     @Mock
@@ -43,7 +43,7 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinnTest {
     @Test
     public void utfoerOppgaveArkiver() throws Exception {
         Oppfoelgingsdialog oppfoelgingsdialog = hentOppfoelgingsdialog();
-        when(oppfoelgingsdialogService.hentGodkjentOppfoelgingsdialog(1L)).thenReturn(oppfoelgingsdialog);
+        when(oppfolgingsplanService.hentGodkjentOppfolgingsplan(1L)).thenReturn(oppfoelgingsdialog);
         when(pdfService.hentPdfTilAltinn(oppfoelgingsdialog)).thenReturn(getOppfoelgingsdialogPdf());
 
         jobbLoggSendOppfoelgingsdialogTilAltinn.utfoerOppgave("1");
@@ -52,7 +52,7 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinnTest {
     }
 
     private Oppfoelgingsdialog hentOppfoelgingsdialog() {
-        return OppfoelgingsdialogTestUtils.oppfoelgingsdialogGodkjentTvang();
+        return OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang();
     }
 
     private byte[] getOppfoelgingsdialogPdf() {

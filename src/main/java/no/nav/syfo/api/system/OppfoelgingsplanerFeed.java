@@ -44,7 +44,7 @@ public class OppfoelgingsplanerFeed {
         return godkjentplanDAO.godkjentePlanerSiden(LocalDateTime.parse(timestamp))
                 .stream()
                 .map(godkjentPlan -> {
-                    Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(godkjentPlan.oppfoelgingsdialogId);
+                    Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
                     String fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
                     return new VeilederOppgaveFeedItem()
                             .uuid(oppfoelgingsdialog.uuid)

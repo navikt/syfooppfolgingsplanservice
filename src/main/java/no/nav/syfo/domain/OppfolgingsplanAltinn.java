@@ -2,14 +2,14 @@ package no.nav.syfo.domain;
 
 import static no.nav.syfo.util.DigestUtil.sha512AsBase64String;
 
-public class OppfoelgingsdialogAltinn {
+public class OppfolgingsplanAltinn {
 
     public Oppfoelgingsdialog oppfoelgingsdialog;
     private byte[] oppfoelgingsdialogPdf;
     private String hashOppfoelgingsdialogPDF;
 
-    public OppfoelgingsdialogAltinn(Oppfoelgingsdialog oppfoelgingsdialog, byte[] oppfoelgingsdialogPdf) {
-        this.oppfoelgingsdialog = oppfoelgingsdialog;
+    public OppfolgingsplanAltinn(Oppfoelgingsdialog oppfolgingsplan, byte[] oppfoelgingsdialogPdf) {
+        this.oppfoelgingsdialog = oppfolgingsplan;
         this.oppfoelgingsdialogPdf = oppfoelgingsdialogPdf;
     }
 

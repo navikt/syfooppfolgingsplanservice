@@ -26,14 +26,14 @@ public class JuridiskLoggService {
     @Value("${srv.password}")
     private String systemPassword;
 
-    public void loggSendOppfoelgingsdialogTilAltinn(OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn) {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelgingsdialogAltinn.oppfoelgingsdialog;
+    public void loggSendOppfoelgingsdialogTilAltinn(OppfolgingsplanAltinn oppfolgingsplanAltinn) {
+        Oppfoelgingsdialog oppfoelgingsdialog = oppfolgingsplanAltinn.oppfoelgingsdialog;
         try {
             LoggMelding loggMelding = new LoggMelding()
                     .meldingsId(oppfoelgingsdialog.uuid)
                     .avsender(oppfoelgingsdialog.arbeidstaker.aktoerId)
                     .mottaker(oppfoelgingsdialog.virksomhet.virksomhetsnummer)
-                    .meldingsInnhold(oppfoelgingsdialogAltinn.getHashOppfoelgingsdialogPDF());
+                    .meldingsInnhold(oppfolgingsplanAltinn.getHashOppfoelgingsdialogPDF());
 
             RestTemplate rt = new RestTemplate();
             rt.getMessageConverters().add(new MappingJackson2HttpMessageConverter());

@@ -24,7 +24,7 @@ public class OppfoelgingsdialogTestUtils {
                 .aktoerId(ARBEIDSGIVER_AKTOERID);
     }
 
-    private static Oppfoelgingsdialog oppfoelgingsdialogOpprettet() {
+    private static Oppfoelgingsdialog oppfolgingsplanOpprettet() {
         return new Oppfoelgingsdialog()
                 .id(1L)
                 .status("UNDER_ARBEID")
@@ -38,8 +38,8 @@ public class OppfoelgingsdialogTestUtils {
                 .arbeidsgiver(arbeidsgiveren());
     }
 
-    public static Oppfoelgingsdialog oppfoelgingsdialogGodkjentTvang() {
-        return oppfoelgingsdialogOpprettet()
+    public static Oppfoelgingsdialog oppfolgingsplanGodkjentTvang() {
+        return oppfolgingsplanOpprettet()
                 .godkjentPlan(java.util.Optional.ofNullable(new GodkjentPlan()
                         .opprettetTidspunkt(LocalDateTime.now().minusDays(1))
                         .tvungenGodkjenning(true)

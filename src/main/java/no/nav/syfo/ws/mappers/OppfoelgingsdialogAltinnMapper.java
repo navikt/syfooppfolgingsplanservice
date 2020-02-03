@@ -7,7 +7,7 @@ import no.altinn.services.serviceengine.reporteeelementlist._2010._10.BinaryAtta
 import no.altinn.services.serviceengine.reporteeelementlist._2010._10.BinaryAttachmentV2;
 import no.nav.syfo.domain.Gyldighetstidspunkt;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.domain.OppfoelgingsdialogAltinn;
+import no.nav.syfo.domain.OppfolgingsplanAltinn;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -23,15 +23,15 @@ public final class OppfoelgingsdialogAltinnMapper {
     private static final String OPPFOELGINGSDIALOG_TJENESTEVERSJON = "1";
     private static final String NORSK_BOKMAL = "1044";
 
-    public static InsertCorrespondenceV2 oppfoelgingsdialogTilCorrespondence(OppfoelgingsdialogAltinn oppfoelgingsdialogAltinn, String brukersNavn) {
+    public static InsertCorrespondenceV2 oppfoelgingsdialogTilCorrespondence(OppfolgingsplanAltinn oppfolgingsplanAltinn, String brukersNavn) {
         String namespace = "http://schemas.altinn.no/services/ServiceEngine/Correspondence/2010/10";
         String binaryNamespace = "http://www.altinn.no/services/ServiceEngine/ReporteeElementList/2010/10";
 
         return new InsertCorrespondenceV2()
                 .withAllowForwarding(new JAXBElement<>(new QName(namespace, "AllowForwarding"), Boolean.class, false))
-                .withReportee(new JAXBElement<>(new QName(namespace, "Reportee"), String.class, getOrgnummerForSendingTilAltinn(oppfoelgingsdialogAltinn.oppfoelgingsdialog.virksomhet.virksomhetsnummer)))
+                .withReportee(new JAXBElement<>(new QName(namespace, "Reportee"), String.class, getOrgnummerForSendingTilAltinn(oppfolgingsplanAltinn.oppfoelgingsdialog.virksomhet.virksomhetsnummer)))
                 .withMessageSender(new JAXBElement<>(new QName(namespace, "MessageSender"), String.class,
-                        byggMessageSender(oppfoelgingsdialogAltinn.oppfoelgingsdialog, brukersNavn)))
+                        byggMessageSender(oppfolgingsplanAltinn.oppfoelgingsdialog, brukersNavn)))
                 .withServiceCode(new JAXBElement<>(new QName(namespace, "ServiceCode"), String.class, OPPFOELGINGSDIALOG_TJENESTEKODE))
                 .withServiceEdition(new JAXBElement<>(new QName(namespace, "ServiceEdition"), String.class, OPPFOELGINGSDIALOG_TJENESTEVERSJON))
                 .withContent(
@@ -40,7 +40,7 @@ public final class OppfoelgingsdialogAltinnMapper {
                                 .withMessageTitle(new JAXBElement<>(
                                         new QName(namespace, "MessageTitle"),
                                         String.class,
-                                        byggTittel(oppfoelgingsdialogAltinn.oppfoelgingsdialog, brukersNavn)))
+                                        byggTittel(oppfolgingsplanAltinn.oppfoelgingsdialog, brukersNavn)))
                                 .withCustomMessageData(null)
                                 .withAttachments(
                                         new JAXBElement<>(new QName(namespace, "Attachments"), AttachmentsV2.class, new AttachmentsV2()
@@ -49,10 +49,10 @@ public final class OppfoelgingsdialogAltinnMapper {
                                                                 new BinaryAttachmentExternalBEV2List()
                                                                         .withBinaryAttachmentV2(
                                                                                 opprettBinaertVedlegg(binaryNamespace,
-                                                                                        oppfoelgingsdialogAltinn.getOppfoelgingsdialogPDF(),
+                                                                                        oppfolgingsplanAltinn.getOppfoelgingsdialogPDF(),
                                                                                         "oppfoelgingsdialog.pdf",
                                                                                         "oppfoelgingsdialog",
-                                                                                        oppfoelgingsdialogAltinn.oppfoelgingsdialog.uuid + ".pdf")
+                                                                                        oppfolgingsplanAltinn.oppfoelgingsdialog.uuid + ".pdf")
                                                                         )
                                                         )
                                                 )

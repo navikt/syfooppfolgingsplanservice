@@ -39,7 +39,7 @@ public class KommentarService {
         Tiltak tiltak = tiltakDAO.finnTiltakById(tiltakId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(tiltak.oppfoelgingsdialogId);
+        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(tiltak.oppfoelgingsdialogId);
         if (kommentarenErIkkeOpprettetAvNoenAndre(kommentar, innloggetAktoerId, oppfoelgingsdialog)) {
             throw new ForbiddenException("Ikke tilgang");
         }
@@ -68,7 +68,7 @@ public class KommentarService {
     public void slettKommentar(Long kommentarId, String fnr) {
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
         Kommentar kommentar = kommentarDAO.finnKommentar(kommentarId);
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.oppfoelgingsdialogByTiltakId(kommentar.tiltakId);
+        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.oppfolgingsplanByTiltakId(kommentar.tiltakId);
 
         if (!kommentar.opprettetAvAktoerId.equals(innloggetAktoerId)) {
             throw new ForbiddenException("Ikke tilgang");

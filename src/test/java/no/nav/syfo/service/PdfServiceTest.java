@@ -27,7 +27,7 @@ public class PdfServiceTest {
 
     @Test
     public void hentPdfTilAltinn() {
-        Oppfoelgingsdialog oppfoelgingsdialog = OppfoelgingsdialogTestUtils.oppfoelgingsdialogGodkjentTvang();
+        Oppfoelgingsdialog oppfoelgingsdialog = OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang();
         byte[] oppfoelgingsdialogPdf = hentOppfoelgingsdialogPdf();
         when(dokumentDAO.hent(any())).thenReturn(oppfoelgingsdialogPdf);
 

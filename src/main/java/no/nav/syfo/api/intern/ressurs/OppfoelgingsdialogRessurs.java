@@ -65,7 +65,7 @@ public class OppfoelgingsdialogRessurs {
     public List<RSHistorikk> historikk(@PathVariable("fnr") String fnr) {
         veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilPerson(fnr);
 
-        List<Oppfoelgingsdialog> oppfoelgingsplaner = oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(fnr))
+        List<Oppfoelgingsdialog> oppfoelgingsplaner = oppfoelingsdialogDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(fnr))
                 .stream()
                 .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
                 .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())
@@ -96,7 +96,7 @@ public class OppfoelgingsdialogRessurs {
         if ("true".equals(getProperty(LOCAL_MOCK))) {
             return mockedOppfoelgingsdialoger();
         }
-        return mapListe(oppfoelingsdialogDAO.oppfoelgingsdialogerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(fnr))
+        return mapListe(oppfoelingsdialogDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(fnr))
                         .stream()
                         .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
                         .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())

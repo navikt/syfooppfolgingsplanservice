@@ -55,7 +55,7 @@ public class ProsesserInnkomnePlaner {
 
             godkjentplanDAO.hentIkkeSaksfoertePlaner()
                     .forEach(godkjentPlan -> {
-                        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfoelgingsdialogMedId(godkjentPlan.oppfoelgingsdialogId);
+                        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
                         String fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
                         String sakId = sakService.finnSak(fnr).orElse(behandleSakService.opprettSak(fnr));
                         godkjentplanDAO.sakId(oppfoelgingsdialog.id, sakId);

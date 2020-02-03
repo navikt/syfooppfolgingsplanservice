@@ -39,7 +39,7 @@ public class DokumentRessursTest extends AbstractRessursTilgangTest {
     public void bilde_har_tilgang() throws IOException {
         mockSvarFraTilgangTilTjenesten(OK);
 
-        when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(1)).thenReturn(Optional.of(new GodkjentPlan().dokumentUuid("1")));
+        when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(1)).thenReturn(Optional.of(new GodkjentPlan().dokumentUuid("1")));
         when(dokumentService.hentDokument("1")).thenReturn(new byte[]{});
 
         dokumentRessurs.bilde(1L, 1);
@@ -56,7 +56,7 @@ public class DokumentRessursTest extends AbstractRessursTilgangTest {
     public void dokumentinfo_har_tilgang() {
         mockSvarFraTilgangTilTjenesten(OK);
 
-        when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(1)).thenReturn(Optional.of(new GodkjentPlan().dokumentUuid("1")));
+        when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(1)).thenReturn(Optional.of(new GodkjentPlan().dokumentUuid("1")));
         when(dokumentService.hentDokument("1")).thenReturn(new byte[]{});
 
         dokumentRessurs.dokumentinfo(1L);
@@ -73,7 +73,7 @@ public class DokumentRessursTest extends AbstractRessursTilgangTest {
     public void dokument_har_tilgang() {
         mockSvarFraTilgangTilTjenesten(OK);
 
-        when(godkjentplanDAO.godkjentPlanByOppfoelgingsdialogId(1)).thenReturn(Optional.of(new GodkjentPlan().dokumentUuid("1")));
+        when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(1)).thenReturn(Optional.of(new GodkjentPlan().dokumentUuid("1")));
         when(dokumentService.hentDokument("1")).thenReturn(new byte[]{});
 
         dokumentRessurs.dokument(1L);
