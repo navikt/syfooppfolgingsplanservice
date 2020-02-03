@@ -79,12 +79,7 @@ public class NarmesteLederConsumer {
                 }
         );
 
-        if (response.getStatusCode() != OK) {
-            metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_FEILET);
-            final String message = ERROR_MESSAGE_BASE + response.getStatusCode();
-            LOG.error(message);
-            throw new RuntimeException(message);
-        }
+        throwExceptionIfError(response.getStatusCode(), HENT_ANSATTE_SYFONARMESTELEDER_FEILET);
 
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET);
         return mapListe(response.getBody(), narmestelederRelasjon2Ansatt);
@@ -102,12 +97,7 @@ public class NarmesteLederConsumer {
                 NarmestelederResponse.class
         );
 
-        if (response.getStatusCode() != OK) {
-            metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER_FEILET);
-            final String message = ERROR_MESSAGE_BASE + response.getStatusCode();
-            LOG.error(message);
-            throw new RuntimeException(message);
-        }
+        throwExceptionIfError(response.getStatusCode(), HENT_LEDER_SYFONARMESTELEDER_FEILET);
 
         if (response.getBody().narmesteLederRelasjon == null) {
             return Optional.empty();
@@ -121,6 +111,15 @@ public class NarmesteLederConsumer {
 
         metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER_VELLYKKET);
         return Optional.of(narmestelederRelasjon2Leder(relasjon, lederNavn));
+    }
+
+    private void throwExceptionIfError(HttpStatus statusCode, String metricEventKey) {
+        if (statusCode != OK) {
+            metrikk.tellHendelse(metricEventKey);
+            final String message = ERROR_MESSAGE_BASE + statusCode;
+            LOG.error(message);
+            throw new RuntimeException(message);
+        }
     }
 
     private HttpEntity entity(String token) {
