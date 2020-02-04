@@ -139,7 +139,7 @@ public class GodkjenningService {
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
             sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
         } else {
-            if (godkjenningRemoved(gyldighetstidspunkt, oppfoelgingsdialog)) {
+            if (godkjenningRemoved(gyldighetstidspunkt, oppfoelgingsdialog) || godkjent(oppfoelgingsdialog)) {
                 throw new ConflictException();
             }
             godkjenningerDAO.create(new Godkjenning()
@@ -162,6 +162,10 @@ public class GodkjenningService {
             }
         }
         oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
+    }
+
+    private boolean godkjent(Oppfoelgingsdialog oppfolgingsplan) {
+        return oppfolgingsplan.godkjentPlan.isPresent();
     }
 
     private boolean godkjenningRemoved(RSGyldighetstidspunkt gyldighetstidspunkt, Oppfoelgingsdialog oppfoelgingsdialog) {
