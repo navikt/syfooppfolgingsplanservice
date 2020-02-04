@@ -1,7 +1,6 @@
 package no.nav.syfo.brukertilgang;
 
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.syfo.aareg.exceptions.RestErrorFromSyfobrukertilgang;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oidc.OIDCUtil;
 import org.slf4j.Logger;
@@ -10,8 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
@@ -52,10 +50,12 @@ public class BrukertilgangConsumer {
             );
             metrikk.tellHendelse("call_syfobrukertilgang_success");
             return response.getBody();
-        } catch (RestClientException e) {
+        } catch (HttpClientErrorException e) {
+            throw e;
+        } catch (HttpServerErrorException e) {
             metrikk.tellHendelse("call_syfobrukertilgang_fail");
             LOG.error("Error requesting ansatt access from syfobrukertilgang", e);
-            throw new RestErrorFromSyfobrukertilgang("Tried to check access of innlogged user to Ansatt", e);
+            throw e;
         }
     }
 
