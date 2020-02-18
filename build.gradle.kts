@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.PropertiesFileTransformer
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.syfo"
 version = "1.0.0"
@@ -8,9 +9,12 @@ version = "1.0.0"
 val cxfVersion = "3.2.7"
 val oidcSpringSupportVersion = "0.2.4"
 val springBootVersion = "2.0.4.RELEASE"
+val kotlinLibVersion = "1.3.50"
+val kotlinJacksonVersion = "2.9.8"
 
 plugins {
-    kotlin("jvm") version "1.3.31"
+    kotlin("jvm") version "1.3.50"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.3.50"
     id("com.github.johnrengelman.shadow") version "4.0.3"
     id("java")
 }
@@ -28,6 +32,12 @@ buildscript {
     }
 }
 
+allOpen {
+    annotation("org.springframework.context.annotation.Configuration")
+    annotation("org.springframework.stereotype.Service")
+    annotation("org.springframework.stereotype.Component")
+}
+
 repositories {
     mavenCentral()
     jcenter()
@@ -37,6 +47,10 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinLibVersion")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinLibVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$kotlinJacksonVersion")
+
     implementation("org.projectlombok:lombok:1.16.20")
     annotationProcessor("org.projectlombok:lombok:1.16.20")
     implementation("no.nav.syfo.tjeneste:altinn-correspondence-agency-external-sf-tjenestespesifikasjon:1.1")
@@ -95,6 +109,10 @@ dependencies {
 }
 
 tasks {
+    shadowJar {
+        isZip64 = true
+    }
+
     withType<Jar> {
         manifest.attributes["Main-Class"] = "no.nav.syfo.Application"
     }
@@ -115,5 +133,13 @@ tasks {
             mergeStrategy = "append"
         }
         mergeServiceFiles()
+    }
+
+    named<KotlinCompile>("compileKotlin") {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
+    named<KotlinCompile>("compileTestKotlin") {
+        kotlinOptions.jvmTarget = "1.8"
     }
 }
