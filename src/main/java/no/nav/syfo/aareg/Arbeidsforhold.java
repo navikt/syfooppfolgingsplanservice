@@ -2,12 +2,12 @@ package no.nav.syfo.aareg;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Accessors(fluent = true)
-public class Arbeidsforhold {
+public class Arbeidsforhold implements Serializable {
     public Ansettelsesperiode ansettelsesperiode;
     public List<AntallTimerForTimeloennet> antallTimerForTimeloennet;
     public List<Arbeidsavtale> arbeidsavtaler;

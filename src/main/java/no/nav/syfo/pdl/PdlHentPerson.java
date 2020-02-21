@@ -2,18 +2,13 @@ package no.nav.syfo.pdl;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.slf4j.Logger;
-
+import java.io.Serializable;
 import java.util.List;
-
 import static no.nav.syfo.util.StringUtil.lowerCapitalize;
-import static org.slf4j.LoggerFactory.getLogger;
 
 @Data
 @Accessors(fluent = true)
-public class PdlHentPerson {
-    private static final Logger LOG = getLogger(PdlPerson.class);
-
+public class PdlHentPerson implements Serializable {
     public PdlPerson hentPerson;
 
     public String getName() {

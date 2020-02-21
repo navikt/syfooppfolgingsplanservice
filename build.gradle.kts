@@ -82,7 +82,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-logging:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-jta-atomikos:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-cache:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:$springBootVersion")
     implementation("io.micrometer:micrometer-registry-prometheus:1.0.6")
     implementation("org.springframework:spring-jms:5.0.7.RELEASE")
     implementation("org.springframework:spring-context:5.0.7.RELEASE")
