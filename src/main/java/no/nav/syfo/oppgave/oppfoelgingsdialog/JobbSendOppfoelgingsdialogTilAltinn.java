@@ -52,8 +52,6 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 
     @Override
     public void utfoerOppgave(String oppfoelgingsdialogId) {
-        log.info("TRACEBATCH: run {}", this.getClass().getName());
-
         Oppfoelgingsdialog oppfoelgingsdialog = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
         oppfoelgingsdialog.arbeidstaker.fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
 

@@ -51,8 +51,6 @@ public class ProsesserInnkomnePlaner {
     @Scheduled(fixedRate = 60000)
     public void opprettSaker() {
         if (leaderElectionService.isLeader()) {
-            log.info("TRACEBATCH: run {} opprettSaker", this.getClass().getName());
-
             godkjentplanDAO.hentIkkeSaksfoertePlaner()
                     .forEach(godkjentPlan -> {
                         Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
@@ -67,8 +65,6 @@ public class ProsesserInnkomnePlaner {
     @Scheduled(fixedRate = 60000)
     public void opprettJournalposter() {
         if (leaderElectionService.isLeader() && !"true".equals(getProperty(LOCAL_MOCK))) {
-            log.info("TRACEBATCH: run {} opprettJournalposter", this.getClass().getName());
-
             godkjentplanDAO.hentIkkeJournalfoertePlaner()
                     .forEach(godkjentPlan -> {
                         godkjentplanDAO.journalpostId(godkjentPlan.oppfoelgingsdialogId, journalService.opprettJournalpost(godkjentPlan.sakId, godkjentPlan));

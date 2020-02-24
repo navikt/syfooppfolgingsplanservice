@@ -26,11 +26,8 @@ public class AsynkOppgaverRapportScheduledTask {
     @Scheduled(cron = "0 0 0 * * *")
     public void run() {
         if (leaderElectionService.isLeader()) {
-            log.info("TRACEBATCH: run {}", this.getClass().getName());
-
             final List<AsynkOppgave> asynkOppgaver = asynkOppgaveDAO.finnOppgaver();
             log.info("Det finnes {} oppgaver på kø", asynkOppgaver.size());
-
             metrikk.tellHendelseMedAntall("oppgaverPaKo", asynkOppgaver.size());
         }
     }

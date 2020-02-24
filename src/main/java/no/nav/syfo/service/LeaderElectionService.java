@@ -57,11 +57,6 @@ public class LeaderElectionService {
         String hostName = InetAddress.getLocalHost().getHostName();
         String leaderName = leader.getName();
 
-        if (hostName.equals(leaderName)) {
-            log.info("Host with name {} is leader", hostName);
-            return true;
-        }
-        log.info("Host with name {} is not leader {}", hostName, leaderName);
-        return false;
+        return hostName.equals(leaderName);
     }
 }

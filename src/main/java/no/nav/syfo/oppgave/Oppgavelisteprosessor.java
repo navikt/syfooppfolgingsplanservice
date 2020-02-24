@@ -41,7 +41,6 @@ public class Oppgavelisteprosessor {
                         metrikk.tellAsynkOppgave(oppgave, false);
 
                         // I test: sletter asynkOppgave som har blitt forsøkt prosessert minst 100 ganger
-                        log.info("TRACEBATCH: erProd {} erPreprod {}", toggle.erPreprod(), this.getClass().getName());
                         if (toggle.erPreprod() && oppgave.antallForsoek > 100) {
                             log.info("Oppgave " + oppgave.oppgavetype + " med id " + oppgave.id + " og ressursId " + oppgave.ressursId +
                                     " har feilet " + (oppgave.antallForsoek - 1) + " ganger. Sletter oppgaven fra databasen");
