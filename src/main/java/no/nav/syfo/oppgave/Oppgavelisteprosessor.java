@@ -26,8 +26,6 @@ public class Oppgavelisteprosessor {
     private final int limit = 100;
 
     public void run() {
-        log.info("Kjører asynk oppgaver");
-
         StreamSupport.stream(Spliterators.spliteratorUnknownSize(oppgaveIterator, Spliterator.ORDERED), false)
                 .limit(limit)
                 .forEach(oppgave -> {
