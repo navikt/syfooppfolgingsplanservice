@@ -26,8 +26,6 @@ public class AsynkOppgaverScheduledTask {
         metrikk.tellHendelse("kanskje_AsynkOppgave");
         if (leaderElectionService.isLeader()) {
             metrikk.tellHendelse("kjorer_AsynkOppgave");
-            log.info("TRACEBATCH: run {}", this.getClass().getName());
-
             oppgavelisteprosessor.run();
         }
     }

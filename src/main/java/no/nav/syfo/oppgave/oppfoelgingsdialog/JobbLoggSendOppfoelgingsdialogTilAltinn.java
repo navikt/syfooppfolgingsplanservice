@@ -46,8 +46,6 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
 
     @Override
     public void utfoerOppgave(String oppfoelgingsdialogId) {
-        log.info("TRACEBATCH: run {}", this.getClass().getName());
-
         Oppfoelgingsdialog oppfoelgingsdialog = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
 
         byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
