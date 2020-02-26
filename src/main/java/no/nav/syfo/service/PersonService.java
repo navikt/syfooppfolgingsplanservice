@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tjeneste.virksomhet.person.v3.*;
+import no.nav.tjeneste.virksomhet.person.v3.binding.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.*;
 import org.springframework.stereotype.Service;
@@ -28,10 +28,10 @@ public class PersonService {
     public String hentGeografiskTilknytning(String fnr) {
         try {
             return of(personV3.hentGeografiskTilknytning(
-                    new WSHentGeografiskTilknytningRequest()
-                            .withAktoer(new WSPersonIdent().withIdent(new WSNorskIdent().withIdent(fnr)))))
-                    .map(WSHentGeografiskTilknytningResponse::getGeografiskTilknytning)
-                    .map(WSGeografiskTilknytning::getGeografiskTilknytning)
+                    new HentGeografiskTilknytningRequest()
+                            .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(fnr)))))
+                    .map(HentGeografiskTilknytningResponse::getGeografiskTilknytning)
+                    .map(GeografiskTilknytning::getGeografiskTilknytning)
                     .orElse(null);
         } catch (HentGeografiskTilknytningSikkerhetsbegrensing | HentGeografiskTilknytningPersonIkkeFunnet e) {
             log.error("Feil ved henting av geografisk tilknytning for fnr {}", fnr, e);
@@ -49,13 +49,13 @@ public class PersonService {
 
     private String hentDiskresjonskodeForBruker(String fnr) {
         try {
-            WSPerson wsPerson = personV3.hentPerson(
-                    new WSHentPersonRequest()
-                            .withAktoer(new WSPersonIdent()
-                                    .withIdent(new WSNorskIdent()
+            Person wsPerson = personV3.hentPerson(
+                    new HentPersonRequest()
+                            .withAktoer(new PersonIdent()
+                                    .withIdent(new NorskIdent()
                                             .withIdent(fnr))))
                     .getPerson();
-            return ofNullable(wsPerson.getDiskresjonskode()).map(WSDiskresjonskoder::getValue).orElse("");
+            return ofNullable(wsPerson.getDiskresjonskode()).map(Diskresjonskoder::getValue).orElse("");
         } catch (HentPersonSikkerhetsbegrensning e) {
             log.error("Feil ved henting av diskresjonskode fra TPS");
             throw new RuntimeException("Feil ved henting av diskresjonskode fra TPS");

@@ -1,7 +1,7 @@
 package no.nav.syfo.config.ws.wsconfig;
 
 import no.nav.syfo.service.ws.*;
-import no.nav.tjeneste.virksomhet.person.v3.PersonV3;
+import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.*;
