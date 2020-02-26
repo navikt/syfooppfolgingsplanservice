@@ -6,7 +6,7 @@ import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEn
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage;
 import no.nav.syfo.domain.OppfolgingsplanAltinn;
-import no.nav.syfo.service.BrukerprofilService;
+import no.nav.syfo.pdl.PdlConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -29,19 +29,20 @@ public class AltinnConsumer {
     private static final String FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN = "Feil ved sending av oppfølgingsplan til Altinn";
 
     private final ICorrespondenceAgencyExternalBasic insertCorrespondenceBasic;
-    private final BrukerprofilService brukerprofilService;
+    private final PdlConsumer pdlConsumer;
 
     @Inject
     public AltinnConsumer(
-            BrukerprofilService brukerprofilService,
-            ICorrespondenceAgencyExternalBasic insertCorrespondenceBasic
+            ICorrespondenceAgencyExternalBasic insertCorrespondenceBasic,
+            PdlConsumer pdlConsumer
+
     ) {
-        this.brukerprofilService = brukerprofilService;
         this.insertCorrespondenceBasic = insertCorrespondenceBasic;
+        this.pdlConsumer = pdlConsumer;
     }
 
     public Integer sendOppfolgingsplanTilArbeidsgiver(OppfolgingsplanAltinn oppfolgingplanAltinn) {
-        Optional<String> brukersNavn = brukerprofilService.hentNavnByFnrForAsynkOppgave(oppfolgingplanAltinn.oppfoelgingsdialog.arbeidstaker.fnr);
+        Optional<String> brukersNavn = Optional.ofNullable(pdlConsumer.person(oppfolgingplanAltinn.oppfoelgingsdialog.arbeidstaker.fnr).getName());
         try {
             ReceiptExternal receiptExternal = insertCorrespondenceBasic.insertCorrespondenceBasicV2(
                     alltinnUsername,
