@@ -50,8 +50,6 @@ public class OppfolgingsplanService {
 
     private ArbeidsfordelingService arbeidsfordelingService;
 
-    private BrukerprofilService brukerprofilService;
-
     private FastlegeService fastlegeService;
 
     private EgenAnsattService egenAnsattService;
@@ -84,7 +82,6 @@ public class OppfolgingsplanService {
             VeilederBehandlingDAO veilederBehandlingDAO,
             AktorregisterConsumer aktorregisterConsumer,
             ArbeidsfordelingService arbeidsfordelingService,
-            BrukerprofilService brukerprofilService,
             FastlegeService fastlegeService,
             EgenAnsattService egenAnsattService,
             NarmesteLederConsumer narmesteLederConsumer,
@@ -104,7 +101,6 @@ public class OppfolgingsplanService {
         this.veilederBehandlingDAO = veilederBehandlingDAO;
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.arbeidsfordelingService = arbeidsfordelingService;
-        this.brukerprofilService = brukerprofilService;
         this.fastlegeService = fastlegeService;
         this.egenAnsattService = egenAnsattService;
         this.narmesteLederConsumer = narmesteLederConsumer;
@@ -165,7 +161,7 @@ public class OppfolgingsplanService {
                 ? innloggetAktoerId
                 : aktorregisterConsumer.hentAktorIdForFnr(rsOpprettOppfolgingsplan.sykmeldtFnr);
 
-        if (brukerprofilService.erKode6eller7(aktorregisterConsumer.hentFnrForAktor(sykmeldtAktoerId))) {
+        if (personService.erDiskresjonsmerket(aktorregisterConsumer.hentFnrForAktor(sykmeldtAktoerId))) {
             throw new ForbiddenException("Ikke tilgang");
         }
 

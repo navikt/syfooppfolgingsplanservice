@@ -55,9 +55,8 @@ aktorregister.rest.url: "http://aktorregister.url"
 virksomhet:
   arbeidsfordeling.v1.endpointurl: "arbeidsfordelingv1.url"
   arbeidsforhold.v3.endpointurl: "arbeidsforhold.url"
-  behandlearbeidogaktivitetoppgave.v1.endpointurl: "brukerprofil.url"
+  behandlearbeidogaktivitetoppgave.v1.endpointurl: "behandlearbeidogaktivitetoppgave.url"
   behandlesak.v1.endpointurl: "behandlesak.url"
-  brukerprofil.v3.endpointurl: "brukerprofil.url"
   digitalkontakinformasjon.v1.endpointurl: "dkif.url"
   diskresjonskode.v1.endpointurl: "diskresjonskode.url"
   egenansatt.v1.endpointurl: "egenansattv1.url"
@@ -84,7 +83,6 @@ client.secret: clientSecret
 
 aktoer.withmock: true
 arena.withmock: true
-brukerprofil.withmock: true
 dkif.withmock: true
 egenansatt.withmock: true
 ereg.withmock: true
