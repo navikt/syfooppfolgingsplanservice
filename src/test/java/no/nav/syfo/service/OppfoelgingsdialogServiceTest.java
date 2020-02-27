@@ -61,8 +61,6 @@ public class OppfoelgingsdialogServiceTest {
     @MockBean
     private AktorregisterConsumer aktorregisterConsumer;
     @MockBean
-    private BrukerprofilService brukerprofilService;
-    @MockBean
     private ServiceVarselService serviceVarselService;
     @MockBean
     private TredjepartsvarselService tredjepartsvarselService;
