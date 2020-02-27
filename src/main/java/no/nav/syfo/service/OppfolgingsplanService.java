@@ -3,6 +3,8 @@ package no.nav.syfo.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.*;
+import no.nav.syfo.behandlendeenhet.BehandlendeEnhet;
+import no.nav.syfo.behandlendeenhet.BehandlendeEnhetConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Ansatt;
@@ -48,19 +50,15 @@ public class OppfolgingsplanService {
 
     private AktorregisterConsumer aktorregisterConsumer;
 
-    private ArbeidsfordelingService arbeidsfordelingService;
+    private final BehandlendeEnhetConsumer behandlendeEnhetConsumer;
 
     private FastlegeService fastlegeService;
-
-    private EgenAnsattService egenAnsattService;
-
-    private NorgService norgService;
 
     private ServiceVarselService serviceVarselService;
 
     private TredjepartsvarselService tredjepartsvarselService;
 
-    private PersonService personService;
+    private final PersonService personService;
 
     private GodkjenningerDAO godkjenningerDAO;
 
@@ -81,11 +79,9 @@ public class OppfolgingsplanService {
             TiltakDAO tiltakDAO,
             VeilederBehandlingDAO veilederBehandlingDAO,
             AktorregisterConsumer aktorregisterConsumer,
-            ArbeidsfordelingService arbeidsfordelingService,
+            BehandlendeEnhetConsumer behandlendeEnhetConsumer,
             FastlegeService fastlegeService,
-            EgenAnsattService egenAnsattService,
             NarmesteLederConsumer narmesteLederConsumer,
-            NorgService norgService,
             PersonService personService,
             ServiceVarselService serviceVarselService,
             TredjepartsvarselService tredjepartsvarselService,
@@ -100,11 +96,9 @@ public class OppfolgingsplanService {
         this.tiltakDAO = tiltakDAO;
         this.veilederBehandlingDAO = veilederBehandlingDAO;
         this.aktorregisterConsumer = aktorregisterConsumer;
-        this.arbeidsfordelingService = arbeidsfordelingService;
+        this.behandlendeEnhetConsumer = behandlendeEnhetConsumer;
         this.fastlegeService = fastlegeService;
-        this.egenAnsattService = egenAnsattService;
         this.narmesteLederConsumer = narmesteLederConsumer;
-        this.norgService = norgService;
         this.personService = personService;
         this.serviceVarselService = serviceVarselService;
         this.tredjepartsvarselService = tredjepartsvarselService;
@@ -246,14 +240,9 @@ public class OppfolgingsplanService {
         return !maybeGodkjentplan.isPresent();
     }
 
-    private Enhet finnBehandlendeEnhetForGeografiskTilknytting(Oppfoelgingsdialog oppfoelgingsdialog) {
-        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
-        String geografiskTilknytning = personService.hentGeografiskTilknytning(sykmeldtFnr);
-        Enhet tildeltEnhet = arbeidsfordelingService.finnBehandlendeEnhet(geografiskTilknytning);
-        if (egenAnsattService.erEgenAnsatt(sykmeldtFnr)) {
-            tildeltEnhet = norgService.finnSetteKontor(tildeltEnhet.enhetId).orElse(tildeltEnhet);
-        }
-        return tildeltEnhet;
+    private BehandlendeEnhet finnBehandlendeEnhetForGeografiskTilknytting(Oppfoelgingsdialog oppfoelgingsdialog) {
+        String arbeidstakerFnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
+        return behandlendeEnhetConsumer.getBehandlendeEnhet(arbeidstakerFnr);
     }
 
     @Transactional
@@ -261,11 +250,11 @@ public class OppfolgingsplanService {
         Oppfoelgingsdialog oppfoelgingsplan = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
         LocalDateTime deltMedNavTidspunkt = now();
-        Enhet sykmeldtBehandlendeEnhet = finnBehandlendeEnhetForGeografiskTilknytting(oppfoelgingsplan);
+        BehandlendeEnhet sykmeldtBehandlendeEnhet = finnBehandlendeEnhetForGeografiskTilknytting(oppfoelgingsplan);
 
         VeilederBehandling veilederBehandling = new VeilederBehandling()
                 .godkjentplanId(godkjentplanDAO.godkjentPlanIdByOppfolgingsplanId(oppfolgingsplanId))
-                .tildeltEnhet(sykmeldtBehandlendeEnhet.enhetId)
+                .tildeltEnhet(sykmeldtBehandlendeEnhet.getEnhetId())
                 .opprettetDato(deltMedNavTidspunkt)
                 .sistEndret(deltMedNavTidspunkt);
 
@@ -273,7 +262,7 @@ public class OppfolgingsplanService {
 
         godkjentplanDAO.delMedNav(oppfolgingsplanId, deltMedNavTidspunkt);
         veilederBehandlingDAO.opprett(veilederBehandling);
-        godkjentplanDAO.delMedNavTildelEnhet(oppfoelgingsplan.id, sykmeldtBehandlendeEnhet.enhetId);
+        godkjentplanDAO.delMedNavTildelEnhet(oppfoelgingsplan.id, sykmeldtBehandlendeEnhet.getEnhetId());
         oppfoelingsdialogDAO.sistEndretAv(oppfolgingsplanId, innloggetAktoerId);
 
     }
