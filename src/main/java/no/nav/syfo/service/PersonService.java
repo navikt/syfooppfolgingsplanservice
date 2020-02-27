@@ -3,12 +3,11 @@ package no.nav.syfo.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tjeneste.virksomhet.person.v3.binding.*;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.*;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
 @Slf4j
@@ -23,23 +22,6 @@ public class PersonService {
     @Inject
     public PersonService(PersonV3 personV3) {
         this.personV3 = personV3;
-    }
-
-    public String hentGeografiskTilknytning(String fnr) {
-        try {
-            return of(personV3.hentGeografiskTilknytning(
-                    new HentGeografiskTilknytningRequest()
-                            .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(fnr)))))
-                    .map(HentGeografiskTilknytningResponse::getGeografiskTilknytning)
-                    .map(GeografiskTilknytning::getGeografiskTilknytning)
-                    .orElse(null);
-        } catch (HentGeografiskTilknytningSikkerhetsbegrensing | HentGeografiskTilknytningPersonIkkeFunnet e) {
-            log.error("Feil ved henting av geografisk tilknytning for fnr {}", fnr, e);
-            throw new RuntimeException("Feil ved henting av geografisk tilknytning", e);
-        } catch (RuntimeException e) {
-            log.error("Feil ved henting av geografisk tilknytning for fnr {}", fnr, e);
-            throw e;
-        }
     }
 
     public boolean erDiskresjonsmerket(String fnr) {

@@ -53,19 +53,17 @@ pdl.url: "https://pdl.url"
 aareg.services.url: "http://aareg-services.url"
 aktorregister.rest.url: "http://aktorregister.url"
 virksomhet:
-  arbeidsfordeling.v1.endpointurl: "arbeidsfordelingv1.url"
   arbeidsforhold.v3.endpointurl: "arbeidsforhold.url"
   behandlearbeidogaktivitetoppgave.v1.endpointurl: "behandlearbeidogaktivitetoppgave.url"
   behandlesak.v1.endpointurl: "behandlesak.url"
   digitalkontakinformasjon.v1.endpointurl: "dkif.url"
   diskresjonskode.v1.endpointurl: "diskresjonskode.url"
-  egenansatt.v1.endpointurl: "egenansattv1.url"
   organisasjon.v4.endpointurl: "organisasjonv4.url"
-  organisasjonenhet.v2.endpointurl: "organisasjonEnhetv2.url"
   organisasjonressursenhet.v1.endpointurl: "organisasjonRessursEnhetv1.url"
   person.v3.endpointurl: "personv3.url"
   sak.v1.endpointurl: "sak.url"
 
+syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
 ad.accesstoken.url: 'accesstoken.url'
 security.token.service.rest.url: "http://security-token-service.url"
 
@@ -84,9 +82,7 @@ client.secret: clientSecret
 aktoer.withmock: true
 arena.withmock: true
 dkif.withmock: true
-egenansatt.withmock: true
 ereg.withmock: true
-norg.withmock: true
 person.withmock: true
 sykefravaersoppfoelging.syfoservice.withmock: true
 
