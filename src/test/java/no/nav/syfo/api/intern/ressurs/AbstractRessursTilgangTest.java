@@ -18,7 +18,8 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 
-import static no.nav.syfo.service.VeilederTilgangService.*;
+import static no.nav.syfo.service.VeilederTilgangService.TILGANG_TIL_BRUKER_VIA_AZURE_PATH;
+import static no.nav.syfo.service.VeilederTilgangService.TILGANG_TIL_TJENESTEN_VIA_AZURE_PATH;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.client.ExpectedCount.manyTimes;
@@ -61,20 +62,6 @@ public abstract class AbstractRessursTilgangTest {
         loggUtAlle(oidcRequestContextHolder);
     }
 
-    public void mockSvarFraTilgangTilBruker(String fnr, HttpStatus status) {
-        String uriString = fromHttpUrl(tilgangskontrollUrl)
-                .path(TILGANG_TIL_BRUKER_PATH)
-                .queryParam(VeilederTilgangService.FNR, fnr)
-                .toUriString();
-
-        String idToken = oidcRequestContextHolder.getOIDCValidationContext().getToken(OIDCIssuer.INTERN).getIdToken();
-
-        mockRestServiceServer.expect(manyTimes(), requestTo(uriString))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(header(AUTHORIZATION, "Bearer " + idToken))
-                .andRespond(withStatus(status));
-    }
-
     public void mockSvarFraTilgangTilBrukerViaAzure(String fnr, HttpStatus status) {
         String uriString = fromHttpUrl(tilgangskontrollUrl)
                 .path(TILGANG_TIL_BRUKER_VIA_AZURE_PATH)
@@ -82,33 +69,6 @@ public abstract class AbstractRessursTilgangTest {
                 .toUriString();
 
         String idToken = oidcRequestContextHolder.getOIDCValidationContext().getToken(OIDCIssuer.AZURE).getIdToken();
-
-        mockRestServiceServer.expect(manyTimes(), requestTo(uriString))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(header(AUTHORIZATION, "Bearer " + idToken))
-                .andRespond(withStatus(status));
-    }
-
-    public void mockSvarFraTilgangTilEnhet(String enhet, HttpStatus status) {
-        String uriString = fromHttpUrl(tilgangskontrollUrl)
-                .path(TILGANG_TIL_ENHET_PATH)
-                .queryParam(VeilederTilgangService.ENHET, enhet)
-                .toUriString();
-
-        String idToken = oidcRequestContextHolder.getOIDCValidationContext().getToken(OIDCIssuer.INTERN).getIdToken();
-
-        mockRestServiceServer.expect(manyTimes(), requestTo(uriString))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(header(AUTHORIZATION, "Bearer " + idToken))
-                .andRespond(withStatus(status));
-    }
-
-    public void mockSvarFraTilgangTilTjenesten(HttpStatus status) {
-        String uriString = fromHttpUrl(tilgangskontrollUrl)
-                .path(TILGANG_TIL_TJENESTEN)
-                .toUriString();
-
-        String idToken = oidcRequestContextHolder.getOIDCValidationContext().getToken(OIDCIssuer.INTERN).getIdToken();
 
         mockRestServiceServer.expect(manyTimes(), requestTo(uriString))
                 .andExpect(method(HttpMethod.GET))
