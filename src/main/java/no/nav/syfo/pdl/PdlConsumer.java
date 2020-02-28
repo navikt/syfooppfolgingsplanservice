@@ -5,8 +5,7 @@ import no.nav.syfo.pdl.exceptions.*;
 import no.nav.syfo.sts.StsConsumer;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -40,7 +39,7 @@ public class PdlConsumer {
     @Autowired
     public PdlConsumer(
             Metrikk metrikk,
-            RestTemplate restTemplate,
+            @Qualifier("scheduler") RestTemplate restTemplate,
             StsConsumer stsConsumer,
             @Value("${pdl.url}") String url
     ) {
