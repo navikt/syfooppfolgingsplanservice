@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val cxfVersion = "3.2.7"
+val cxfVersion = "3.3.3"
 val personV3Version = "1.2019.07.11-06.47-b55f47790a9d"
 val oidcSpringSupportVersion = "0.2.4"
 val springBootVersion = "2.0.4.RELEASE"
