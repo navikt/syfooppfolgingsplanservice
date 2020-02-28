@@ -32,12 +32,6 @@ public class OIDCUtil {
                 .orElse(null);
     }
 
-    public static String getSubjectIntern(OIDCRequestContextHolder contextHolder) {
-        return Optional.ofNullable(claimSet(contextHolder, OIDCIssuer.INTERN))
-                .map(JWTClaimsSet::getSubject)
-                .orElse(null);
-    }
-
     public static String getSubjectEkstern(OIDCRequestContextHolder contextHolder) {
         return Optional.ofNullable(claimSet(contextHolder, OIDCIssuer.EKSTERN))
                 .map(JWTClaimsSet::getSubject)
