@@ -91,6 +91,7 @@ public class PdfService {
             document.close();
             return antallSider;
         } catch (IOException e) {
+            log.error("Catched IOException when get number of pages of document", e);
             return 1;
         }
     }
