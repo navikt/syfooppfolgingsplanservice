@@ -7,7 +7,6 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 val cxfVersion = "3.3.3"
-val personV3Version = "1.2019.07.11-06.47-b55f47790a9d"
 val oidcSupportVersion = "0.2.7"
 val oidcSupportTestVersion = "0.2.4"
 val springBootVersion = "2.0.4.RELEASE"
@@ -60,7 +59,6 @@ dependencies {
     implementation("no.nav.syfo.tjenester:behandleJournal-v2:1.0.2")
     implementation("no.nav.syfo.tjenester:dkif-tjenestespesifikasjon:1.2")
     implementation("no.nav.sbl.dialogarena:organisasjonv4-tjenestespesifikasjon:1.0.1")
-    implementation("no.nav.tjenestespesifikasjoner:person-v3-tjenestespesifikasjon:$personV3Version")
     implementation("no.nav.syfo.tjenester:sykefravaersoppfoelgingv1-tjenestespesifikasjon:1.0.20")
     implementation("no.nav.sbl.dialogarena:dial-nav-tjeneste-aktoer_v2:1.2")
     implementation("no.nav.syfo.tjenester:servicemeldingMedKontaktinformasjon-v1:1.0.0")

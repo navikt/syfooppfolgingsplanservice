@@ -42,7 +42,7 @@ public class AltinnConsumer {
     }
 
     public Integer sendOppfolgingsplanTilArbeidsgiver(OppfolgingsplanAltinn oppfolgingplanAltinn) {
-        Optional<String> brukersNavn = Optional.ofNullable(pdlConsumer.person(oppfolgingplanAltinn.oppfoelgingsdialog.arbeidstaker.fnr).getName());
+        Optional<String> brukersNavn = Optional.ofNullable(pdlConsumer.personName(oppfolgingplanAltinn.oppfoelgingsdialog.arbeidstaker.fnr));
         try {
             ReceiptExternal receiptExternal = insertCorrespondenceBasic.insertCorrespondenceBasicV2(
                     alltinnUsername,

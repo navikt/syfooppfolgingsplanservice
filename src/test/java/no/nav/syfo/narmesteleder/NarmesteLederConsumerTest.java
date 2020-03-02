@@ -107,7 +107,7 @@ public class NarmesteLederConsumerTest {
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(NarmestelederResponse.class))).thenReturn(new ResponseEntity<>(narmestelederResponse, OK));
         when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn(FNR);
-        when(pdlConsumer.person(anyString())).thenReturn(pdlHentPerson);
+        when(pdlConsumer.personName(anyString())).thenReturn(pdlName());
 
         Optional<Naermesteleder> naermestelederOptional = narmesteLederConsumer.narmesteLeder(SYKMELDT_AKTOR_ID, VIRKSOMHETSNUMMER);
         assertThat(naermestelederOptional.isPresent()).isTrue();
@@ -116,7 +116,7 @@ public class NarmesteLederConsumerTest {
 
         assertThat(naermesteleder.naermesteLederAktoerId).isEqualTo(LEDER_AKTOR_ID);
         assertThat(naermesteleder.orgnummer).isEqualTo(VIRKSOMHETSNUMMER);
-        assertThat(naermesteleder.navn).isEqualTo(pdlHentPerson.getName());
+        assertThat(naermesteleder.navn).isEqualTo(pdlName());
 
         verify(metrikk).tellHendelse(HENT_LEDER_SYFONARMESTELEDER);
         verify(metrikk).tellHendelse(HENT_LEDER_SYFONARMESTELEDER_VELLYKKET);
@@ -138,13 +138,20 @@ public class NarmesteLederConsumerTest {
     }
 
     private PdlHentPerson mockPdlHentPerson() {
-        return new PdlHentPerson()
-                .hentPerson(
-                        new PdlPerson()
-                                .navn(singletonList(
-                                        new PdlPersonNavn()
-                                                .fornavn(FIRSTNAME)
-                                                .mellomnavn(MIDDLENAME)
-                                                .etternavn(SURNAME))));
+        return new PdlHentPerson(
+                new PdlPerson(
+                        singletonList(
+                                new PdlPersonNavn(
+                                        FIRSTNAME,
+                                        MIDDLENAME,
+                                        SURNAME
+                                )),
+                        null
+                )
+        );
+    }
+
+    private String pdlName() {
+        return FIRSTNAME + MIDDLENAME + SURNAME;
     }
 }
