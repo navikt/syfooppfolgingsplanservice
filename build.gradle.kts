@@ -8,7 +8,8 @@ version = "1.0.0"
 
 val cxfVersion = "3.3.3"
 val personV3Version = "1.2019.07.11-06.47-b55f47790a9d"
-val oidcSpringSupportVersion = "0.2.4"
+val oidcSupportVersion = "0.2.7"
+val oidcSupportTestVersion = "0.2.4"
 val springBootVersion = "2.0.4.RELEASE"
 val kotlinLibVersion = "1.3.50"
 val kotlinJacksonVersion = "2.9.8"
@@ -83,8 +84,8 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:1.0.6")
     implementation("org.springframework:spring-jms:5.0.7.RELEASE")
     implementation("org.springframework:spring-context:5.0.7.RELEASE")
-    implementation("no.nav.security:oidc-support:0.2.4")
-    implementation("no.nav.security:oidc-spring-support:0.2.4")
+    implementation("no.nav.security:oidc-support:$oidcSupportVersion")
+    implementation("no.nav.security:oidc-spring-support:$oidcSupportVersion")
     implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.4.0")
     implementation("org.flywaydb:flyway-core:4.0.3")
     implementation("net.logstash.logback:logstash-logback-encoder:4.10")
@@ -101,7 +102,7 @@ dependencies {
     implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
     runtime("com.oracle:ojdbc6:11.2.0.3")
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
-    testImplementation("no.nav.security:oidc-spring-test:0.2.4")
+    testImplementation("no.nav.security:oidc-spring-test:$oidcSupportTestVersion")
     testImplementation("com.h2database:h2:1.4.197")
 }
 

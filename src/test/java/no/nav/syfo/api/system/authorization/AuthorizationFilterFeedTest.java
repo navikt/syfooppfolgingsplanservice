@@ -1,6 +1,6 @@
 package no.nav.syfo.api.system.authorization;
 
-import no.nav.security.spring.oidc.validation.api.Unprotected;
+import no.nav.security.oidc.api.Unprotected;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,8 +1,8 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
 import no.nav.syfo.api.selvbetjening.domain.RSTilgang;
 import no.nav.syfo.brukertilgang.BrukerTilgang;
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer;

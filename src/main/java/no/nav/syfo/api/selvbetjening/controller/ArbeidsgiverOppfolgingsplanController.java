@@ -1,12 +1,12 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
+import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.service.OppfolgingsplanService;
 import org.springframework.web.bind.annotation.*;
 

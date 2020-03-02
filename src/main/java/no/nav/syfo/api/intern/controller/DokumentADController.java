@@ -3,7 +3,7 @@ package no.nav.syfo.api.intern.controller;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
+import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.service.*;

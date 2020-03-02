@@ -1,7 +1,7 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
+import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
 import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Tiltak;
@@ -102,7 +102,9 @@ public class OppfolgingsplanController {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
         boolean isPlanSharedWithNAV = Optional.ofNullable(delMedNav).orElse(false);
-        if (isPlanSharedWithNAV) { countShareWithNAVAtApproval(); }
+        if (isPlanSharedWithNAV) {
+            countShareWithNAVAtApproval();
+        }
 
         godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, "tvungenGodkjenning".equals(status), isPlanSharedWithNAV);
 
@@ -125,7 +127,9 @@ public class OppfolgingsplanController {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
         boolean isPlanSharedWithNAV = Optional.ofNullable(delMedNav).orElse(false);
-        if (isPlanSharedWithNAV) { countShareWithNAVAtApproval(); }
+        if (isPlanSharedWithNAV) {
+            countShareWithNAVAtApproval();
+        }
 
         godkjenningService.godkjennOppfolgingsplan(id, null, innloggetIdent, "tvungengodkjenning".equals(status), isPlanSharedWithNAV);
 
