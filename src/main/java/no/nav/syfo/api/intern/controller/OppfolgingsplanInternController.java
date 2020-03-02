@@ -1,6 +1,6 @@
 package no.nav.syfo.api.intern.controller;
 
-import no.nav.security.spring.oidc.validation.api.ProtectedWithClaims;
+import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.intern.domain.RSHistorikk;
 import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
