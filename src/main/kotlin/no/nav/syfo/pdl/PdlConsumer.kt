@@ -6,7 +6,6 @@ import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.*
 import org.springframework.http.HttpHeaders.AUTHORIZATION
@@ -21,7 +20,6 @@ class PdlConsumer(
         private val stsConsumer: StsConsumer,
         @param:Qualifier("scheduler") private val restTemplate: RestTemplate
 ) {
-    @Cacheable(cacheNames = ["personPdl"], key = "#ident", condition = "#ident != null")
     fun person(ident: String): PdlHentPerson? {
         metric.tellHendelse("call_pdl")
 
@@ -58,7 +56,7 @@ class PdlConsumer(
     }
 
     fun isKode6Or7(ident: String): Boolean {
-        return person(ident)?.isKode6Or7() ?: true
+        return person(ident)?.isKode6Or7() ?: throw PdlRequestFailedException()
     }
 
     private fun createRequestEntity(request: PdlRequest): HttpEntity<PdlRequest> {

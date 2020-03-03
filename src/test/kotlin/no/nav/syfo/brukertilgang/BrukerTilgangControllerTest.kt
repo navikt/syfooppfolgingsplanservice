@@ -1,10 +1,11 @@
 package no.nav.syfo.brukertilgang
 
 import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest
-import no.nav.syfo.pdl.*
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.BrukertilgangService
-import no.nav.syfo.testhelper.*
+import no.nav.syfo.testhelper.OidcTestHelper
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
+import no.nav.syfo.testhelper.UserConstants
 import no.nav.syfo.util.HeaderUtil
 import org.junit.Assert.*
 import org.junit.Test
@@ -30,8 +31,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
     @Test
     fun sjekk_tilgang_til_bruker() {
         loggInnBruker(oidcRequestContextHolder, UserConstants.LEDER_FNR)
-        val pdlPersonResponse = generatePdlHentPerson(null, null)
-        `when`(pdlConsumer.person(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(pdlPersonResponse)
+        `when`(pdlConsumer.isKode6Or7(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.LEDER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
 
         val exp = RSTilgang(
@@ -45,8 +45,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
     @Test
     fun sjekk_tilgang_til_seg_selv() {
         loggInnBruker(oidcRequestContextHolder, UserConstants.ARBEIDSTAKER_FNR)
-        val pdlPersonResponse = generatePdlHentPerson(null, null)
-        `when`(pdlConsumer.person(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(pdlPersonResponse)
+        `when`(pdlConsumer.isKode6Or7(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.ARBEIDSTAKER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
 
         val exp = RSTilgang(true, null)
@@ -57,11 +56,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
     @Test
     fun sjekk_tilgang_til_bruker_diskresjonsmerket() {
         loggInnBruker(oidcRequestContextHolder, UserConstants.LEDER_FNR)
-        val pdlPersonResponse = generatePdlHentPerson(
-                null,
-                Adressebeskyttelse(Gradering.STRENGT_FORTROLIG)
-        )
-        `when`(pdlConsumer.person(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(pdlPersonResponse)
+        `when`(pdlConsumer.isKode6Or7(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.LEDER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
 
         val exp = RSTilgang(false, BrukerTilgangController.IKKE_TILGANG_GRUNN_DISKRESJONSMERKET)
@@ -72,11 +67,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
     @Test
     fun sjekk_tilgang_til_seg_selv_diskresjonsmerket() {
         loggInnBruker(oidcRequestContextHolder, UserConstants.ARBEIDSTAKER_FNR)
-        val pdlPersonResponse = generatePdlHentPerson(
-                null,
-                Adressebeskyttelse(Gradering.FORTROLIG)
-        )
-        `when`(pdlConsumer.person(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(pdlPersonResponse)
+        `when`(pdlConsumer.isKode6Or7(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.ARBEIDSTAKER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
 
         val exp = RSTilgang(false, BrukerTilgangController.IKKE_TILGANG_GRUNN_DISKRESJONSMERKET)
