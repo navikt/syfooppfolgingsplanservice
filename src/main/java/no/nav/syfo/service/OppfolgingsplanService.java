@@ -10,6 +10,7 @@ import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class OppfolgingsplanService {
 
     private TredjepartsvarselService tredjepartsvarselService;
 
-    private final PersonService personService;
+    private final PdlConsumer pdlConsumer;
 
     private GodkjenningerDAO godkjenningerDAO;
 
@@ -82,7 +83,7 @@ public class OppfolgingsplanService {
             BehandlendeEnhetConsumer behandlendeEnhetConsumer,
             FastlegeService fastlegeService,
             NarmesteLederConsumer narmesteLederConsumer,
-            PersonService personService,
+            PdlConsumer pdlConsumer,
             ServiceVarselService serviceVarselService,
             TredjepartsvarselService tredjepartsvarselService,
             TilgangskontrollService tilgangskontrollService
@@ -99,7 +100,7 @@ public class OppfolgingsplanService {
         this.behandlendeEnhetConsumer = behandlendeEnhetConsumer;
         this.fastlegeService = fastlegeService;
         this.narmesteLederConsumer = narmesteLederConsumer;
-        this.personService = personService;
+        this.pdlConsumer = pdlConsumer;
         this.serviceVarselService = serviceVarselService;
         this.tredjepartsvarselService = tredjepartsvarselService;
         this.tilgangskontrollService = tilgangskontrollService;
@@ -155,7 +156,7 @@ public class OppfolgingsplanService {
                 ? innloggetAktoerId
                 : aktorregisterConsumer.hentAktorIdForFnr(rsOpprettOppfolgingsplan.sykmeldtFnr);
 
-        if (personService.erDiskresjonsmerket(aktorregisterConsumer.hentFnrForAktor(sykmeldtAktoerId))) {
+        if (pdlConsumer.isKode6Or7(aktorregisterConsumer.hentFnrForAktor(sykmeldtAktoerId))) {
             throw new ForbiddenException("Ikke tilgang");
         }
 

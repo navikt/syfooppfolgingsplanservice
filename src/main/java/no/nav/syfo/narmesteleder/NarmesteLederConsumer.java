@@ -5,6 +5,7 @@ import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.*;
 import no.nav.syfo.pdl.PdlConsumer;
+import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -107,7 +108,7 @@ public class NarmesteLederConsumer {
 
         String lederAktorId = relasjon.narmesteLederAktorId;
         String lederFnr = aktorregisterConsumer.hentFnrForAktor(lederAktorId);
-        String lederNavn = pdlConsumer.person(lederFnr).getName();
+        String lederNavn = Optional.ofNullable(pdlConsumer.personName(lederFnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of leader was null"));
 
         metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER_VELLYKKET);
         return Optional.of(narmestelederRelasjon2Leder(relasjon, lederNavn));

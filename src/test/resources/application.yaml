@@ -60,7 +60,6 @@ virksomhet:
   diskresjonskode.v1.endpointurl: "diskresjonskode.url"
   organisasjon.v4.endpointurl: "organisasjonv4.url"
   organisasjonressursenhet.v1.endpointurl: "organisasjonRessursEnhetv1.url"
-  person.v3.endpointurl: "personv3.url"
   sak.v1.endpointurl: "sak.url"
 
 syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
@@ -83,7 +82,6 @@ aktoer.withmock: true
 arena.withmock: true
 dkif.withmock: true
 ereg.withmock: true
-person.withmock: true
 sykefravaersoppfoelging.syfoservice.withmock: true
 
 dev: true
