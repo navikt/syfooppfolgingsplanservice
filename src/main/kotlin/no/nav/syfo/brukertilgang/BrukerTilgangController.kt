@@ -6,7 +6,6 @@ import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.oidc.OIDCUtil
 import no.nav.syfo.pdl.PdlConsumer
-import no.nav.syfo.pdl.isKode6Or7
 import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.util.HeaderUtil
 import org.slf4j.LoggerFactory
@@ -15,6 +14,7 @@ import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
 import javax.ws.rs.ForbiddenException
+
 
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
@@ -35,14 +35,14 @@ class BrukerTilgangController @Inject constructor(
             throw ForbiddenException()
         }
         metrikk.tellHendelse("sjekk_brukertilgang")
-        val isKode6Or7 = pdlConsumer.person(oppslaattIdent!!)?.isKode6Or7()
-        return if (isKode6Or7 == false) {
-            RSTilgang(true)
-        } else {
+        val isKode6Or7 = pdlConsumer.isKode6Or7(oppslaattIdent!!)
+        return if (isKode6Or7) {
             RSTilgang(
                     false,
                     IKKE_TILGANG_GRUNN_DISKRESJONSMERKET
             )
+        } else {
+            RSTilgang(true)
         }
     }
 
