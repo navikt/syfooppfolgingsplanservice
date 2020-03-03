@@ -50,27 +50,6 @@ enum class Gradering : Serializable {
     UGRADERT
 }
 
-
-fun PdlHentPerson.diskresjonskode(): String {
-    val adressebeskyttelse = this.hentPerson?.adressebeskyttelse
-    if (adressebeskyttelse.isNullOrEmpty()) {
-        return ""
-    } else {
-        val gradering: Gradering = adressebeskyttelse.first().gradering
-        return when {
-            gradering === Gradering.STRENGT_FORTROLIG -> {
-                "6"
-            }
-            gradering === Gradering.FORTROLIG -> {
-                "7"
-            }
-            else -> {
-                ""
-            }
-        }
-    }
-}
-
 fun PdlHentPerson.isKode6Or7(): Boolean {
     val adressebeskyttelse = this.hentPerson?.adressebeskyttelse
     return if (adressebeskyttelse.isNullOrEmpty()) {
