@@ -45,6 +45,7 @@ data class Adressebeskyttelse(
 ) : Serializable
 
 enum class Gradering : Serializable {
+    STRENGT_FORTROLIG_UTLAND,
     STRENGT_FORTROLIG,
     FORTROLIG,
     UGRADERT
@@ -56,9 +57,17 @@ fun PdlHentPerson.isKode6Or7(): Boolean {
         false
     } else {
         return adressebeskyttelse.any {
-            it.gradering == Gradering.STRENGT_FORTROLIG || it.gradering == Gradering.FORTROLIG
+            it.isKode6() || it.isKode7()
         }
     }
+}
+
+fun Adressebeskyttelse.isKode6(): Boolean {
+    return this.gradering == Gradering.STRENGT_FORTROLIG || this.gradering == Gradering.STRENGT_FORTROLIG_UTLAND
+}
+
+fun Adressebeskyttelse.isKode7(): Boolean {
+    return this.gradering == Gradering.FORTROLIG
 }
 
 fun PdlHentPerson.fullName(): String? {
