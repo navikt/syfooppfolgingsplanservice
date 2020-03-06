@@ -1,6 +1,8 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
+import no.nav.syfo.domain.Person;
+import no.nav.syfo.domain.Person;
 import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
 import org.springframework.stereotype.Service;
@@ -29,5 +31,17 @@ public class BrukerprofilService {
         }
         String fnr = aktorregisterConsumer.hentFnrForAktor(aktoerId);
         return Optional.ofNullable(pdlConsumer.personName(fnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of leader was null"));
+    }
+
+    public Person hentNavnOgFnr(String aktorId) {
+        if (!aktorId.matches("\\d{13}$")) {
+            throw new RuntimeException();
+        }
+        String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
+        String navn = Optional.ofNullable(pdlConsumer.personName(fnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of leader was null"));
+
+        return new Person()
+                .navn(navn)
+                .fnr(fnr);
     }
 }

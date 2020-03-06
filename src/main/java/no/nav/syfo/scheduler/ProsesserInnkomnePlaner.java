@@ -2,7 +2,6 @@ package no.nav.syfo.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
@@ -21,7 +20,7 @@ public class ProsesserInnkomnePlaner {
     private AktorregisterConsumer aktorregisterConsumer;
     private BehandleSakService behandleSakService;
     private GodkjentplanDAO godkjentplanDAO;
-    private JournalService journalService;
+    private JournalforOPService journalforOPService;
     private LeaderElectionService leaderElectionService;
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private SakService sakService;
@@ -32,7 +31,7 @@ public class ProsesserInnkomnePlaner {
             AktorregisterConsumer aktorregisterConsumer,
             BehandleSakService behandleSakService,
             GodkjentplanDAO godkjentplanDAO,
-            JournalService journalService,
+            JournalforOPService journalforOPService,
             LeaderElectionService leaderElectionService,
             OppfoelingsdialogDAO oppfoelingsdialogDAO,
             SakService sakService,
@@ -41,7 +40,7 @@ public class ProsesserInnkomnePlaner {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.behandleSakService = behandleSakService;
         this.godkjentplanDAO = godkjentplanDAO;
-        this.journalService = journalService;
+        this.journalforOPService = journalforOPService;
         this.leaderElectionService = leaderElectionService;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.sakService = sakService;
@@ -67,7 +66,9 @@ public class ProsesserInnkomnePlaner {
         if (leaderElectionService.isLeader() && !"true".equals(getProperty(LOCAL_MOCK))) {
             godkjentplanDAO.hentIkkeJournalfoertePlaner()
                     .forEach(godkjentPlan -> {
-                        godkjentplanDAO.journalpostId(godkjentPlan.oppfoelgingsdialogId, journalService.opprettJournalpost(godkjentPlan.sakId, godkjentPlan));
+                        godkjentplanDAO.journalpostId(
+                                godkjentPlan.oppfoelgingsdialogId,
+                                journalforOPService.opprettJournalpost(godkjentPlan).toString());
                         metrikk.tellHendelse("plan_opprettet_journal_gosys");
                     });
         }
