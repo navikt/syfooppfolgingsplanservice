@@ -47,7 +47,7 @@ public class ProsesserInnkomnePlaner {
         this.metrikk = metrikk;
     }
 
-    @Scheduled(fixedRate = 60000)
+    /*@Scheduled(fixedRate = 60000)
     public void opprettSaker() {
         if (leaderElectionService.isLeader()) {
             godkjentplanDAO.hentIkkeSaksfoertePlaner()
@@ -59,7 +59,7 @@ public class ProsesserInnkomnePlaner {
                         metrikk.tellHendelse("plan_opprettet_sak_gosys");
                     });
         }
-    }
+    }*/
 
     @Scheduled(fixedRate = 60000)
     public void opprettJournalposter() {
