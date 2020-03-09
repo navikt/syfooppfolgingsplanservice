@@ -8,6 +8,7 @@ import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.domain.Person;
 import no.nav.syfo.domain.Virksomhet;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
 import org.junit.After;
 import org.junit.Before;
@@ -51,6 +52,9 @@ public class DokArkivConsumerTest {
 
     private DokArkivConsumer dokArkivConsumer;
 
+    @Inject
+    private Metrikk metrikk;
+
     private MockRestServiceServer mockRestServiceServer;
 
     private final String DOKARKIV_URL = "https://url.nav.no";
@@ -69,7 +73,7 @@ public class DokArkivConsumerTest {
         this.mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build();
 
         when(stsConsumer.token()).thenReturn("token");
-        dokArkivConsumer = new DokArkivConsumer(restTemplate, DOKARKIV_URL, stsConsumer);
+        dokArkivConsumer = new DokArkivConsumer(restTemplate, DOKARKIV_URL, stsConsumer, metrikk);
     }
 
     @After

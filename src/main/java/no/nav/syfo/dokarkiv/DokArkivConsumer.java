@@ -1,8 +1,11 @@
 package no.nav.syfo.dokarkiv;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -18,21 +21,24 @@ import static java.lang.String.format;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+@Slf4j
 @Service
 public class DokArkivConsumer {
-    //TODO: Fix syfonais
     private static final String JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1/journalpost";
 
     private final RestTemplate restTemplate;
     private final String url;
     private final StsConsumer stsConsumer;
+    private final Metrikk metrikk;
+
 
     @Inject
-    public DokArkivConsumer(RestTemplate restTemplate, @Value("${dokarkiv.url}") String url, StsConsumer stsConsumer
+    public DokArkivConsumer(@Qualifier("scheduler") RestTemplate restTemplate, @Value("${dokarkiv.url}") String url, StsConsumer stsConsumer, Metrikk metrikk
     ) {
         this.restTemplate = restTemplate;
         this.url = url;
         this.stsConsumer = stsConsumer;
+        this.metrikk = metrikk;
     }
 
     public Integer journalforOppfolgingsplan(Oppfoelgingsdialog oppfolgingsplan, GodkjentPlan godkjentPlan) {
@@ -46,11 +52,10 @@ public class DokArkivConsumer {
                     HttpMethod.POST,
                     entity,
                     JournalpostResponse.class);
-
+            metrikk.tellHendelse("journalfor_oppfolgingsplan");
             return response.getBody().journalpostId;
         } catch (RestClientException e){
-            //metrics
-            //logs
+            log.error("Error from DokArkiv " + url + JOURNALPOSTAPI_PATH, e);
             throw e;
         }
     }
