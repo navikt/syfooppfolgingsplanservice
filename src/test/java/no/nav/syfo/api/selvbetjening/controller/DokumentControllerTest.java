@@ -16,7 +16,6 @@ import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +39,7 @@ public class DokumentControllerTest extends AbstractRessursTilgangTest {
 
     @Test
     public void hent_pdf_som_bruker() {
-        byte[] pdf = new byte[10];
+        ResponseEntity<byte[]> pdf = ResponseEntity.ok().body(new byte[10]);
         when(pdfService.hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(pdf);
 
         ResponseEntity response = dokumentController.hentPdf(oppfolgingsplanId);
@@ -60,8 +59,9 @@ public class DokumentControllerTest extends AbstractRessursTilgangTest {
     @Test
     public void hentSidebilde_som_bruker() {
         byte[] pdf = new byte[10];
+        ResponseEntity<byte[]> reponsePdf = ResponseEntity.ok().body(pdf);
         int sideantall = 3;
-        when(pdfService.hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(pdf);
+        when(pdfService.hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(reponsePdf);
         when(pdfService.hentAntallSiderIDokument(pdf)).thenReturn(sideantall);
         ResponseEntity response = ResponseEntity.badRequest().build();
         try {
@@ -91,8 +91,9 @@ public class DokumentControllerTest extends AbstractRessursTilgangTest {
     @Test
     public void hentPdfurler_som_bruker() {
         byte[] pdf = new byte[10];
+        ResponseEntity<byte[]> reponsePdf = ResponseEntity.ok().body(pdf);
         int sideantall = 3;
-        when(pdfService.hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(pdf);
+        when(pdfService.hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(reponsePdf);
         when(pdfService.hentAntallSiderIDokument(pdf)).thenReturn(sideantall);
 
         List<String> returnertListe = dokumentController.hentPdfurler(oppfolgingsplanId);

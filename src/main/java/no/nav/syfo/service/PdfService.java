@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
@@ -9,16 +8,22 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
+import org.slf4j.Logger;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Optional;
 
-@Slf4j
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Service
 public class PdfService {
+
+    private static final Logger log = getLogger(PdfService.class);
 
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
 
@@ -49,15 +54,21 @@ public class PdfService {
         this.metrikk = metrikk;
     }
 
-    public byte[] hentPdf(long oppfolgingsplanId, String innloggetFnr) {
+    public ResponseEntity<byte[]> hentPdf(long oppfolgingsplanId, String innloggetFnr) {
         if (!oppfolgingsplanService.harBrukerTilgangTilDialog(oppfolgingsplanId, innloggetFnr)) {
             throw new ForbiddenException("Ikke tilgang");
         }
         Oppfoelgingsdialog oppfolgingsplan = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         metrikk.tellAntallDagerSiden(oppfolgingsplan.opprettet, "antallDagerFraOpprettetTilPdf");
-        String dokumentUuid = godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingsplanId).get().dokumentUuid;
-
-        return dokumentDAO.hent(dokumentUuid);
+        Optional<GodkjentPlan> godkjentPlanOptional = godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingsplanId);
+        if (godkjentPlanOptional.isPresent()) {
+            String dokumentUuid = godkjentPlanOptional.get().dokumentUuid;
+            return ResponseEntity.ok().body(dokumentDAO.hent(dokumentUuid));
+        } else {
+            metrikk.tellHendelse("hent_pdf_missing_godkjentplan");
+            log.error("Did not find PDF due to missing GodkjentPlan for plan {}", oppfolgingsplanId);
+            return ResponseEntity.status(500).build();
+        }
     }
 
     public byte[] hentPdfTilAltinn(Oppfoelgingsdialog oppfoelgingsdialog) {
