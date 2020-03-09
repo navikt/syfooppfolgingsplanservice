@@ -54,7 +54,7 @@ public class PdfService {
         this.metrikk = metrikk;
     }
 
-    public ResponseEntity<byte[]> hentPdf(long oppfolgingsplanId, String innloggetFnr) {
+    public byte[] hentPdf(long oppfolgingsplanId, String innloggetFnr) {
         if (!oppfolgingsplanService.harBrukerTilgangTilDialog(oppfolgingsplanId, innloggetFnr)) {
             throw new ForbiddenException("Ikke tilgang");
         }
@@ -63,11 +63,11 @@ public class PdfService {
         Optional<GodkjentPlan> godkjentPlanOptional = godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingsplanId);
         if (godkjentPlanOptional.isPresent()) {
             String dokumentUuid = godkjentPlanOptional.get().dokumentUuid;
-            return ResponseEntity.ok().body(dokumentDAO.hent(dokumentUuid));
+            return dokumentDAO.hent(dokumentUuid);
         } else {
             metrikk.tellHendelse("hent_pdf_missing_godkjentplan");
             log.error("Did not find PDF due to missing GodkjentPlan for plan {}", oppfolgingsplanId);
-            return ResponseEntity.status(500).build();
+            throw new RuntimeException();
         }
     }
 
