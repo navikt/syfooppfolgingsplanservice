@@ -13,10 +13,3 @@ public class DokumentInfo {
     public String tittel;
 }
 
-/*
- {
-      "brevkode": "NAV 14-05.09",
-      "dokumentInfoId": 123,
-      "tittel": "Søknad om foreldrepenger ved fødsel"
-    }
-* */

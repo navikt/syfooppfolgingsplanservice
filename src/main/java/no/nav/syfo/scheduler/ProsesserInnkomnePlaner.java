@@ -47,19 +47,6 @@ public class ProsesserInnkomnePlaner {
         this.metrikk = metrikk;
     }
 
-    /*@Scheduled(fixedRate = 60000)
-    public void opprettSaker() {
-        if (leaderElectionService.isLeader()) {
-            godkjentplanDAO.hentIkkeSaksfoertePlaner()
-                    .forEach(godkjentPlan -> {
-                        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
-                        String fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
-                        String sakId = sakService.finnSak(fnr).orElse(behandleSakService.opprettSak(fnr));
-                        godkjentplanDAO.sakId(oppfoelgingsdialog.id, sakId);
-                        metrikk.tellHendelse("plan_opprettet_sak_gosys");
-                    });
-        }
-    }*/
 
     @Scheduled(fixedRate = 60000)
     public void opprettJournalposter() {
