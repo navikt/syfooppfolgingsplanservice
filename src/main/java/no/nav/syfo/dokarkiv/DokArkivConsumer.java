@@ -72,7 +72,7 @@ public class DokArkivConsumer {
     private JournalpostRequest createJournalpostRequest(Oppfoelgingsdialog oppfolgingsplan, GodkjentPlan godkjentPlan) {
         String dokumentNavn = format("Oppfølgingsplan %s", oppfolgingsplan.virksomhet.navn);
         Sak sak = new Sak()
-                .sakstype("generell_sak");
+                .sakstype("GENERELL_SAK");
         Bruker bruker = new Bruker()
                 .id(oppfolgingsplan.arbeidstaker.fnr)
                 .idType("FNR");
@@ -95,7 +95,7 @@ public class DokArkivConsumer {
 
         Dokumentvariant dokumentvariant = new Dokumentvariant()
                 .filnavn(dokumentNavn)
-                .filtype("PDF")
+                .filtype("PDFA")
                 .variantformat("ARKIV")
                 .fysiskDokument(godkjentPlan.dokument);
 
