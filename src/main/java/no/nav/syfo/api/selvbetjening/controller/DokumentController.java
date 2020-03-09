@@ -71,7 +71,7 @@ public class DokumentController {
                     .contentType(IMAGE_PNG)
                     .body(pdfService.pdf2image(pdf, side.intValue()));
         } catch (IndexOutOfBoundsException e) {
-            log.error("Fikk IndexOutOfBoundsException ved henting av side {} for oppfoelgingsplan {} ", side, oppfolgingsplanId);
+            log.error("Fikk IndexOutOfBoundsException ved henting av side {} for oppfoelgingsplan", side);
             throw e;
         }
     }
