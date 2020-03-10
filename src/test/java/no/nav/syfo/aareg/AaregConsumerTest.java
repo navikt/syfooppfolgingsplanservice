@@ -18,10 +18,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
+import static no.nav.syfo.aareg.AaregUtils.stillingsprosentWithMaxScale;
 import static no.nav.syfo.aareg.utils.AaregConsumerTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -145,6 +145,6 @@ public class AaregConsumerTest {
         Stilling stilling = stillingList.get(0);
 
         assertThat(stilling.yrke).isEqualTo(YRKESKODE);
-        assertThat(stilling.prosent).isEqualTo(new BigDecimal(STILLINGSPROSENT));
+        assertThat(stilling.prosent).isEqualTo(stillingsprosentWithMaxScale(STILLINGSPROSENT));
     }
 }

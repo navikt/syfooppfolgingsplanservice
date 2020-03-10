@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static no.nav.syfo.aareg.AaregUtils.stillingsprosentWithMaxScale;
 import static no.nav.syfo.aareg.OpplysningspliktigArbeidsgiver.Type.Organisasjon;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -90,7 +90,7 @@ public class AaregConsumer {
                 .flatMap(arbeidsforhold -> arbeidsforhold.arbeidsavtaler().stream())
                 .map(arbeidsavtale -> new Stilling()
                         .yrke(arbeidsavtale.yrke)
-                        .prosent(new BigDecimal(arbeidsavtale.stillingsprosent)))
+                        .prosent(stillingsprosentWithMaxScale(arbeidsavtale.stillingsprosent)))
                 .collect(Collectors.toList());
     }
 
