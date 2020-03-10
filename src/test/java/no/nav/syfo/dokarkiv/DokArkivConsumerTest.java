@@ -10,6 +10,8 @@ import no.nav.syfo.domain.Person;
 import no.nav.syfo.domain.Virksomhet;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,10 +19,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.response.DefaultResponseCreator;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.test.web.client.ExpectedCount.once;
@@ -33,6 +40,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RunWith(SpringRunner.class)
@@ -95,12 +103,28 @@ public class DokArkivConsumerTest {
         GodkjentPlan godkjentplan = new GodkjentPlan()
                 .dokument(dokument);
 
-        Integer journpostID = dokArkivConsumer.journalforOppfolgingsplan(oppfolgingsplan, godkjentplan);
+        Integer journalpostId = dokArkivConsumer.journalforOppfolgingsplan(oppfolgingsplan, godkjentplan);
 
-        assertThat(journpostID).isEqualTo(123);
+        assertThat(journalpostId).isEqualTo(123);
     }
 
-    private String journalPostResponseAsJsonString() {
+    @Test(expected = RestClientException.class)
+    public void journalforOppfolgingsplanFeiler() throws Exception {
+        mockRestServiceServer.expect(once(),
+                requestTo(DOKARKIV_URL + "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"))
+                .andRespond(withBadRequest());
+        Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan()
+                .virksomhet(KAKEBUA)
+                .arbeidstaker(KAKEMONSTERET)
+                .sistEndretAvAktoerId(AKTOR_ID);
+        byte[] dokument = "dokument".getBytes();
+        GodkjentPlan godkjentplan = new GodkjentPlan()
+                .dokument(dokument);
+
+        dokArkivConsumer.journalforOppfolgingsplan(oppfolgingsplan, godkjentplan);
+    }
+
+    private String journalPostResponseAsJsonString(){
         ObjectMapper objectMapper = new ObjectMapper();
         JavaTimeModule module = new JavaTimeModule();
         objectMapper.registerModule(module);

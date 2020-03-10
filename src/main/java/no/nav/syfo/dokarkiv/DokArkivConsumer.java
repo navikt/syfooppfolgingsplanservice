@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -52,8 +53,11 @@ public class DokArkivConsumer {
                     entity,
                     JournalpostResponse.class);
             metrikk.tellHendelse("journalfor_oppfolgingsplan");
+            if (!response.getBody().journalpostferdigstilt) {
+                log.warn("Journalpost is not ferdigstilt with message: {}", response.getBody().melding);
+            }
             return response.getBody().journalpostId;
-        } catch (RestClientException e){
+        } catch (RestClientException e) {
             log.error("Error from DokArkiv " + url + JOURNALPOSTAPI_PATH, e);
             throw e;
         }
