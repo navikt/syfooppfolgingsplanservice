@@ -1,7 +1,7 @@
 package no.nav.syfo.util;
 
 import no.nav.syfo.domain.Godkjenning;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.Person;
 import no.nav.syfo.domain.Tiltak;
 import org.junit.Test;
@@ -14,11 +14,11 @@ import static no.nav.syfo.util.OppfoelgingsdialogUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OppfoelgingsdialogUtilTest {
+public class OppfolgingsplanUtilTest {
 
     @Test
     public void sisteGodkjenningAvAnnenPartSortererRiktig() {
-        Godkjenning godkjenning = sisteGodkjenningAvAnnenPart(new Oppfoelgingsdialog()
+        Godkjenning godkjenning = sisteGodkjenningAvAnnenPart(new Oppfolgingsplan()
                 .arbeidstaker(new Person().aktoerId("123"))
                 .godkjenninger(asList(
                         new Godkjenning()
@@ -41,7 +41,7 @@ public class OppfoelgingsdialogUtilTest {
 
     @Test
     public void arbeidsgiverHarGjortEndringerIMellomtiden() {
-        boolean b = annenPartHarGjortEndringerImellomtiden(new Oppfoelgingsdialog()
+        boolean b = annenPartHarGjortEndringerImellomtiden(new Oppfolgingsplan()
                         .sistEndretArbeidsgiver(now().minusSeconds(10))
                         .arbeidstaker(new Person().sistAksessert(now().minusSeconds(20)).aktoerId("aktoerId"))
                 , "aktoerId");
@@ -50,7 +50,7 @@ public class OppfoelgingsdialogUtilTest {
 
     @Test
     public void sykmeldtHarGjortEndringerIMellomtiden() {
-        boolean b = annenPartHarGjortEndringerImellomtiden(new Oppfoelgingsdialog()
+        boolean b = annenPartHarGjortEndringerImellomtiden(new Oppfolgingsplan()
                         .sistEndretSykmeldt(now().minusSeconds(10))
                         .arbeidsgiver(new Person().sistAksessert(now().minusSeconds(20)))
                 .arbeidstaker(new Person().aktoerId("aktoerId"))
@@ -60,7 +60,7 @@ public class OppfoelgingsdialogUtilTest {
 
     @Test
     public void taalerAtSistAksessertAnnenPartErNull() {
-        boolean b = annenPartHarGjortEndringerImellomtiden(new Oppfoelgingsdialog()
+        boolean b = annenPartHarGjortEndringerImellomtiden(new Oppfolgingsplan()
                 .sistEndretSykmeldt(null)
                 .arbeidsgiver(new Person().sistAksessert(now().minusSeconds(20)))
                 .arbeidstaker(new Person().aktoerId("aktoerId"))

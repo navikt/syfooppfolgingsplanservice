@@ -2,7 +2,7 @@ package no.nav.syfo.dokarkiv;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.GodkjentPlan;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,7 +40,7 @@ public class DokArkivConsumer {
         this.metrikk = metrikk;
     }
 
-    public Integer journalforOppfolgingsplan(Oppfoelgingsdialog oppfolgingsplan, GodkjentPlan godkjentPlan) {
+    public Integer journalforOppfolgingsplan(Oppfolgingsplan oppfolgingsplan, GodkjentPlan godkjentPlan) {
 
         JournalpostRequest request = createJournalpostRequest(oppfolgingsplan, godkjentPlan);
         HttpEntity<JournalpostRequest> entity = createRequestEntity(request);
@@ -59,7 +59,7 @@ public class DokArkivConsumer {
         }
     }
 
-    private AvsenderMottaker hentSistEndret(Oppfoelgingsdialog oppfolgingsplan) {
+    private AvsenderMottaker hentSistEndret(Oppfolgingsplan oppfolgingsplan) {
         if (oppfolgingsplan.sistEndretAvAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
             return new AvsenderMottaker()
                     .id(oppfolgingsplan.arbeidstaker.fnr)
@@ -73,7 +73,7 @@ public class DokArkivConsumer {
                 .id(oppfolgingsplan.virksomhet.virksomhetsnummer);
     }
 
-    private JournalpostRequest createJournalpostRequest(Oppfoelgingsdialog oppfolgingsplan, GodkjentPlan godkjentPlan) {
+    private JournalpostRequest createJournalpostRequest(Oppfolgingsplan oppfolgingsplan, GodkjentPlan godkjentPlan) {
         String dokumentNavn = format("Oppfølgingsplan %s", oppfolgingsplan.virksomhet.navn);
         Sak sak = new Sak()
                 .sakstype("GENERELL_SAK");

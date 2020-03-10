@@ -2,7 +2,7 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Arbeidsoppgave;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
@@ -21,7 +21,7 @@ public class ArbeidsoppgaveService {
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
     private GodkjenningerDAO godkjenningerDAO;
     private Metrikk metrikk;
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     private TilgangskontrollService tilgangskontrollService;
 
     @Inject
@@ -30,24 +30,24 @@ public class ArbeidsoppgaveService {
             ArbeidsoppgaveDAO arbeidsoppgaveDAO,
             GodkjenningerDAO godkjenningerDAO,
             Metrikk metrikk,
-            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OppfolgingsplanDAO oppfolgingsplanDAO,
             TilgangskontrollService tilgangskontrollService
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
         this.godkjenningerDAO = godkjenningerDAO;
         this.metrikk = metrikk;
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.tilgangskontrollService = tilgangskontrollService;
     }
 
     @Transactional
     public Long lagreArbeidsoppgave(Long oppfoelgingsdialogId, Arbeidsoppgave arbeidsoppgave, String fnr) throws ConflictException {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
         if (!eksisterendeArbeidsoppgaveHoererTilDialog(arbeidsoppgave.id, arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(oppfoelgingsdialogId))
-                || !tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog)) {
+                || !tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
@@ -55,19 +55,19 @@ public class ArbeidsoppgaveService {
             throw new ConflictException();
         }
 
-        oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
+        oppfolgingsplanDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
         if (arbeidsoppgave.id == null) {
             metrikk.tellHendelse("lagre_arbeidsoppgave_ny");
             return arbeidsoppgaveDAO.create(arbeidsoppgave
                     .oppfoelgingsdialogId(oppfoelgingsdialogId)
-                    .erVurdertAvSykmeldt(oppfoelgingsdialog.arbeidstaker.aktoerId.equals(innloggetAktoerId))
+                    .erVurdertAvSykmeldt(oppfolgingsplan.arbeidstaker.aktoerId.equals(innloggetAktoerId))
                     .opprettetAvAktoerId(innloggetAktoerId)
                     .sistEndretAvAktoerId(innloggetAktoerId)).id;
         } else {
             metrikk.tellHendelse("lagre_arbeidsoppgave_eksisterende");
             return arbeidsoppgaveDAO.update(arbeidsoppgave
                     .oppfoelgingsdialogId(oppfoelgingsdialogId)
-                    .erVurdertAvSykmeldt(oppfoelgingsdialog.arbeidstaker.aktoerId.equals(innloggetAktoerId) || arbeidsoppgaveDAO.finnArbeidsoppgave(arbeidsoppgave.id).erVurdertAvSykmeldt)
+                    .erVurdertAvSykmeldt(oppfolgingsplan.arbeidstaker.aktoerId.equals(innloggetAktoerId) || arbeidsoppgaveDAO.finnArbeidsoppgave(arbeidsoppgave.id).erVurdertAvSykmeldt)
                     .sistEndretAvAktoerId(innloggetAktoerId)).id;
         }
     }
@@ -84,7 +84,7 @@ public class ArbeidsoppgaveService {
             throw new ConflictException();
         }
 
-        oppfoelingsdialogDAO.sistEndretAv(arbeidsoppgave.oppfoelgingsdialogId, innloggetAktoerId);
+        oppfolgingsplanDAO.sistEndretAv(arbeidsoppgave.oppfoelgingsdialogId, innloggetAktoerId);
         arbeidsoppgaveDAO.delete(arbeidsoppgave.id);
     }
 }

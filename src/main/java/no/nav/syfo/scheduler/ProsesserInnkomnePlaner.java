@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
+import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import no.nav.syfo.service.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class ProsesserInnkomnePlaner {
     private GodkjentplanDAO godkjentplanDAO;
     private JournalforOPService journalforOPService;
     private LeaderElectionService leaderElectionService;
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     private SakService sakService;
     private final Metrikk metrikk;
 
@@ -33,7 +33,7 @@ public class ProsesserInnkomnePlaner {
             GodkjentplanDAO godkjentplanDAO,
             JournalforOPService journalforOPService,
             LeaderElectionService leaderElectionService,
-            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OppfolgingsplanDAO oppfolgingsplanDAO,
             SakService sakService,
             Metrikk metrikk
     ) {
@@ -42,7 +42,7 @@ public class ProsesserInnkomnePlaner {
         this.godkjentplanDAO = godkjentplanDAO;
         this.journalforOPService = journalforOPService;
         this.leaderElectionService = leaderElectionService;
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.sakService = sakService;
         this.metrikk = metrikk;
     }

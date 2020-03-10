@@ -3,9 +3,9 @@ package no.nav.syfo.service;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.dokarkiv.DokArkivConsumer;
 import no.nav.syfo.domain.GodkjentPlan;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.Person;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
+import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
 public class JournalforOPService {
 
     private AktorregisterConsumer aktorregisterConsumer;
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO; //Todo fiks skrivefeil i OppfoelingsdialogDAO
+    private OppfolgingsplanDAO oppfolgingsplanDAO; //Todo fiks skrivefeil i OppfoelingsdialogDAO
     private OrganisasjonService organisasjonService;
     private DokArkivConsumer dokArkivConsumer;
     private BrukerprofilService brukerprofilService;
@@ -25,14 +25,14 @@ public class JournalforOPService {
     @Inject
     public JournalforOPService(
             AktorregisterConsumer aktorregisterConsumer,
-            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OppfolgingsplanDAO oppfolgingsplanDAO,
             OrganisasjonService organisasjonService,
             DokArkivConsumer dokArkivConsumer,
             BrukerprofilService brukerprofilService,
             DokumentService dokumentService
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.organisasjonService = organisasjonService;
         this.dokArkivConsumer = dokArkivConsumer;
         this.brukerprofilService = brukerprofilService;
@@ -40,7 +40,7 @@ public class JournalforOPService {
     }
 
     public Integer opprettJournalpost(GodkjentPlan godkjentPlan) {
-        Oppfoelgingsdialog oppfolgingsplan = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
         String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         oppfolgingsplan.virksomhet.navn(virksomhetsnavn);
         setArbeidstakerinfo(oppfolgingsplan);
@@ -53,7 +53,7 @@ public class JournalforOPService {
         godkjentPlan.dokument = dokumentService.hentDokument(godkjentPlan.dokumentUuid);
     }
 
-    private void setArbeidstakerinfo(Oppfoelgingsdialog oppfoelgingsplan) {
+    private void setArbeidstakerinfo(Oppfolgingsplan oppfoelgingsplan) {
         Person person = brukerprofilService.hentNavnOgFnr(oppfoelgingsplan.arbeidstaker.aktoerId);
         oppfoelgingsplan.arbeidstaker.navn(person.navn);
         oppfoelgingsplan.arbeidstaker.fnr(person.fnr);

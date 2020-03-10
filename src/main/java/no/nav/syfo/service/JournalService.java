@@ -2,8 +2,8 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.GodkjentPlan;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
+import no.nav.syfo.domain.Oppfolgingsplan;
+import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.*;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.*;
@@ -27,7 +27,7 @@ public class JournalService {
     private BehandleJournalV2 behandleJournalV2;
     private BrukerprofilService brukerprofilService;
     private DokumentService dokumentService;
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     private OrganisasjonService organisasjonService;
 
     @Inject
@@ -36,22 +36,22 @@ public class JournalService {
             BehandleJournalV2 behandleJournalV2,
             BrukerprofilService brukerprofilService,
             DokumentService dokumentService,
-            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OppfolgingsplanDAO oppfolgingsplanDAO,
             OrganisasjonService organisasjonService
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.behandleJournalV2 = behandleJournalV2;
         this.brukerprofilService = brukerprofilService;
         this.dokumentService = dokumentService;
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.organisasjonService = organisasjonService;
     }
 
     public String opprettJournalpost(String saksId, GodkjentPlan godkjentPlan) {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
-        String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfoelgingsdialog.virksomhet.virksomhetsnummer);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
+        String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String dokumentNavn = format("Oppfølgingsplan %s", virksomhetsnavn);
-        String fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.sistEndretAvAktoerId);
+        String fnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.sistEndretAvAktoerId);
 
         return behandleJournalV2.journalfoerInngaaendeHenvendelse(
                 new WSJournalfoerInngaaendeHenvendelseRequest()
@@ -66,7 +66,7 @@ public class JournalService {
                                 .withOpprettetAvNavn("Syfooppfolgingsplanservice")
                                 .withInnhold(dokumentNavn)
                                 .withEksternPart(new WSEksternPart()
-                                        .withNavn(sykmeldtAvsendernavnHvisSistEndretAvSykmeldt(oppfoelgingsdialog).orElse(virksomhetsnavn))
+                                        .withNavn(sykmeldtAvsendernavnHvisSistEndretAvSykmeldt(oppfolgingsplan).orElse(virksomhetsnavn))
                                         .withEksternAktoer(new WSPerson().withIdent(new WSNorskIdent().withIdent(fnr))))
                                 .withGjelderSak(new WSSak().withSaksId(saksId).withFagsystemkode(GOSYS))
                                 .withMottattDato(LocalDateTime.now())
@@ -91,9 +91,9 @@ public class JournalService {
         ).getJournalpostId();
     }
 
-    private Optional<String> sykmeldtAvsendernavnHvisSistEndretAvSykmeldt(Oppfoelgingsdialog oppfoelgingsdialog) {
-        if (oppfoelgingsdialog.sistEndretAvAktoerId.equals(oppfoelgingsdialog.arbeidstaker.aktoerId)) {
-            return of(brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId));
+    private Optional<String> sykmeldtAvsendernavnHvisSistEndretAvSykmeldt(Oppfolgingsplan oppfolgingsplan) {
+        if (oppfolgingsplan.sistEndretAvAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
+            return of(brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId));
         }
         return empty();
     }

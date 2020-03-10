@@ -42,13 +42,13 @@ public class AltinnConsumer {
     }
 
     public Integer sendOppfolgingsplanTilArbeidsgiver(OppfolgingsplanAltinn oppfolgingplanAltinn) {
-        Optional<String> brukersNavn = Optional.ofNullable(pdlConsumer.personName(oppfolgingplanAltinn.oppfoelgingsdialog.arbeidstaker.fnr));
+        Optional<String> brukersNavn = Optional.ofNullable(pdlConsumer.personName(oppfolgingplanAltinn.oppfolgingsplan.arbeidstaker.fnr));
         try {
             ReceiptExternal receiptExternal = insertCorrespondenceBasic.insertCorrespondenceBasicV2(
                     alltinnUsername,
                     altinnPassword,
                     SYSTEM_USER_CODE,
-                    oppfolgingplanAltinn.oppfoelgingsdialog.uuid,
+                    oppfolgingplanAltinn.oppfolgingsplan.uuid,
                     oppfoelgingsdialogTilCorrespondence(oppfolgingplanAltinn, brukersNavn.orElseThrow(() -> {
                         log.error("Fikk uventet feil fra TPS");
                         return new RuntimeException(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN);

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import no.nav.syfo.LocalApplication;
 import no.nav.syfo.domain.GodkjentPlan;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.Person;
 import no.nav.syfo.domain.Virksomhet;
 import no.nav.syfo.metric.Metrikk;
@@ -87,7 +87,7 @@ public class DokArkivConsumerTest {
         mockRestServiceServer.expect(once(),
                 requestTo(DOKARKIV_URL + "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
-        Oppfoelgingsdialog oppfolgingsplan = new Oppfoelgingsdialog()
+        Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan()
                 .virksomhet(KAKEBUA)
                 .arbeidstaker(KAKEMONSTERET)
                 .sistEndretAvAktoerId(AKTOR_ID);

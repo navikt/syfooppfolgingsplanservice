@@ -5,7 +5,7 @@ import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
+import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import no.nav.syfo.service.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,10 +25,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OppfoelgingsdialogServiceTest {
+public class OppfolgingsplanServiceTest {
 
     @Mock
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     @Mock
     private NarmesteLederConsumer narmesteLederConsumer;
     @Mock
@@ -44,16 +44,16 @@ public class OppfoelgingsdialogServiceTest {
 
     @Test
     public void oppfolgingsplanerFraAndreBedrifterBlirFiltrertBort() {
-        Oppfoelgingsdialog dialog1 = new Oppfoelgingsdialog().id(1L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("1"));
-        Oppfoelgingsdialog dialog2 = new Oppfoelgingsdialog().id(2L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("2"));
+        Oppfolgingsplan dialog1 = new Oppfolgingsplan().id(1L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("1"));
+        Oppfolgingsplan dialog2 = new Oppfolgingsplan().id(2L).arbeidstaker(new Person().aktoerId("sykmeldt")).virksomhet(new Virksomhet().virksomhetsnummer("2"));
         when(aktorregisterConsumer.hentAktorIdForFnr("123")).thenReturn(LEDER_FNR);
         when(narmesteLederConsumer.ansatte(anyString())).thenReturn(asList(new Ansatt().aktoerId("sykmeldt").virksomhetsnummer("1")));
-        when(oppfoelingsdialogDAO.oppfolgingsplanerKnyttetTilSykmeldt(anyString())).thenReturn(asList(
+        when(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(anyString())).thenReturn(asList(
                 dialog1,
                 dialog2
         ));
-        when(oppfoelingsdialogDAO.populate(dialog1)).thenReturn(dialog1);
-        List<Oppfoelgingsdialog> dialoger = oppfolgingsplanService.hentAktorsOppfolgingsplaner(ARBEIDSGIVER, "123");
+        when(oppfolgingsplanDAO.populate(dialog1)).thenReturn(dialog1);
+        List<Oppfolgingsplan> dialoger = oppfolgingsplanService.hentAktorsOppfolgingsplaner(ARBEIDSGIVER, "123");
         assertThat(dialoger.size()).isEqualTo(1);
         assertThat(dialoger.get(0).id).isEqualTo(1L);
     }

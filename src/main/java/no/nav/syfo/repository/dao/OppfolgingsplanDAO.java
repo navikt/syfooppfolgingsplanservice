@@ -1,7 +1,7 @@
 package no.nav.syfo.repository.dao;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.repository.domain.POppfoelgingsdialog;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,7 +26,7 @@ import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
 
 @Slf4j
 @Repository
-public class OppfoelingsdialogDAO {
+public class OppfolgingsplanDAO {
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -36,7 +36,7 @@ public class OppfoelingsdialogDAO {
     private TiltakDAO tiltakDAO;
 
     @Inject
-    public OppfoelingsdialogDAO(
+    public OppfolgingsplanDAO(
             JdbcTemplate jdbcTemplate,
             NamedParameterJdbcTemplate namedParameterJdbcTemplate,
             ArbeidsoppgaveDAO arbeidsoppgaveDAO,
@@ -52,7 +52,7 @@ public class OppfoelingsdialogDAO {
         this.tiltakDAO = tiltakDAO;
     }
 
-    public Oppfoelgingsdialog create(Oppfoelgingsdialog oppfolgingsplan) {
+    public Oppfolgingsplan create(Oppfolgingsplan oppfolgingsplan) {
         long id = nesteSekvensverdi("OPPFOELGINGSDIALOG_ID_SEQ", jdbcTemplate);
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("oppfoelgingsdialog_id", id)
@@ -83,25 +83,25 @@ public class OppfoelingsdialogDAO {
         return oppfolgingsplan.id(id);
     }
 
-    public Oppfoelgingsdialog oppfolgingsplanByTiltakId(Long tiltakId) {
+    public Oppfolgingsplan oppfolgingsplanByTiltakId(Long tiltakId) {
         return map(jdbcTemplate.queryForObject("select * from oppfoelgingsdialog join tiltak " +
                 "on tiltak.oppfoelgingsdialog_id = oppfoelgingsdialog.oppfoelgingsdialog_id " +
                 "where tiltak_id = ?", new OppfoelgingsdialogRowMapper(), tiltakId), p2oppfoelgingsdialog);
     }
 
-    public Oppfoelgingsdialog finnOppfolgingsplanMedId(Long oppfoelgingsdialogId) {
+    public Oppfolgingsplan finnOppfolgingsplanMedId(Long oppfoelgingsdialogId) {
         return map(jdbcTemplate.queryForObject("select * from oppfoelgingsdialog where oppfoelgingsdialog_id = ?", new OppfoelgingsdialogRowMapper(), oppfoelgingsdialogId), p2oppfoelgingsdialog);
     }
 
-    public List<Oppfoelgingsdialog> oppfolgingsplanerKnyttetTilSykmeldt(String aktoerId) {
+    public List<Oppfolgingsplan> oppfolgingsplanerKnyttetTilSykmeldt(String aktoerId) {
         return mapListe(jdbcTemplate.query("select * from oppfoelgingsdialog where aktoer_id = ?", new OppfoelgingsdialogRowMapper(), aktoerId), p2oppfoelgingsdialog);
     }
 
-    public List<Oppfoelgingsdialog> oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(String sykmeldtAktoerId, String virksomhetsnummer) {
+    public List<Oppfolgingsplan> oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(String sykmeldtAktoerId, String virksomhetsnummer) {
         return mapListe(jdbcTemplate.query("select * from oppfoelgingsdialog where aktoer_id = ? and virksomhetsnummer = ?", new OppfoelgingsdialogRowMapper(), sykmeldtAktoerId, virksomhetsnummer), p2oppfoelgingsdialog);
     }
 
-    public Oppfoelgingsdialog populate(Oppfoelgingsdialog oppfolgingplan) {
+    public Oppfolgingsplan populate(Oppfolgingsplan oppfolgingplan) {
         oppfolgingplan.arbeidsoppgaveListe = arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(oppfolgingplan.id);
         oppfolgingplan.tiltakListe = tiltakDAO.finnTiltakByOppfoelgingsdialogId(oppfolgingplan.id);
         oppfolgingplan.godkjenninger = godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(oppfolgingplan.id);
@@ -120,8 +120,8 @@ public class OppfoelingsdialogDAO {
     }
 
     public void sistEndretAv(Long oppfoelgingsplanId, String innloggetAktoerId) {
-        Oppfoelgingsdialog oppfoelgingsdialog = finnOppfolgingsplanMedId(oppfoelgingsplanId);
-        if (erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId)) {
+        Oppfolgingsplan oppfolgingsplan = finnOppfolgingsplanMedId(oppfoelgingsplanId);
+        if (erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
             jdbcTemplate.update("update oppfoelgingsdialog set sykmeldt_sist_endret = ?, sist_endret = ?, sist_endret_av = ? where oppfoelgingsdialog_id = ?",
                     convert(now()), convert(now()), innloggetAktoerId, oppfoelgingsplanId);
         } else {
@@ -138,7 +138,7 @@ public class OppfoelingsdialogDAO {
         jdbcTemplate.update("update oppfoelgingsdialog set samtykke_sykmeldt = ? where oppfoelgingsdialog_id = ?", samtykke, oppfolgingsplanId);
     }
 
-    public void oppdaterSistInnlogget(Oppfoelgingsdialog oppfolgingsplan, String innloggetAktoerId) {
+    public void oppdaterSistInnlogget(Oppfolgingsplan oppfolgingsplan, String innloggetAktoerId) {
         if (innloggetAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
             jdbcTemplate.update("update oppfoelgingsdialog set sykmeldt_sist_innlogget = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfolgingsplan.id);
         } else {
@@ -146,7 +146,7 @@ public class OppfoelingsdialogDAO {
         }
     }
 
-    public void oppdaterSistAksessert(Oppfoelgingsdialog oppfolgingsplan, String innloggetAktoerId) {
+    public void oppdaterSistAksessert(Oppfolgingsplan oppfolgingsplan, String innloggetAktoerId) {
         if (innloggetAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
             jdbcTemplate.update("update oppfoelgingsdialog set sykmeldt_sist_aksessert = ? where oppfoelgingsdialog_id = ?", convert(now()), oppfolgingsplan.id);
         } else {

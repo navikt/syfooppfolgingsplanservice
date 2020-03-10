@@ -4,9 +4,9 @@ import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.security.oidc.api.Unprotected;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.system.domain.VeilederOppgaveFeedItem;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
+import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -25,17 +25,17 @@ public class OppfoelgingsplanerFeed {
 
     private AktorregisterConsumer aktorregisterConsumer;
     private GodkjentplanDAO godkjentplanDAO;
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
 
     @Inject
     public OppfoelgingsplanerFeed(
             AktorregisterConsumer aktorregisterConsumer,
             GodkjentplanDAO godkjentplanDAO,
-            OppfoelingsdialogDAO oppfoelingsdialogDAO
+            OppfolgingsplanDAO oppfolgingsplanDAO
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.godkjentplanDAO = godkjentplanDAO;
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
     }
 
     @Unprotected
@@ -44,16 +44,16 @@ public class OppfoelgingsplanerFeed {
         return godkjentplanDAO.godkjentePlanerSiden(LocalDateTime.parse(timestamp))
                 .stream()
                 .map(godkjentPlan -> {
-                    Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
-                    String fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
+                    Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
+                    String fnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
                     return new VeilederOppgaveFeedItem()
-                            .uuid(oppfoelgingsdialog.uuid)
+                            .uuid(oppfolgingsplan.uuid)
                             .fnr(fnr)
-                            .lenke(baseUrl() + "/sykefravaer/" + fnr + "/oppfoelgingsplaner/" + oppfoelgingsdialog.id)
+                            .lenke(baseUrl() + "/sykefravaer/" + fnr + "/oppfoelgingsplaner/" + oppfolgingsplan.id)
                             .type("SE_OPPFOLGINGSPLAN")
                             .created(godkjentPlan.deltMedNAVTidspunkt)
                             .status("IKKE_STARTET")
-                            .virksomhetsnummer(oppfoelgingsdialog.virksomhet.virksomhetsnummer);
+                            .virksomhetsnummer(oppfolgingsplan.virksomhet.virksomhetsnummer);
                 })
                 .filter(veilederOppgaveFeedItem -> veilederOppgaveFeedItem.uuid != null)
                 .collect(toList());

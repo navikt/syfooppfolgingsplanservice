@@ -2,7 +2,7 @@ package no.nav.syfo.dao;
 
 import no.nav.syfo.domain.Godkjenning;
 import no.nav.syfo.domain.GodkjentPlan;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.repository.dao.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OppfoelingsdialogDAOTest {
+public class OppfolgingsplanDAOTest {
 
     @Mock
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
@@ -32,7 +32,7 @@ public class OppfoelingsdialogDAOTest {
     private GodkjentplanDAO godkjentplanDAO;
 
     @InjectMocks
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
 
     @Test
     public void populateMedGodkjenningerIngenGodkjent() {
@@ -40,11 +40,11 @@ public class OppfoelingsdialogDAOTest {
         when(godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(anyLong())).thenReturn(godkjenningListe);
         when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(empty());
 
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.populate(new Oppfoelgingsdialog().id(1L));
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.populate(new Oppfolgingsplan().id(1L));
 
         verify(godkjenningerDAO, never()).deleteAllByOppfoelgingsdialogId(anyLong());
-        assertThat(oppfoelgingsdialog.godkjenninger).isSameAs(godkjenningListe).isNotEmpty();
-        assertThat(oppfoelgingsdialog.godkjentPlan).isEmpty();
+        assertThat(oppfolgingsplan.godkjenninger).isSameAs(godkjenningListe).isNotEmpty();
+        assertThat(oppfolgingsplan.godkjentPlan).isEmpty();
     }
 
     @Test
@@ -53,11 +53,11 @@ public class OppfoelingsdialogDAOTest {
         when(godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(anyLong())).thenReturn(godkjenningListe);
         when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(of(new GodkjentPlan()));
 
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.populate(new Oppfoelgingsdialog().id(1L));
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.populate(new Oppfolgingsplan().id(1L));
 
         verify(godkjenningerDAO, never()).deleteAllByOppfoelgingsdialogId(anyLong());
-        assertThat(oppfoelgingsdialog.godkjenninger).isSameAs(godkjenningListe).isEmpty();
-        assertThat(oppfoelgingsdialog.godkjentPlan).isNotEmpty();
+        assertThat(oppfolgingsplan.godkjenninger).isSameAs(godkjenningListe).isEmpty();
+        assertThat(oppfolgingsplan.godkjentPlan).isNotEmpty();
     }
 
     @Test
@@ -66,10 +66,10 @@ public class OppfoelingsdialogDAOTest {
         when(godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(anyLong())).thenReturn(godkjenningListe);
         when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(of(new GodkjentPlan()));
 
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.populate(new Oppfoelgingsdialog().id(1L));
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.populate(new Oppfolgingsplan().id(1L));
 
         verify(godkjenningerDAO).deleteAllByOppfoelgingsdialogId(anyLong());
-        assertThat(oppfoelgingsdialog.godkjenninger).isNotSameAs(godkjenningListe).isEmpty();
-        assertThat(oppfoelgingsdialog.godkjentPlan).isNotEmpty();
+        assertThat(oppfolgingsplan.godkjenninger).isNotSameAs(godkjenningListe).isEmpty();
+        assertThat(oppfolgingsplan.godkjentPlan).isNotEmpty();
     }
 }

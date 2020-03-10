@@ -2,9 +2,8 @@ package no.nav.syfo.api.intern.controller;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
-import no.nav.syfo.service.BrukerprofilService;
-import no.nav.syfo.service.OrganisasjonService;
+import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
+import no.nav.syfo.service.*;
 import org.junit.*;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -14,8 +13,7 @@ import java.text.ParseException;
 
 import static no.nav.syfo.testhelper.OidcTestHelper.loggInnVeilederAzure;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
-import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
-import static no.nav.syfo.testhelper.UserConstants.VEILEDER_ID;
+import static no.nav.syfo.testhelper.UserConstants.*;
 import static org.springframework.http.HttpStatus.*;
 
 public class OppfolgingsplanInternControllerTest extends AbstractRessursTilgangTest {
@@ -23,7 +21,7 @@ public class OppfolgingsplanInternControllerTest extends AbstractRessursTilgangT
     @MockBean
     private AktorregisterConsumer aktorregisterConsumer;
     @MockBean
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     @MockBean
     private BrukerprofilService brukerprofilService;
     @MockBean

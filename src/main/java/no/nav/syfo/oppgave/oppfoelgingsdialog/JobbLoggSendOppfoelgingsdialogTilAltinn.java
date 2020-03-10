@@ -1,7 +1,7 @@
 package no.nav.syfo.oppgave.oppfoelgingsdialog;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.OppfolgingsplanAltinn;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
@@ -46,11 +46,11 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
 
     @Override
     public void utfoerOppgave(String oppfoelgingsdialogId) {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
 
-        byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
+        byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfolgingsplan);
 
-        OppfolgingsplanAltinn oppfolgingsplanAltinn = new OppfolgingsplanAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
+        OppfolgingsplanAltinn oppfolgingsplanAltinn = new OppfolgingsplanAltinn(oppfolgingsplan, oppfoelgingsdialogPdf);
 
         juridiskLoggService.loggSendOppfoelgingsdialogTilAltinn(oppfolgingsplanAltinn);
 

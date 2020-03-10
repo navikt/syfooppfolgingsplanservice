@@ -4,12 +4,12 @@ import static no.nav.syfo.util.DigestUtil.sha512AsBase64String;
 
 public class OppfolgingsplanAltinn {
 
-    public Oppfoelgingsdialog oppfoelgingsdialog;
+    public Oppfolgingsplan oppfolgingsplan;
     private byte[] oppfoelgingsdialogPdf;
     private String hashOppfoelgingsdialogPDF;
 
-    public OppfolgingsplanAltinn(Oppfoelgingsdialog oppfolgingsplan, byte[] oppfoelgingsdialogPdf) {
-        this.oppfoelgingsdialog = oppfolgingsplan;
+    public OppfolgingsplanAltinn(Oppfolgingsplan oppfolgingsplan, byte[] oppfoelgingsdialogPdf) {
+        this.oppfolgingsplan = oppfolgingsplan;
         this.oppfoelgingsdialogPdf = oppfoelgingsdialogPdf;
     }
 

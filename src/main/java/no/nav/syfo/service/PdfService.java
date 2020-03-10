@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.domain.GodkjentPlan;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -9,7 +9,6 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.slf4j.Logger;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -25,7 +24,7 @@ public class PdfService {
 
     private static final Logger log = getLogger(PdfService.class);
 
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
 
     private OppfolgingsplanService oppfolgingsplanService;
 
@@ -41,13 +40,13 @@ public class PdfService {
 
     @Inject
     public PdfService(
-            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OppfolgingsplanDAO oppfolgingsplanDAO,
             OppfolgingsplanService oppfolgingsplanService,
             DokumentDAO dokumentDAO,
             GodkjentplanDAO godkjentplanDAO,
             Metrikk metrikk
     ) {
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.oppfolgingsplanService = oppfolgingsplanService;
         this.dokumentDAO = dokumentDAO;
         this.godkjentplanDAO = godkjentplanDAO;
@@ -58,7 +57,7 @@ public class PdfService {
         if (!oppfolgingsplanService.harBrukerTilgangTilDialog(oppfolgingsplanId, innloggetFnr)) {
             throw new ForbiddenException("Ikke tilgang");
         }
-        Oppfoelgingsdialog oppfolgingsplan = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         metrikk.tellAntallDagerSiden(oppfolgingsplan.opprettet, "antallDagerFraOpprettetTilPdf");
         Optional<GodkjentPlan> godkjentPlanOptional = godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingsplanId);
         if (godkjentPlanOptional.isPresent()) {
@@ -71,11 +70,11 @@ public class PdfService {
         }
     }
 
-    public byte[] hentPdfTilAltinn(Oppfoelgingsdialog oppfoelgingsdialog) {
-        metrikk.tellAntallDagerSiden(oppfoelgingsdialog.opprettet, "antallDagerFraOpprettetTilPdf");
+    public byte[] hentPdfTilAltinn(Oppfolgingsplan oppfolgingsplan) {
+        metrikk.tellAntallDagerSiden(oppfolgingsplan.opprettet, "antallDagerFraOpprettetTilPdf");
 
-        GodkjentPlan godkjentPlan = oppfoelgingsdialog.godkjentPlan.orElseThrow(() ->
-                throwOppfoelgingsplanUtenGodkjenPlan(oppfoelgingsdialog)
+        GodkjentPlan godkjentPlan = oppfolgingsplan.godkjentPlan.orElseThrow(() ->
+                throwOppfoelgingsplanUtenGodkjenPlan(oppfolgingsplan)
         );
 
         return dokumentDAO.hent(godkjentPlan.dokumentUuid);
@@ -107,8 +106,8 @@ public class PdfService {
         }
     }
 
-    private RuntimeException throwOppfoelgingsplanUtenGodkjenPlan(Oppfoelgingsdialog oppfoelgingsdialog) {
-        log.error("Oppfoelgingsplan med id {} har ikke godkjentPlan", oppfoelgingsdialog.id);
+    private RuntimeException throwOppfoelgingsplanUtenGodkjenPlan(Oppfolgingsplan oppfolgingsplan) {
+        log.error("Oppfoelgingsplan med id {} har ikke godkjentPlan", oppfolgingsplan.id);
         return new RuntimeException("Oppfoelgingsplan har ikke godkjentPlan");
     }
 }

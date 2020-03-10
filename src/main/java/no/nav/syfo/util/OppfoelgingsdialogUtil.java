@@ -3,7 +3,7 @@ package no.nav.syfo.util;
 import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Godkjenning;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.Tiltak;
 
 import java.util.List;
@@ -49,47 +49,47 @@ public class OppfoelgingsdialogUtil {
                 .collect(toList());
     }
 
-    public static boolean erGodkjentAvAnnenPart(Oppfoelgingsdialog oppfoelgingsdialog, String aktoerId) {
-        if (erArbeidstakeren(oppfoelgingsdialog, aktoerId)) {
-            return harArbeidsgiverGodkjentPlan(oppfoelgingsdialog);
+    public static boolean erGodkjentAvAnnenPart(Oppfolgingsplan oppfolgingsplan, String aktoerId) {
+        if (erArbeidstakeren(oppfolgingsplan, aktoerId)) {
+            return harArbeidsgiverGodkjentPlan(oppfolgingsplan);
         }
-        return harArbeidstakerGodkjentPlan(oppfoelgingsdialog);
+        return harArbeidstakerGodkjentPlan(oppfolgingsplan);
     }
 
-    public static boolean annenPartHarGjortEndringerImellomtiden(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId) {
-        if (erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId)) {
-            return oppfoelgingsdialog.sistEndretArbeidsgiver != null && oppfoelgingsdialog.arbeidstaker.sistAksessert != null && oppfoelgingsdialog.arbeidstaker.sistAksessert.isBefore(oppfoelgingsdialog.sistEndretArbeidsgiver);
+    public static boolean annenPartHarGjortEndringerImellomtiden(Oppfolgingsplan oppfolgingsplan, String innloggetAktoerId) {
+        if (erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
+            return oppfolgingsplan.sistEndretArbeidsgiver != null && oppfolgingsplan.arbeidstaker.sistAksessert != null && oppfolgingsplan.arbeidstaker.sistAksessert.isBefore(oppfolgingsplan.sistEndretArbeidsgiver);
         }
-        return oppfoelgingsdialog.sistEndretSykmeldt != null && oppfoelgingsdialog.arbeidsgiver.sistAksessert != null && oppfoelgingsdialog.arbeidsgiver.sistAksessert.isBefore(oppfoelgingsdialog.sistEndretSykmeldt);
+        return oppfolgingsplan.sistEndretSykmeldt != null && oppfolgingsplan.arbeidsgiver.sistAksessert != null && oppfolgingsplan.arbeidsgiver.sistAksessert.isBefore(oppfolgingsplan.sistEndretSykmeldt);
 
     }
 
-    public static Godkjenning sisteGodkjenningAvAnnenPart(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId) {
-        if (erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId)) {
-            return oppfoelgingsdialog.godkjenninger.stream()
+    public static Godkjenning sisteGodkjenningAvAnnenPart(Oppfolgingsplan oppfolgingsplan, String innloggetAktoerId) {
+        if (erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
+            return oppfolgingsplan.godkjenninger.stream()
                     .filter(godkjenning -> godkjenning.godkjentAvAktoerId.equals(innloggetAktoerId))
                     .sorted((o1, o2) -> o2.godkjenningsTidspunkt.compareTo(o1.godkjenningsTidspunkt)).findFirst().get();
         }
-        return oppfoelgingsdialog.godkjenninger.stream()
+        return oppfolgingsplan.godkjenninger.stream()
                 .filter(godkjenning -> !godkjenning.godkjentAvAktoerId.equals(innloggetAktoerId))
                 .sorted((o1, o2) -> o2.godkjenningsTidspunkt.compareTo(o1.godkjenningsTidspunkt)).findFirst().get();
     }
 
 
-    public static boolean harArbeidsgiverGodkjentPlan(Oppfoelgingsdialog oppfoelgingsdialog) {
-        return oppfoelgingsdialog.godkjenninger.stream().anyMatch(godkjenning -> !erArbeidstakeren(oppfoelgingsdialog, godkjenning.godkjentAvAktoerId) && godkjenning.godkjent);
+    public static boolean harArbeidsgiverGodkjentPlan(Oppfolgingsplan oppfolgingsplan) {
+        return oppfolgingsplan.godkjenninger.stream().anyMatch(godkjenning -> !erArbeidstakeren(oppfolgingsplan, godkjenning.godkjentAvAktoerId) && godkjenning.godkjent);
     }
 
-    public static boolean harArbeidstakerGodkjentPlan(Oppfoelgingsdialog oppfoelgingsdialog) {
-        return oppfoelgingsdialog.godkjenninger.stream().anyMatch(godkjenning -> erArbeidstakeren(oppfoelgingsdialog, godkjenning.godkjentAvAktoerId) && godkjenning.godkjent);
+    public static boolean harArbeidstakerGodkjentPlan(Oppfolgingsplan oppfolgingsplan) {
+        return oppfolgingsplan.godkjenninger.stream().anyMatch(godkjenning -> erArbeidstakeren(oppfolgingsplan, godkjenning.godkjentAvAktoerId) && godkjenning.godkjent);
     }
 
-    public static boolean erArbeidstakeren(Oppfoelgingsdialog oppfoelgingsdialog, String aktoerId) {
-        return aktoerId.equals(oppfoelgingsdialog.arbeidstaker.aktoerId);
+    public static boolean erArbeidstakeren(Oppfolgingsplan oppfolgingsplan, String aktoerId) {
+        return aktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId);
     }
 
-    public static boolean erArbeidsgiveren(Oppfoelgingsdialog oppfoelgingsdialog, String aktoerId) {
-        return !erArbeidstakeren(oppfoelgingsdialog, aktoerId);
+    public static boolean erArbeidsgiveren(Oppfolgingsplan oppfolgingsplan, String aktoerId) {
+        return !erArbeidstakeren(oppfolgingsplan, aktoerId);
     }
 
     public static boolean eksisterendeTiltakHoererTilDialog(Long tiltakId, List<Tiltak> tiltakListe) {
