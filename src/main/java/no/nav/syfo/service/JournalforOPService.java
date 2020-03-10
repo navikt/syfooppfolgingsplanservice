@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.dokarkiv.DokArkivConsumer;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfolgingsplan;
@@ -14,8 +13,7 @@ import javax.inject.Inject;
 @Service
 public class JournalforOPService {
 
-    private AktorregisterConsumer aktorregisterConsumer;
-    private OppfolgingsplanDAO oppfolgingsplanDAO; //Todo fiks skrivefeil i OppfoelingsdialogDAO
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     private OrganisasjonService organisasjonService;
     private DokArkivConsumer dokArkivConsumer;
     private BrukerprofilService brukerprofilService;
@@ -24,14 +22,12 @@ public class JournalforOPService {
 
     @Inject
     public JournalforOPService(
-            AktorregisterConsumer aktorregisterConsumer,
             OppfolgingsplanDAO oppfolgingsplanDAO,
             OrganisasjonService organisasjonService,
             DokArkivConsumer dokArkivConsumer,
             BrukerprofilService brukerprofilService,
             DokumentService dokumentService
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.organisasjonService = organisasjonService;
         this.dokArkivConsumer = dokArkivConsumer;

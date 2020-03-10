@@ -10,9 +10,6 @@ import org.springframework.context.annotation.Import;
         DKIFConfig.class,
         OrganisasjonConfig.class,
         SyfoOppfoelgingConfig.class,
-        BehandleSakConfig.class,
-        SakConfig.class,
-        BehandleJournalConfig.class,
 })
 public class WSConfigs {
 }
