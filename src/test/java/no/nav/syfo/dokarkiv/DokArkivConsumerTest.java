@@ -84,7 +84,8 @@ public class DokArkivConsumerTest {
     @Test
     public void journalforOppfolgingsplan() {
         String responseBody = journalPostResponseAsJsonString();
-        mockRestServiceServer.expect(once(), requestTo(DOKARKIV_URL + "/rest/journalpostapi/v1/journalpost"))
+        mockRestServiceServer.expect(once(),
+                requestTo(DOKARKIV_URL + "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
         Oppfoelgingsdialog oppfolgingsplan = new Oppfoelgingsdialog()
                 .virksomhet(KAKEBUA)

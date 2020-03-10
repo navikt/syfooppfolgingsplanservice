@@ -24,13 +24,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Slf4j
 @Service
 public class DokArkivConsumer {
-    private static final String JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1/journalpost";
+    private static final String JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true";
 
     private final RestTemplate restTemplate;
     private final String url;
     private final StsConsumer stsConsumer;
     private final Metrikk metrikk;
-
 
     @Inject
     public DokArkivConsumer(@Qualifier("scheduler") RestTemplate restTemplate, @Value("${dokarkiv.url}") String url, StsConsumer stsConsumer, Metrikk metrikk
