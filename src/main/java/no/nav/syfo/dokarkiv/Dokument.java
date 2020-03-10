@@ -10,6 +10,7 @@ import java.util.List;
 @Accessors(fluent = true)
 @JsonSerialize
 public class Dokument {
+    public String brevkode;
     public String dokumentKategori;
     public List<Dokumentvariant> dokumentvarianter;
     public String tittel;

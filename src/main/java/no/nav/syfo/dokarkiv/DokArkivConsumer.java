@@ -108,6 +108,7 @@ public class DokArkivConsumer {
 
         Dokument dokument =  new Dokument()
                 .dokumentKategori("ES")
+                .brevkode("Oppfølgingsplan")
                 .tittel(dokumentNavn)
                 .dokumentvarianter(dokumentvarianter);
 
