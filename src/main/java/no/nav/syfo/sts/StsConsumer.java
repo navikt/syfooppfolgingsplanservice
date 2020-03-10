@@ -1,9 +1,7 @@
 package no.nav.syfo.sts;
 
 import no.nav.syfo.metric.Metrikk;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -11,11 +9,9 @@ import org.springframework.web.client.RestTemplate;
 
 import static no.nav.syfo.sts.StsToken.setExpirationTime;
 import static no.nav.syfo.util.RestUtils.basicCredentials;
-import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class StsConsumer {
-    private static final Logger LOG = getLogger(StsConsumer.class);
 
     private final Metrikk metrikk;
     private final String password;
@@ -29,7 +25,7 @@ public class StsConsumer {
     public StsConsumer(
             Metrikk metrikk,
             @Value("${srv.password}") String password,
-            RestTemplate restTemplate,
+            @Qualifier("scheduler") RestTemplate restTemplate,
             @Value("${security.token.service.rest.url}") String url,
             @Value("${srv.username}") String username
     ) {
