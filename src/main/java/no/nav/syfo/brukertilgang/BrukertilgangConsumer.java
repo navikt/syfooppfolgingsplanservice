@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.*;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestTemplate;
 
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
@@ -18,6 +19,8 @@ import static org.springframework.http.HttpMethod.GET;
 
 @Service
 public class BrukertilgangConsumer {
+    private final String METRIC_CALL_BRUKERTILGANG = "call_syfobrukertilgang";
+
     private static final Logger LOG = getLogger(BrukertilgangConsumer.class);
 
     private final OIDCRequestContextHolder oidcContextHolder;
@@ -39,7 +42,6 @@ public class BrukertilgangConsumer {
     }
 
     public boolean hasAccessToAnsatt(String ansattFnr) {
-        metrikk.tellHendelse("call_syfobrukertilgang");
         try {
             ResponseEntity<Boolean> response = restTemplate.exchange(
                     arbeidstakerUrl(ansattFnr),
@@ -48,14 +50,16 @@ public class BrukertilgangConsumer {
                     new ParameterizedTypeReference<Boolean>() {
                     }
             );
-            metrikk.tellHendelse("call_syfobrukertilgang_success");
+            metrikk.countOutgoingReponses(METRIC_CALL_BRUKERTILGANG, response.getStatusCodeValue());
             return response.getBody();
-        } catch (HttpClientErrorException e) {
-            throw e;
-        } catch (HttpServerErrorException e) {
-            metrikk.tellHendelse("call_syfobrukertilgang_fail");
-            LOG.error("Error requesting ansatt access from syfobrukertilgang", e);
-            throw e;
+        } catch (RestClientResponseException e) {
+            metrikk.countOutgoingReponses(METRIC_CALL_BRUKERTILGANG, e.getRawStatusCode());
+            if (e.getRawStatusCode() == 401) {
+                throw new RequestUnauthorizedException("Unauthorized request to get access to Ansatt from Syfobrukertilgang");
+            } else {
+                LOG.error("Error requesting ansatt access from syfobrukertilgang: ", e);
+                throw e;
+            }
         }
     }
 
