@@ -272,7 +272,7 @@ public class GodkjenningService {
                         .withGradering(periode.grad)
                         .withBehandlingsdager(periode.behandlingsdager)
                         .withReisetilskudd(periode.reisetilskudd)
-                        .withAvventende(periode.avventende != null)
+                        .withAvventende(periode.avventende)
                 ))
                 .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfoelgingsdialog.arbeidsoppgaveListe),
                         arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
