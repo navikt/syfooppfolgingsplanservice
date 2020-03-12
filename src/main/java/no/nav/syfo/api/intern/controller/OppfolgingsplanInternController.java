@@ -6,8 +6,6 @@ import no.nav.syfo.api.intern.domain.RSHistorikk;
 import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
 import no.nav.syfo.domain.Fnr;
 import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.model.VeilederOppgave.OppgaveStatus;
-import no.nav.syfo.model.VeilederOppgave.OppgaveType;
 import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
 import no.nav.syfo.service.*;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +14,6 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Stream.concat;
 import static no.nav.syfo.api.intern.mappers.OppfoelgingsdialogRestMapper.oppfoelgingsdialog2rs;
 import static no.nav.syfo.oidc.OIDCIssuer.AZURE;
 import static no.nav.syfo.util.MapUtil.mapListe;

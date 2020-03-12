@@ -4,8 +4,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Accessors(fluent = true)
@@ -20,7 +18,6 @@ public class RSOppfoelgingsdialog {
     public RSVirksomhet virksomhet;
 
     public RSGodkjentPlan godkjentPlan = null;
-    public List<RSVeilederOppgave> oppgaver = new ArrayList<>();
 
     public RSPerson arbeidsgiver;
     public RSPerson arbeidstaker;

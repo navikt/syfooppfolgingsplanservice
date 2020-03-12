@@ -20,10 +20,6 @@ public class MockData {
                         .virksomhet(new RSVirksomhet()
                                 .virksomhetsnummer("981566378")
                         )
-                        .oppgaver(asList(
-                                new RSVeilederOppgave()
-                                        .id(2L)
-                        ))
                         .godkjentPlan(new RSGodkjentPlan()
                                 .deltMedNAV(true)
                                 .deltMedNAVTidspunkt(LocalDateTime.now())
