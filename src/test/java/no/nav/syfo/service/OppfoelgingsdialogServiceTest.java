@@ -65,8 +65,6 @@ public class OppfoelgingsdialogServiceTest {
     @MockBean
     private TredjepartsvarselService tredjepartsvarselService;
     @MockBean
-    private VeilederOppgaverService veilederOppgaverService;
-    @MockBean
     private GodkjenningerDAO godkjenningerDAO;
 
     @Value("${fastlege.dialogmelding.api.v1.url}")
