@@ -25,19 +25,11 @@ public class VeilederTilgangService {
     private final OIDCRequestContextHolder oidcContextHolder;
 
     public static final String FNR = "fnr";
-    public static final String ENHET = "enhet";
-    public static final String TILGANG_TIL_BRUKER_PATH = "/tilgangtilbruker";
     public static final String TILGANG_TIL_BRUKER_VIA_AZURE_PATH = "/bruker";
-    public static final String TILGANG_TIL_ENHET_PATH = "/enhet";
-    public static final String TILGANG_TIL_TJENESTEN = "/tilgangtiltjenesten";
     public static final String TILGANG_TIL_TJENESTEN_VIA_AZURE_PATH = "/syfo";
     private static final String FNR_PLACEHOLDER = "{" + FNR + "}";
-    private static final String ENHET_PLACEHOLDER = "{" + ENHET + "}";
     private final RestTemplate template;
-    private final UriComponentsBuilder tilgangTilBrukerUriTemplate;
     private final UriComponentsBuilder tilgangTilBrukerViaAzureUriTemplate;
-    private final UriComponentsBuilder tilgangTilEnhetUriTemplate;
-    private final UriComponentsBuilder tilgangTilTjenesteUriTemplate;
     private final UriComponentsBuilder tilgangTilTjenesteViaAzureUriTemplate;
 
     public VeilederTilgangService(
@@ -46,32 +38,12 @@ public class VeilederTilgangService {
             RestTemplate template
     ) {
         this.oidcContextHolder = oidcContextHolder;
-        tilgangTilBrukerUriTemplate = fromHttpUrl(tilgangskontrollUrl)
-                .path(TILGANG_TIL_BRUKER_PATH)
-                .queryParam(FNR, FNR_PLACEHOLDER);
         tilgangTilBrukerViaAzureUriTemplate = fromHttpUrl(tilgangskontrollUrl)
                 .path(TILGANG_TIL_BRUKER_VIA_AZURE_PATH)
                 .queryParam(FNR, FNR_PLACEHOLDER);
-        tilgangTilEnhetUriTemplate = fromHttpUrl(tilgangskontrollUrl)
-                .path(TILGANG_TIL_ENHET_PATH)
-                .queryParam(ENHET, ENHET_PLACEHOLDER);
-        tilgangTilTjenesteUriTemplate = fromHttpUrl(tilgangskontrollUrl)
-                .path(TILGANG_TIL_TJENESTEN);
         tilgangTilTjenesteViaAzureUriTemplate = fromHttpUrl(tilgangskontrollUrl)
                 .path(TILGANG_TIL_TJENESTEN_VIA_AZURE_PATH);
         this.template = template;
-    }
-
-    public void kastExceptionHvisIkkeVeilederHarTilgangTilPerson(String fnr) {
-        boolean harTilgang = harVeilederTilgangTilPerson(fnr);
-        if (!harTilgang) {
-            throw new ForbiddenException();
-        }
-    }
-
-    public boolean harVeilederTilgangTilPerson(String fnr) {
-        URI tilgangTilBrukerUriMedFnr = tilgangTilBrukerUriTemplate.build(singletonMap(FNR, fnr));
-        return kallUriMedTemplate(tilgangTilBrukerUriMedFnr);
     }
 
     public void throwExceptionIfVeilederWithoutAccess(Fnr fnr) {
@@ -84,30 +56,6 @@ public class VeilederTilgangService {
     public boolean harVeilederTilgangTilPersonViaAzure(Fnr fnr) {
         URI tilgangTilBrukerViaAzureUriMedFnr = tilgangTilBrukerViaAzureUriTemplate.build(singletonMap(FNR, fnr.getFnr()));
         return checkAccess(tilgangTilBrukerViaAzureUriMedFnr, OIDCIssuer.AZURE);
-    }
-
-    public void kastExceptionHvisIkkeVeilederHarTilgangTilEnhet(String enhet) {
-        boolean harTilgang = harVeilederTilgangTilEnhet(enhet);
-        if (!harTilgang) {
-            throw new ForbiddenException();
-        }
-    }
-
-    public boolean harVeilederTilgangTilEnhet(String enhet) {
-        URI tilgangTilEnhetUriMedFnr = tilgangTilEnhetUriTemplate.build(singletonMap(ENHET, enhet));
-        return kallUriMedTemplate(tilgangTilEnhetUriMedFnr);
-    }
-
-    public void kastExceptionHvisIkkeVeilederHarTilgangTilTjenesten() {
-        boolean harTilgang = harVeilederTilgangTilTjenesten();
-        if (!harTilgang) {
-            throw new ForbiddenException();
-        }
-    }
-
-    public boolean harVeilederTilgangTilTjenesten() {
-        URI tilgangTilTjenesterUri = tilgangTilTjenesteUriTemplate.build().toUri();
-        return kallUriMedTemplate(tilgangTilTjenesterUri);
     }
 
     public void kastExceptionHvisIkkeVeilederHarTilgangTilTjenestenViaAzure() {
@@ -140,23 +88,10 @@ public class VeilederTilgangService {
         }
     }
 
-    private boolean kallUriMedTemplate(URI uri) {
-        try {
-            template.getForObject(uri, Object.class);
-            return true;
-        } catch (HttpClientErrorException e) {
-            if (e.getRawStatusCode() == 403) {
-                return false;
-            } else {
-                throw e;
-            }
-        }
-    }
-
     private HttpEntity<String> createEntity(String issuer) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("Authorization", bearerHeader(OIDCUtil.getIssuerToken(oidcContextHolder, issuer)));
+        headers.set(HttpHeaders.AUTHORIZATION, bearerHeader(OIDCUtil.getIssuerToken(oidcContextHolder, issuer)));
         return new HttpEntity<>(headers);
     }
 }
