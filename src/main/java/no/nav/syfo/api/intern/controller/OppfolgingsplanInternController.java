@@ -32,7 +32,6 @@ public class OppfolgingsplanInternController {
     private OppfoelingsdialogDAO oppfoelingsdialogDAO;
     private OrganisasjonService organisasjonService;
     private VeilederTilgangService veilederTilgangService;
-    private VeilederOppgaverService veilederOppgaverService;
 
     @Inject
     public OppfolgingsplanInternController(
@@ -40,15 +39,13 @@ public class OppfolgingsplanInternController {
             final BrukerprofilService brukerprofilService,
             final OppfoelingsdialogDAO oppfoelingsdialogDAO,
             final OrganisasjonService organisasjonService,
-            final VeilederTilgangService veilederTilgangService,
-            final VeilederOppgaverService veilederOppgaverService
+            final VeilederTilgangService veilederTilgangService
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukerprofilService = brukerprofilService;
         this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
         this.organisasjonService = organisasjonService;
         this.veilederTilgangService = veilederTilgangService;
-        this.veilederOppgaverService = veilederOppgaverService;
     }
 
     private String finnDeltAvNavn(Oppfoelgingsdialog oppfoelgingsdialog) {
@@ -72,21 +69,13 @@ public class OppfolgingsplanInternController {
                 .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.get().deltMedNAV)
                 .collect(toList());
 
-        List<RSHistorikk> utfoertHistorikk = veilederOppgaverService.get(personFnr.getFnr()).stream()
-                .filter(veilederOppgave -> veilederOppgave.type.equals(OppgaveType.SE_OPPFOLGINGSPLAN.name())
-                        && veilederOppgave.status.equals(OppgaveStatus.FERDIG.name()))
-                .map(veilederOppgave -> new RSHistorikk()
-                        .tekst("Oppfølgingsplanen ble lest av " + veilederOppgave.sistEndretAv)
-                        .tidspunkt(veilederOppgave.getSistEndret())
-                )
-                .collect(toList());
         List<RSHistorikk> opprettetHistorikk = mapListe(
                 oppfoelgingsplaner,
                 oppfoelgingsdialog -> new RSHistorikk()
                         .tekst("Oppfølgingsplanen ble delt med NAV av " + finnDeltAvNavn(oppfoelgingsdialog) + ".")
                         .tidspunkt(oppfoelgingsdialog.godkjentPlan.get().deltMedNAVTidspunkt)
         );
-        return concat(opprettetHistorikk.stream(), utfoertHistorikk.stream()).collect(toList());
+        return opprettetHistorikk;
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
