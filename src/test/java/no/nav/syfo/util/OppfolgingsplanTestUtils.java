@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
 
-public class OppfoelgingsdialogTestUtils {
+public class OppfolgingsplanTestUtils {
 
     private static final String SYKMELDT_AKTOERID = "1010101010101";
     private static final String ARBEIDSGIVER_FNR = "10101010100";
@@ -24,8 +24,8 @@ public class OppfoelgingsdialogTestUtils {
                 .aktoerId(ARBEIDSGIVER_AKTOERID);
     }
 
-    private static Oppfoelgingsdialog oppfolgingsplanOpprettet() {
-        return new Oppfoelgingsdialog()
+    private static Oppfolgingsplan oppfolgingsplanOpprettet() {
+        return new Oppfolgingsplan()
                 .id(1L)
                 .status("UNDER_ARBEID")
                 .opprettet(LocalDateTime.now().minusDays(7))
@@ -38,7 +38,7 @@ public class OppfoelgingsdialogTestUtils {
                 .arbeidsgiver(arbeidsgiveren());
     }
 
-    public static Oppfoelgingsdialog oppfolgingsplanGodkjentTvang() {
+    public static Oppfolgingsplan oppfolgingsplanGodkjentTvang() {
         return oppfolgingsplanOpprettet()
                 .godkjentPlan(java.util.Optional.ofNullable(new GodkjentPlan()
                         .opprettetTidspunkt(LocalDateTime.now().minusDays(1))

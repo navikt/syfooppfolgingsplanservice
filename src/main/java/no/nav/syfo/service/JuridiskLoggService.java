@@ -27,12 +27,12 @@ public class JuridiskLoggService {
     private String systemPassword;
 
     public void loggSendOppfoelgingsdialogTilAltinn(OppfolgingsplanAltinn oppfolgingsplanAltinn) {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfolgingsplanAltinn.oppfoelgingsdialog;
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanAltinn.oppfolgingsplan;
         try {
             LoggMelding loggMelding = new LoggMelding()
-                    .meldingsId(oppfoelgingsdialog.uuid)
-                    .avsender(oppfoelgingsdialog.arbeidstaker.aktoerId)
-                    .mottaker(oppfoelgingsdialog.virksomhet.virksomhetsnummer)
+                    .meldingsId(oppfolgingsplan.uuid)
+                    .avsender(oppfolgingsplan.arbeidstaker.aktoerId)
+                    .mottaker(oppfolgingsplan.virksomhet.virksomhetsnummer)
                     .meldingsInnhold(oppfolgingsplanAltinn.getHashOppfoelgingsdialogPDF());
 
             RestTemplate rt = new RestTemplate();
@@ -45,9 +45,9 @@ public class JuridiskLoggService {
             HttpEntity<LoggMelding> requestPost = new HttpEntity<>(loggMelding, headers);
 
             rt.exchange(altinnUrl, HttpMethod.POST, requestPost, LoggMelding.class);
-            log.info("Logget sending av oppfølgingsplan med id {} i juridisk loggSendOppfoelgingsdialogTilAltinn", oppfoelgingsdialog.id);
+            log.info("Logget sending av oppfølgingsplan med id {} i juridisk loggSendOppfoelgingsdialogTilAltinn", oppfolgingsplan.id);
         } catch (HttpClientErrorException e) {
-            log.error("Klientfeil mot JuridiskLogg ved logging av sendt oppfølgingsplan med id {} til Altinn", oppfoelgingsdialog.id, e);
+            log.error("Klientfeil mot JuridiskLogg ved logging av sendt oppfølgingsplan med id {} til Altinn", oppfolgingsplan.id, e);
             throw e;
         }
     }

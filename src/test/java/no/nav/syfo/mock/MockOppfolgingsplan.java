@@ -20,8 +20,8 @@ public class MockOppfolgingsplan {
                 .aktoerId(LEDER_AKTORID);
     }
 
-    public static Oppfoelgingsdialog oppfoelgingsdialogOpprettet() {
-        return new Oppfoelgingsdialog()
+    public static Oppfolgingsplan oppfoelgingsdialogOpprettet() {
+        return new Oppfolgingsplan()
                 .id(1L)
                 .status("UNDER_ARBEID")
                 .opprettet(LocalDateTime.now().minusDays(7))
@@ -34,7 +34,7 @@ public class MockOppfolgingsplan {
                 .arbeidsgiver(arbeidsgiveren());
     }
 
-    public static Oppfoelgingsdialog oppfoelgingsdialogGodkjentTvang() {
+    public static Oppfolgingsplan oppfoelgingsdialogGodkjentTvang() {
         return oppfoelgingsdialogOpprettet()
                 .godkjentPlan(java.util.Optional.ofNullable(new GodkjentPlan()
                         .opprettetTidspunkt(LocalDateTime.now().minusDays(1))

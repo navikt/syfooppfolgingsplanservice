@@ -48,12 +48,8 @@ public class GodkjentplanDAO {
         return jdbcTemplate.queryForObject("SELECT godkjentplan_id FROM godkjentplan WHERE oppfoelgingsdialog_id = ?", (rs, rowNum) -> rs.getLong("godkjentplan_id"), oppfolgingsplanId);
     }
 
-    public List<GodkjentPlan> hentIkkeSaksfoertePlaner() {
-        return mapListe(jdbcTemplate.query("SELECT * FROM godkjentplan WHERE sak_id IS NULL AND delt_med_nav = 1", new GodkjentPlanRowMapper()), p2godkjentplan);
-    }
-
     public List<GodkjentPlan> hentIkkeJournalfoertePlaner() {
-        return mapListe(jdbcTemplate.query("SELECT * FROM godkjentplan WHERE sak_id IS NOT NULL AND journalpost_id IS NULL AND delt_med_nav = 1", new GodkjentPlanRowMapper()), p2godkjentplan);
+        return mapListe(jdbcTemplate.query("SELECT * FROM godkjentplan WHERE journalpost_id IS NULL AND delt_med_nav = 1", new GodkjentPlanRowMapper()), p2godkjentplan);
     }
 
     public GodkjentPlan create(GodkjentPlan godkjentPlan) {

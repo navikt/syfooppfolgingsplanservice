@@ -1,9 +1,9 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.DokumentDAO;
-import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
+import no.nav.syfo.util.OppfolgingsplanTestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,20 +27,20 @@ public class PdfServiceTest {
 
     @Test
     public void hentPdfTilAltinn() {
-        Oppfoelgingsdialog oppfoelgingsdialog = OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang();
+        Oppfolgingsplan oppfolgingsplan = OppfolgingsplanTestUtils.oppfolgingsplanGodkjentTvang();
         byte[] oppfoelgingsdialogPdf = hentOppfoelgingsdialogPdf();
         when(dokumentDAO.hent(any())).thenReturn(oppfoelgingsdialogPdf);
 
-        byte[] dbPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
+        byte[] dbPdf = pdfService.hentPdfTilAltinn(oppfolgingsplan);
         assertEquals(dbPdf, oppfoelgingsdialogPdf);
     }
 
     @Test(expected = RuntimeException.class)
     public void hentPdfTilAltinnUtenGodkjentPlan() {
-        Oppfoelgingsdialog oppfoelgingsdialog = new Oppfoelgingsdialog();
+        Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan();
         when(dokumentDAO.hent(anyString())).thenReturn(hentOppfoelgingsdialogPdf());
 
-        pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
+        pdfService.hentPdfTilAltinn(oppfolgingsplan);
     }
 
     private byte[] hentOppfoelgingsdialogPdf() {

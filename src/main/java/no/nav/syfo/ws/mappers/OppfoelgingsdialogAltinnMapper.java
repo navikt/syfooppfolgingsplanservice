@@ -6,7 +6,7 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertC
 import no.altinn.services.serviceengine.reporteeelementlist._2010._10.BinaryAttachmentExternalBEV2List;
 import no.altinn.services.serviceengine.reporteeelementlist._2010._10.BinaryAttachmentV2;
 import no.nav.syfo.domain.Gyldighetstidspunkt;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.OppfolgingsplanAltinn;
 
 import javax.xml.bind.JAXBElement;
@@ -29,9 +29,9 @@ public final class OppfoelgingsdialogAltinnMapper {
 
         return new InsertCorrespondenceV2()
                 .withAllowForwarding(new JAXBElement<>(new QName(namespace, "AllowForwarding"), Boolean.class, false))
-                .withReportee(new JAXBElement<>(new QName(namespace, "Reportee"), String.class, getOrgnummerForSendingTilAltinn(oppfolgingsplanAltinn.oppfoelgingsdialog.virksomhet.virksomhetsnummer)))
+                .withReportee(new JAXBElement<>(new QName(namespace, "Reportee"), String.class, getOrgnummerForSendingTilAltinn(oppfolgingsplanAltinn.oppfolgingsplan.virksomhet.virksomhetsnummer)))
                 .withMessageSender(new JAXBElement<>(new QName(namespace, "MessageSender"), String.class,
-                        byggMessageSender(oppfolgingsplanAltinn.oppfoelgingsdialog, brukersNavn)))
+                        byggMessageSender(oppfolgingsplanAltinn.oppfolgingsplan, brukersNavn)))
                 .withServiceCode(new JAXBElement<>(new QName(namespace, "ServiceCode"), String.class, OPPFOELGINGSDIALOG_TJENESTEKODE))
                 .withServiceEdition(new JAXBElement<>(new QName(namespace, "ServiceEdition"), String.class, OPPFOELGINGSDIALOG_TJENESTEVERSJON))
                 .withContent(
@@ -40,7 +40,7 @@ public final class OppfoelgingsdialogAltinnMapper {
                                 .withMessageTitle(new JAXBElement<>(
                                         new QName(namespace, "MessageTitle"),
                                         String.class,
-                                        byggTittel(oppfolgingsplanAltinn.oppfoelgingsdialog, brukersNavn)))
+                                        byggTittel(oppfolgingsplanAltinn.oppfolgingsplan, brukersNavn)))
                                 .withCustomMessageData(null)
                                 .withAttachments(
                                         new JAXBElement<>(new QName(namespace, "Attachments"), AttachmentsV2.class, new AttachmentsV2()
@@ -50,9 +50,9 @@ public final class OppfoelgingsdialogAltinnMapper {
                                                                         .withBinaryAttachmentV2(
                                                                                 opprettBinaertVedlegg(binaryNamespace,
                                                                                         oppfolgingsplanAltinn.getOppfoelgingsdialogPDF(),
-                                                                                        "oppfoelgingsdialog.pdf",
-                                                                                        "oppfoelgingsdialog",
-                                                                                        oppfolgingsplanAltinn.oppfoelgingsdialog.uuid + ".pdf")
+                                                                                        "oppfolgingsplan.pdf",
+                                                                                        "oppfolgingsplan",
+                                                                                        oppfolgingsplanAltinn.oppfolgingsplan.uuid + ".pdf")
                                                                         )
                                                         )
                                                 )
@@ -74,13 +74,13 @@ public final class OppfoelgingsdialogAltinnMapper {
                 .withData(new JAXBElement<>(new QName("http://www.altinn.no/services/ServiceEngine/ReporteeElementList/2010/10", "Data"), byte[].class, fil));
     }
 
-    private static String byggTittel(Oppfoelgingsdialog oppfoelgingsdialog, String brukersNavn) {
-        String fnr = oppfoelgingsdialog.arbeidstaker.fnr;
-        return "Oppfølgingsplan - " + gyldighetstidspunktSomTekst(oppfoelgingsdialog.godkjentPlan.get().gyldighetstidspunkt) + " - " + brukersNavn + " (" + fnr + ")";
+    private static String byggTittel(Oppfolgingsplan oppfolgingsplan, String brukersNavn) {
+        String fnr = oppfolgingsplan.arbeidstaker.fnr;
+        return "Oppfølgingsplan - " + gyldighetstidspunktSomTekst(oppfolgingsplan.godkjentPlan.get().gyldighetstidspunkt) + " - " + brukersNavn + " (" + fnr + ")";
     }
 
-    private static String byggMessageSender(Oppfoelgingsdialog oppfoelgingsdialog, String brukersNavn) {
-        String fnr = oppfoelgingsdialog.arbeidstaker.fnr;
+    private static String byggMessageSender(Oppfolgingsplan oppfolgingsplan, String brukersNavn) {
+        String fnr = oppfolgingsplan.arbeidstaker.fnr;
         return brukersNavn + " - " + fnr;
     }
 

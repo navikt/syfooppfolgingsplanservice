@@ -40,10 +40,10 @@ import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = LocalApplication.class)
 @DirtiesContext
-public class OppfoelgingsdialogServiceTest {
+public class OppfolgingsplanServiceTest {
 
     @MockBean
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     @MockBean
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
     @MockBean
@@ -95,7 +95,7 @@ public class OppfoelgingsdialogServiceTest {
 
     @Test
     public void avbrytningAvEksisterendePlanFoererTilOpprettelseAvNyPlanMedDataFraGammelPlan() {
-        Oppfoelgingsdialog oppfoelgingsdialog = new Oppfoelgingsdialog()
+        Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan()
                 .id(1L)
                 .arbeidstaker(new Person()
                         .aktoerId("12345678901"))
@@ -109,8 +109,8 @@ public class OppfoelgingsdialogServiceTest {
                                         new Kommentar()
                                 ))
                 ));
-        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(oppfoelgingsdialog);
-        when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
+        when(oppfolgingsplanDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(oppfolgingsplan);
+        when(oppfolgingsplanDAO.create(any())).thenReturn(oppfolgingsplan.id(2L));
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
         when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
@@ -131,7 +131,7 @@ public class OppfoelgingsdialogServiceTest {
 
     @Test
     public void kopieringAvEksisterendePlanFoererTilOpprettelseAvNyPlanMedDataFraGammelPlan() {
-        Oppfoelgingsdialog oppfoelgingsdialog = new Oppfoelgingsdialog()
+        Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan()
                 .id(1L)
                 .arbeidstaker(new Person()
                         .aktoerId("12345678901"))
@@ -145,8 +145,8 @@ public class OppfoelgingsdialogServiceTest {
                                         new Kommentar()
                                 ))
                 ));
-        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(oppfoelgingsdialog);
-        when(oppfoelingsdialogDAO.create(any())).thenReturn(oppfoelgingsdialog.id(2L));
+        when(oppfolgingsplanDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(oppfolgingsplan);
+        when(oppfolgingsplanDAO.create(any())).thenReturn(oppfolgingsplan.id(2L));
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("1234567890123");
         when(narmesteLederConsumer.narmesteLeder(anyString(), anyString())).thenReturn(of(new Naermesteleder()));
         when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(anyString(), any())).thenReturn(true);
@@ -168,9 +168,9 @@ public class OppfoelgingsdialogServiceTest {
     public void delMedFastlege() throws Exception {
         mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.OK);
 
-        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
+        when(oppfolgingsplanDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfolgingsplan());
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
-        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfolgingsplan.class))).thenReturn(true);
         when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
         when(dokumentDAO.hent(anyString())).thenReturn(new byte[]{0, 1, 2});
 
@@ -183,18 +183,18 @@ public class OppfoelgingsdialogServiceTest {
 
     @Test(expected = ForbiddenException.class)
     public void delMedFastlegeIkkeTilgang() throws Exception {
-        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
+        when(oppfolgingsplanDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfolgingsplan());
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
-        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(false);
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfolgingsplan.class))).thenReturn(false);
 
         oppfolgingsplanService.delMedFastlege(1L, "fnr");
     }
 
     @Test(expected = RuntimeException.class)
     public void delMedFastlegeFinnerIkkeGodkjentPlan() throws Exception {
-        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
+        when(oppfolgingsplanDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfolgingsplan());
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
-        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfolgingsplan.class))).thenReturn(true);
         when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(empty());
 
         oppfolgingsplanService.delMedFastlege(1L, "fnr");
@@ -204,9 +204,9 @@ public class OppfoelgingsdialogServiceTest {
     public void delMedFastlegeFeilFraFastlegerest() throws Exception {
         mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        when(oppfoelingsdialogDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfoelgingsdialog());
+        when(oppfolgingsplanDAO.finnOppfolgingsplanMedId(anyLong())).thenReturn(new Oppfolgingsplan());
         when(aktorregisterConsumer.hentAktorIdForFnr(anyString())).thenReturn("aktoerId");
-        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfoelgingsdialog.class))).thenReturn(true);
+        when(tilgangskontrollService.aktorTilhorerOppfolgingsplan(eq("aktoerId"), any(Oppfolgingsplan.class))).thenReturn(true);
         when(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(anyLong())).thenReturn(of(new GodkjentPlan().dokumentUuid("dokumentUuid")));
         when(dokumentDAO.hent(anyString())).thenReturn(new byte[]{0, 1, 2});
 

@@ -79,8 +79,8 @@ public class POppfoelgingsdialogMapper {
                     .beskrivelseIkkeAktuelt(pTiltak.beskrivelseIkkeAktuelt);
 
 
-    public static Function<POppfoelgingsdialog, Oppfoelgingsdialog> p2oppfoelgingsdialog = pOppfoelgingsdialog ->
-            new Oppfoelgingsdialog()
+    public static Function<POppfoelgingsdialog, Oppfolgingsplan> p2oppfoelgingsdialog = pOppfoelgingsdialog ->
+            new Oppfolgingsplan()
                     .id(pOppfoelgingsdialog.id)
                     .uuid(pOppfoelgingsdialog.uuid)
                     .arbeidstaker(new Person()

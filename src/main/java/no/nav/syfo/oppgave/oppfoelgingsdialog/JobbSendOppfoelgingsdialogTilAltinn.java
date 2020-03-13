@@ -2,7 +2,7 @@ package no.nav.syfo.oppgave.oppfoelgingsdialog;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.OppfolgingsplanAltinn;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
@@ -52,17 +52,17 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 
     @Override
     public void utfoerOppgave(String oppfoelgingsdialogId) {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
-        oppfoelgingsdialog.arbeidstaker.fnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
+        oppfolgingsplan.arbeidstaker.fnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
 
-        byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfoelgingsdialog);
+        byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfolgingsplan);
 
-        OppfolgingsplanAltinn oppfolgingsplanAltinn = new OppfolgingsplanAltinn(oppfoelgingsdialog, oppfoelgingsdialogPdf);
+        OppfolgingsplanAltinn oppfolgingsplanAltinn = new OppfolgingsplanAltinn(oppfolgingsplan, oppfoelgingsdialogPdf);
 
         altinnConsumer.sendOppfolgingsplanTilArbeidsgiver(oppfolgingsplanAltinn);
 
 
-        LocalDateTime dato = Optional.ofNullable(Objects.requireNonNull(oppfoelgingsdialog.godkjentPlan
+        LocalDateTime dato = Optional.ofNullable(Objects.requireNonNull(oppfolgingsplan.godkjentPlan
                 .orElse(null)).opprettetTidspunkt)
                 .orElse(now());
 

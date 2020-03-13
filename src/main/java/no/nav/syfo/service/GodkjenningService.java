@@ -45,7 +45,7 @@ public class GodkjenningService {
 
     private Metrikk metrikk;
 
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
 
     private NarmesteLederConsumer narmesteLederConsumer;
 
@@ -81,7 +81,7 @@ public class GodkjenningService {
             DokumentDAO dokumentDAO,
             GodkjenningerDAO godkjenningerDAO,
             GodkjentplanDAO godkjentplanDAO,
-            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OppfolgingsplanDAO oppfolgingsplanDAO,
             AktorregisterConsumer aktorregisterConsumer,
             BrukerprofilService brukerprofilService,
             DkifService dkifService,
@@ -98,7 +98,7 @@ public class GodkjenningService {
         this.dokumentDAO = dokumentDAO;
         this.godkjenningerDAO = godkjenningerDAO;
         this.godkjentplanDAO = godkjentplanDAO;
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukerprofilService = brukerprofilService;
         this.dkifService = dkifService;
@@ -112,34 +112,34 @@ public class GodkjenningService {
 
     @Transactional
     public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning, boolean delMedNav) {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
-        if (!tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog)) {
+        if (!tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
-        if (annenPartHarGjortEndringerImellomtiden(oppfoelgingsdialog, innloggetAktoerId)) {
+        if (annenPartHarGjortEndringerImellomtiden(oppfolgingsplan, innloggetAktoerId)) {
             throw new ConflictException();
         }
 
-        if (innloggetBrukerHarAlleredeGodkjentPlan(oppfoelgingsdialog, innloggetAktoerId)) {
+        if (innloggetBrukerHarAlleredeGodkjentPlan(oppfolgingsplan, innloggetAktoerId)) {
             throw new ConflictException();
         }
 
-        oppfoelgingsdialog = oppfoelingsdialogDAO.populate(oppfoelgingsdialog);
+        oppfolgingsplan = oppfolgingsplanDAO.populate(oppfolgingsplan);
 
-        if (erArbeidsgiveren(oppfoelgingsdialog, innloggetAktoerId) && tvungenGodkjenning) {
-            genererTvungenPlan(oppfoelgingsdialog, gyldighetstidspunkt, delMedNav);
+        if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId) && tvungenGodkjenning) {
+            genererTvungenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
             sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
 
-        } else if (erGodkjentAvAnnenPart(oppfoelingsdialogDAO.populate(oppfoelgingsdialog), innloggetAktoerId)) {
-            genererNyPlan(oppfoelgingsdialog, innloggetAktoerId, delMedNav);
+        } else if (erGodkjentAvAnnenPart(oppfolgingsplanDAO.populate(oppfolgingsplan), innloggetAktoerId)) {
+            genererNyPlan(oppfolgingsplan, innloggetAktoerId, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
             sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
         } else {
-            if (godkjenningRemoved(gyldighetstidspunkt, oppfoelgingsdialog) || godkjent(oppfoelgingsdialog)) {
+            if (godkjenningRemoved(gyldighetstidspunkt, oppfolgingsplan) || godkjent(oppfolgingsplan)) {
                 throw new ConflictException();
             }
             godkjenningerDAO.create(new Godkjenning()
@@ -154,35 +154,35 @@ public class GodkjenningService {
                     )
             );
 
-            if (erArbeidsgiveren(oppfoelgingsdialog, innloggetAktoerId)) {
-                serviceVarselService.sendServiceVarsel(oppfoelgingsdialog.arbeidstaker.aktoerId, SyfoplangodkjenningSyk, oppfoelgingsdialogId);
+            if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId)) {
+                serviceVarselService.sendServiceVarsel(oppfolgingsplan.arbeidstaker.aktoerId, SyfoplangodkjenningSyk, oppfoelgingsdialogId);
             } else {
-                Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer).get();
+                Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
                 tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplangodkjenningNl, naermesteleder, oppfoelgingsdialogId);
             }
         }
-        oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
+        oppfolgingsplanDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
     }
 
-    private boolean godkjent(Oppfoelgingsdialog oppfolgingsplan) {
+    private boolean godkjent(Oppfolgingsplan oppfolgingsplan) {
         return oppfolgingsplan.godkjentPlan.isPresent();
     }
 
-    private boolean godkjenningRemoved(RSGyldighetstidspunkt gyldighetstidspunkt, Oppfoelgingsdialog oppfoelgingsdialog) {
-        return gyldighetstidspunkt == null && oppfoelgingsdialog.godkjenninger.isEmpty();
+    private boolean godkjenningRemoved(RSGyldighetstidspunkt gyldighetstidspunkt, Oppfolgingsplan oppfolgingsplan) {
+        return gyldighetstidspunkt == null && oppfolgingsplan.godkjenninger.isEmpty();
     }
 
-    private boolean innloggetBrukerHarAlleredeGodkjentPlan(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId) {
-        return godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(oppfoelgingsdialog.id).stream().anyMatch(godkjenning -> godkjenning.godkjent && godkjenning.godkjentAvAktoerId.equals(innloggetAktoerId));
+    private boolean innloggetBrukerHarAlleredeGodkjentPlan(Oppfolgingsplan oppfolgingsplan, String innloggetAktoerId) {
+        return godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(oppfolgingsplan.id).stream().anyMatch(godkjenning -> godkjenning.godkjent && godkjenning.godkjentAvAktoerId.equals(innloggetAktoerId));
     }
 
-    private Godkjenning finnGodkjenning(Oppfoelgingsdialog oppfoelgingsdialog) {
-        return oppfoelgingsdialog.godkjenninger.stream()
+    private Godkjenning finnGodkjenning(Oppfolgingsplan oppfolgingsplan) {
+        return oppfolgingsplan.godkjenninger.stream()
                 .filter(pGodkjenning -> pGodkjenning.godkjent)
                 .findFirst().orElseThrow(() -> new RuntimeException("Fant ikke godkjenning"));
     }
 
-    private void rapporterMetrikkerForNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, boolean erPlanTvungenGodkjent, boolean delMedNav) {
+    private void rapporterMetrikkerForNyPlan(Oppfolgingsplan oppfolgingsplan, boolean erPlanTvungenGodkjent, boolean delMedNav) {
         if (erPlanTvungenGodkjent) {
             metrikk.tellHendelse("genererTvungenPlan");
         } else {
@@ -193,18 +193,18 @@ public class GodkjenningService {
             metrikk.tellHendelse("del_plan_med_nav_ved_generer_godkjent_plan");
         }
 
-        metrikk.tellHendelseMedAntall("tiltak", oppfoelgingsdialog.tiltakListe.size());
-        metrikk.tellHendelseMedAntall("arbeidsoppgaver", oppfoelgingsdialog.arbeidsoppgaveListe.size());
+        metrikk.tellHendelseMedAntall("tiltak", oppfolgingsplan.tiltakListe.size());
+        metrikk.tellHendelseMedAntall("arbeidsoppgaver", oppfolgingsplan.arbeidsoppgaveListe.size());
 
-        long antallArboppgGjennomforNormalt = oppfoelgingsdialog.arbeidsoppgaveListe
+        long antallArboppgGjennomforNormalt = oppfolgingsplan.arbeidsoppgaveListe
                 .stream()
                 .filter(arbeidsoppgave -> KAN.name().equals(arbeidsoppgave.gjennomfoering.gjennomfoeringStatus))
                 .count();
-        long antallArboppgGjennomforTilrettelegging = oppfoelgingsdialog.arbeidsoppgaveListe
+        long antallArboppgGjennomforTilrettelegging = oppfolgingsplan.arbeidsoppgaveListe
                 .stream()
                 .filter(arbeidsoppgave -> TILRETTELEGGING.name().equals(arbeidsoppgave.gjennomfoering.gjennomfoeringStatus))
                 .count();
-        long antallArboppgGjennomforIkke = oppfoelgingsdialog.arbeidsoppgaveListe
+        long antallArboppgGjennomforIkke = oppfolgingsplan.arbeidsoppgaveListe
                 .stream()
                 .filter(arbeidsoppgave -> KAN_IKKE.name().equals(arbeidsoppgave.gjennomfoering.gjennomfoeringStatus))
                 .count();
@@ -213,17 +213,17 @@ public class GodkjenningService {
         metrikk.tellHendelseMedAntall("arbeidsoppgaverGjennomforesTilrettelegging", antallArboppgGjennomforTilrettelegging);
         metrikk.tellHendelseMedAntall("arbeidsoppgaverGjennomforesIkke", antallArboppgGjennomforIkke);
 
-        String arbeidstakerAktoerId = oppfoelgingsdialog.arbeidstaker.aktoerId;
+        String arbeidstakerAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
 
-        long antallArbboppgVurdertOgOpprettetAvAT = oppfoelgingsdialog.arbeidsoppgaveListe
+        long antallArbboppgVurdertOgOpprettetAvAT = oppfolgingsplan.arbeidsoppgaveListe
                 .stream()
                 .filter(arbeidsoppgave -> arbeidsoppgave.erVurdertAvSykmeldt && arbeidsoppgave.opprettetAvAktoerId.equals(arbeidstakerAktoerId))
                 .count();
-        long antallArbboppgVurdertOgOpprettetAvNL = oppfoelgingsdialog.arbeidsoppgaveListe
+        long antallArbboppgVurdertOgOpprettetAvNL = oppfolgingsplan.arbeidsoppgaveListe
                 .stream()
                 .filter(arbeidsoppgave -> arbeidsoppgave.erVurdertAvSykmeldt && !arbeidsoppgave.opprettetAvAktoerId.equals(arbeidstakerAktoerId))
                 .count();
-        long antallArbboppgIkkeVurdertOgOpprettetAvAT = oppfoelgingsdialog.arbeidsoppgaveListe
+        long antallArbboppgIkkeVurdertOgOpprettetAvAT = oppfolgingsplan.arbeidsoppgaveListe
                 .stream()
                 .filter(arbeidsoppgave -> !(arbeidsoppgave.erVurdertAvSykmeldt || arbeidsoppgave.opprettetAvAktoerId.equals(arbeidstakerAktoerId)))
                 .count();
@@ -231,7 +231,7 @@ public class GodkjenningService {
         metrikk.tellHendelseMedAntall("arbeidsoppgaverVurdertAvATOpprettetAvNL", antallArbboppgVurdertOgOpprettetAvNL);
         metrikk.tellHendelseMedAntall("arbeidsoppgaverIkkeVurdertAvATOpprettetAvNL", antallArbboppgIkkeVurdertOgOpprettetAvAT);
 
-        List<Kommentar> kommentarListe = oppfoelgingsdialog.tiltakListe
+        List<Kommentar> kommentarListe = oppfolgingsplan.tiltakListe
                 .stream()
                 .flatMap(tiltak -> tiltak.kommentarer.stream())
                 .collect(Collectors.toList());
@@ -247,25 +247,25 @@ public class GodkjenningService {
         metrikk.tellHendelseMedAntall("tiltakKommentarerFraNL", antallKommentarerNL);
     }
 
-    public void genererNyPlan(Oppfoelgingsdialog oppfoelgingsdialog, String innloggetAktoerId, boolean delMedNav) {
-        rapporterMetrikkerForNyPlan(oppfoelgingsdialog, false, delMedNav);
+    public void genererNyPlan(Oppfolgingsplan oppfolgingsplan, String innloggetAktoerId, boolean delMedNav) {
+        rapporterMetrikkerForNyPlan(oppfolgingsplan, false, delMedNav);
 
-        Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer)
+        Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
-        Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
-        String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
-        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
-        String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfoelgingsdialog.virksomhet.virksomhetsnummer);
+        Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
+        String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
+        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+        String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
                 .withArbeidsgiverEpost(naermesteleder.epost)
                 .withArbeidsgivernavn(naermesteleder.navn)
-                .withArbeidsgiverOrgnr(oppfoelgingsdialog.virksomhet.virksomhetsnummer)
+                .withArbeidsgiverOrgnr(oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .withVirksomhetsnavn(virksomhetsnavn)
                 .withArbeidsgiverTlf(naermesteleder.mobil)
-                .withEvalueres(tilMuntligDatoAarFormat(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.evalueres))
-                .withGyldigfra(tilMuntligDatoAarFormat(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.fom))
-                .withGyldigtil(tilMuntligDatoAarFormat(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.tom))
-                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN), periode -> new SykeforloepsperioderXML()
+                .withEvalueres(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.evalueres))
+                .withGyldigfra(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom))
+                .withGyldigtil(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom))
+                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer, EKSTERN), periode -> new SykeforloepsperioderXML()
                         .withFom(tilKortDato(periode.fom))
                         .withTom(tilKortDato(periode.tom))
                         .withAntallDager(antallDagerIPeriode(periode.fom, periode.tom))
@@ -274,35 +274,35 @@ public class GodkjenningService {
                         .withReisetilskudd(periode.reisetilskudd)
                         .withAvventende(periode.avventende)
                 ))
-                .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfoelgingsdialog.arbeidsoppgaveListe),
+                .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
                                 .withNavn(arbeidsoppgave.navn)))
-                .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfoelgingsdialog.arbeidsoppgaveListe),
+                .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new KanIkkeGjennomfoeresArbeidsoppgaveXML()
                                 .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanIkkeBeskrivelse)
                                 .withNavn(arbeidsoppgave.navn)))
-                .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfoelgingsdialog.arbeidsoppgaveListe),
+                .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML()
                                 .withMedHjelp(arbeidsoppgave.gjennomfoering.medHjelp)
                                 .withMedMerTid(arbeidsoppgave.gjennomfoering.medMerTid)
                                 .withPaaAnnetSted(arbeidsoppgave.gjennomfoering.paaAnnetSted)
                                 .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanBeskrivelse)
                                 .withNavn(arbeidsoppgave.navn)))
-                .withKanGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfoelgingsdialog.arbeidsoppgaveListe),
+                .withKanGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new KanGjennomfoeresArbeidsoppgaveXML()
                                 .withNavn(arbeidsoppgave.navn)))
-                .withTiltak(mapListe(oppfoelgingsdialog.tiltakListe, tiltak -> new TiltakXML()
+                .withTiltak(mapListe(oppfolgingsplan.tiltakListe, tiltak -> new TiltakXML()
                         .withNavn(tiltak.navn)
                         .withBeskrivelse(tiltak.beskrivelse)
                         .withBeskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
                         .withStatus(tiltak.status)
                         .withId(tiltak.id)
                         .withGjennomfoering(tiltak.gjennomfoering)
-                        .withFom(tilMuntligDatoAarFormat(ofNullable(tiltak.fom).orElse(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.fom)))
-                        .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.tom)))
+                        .withFom(tilMuntligDatoAarFormat(ofNullable(tiltak.fom).orElse(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom)))
+                        .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom)))
                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
                 ))
-                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfoelgingsdialog.arbeidstaker.aktoerId, finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.fom, oppfoelgingsdialog.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
                         .withYrke(stilling.yrke)
                         .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)
@@ -311,30 +311,30 @@ public class GodkjenningService {
                 .withSykmeldtEpost(sykmeldtKontaktinfo.epost)
                 .withVisAdvarsel(false)
                 .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
-                .withOpprettetAv(!erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId) ? sykmeldtnavn : naermesteleder.navn)
-                .withOpprettetDato(tilMuntligDatoAarFormat(finnGodkjenning(oppfoelgingsdialog).godkjenningsTidspunkt.toLocalDate()))
-                .withGodkjentAv(erArbeidstakeren(oppfoelgingsdialog, innloggetAktoerId) ? sykmeldtnavn : naermesteleder.navn)
+                .withOpprettetAv(!erArbeidstakeren(oppfolgingsplan, innloggetAktoerId) ? sykmeldtnavn : naermesteleder.navn)
+                .withOpprettetDato(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).godkjenningsTidspunkt.toLocalDate()))
+                .withGodkjentAv(erArbeidstakeren(oppfolgingsplan, innloggetAktoerId) ? sykmeldtnavn : naermesteleder.navn)
                 .withGodkjentDato(tilMuntligDatoAarFormat(LocalDate.now()))
         );
 
         String dokumentUuid = UUID.randomUUID().toString();
 
-        boolean skalDeleMedNav = delMedNav || oppfoelgingsdialog.godkjenninger.stream()
+        boolean skalDeleMedNav = delMedNav || oppfolgingsplan.godkjenninger.stream()
                 .anyMatch(godkjenning -> godkjenning.delMedNav);
 
         godkjentplanDAO.create(new GodkjentPlan()
-                .oppfoelgingsdialogId(oppfoelgingsdialog.id)
+                .oppfoelgingsdialogId(oppfolgingsplan.id)
                 .deltMedNAV(skalDeleMedNav)
                 .deltMedNAVTidspunkt((skalDeleMedNav) ? LocalDateTime.now() : null)
                 .tvungenGodkjenning(false)
                 .dokumentUuid(dokumentUuid)
                 .gyldighetstidspunkt(new Gyldighetstidspunkt()
-                        .fom(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.fom)
-                        .tom(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.tom)
-                        .evalueres(finnGodkjenning(oppfoelgingsdialog).gyldighetstidspunkt.evalueres)
+                        .fom(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom)
+                        .tom(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom)
+                        .evalueres(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.evalueres)
                 ));
-        metrikk.tellAntallDagerSiden(oppfoelgingsdialog.opprettet, "opprettettilgodkjent");
-        metrikk.tellAntallDagerSiden(finnGodkjenning(oppfoelgingsdialog).godkjenningsTidspunkt, "fragodkjenningtilplan");
+        metrikk.tellAntallDagerSiden(oppfolgingsplan.opprettet, "opprettettilgodkjent");
+        metrikk.tellAntallDagerSiden(finnGodkjenning(oppfolgingsplan).godkjenningsTidspunkt, "fragodkjenningtilplan");
         dokumentDAO.lagre(new Dokument()
                 .uuid(dokumentUuid)
                 .pdf(tilPdf(xml))
@@ -342,25 +342,25 @@ public class GodkjenningService {
         );
     }
 
-    public void genererTvungenPlan(Oppfoelgingsdialog oppfoelgingsdialog, RSGyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
-        rapporterMetrikkerForNyPlan(oppfoelgingsdialog, true, delMedNav);
+    public void genererTvungenPlan(Oppfolgingsplan oppfolgingsplan, RSGyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
+        rapporterMetrikkerForNyPlan(oppfolgingsplan, true, delMedNav);
 
-        Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer)
+        Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
-        Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
-        String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.arbeidstaker.aktoerId);
-        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfoelgingsdialog.arbeidstaker.aktoerId);
-        String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfoelgingsdialog.virksomhet.virksomhetsnummer);
+        Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
+        String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
+        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+        String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
                 .withArbeidsgiverEpost(naermesteleder.epost)
                 .withArbeidsgivernavn(naermesteleder.navn)
-                .withArbeidsgiverOrgnr(oppfoelgingsdialog.virksomhet.virksomhetsnummer)
+                .withArbeidsgiverOrgnr(oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .withVirksomhetsnavn(virksomhetsnavn)
                 .withArbeidsgiverTlf(naermesteleder.mobil)
                 .withEvalueres(tilMuntligDatoAarFormat(gyldighetstidspunkt.evalueres()))
                 .withGyldigfra(tilMuntligDatoAarFormat(gyldighetstidspunkt.fom))
                 .withGyldigtil(tilMuntligDatoAarFormat(gyldighetstidspunkt.tom))
-                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfoelgingsdialog.arbeidstaker.aktoerId, oppfoelgingsdialog.virksomhet.virksomhetsnummer, EKSTERN), periode -> new SykeforloepsperioderXML()
+                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer, EKSTERN), periode -> new SykeforloepsperioderXML()
                         .withFom(tilKortDato(periode.fom))
                         .withTom(tilKortDato(periode.tom))
                         .withAntallDager(antallDagerIPeriode(periode.fom, periode.tom))
@@ -369,24 +369,24 @@ public class GodkjenningService {
                         .withReisetilskudd(periode.reisetilskudd)
                         .withAvventende(periode.avventende)
                 ))
-                .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfoelgingsdialog.arbeidsoppgaveListe),
+                .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
                                 .withNavn(arbeidsoppgave.navn)))
-                .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfoelgingsdialog.arbeidsoppgaveListe),
+                .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new KanIkkeGjennomfoeresArbeidsoppgaveXML()
                                 .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanIkkeBeskrivelse)
                                 .withNavn(arbeidsoppgave.navn)))
-                .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfoelgingsdialog.arbeidsoppgaveListe),
+                .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML()
                                 .withMedHjelp(arbeidsoppgave.gjennomfoering.medHjelp)
                                 .withMedMerTid(arbeidsoppgave.gjennomfoering.medMerTid)
                                 .withPaaAnnetSted(arbeidsoppgave.gjennomfoering.paaAnnetSted)
                                 .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanBeskrivelse)
                                 .withNavn(arbeidsoppgave.navn)))
-                .withKanGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfoelgingsdialog.arbeidsoppgaveListe),
+                .withKanGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new KanGjennomfoeresArbeidsoppgaveXML()
                                 .withNavn(arbeidsoppgave.navn)))
-                .withTiltak(mapListe(oppfoelgingsdialog.tiltakListe, tiltak -> new TiltakXML()
+                .withTiltak(mapListe(oppfolgingsplan.tiltakListe, tiltak -> new TiltakXML()
                         .withNavn(tiltak.navn)
                         .withBeskrivelse(tiltak.beskrivelse)
                         .withBeskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
@@ -397,7 +397,7 @@ public class GodkjenningService {
                         .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(gyldighetstidspunkt.tom)))
                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
                 ))
-                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfoelgingsdialog.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfoelgingsdialog.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
                         .withYrke(stilling.yrke)
                         .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)
@@ -413,7 +413,7 @@ public class GodkjenningService {
         );
         String dokumentUuid = UUID.randomUUID().toString();
         godkjentplanDAO.create(new GodkjentPlan()
-                .oppfoelgingsdialogId(oppfoelgingsdialog.id)
+                .oppfoelgingsdialogId(oppfolgingsplan.id)
                 .deltMedNAV(delMedNav)
                 .deltMedNAVTidspunkt(delMedNav ? LocalDateTime.now() : null)
                 .deltMedFastlege(false)
@@ -434,10 +434,10 @@ public class GodkjenningService {
 
     @Transactional
     public void avvisGodkjenning(long oppfoelgingsdialogId, String innloggetFnr) {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
-        if (!tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog)) {
+        if (!tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
@@ -450,8 +450,8 @@ public class GodkjenningService {
                 .oppfoelgingsdialogId(oppfoelgingsdialogId)
                 .godkjentAvAktoerId(innloggetAktoerId)
         );
-        oppfoelingsdialogDAO.nullstillSamtykke(oppfoelgingsdialogId);
-        oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
+        oppfolgingsplanDAO.nullstillSamtykke(oppfoelgingsdialogId);
+        oppfolgingsplanDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
     }
 
     private void sendGodkjentPlanTilAltinn(Long oppfoelgingsdialogId) {

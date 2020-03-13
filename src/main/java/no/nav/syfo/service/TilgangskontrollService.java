@@ -1,6 +1,6 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class TilgangskontrollService {
         this.narmesteLederConsumer = narmesteLederConsumer;
     }
 
-    public boolean aktorTilhorerOppfolgingsplan(String aktoerId, Oppfoelgingsdialog oppfolgingsplan) {
+    public boolean aktorTilhorerOppfolgingsplan(String aktoerId, Oppfolgingsplan oppfolgingsplan) {
         return oppfolgingsplan.arbeidstaker.aktoerId.equals(aktoerId)
                 || erAktoerNaermestelederForBruker(aktoerId, oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer);
     }

@@ -1,10 +1,10 @@
 package no.nav.syfo;
 
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbLoggSendOppfoelgingsdialogTilAltinn;
 import no.nav.syfo.service.*;
-import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
+import no.nav.syfo.util.OppfolgingsplanTestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class JobbLoggSendOppfoelgingsdialogTilAltinnTest {
+public class JobbLoggSendOppfolgingsplanTilAltinnTest {
 
     @Mock
     private OppfolgingsplanService oppfolgingsplanService;
@@ -42,17 +42,17 @@ public class JobbLoggSendOppfoelgingsdialogTilAltinnTest {
 
     @Test
     public void utfoerOppgaveArkiver() throws Exception {
-        Oppfoelgingsdialog oppfoelgingsdialog = hentOppfoelgingsdialog();
-        when(oppfolgingsplanService.hentGodkjentOppfolgingsplan(1L)).thenReturn(oppfoelgingsdialog);
-        when(pdfService.hentPdfTilAltinn(oppfoelgingsdialog)).thenReturn(getOppfoelgingsdialogPdf());
+        Oppfolgingsplan oppfolgingsplan = hentOppfoelgingsdialog();
+        when(oppfolgingsplanService.hentGodkjentOppfolgingsplan(1L)).thenReturn(oppfolgingsplan);
+        when(pdfService.hentPdfTilAltinn(oppfolgingsplan)).thenReturn(getOppfoelgingsdialogPdf());
 
         jobbLoggSendOppfoelgingsdialogTilAltinn.utfoerOppgave("1");
 
         verify(juridiskLoggService, times(1)).loggSendOppfoelgingsdialogTilAltinn(any());
     }
 
-    private Oppfoelgingsdialog hentOppfoelgingsdialog() {
-        return OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang();
+    private Oppfolgingsplan hentOppfoelgingsdialog() {
+        return OppfolgingsplanTestUtils.oppfolgingsplanGodkjentTvang();
     }
 
     private byte[] getOppfoelgingsdialogPdf() {

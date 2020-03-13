@@ -25,4 +25,5 @@ public class GodkjentPlan {
     public String sakId;
     public String journalpostId;
     public String tildeltEnhet;
+    public byte[] dokument;
 }

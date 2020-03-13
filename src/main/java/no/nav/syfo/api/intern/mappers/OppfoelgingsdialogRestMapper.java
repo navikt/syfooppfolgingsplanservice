@@ -5,7 +5,7 @@ import no.nav.syfo.api.intern.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
 import no.nav.syfo.api.intern.domain.RSVirksomhet;
 import no.nav.syfo.domain.GodkjentPlan;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 
 import java.time.LocalDate;
 import java.util.function.Function;
@@ -29,7 +29,7 @@ public class OppfoelgingsdialogRestMapper {
                     .evalueres(godkjentPlan.gyldighetstidspunkt.evalueres)
             );
 
-    public static Function<Oppfoelgingsdialog, String> status2rs = oppfoelgingsdialog -> {
+    public static Function<Oppfolgingsplan, String> status2rs = oppfoelgingsdialog -> {
         if (oppfoelgingsdialog.godkjentPlan.isPresent()) {
             if (oppfoelgingsdialog.godkjentPlan.get().avbruttPlan.isPresent()) {
                 return "AVBRUTT";
@@ -43,7 +43,7 @@ public class OppfoelgingsdialogRestMapper {
     };
 
 
-    public static Function<Oppfoelgingsdialog, RSOppfoelgingsdialog> oppfoelgingsdialog2rs = oppfoelgingsdialog ->
+    public static Function<Oppfolgingsplan, RSOppfoelgingsdialog> oppfoelgingsdialog2rs = oppfoelgingsdialog ->
             new RSOppfoelgingsdialog()
                     .id(oppfoelgingsdialog.id)
                     .uuid(oppfoelgingsdialog.uuid)

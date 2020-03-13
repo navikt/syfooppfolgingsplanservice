@@ -16,7 +16,7 @@ public class KommentarService {
     private AktorregisterConsumer aktorregisterConsumer;
     private GodkjenningerDAO godkjenningerDAO;
     private KommentarDAO kommentarDAO;
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     private TiltakDAO tiltakDAO;
 
     @Inject
@@ -24,13 +24,13 @@ public class KommentarService {
             AktorregisterConsumer aktorregisterConsumer,
             GodkjenningerDAO godkjenningerDAO,
             KommentarDAO kommentarDAO,
-            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OppfolgingsplanDAO oppfolgingsplanDAO,
             TiltakDAO tiltakDAO
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.godkjenningerDAO = godkjenningerDAO;
         this.kommentarDAO = kommentarDAO;
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.tiltakDAO = tiltakDAO;
     }
 
@@ -39,8 +39,8 @@ public class KommentarService {
         Tiltak tiltak = tiltakDAO.finnTiltakById(tiltakId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(tiltak.oppfoelgingsdialogId);
-        if (kommentarenErIkkeOpprettetAvNoenAndre(kommentar, innloggetAktoerId, oppfoelgingsdialog)) {
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(tiltak.oppfoelgingsdialogId);
+        if (kommentarenErIkkeOpprettetAvNoenAndre(kommentar, innloggetAktoerId, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
@@ -48,7 +48,7 @@ public class KommentarService {
             throw new ConflictException();
         }
 
-        oppfoelingsdialogDAO.sistEndretAv(tiltak.oppfoelgingsdialogId, innloggetAktoerId);
+        oppfolgingsplanDAO.sistEndretAv(tiltak.oppfoelgingsdialogId, innloggetAktoerId);
         if (kommentar.id == null) {
             return kommentarDAO.create(kommentar
                     .tiltakId(tiltakId)
@@ -60,25 +60,25 @@ public class KommentarService {
         }
     }
 
-    private boolean kommentarenErIkkeOpprettetAvNoenAndre(Kommentar kommentar, String innloggetAktoerId, Oppfoelgingsdialog oppfoelgingsdialog) {
-        return kommentar.id != null && oppfoelgingsdialog.tiltakListe.stream().noneMatch(pTiltak -> pTiltak.opprettetAvAktoerId.equals(innloggetAktoerId));
+    private boolean kommentarenErIkkeOpprettetAvNoenAndre(Kommentar kommentar, String innloggetAktoerId, Oppfolgingsplan oppfolgingsplan) {
+        return kommentar.id != null && oppfolgingsplan.tiltakListe.stream().noneMatch(pTiltak -> pTiltak.opprettetAvAktoerId.equals(innloggetAktoerId));
     }
 
     @Transactional
     public void slettKommentar(Long kommentarId, String fnr) {
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
         Kommentar kommentar = kommentarDAO.finnKommentar(kommentarId);
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.oppfolgingsplanByTiltakId(kommentar.tiltakId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.oppfolgingsplanByTiltakId(kommentar.tiltakId);
 
         if (!kommentar.opprettetAvAktoerId.equals(innloggetAktoerId)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
-        if (godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(oppfoelgingsdialog.id).stream().anyMatch(godkjenning -> godkjenning.godkjent)) {
+        if (godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(oppfolgingsplan.id).stream().anyMatch(godkjenning -> godkjenning.godkjent)) {
             throw new ConflictException();
         }
 
-        oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialog.id, innloggetAktoerId);
+        oppfolgingsplanDAO.sistEndretAv(oppfolgingsplan.id, innloggetAktoerId);
         kommentarDAO.delete(kommentarId);
     }
 }

@@ -12,7 +12,7 @@ import static java.util.Optional.empty;
 
 @Data
 @Accessors(fluent = true)
-public class Oppfoelgingsdialog {
+public class Oppfolgingsplan {
     public Long id;
     public String uuid;
 

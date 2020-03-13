@@ -21,7 +21,7 @@ public class TiltakService {
     private GodkjenningerDAO godkjenningerDAO;
     private KommentarDAO kommentarDAO;
     private Metrikk metrikk;
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     private TilgangskontrollService tilgangskontrollService;
     private TiltakDAO tiltakDAO;
 
@@ -31,7 +31,7 @@ public class TiltakService {
             GodkjenningerDAO godkjenningerDAO,
             KommentarDAO kommentarDAO,
             Metrikk metrikk,
-            OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            OppfolgingsplanDAO oppfolgingsplanDAO,
             TilgangskontrollService tilgangskontrollService,
             TiltakDAO tiltakDAO
     ) {
@@ -39,17 +39,17 @@ public class TiltakService {
         this.godkjenningerDAO = godkjenningerDAO;
         this.kommentarDAO = kommentarDAO;
         this.metrikk = metrikk;
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.tilgangskontrollService = tilgangskontrollService;
         this.tiltakDAO = tiltakDAO;
     }
 
     @Transactional
     public Long lagreTiltak(Long oppfoelgingsdialogId, Tiltak tiltak, String fnr) {
-        Oppfoelgingsdialog oppfoelgingsdialog = oppfoelingsdialogDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
-        if (!eksisterendeTiltakHoererTilDialog(tiltak.id, tiltakDAO.finnTiltakByOppfoelgingsdialogId(oppfoelgingsdialogId)) || !tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfoelgingsdialog)) {
+        if (!eksisterendeTiltakHoererTilDialog(tiltak.id, tiltakDAO.finnTiltakByOppfoelgingsdialogId(oppfoelgingsdialogId)) || !tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
@@ -57,7 +57,7 @@ public class TiltakService {
             throw new ConflictException();
         }
 
-        oppfoelingsdialogDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
+        oppfolgingsplanDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
         if (tiltak.id == null) {
             metrikk.tellHendelse("lagre_tiltak_nytt");
             return tiltakDAO.create(tiltak
@@ -85,7 +85,7 @@ public class TiltakService {
             throw new ConflictException();
         }
 
-        oppfoelingsdialogDAO.sistEndretAv(tiltak.oppfoelgingsdialogId, innloggetAktoerId);
+        oppfolgingsplanDAO.sistEndretAv(tiltak.oppfoelgingsdialogId, innloggetAktoerId);
         List<Kommentar> kommetarer = kommentarDAO.finnKommentarerByTiltakId(tiltakId);
         kommetarer.forEach(kommentar -> kommentarDAO.delete(kommentar.id));
         tiltakDAO.deleteById(tiltakId);

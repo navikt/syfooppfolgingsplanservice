@@ -35,7 +35,7 @@ public class GodkjenningServiceTest {
     @Mock
     private Metrikk metrikk;
     @Mock
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     @Mock
     private NarmesteLederConsumer narmesteLederConsumer;
     @Mock
@@ -64,7 +64,7 @@ public class GodkjenningServiceTest {
     private GodkjenningService godkjenningService;
 
 
-    private Oppfoelgingsdialog oppfoelgingsdialog = new Oppfoelgingsdialog()
+    private Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan()
             .id(1L)
             .arbeidsgiver(new Person()
                     .aktoerId("arbAktoerId")
@@ -123,14 +123,14 @@ public class GodkjenningServiceTest {
     @Test
     public void genererNyPlanKompatibelMedVersjon1Avplanen() {
         when(godkjentplanDAO.create(any())).thenReturn(new GodkjentPlan().id(1));
-        godkjenningService.genererNyPlan(oppfoelgingsdialog, "sykmeldtAktoerId", false);
+        godkjenningService.genererNyPlan(oppfolgingsplan, "sykmeldtAktoerId", false);
         verify(godkjentplanDAO, times(1)).create(any());
     }
 
     @Test
     public void genererNyPlanKompatibelMedVersjon2Avplanen() {
         when(godkjentplanDAO.create(any())).thenReturn(new GodkjentPlan().id(1));
-        oppfoelgingsdialog.tiltakListe = asList(new Tiltak()
+        oppfolgingsplan.tiltakListe = asList(new Tiltak()
                 .beskrivelse("beskrivelse")
                 .navn("navn")
                 .gjennomfoering("gjennomfoering")
@@ -139,14 +139,14 @@ public class GodkjenningServiceTest {
                 .fom(now())
                 .tom(now())
         );
-        godkjenningService.genererNyPlan(oppfoelgingsdialog, "sykmeldtAktoerId", false);
+        godkjenningService.genererNyPlan(oppfolgingsplan, "sykmeldtAktoerId", false);
         verify(godkjentplanDAO, times(1)).create(any());
     }
 
     @Test
     public void tvungenPlanKompatibelMedVersjon1Avplanen() {
         when(godkjentplanDAO.create(any())).thenReturn(new GodkjentPlan().id(1));
-        godkjenningService.genererTvungenPlan(oppfoelgingsdialog, new RSGyldighetstidspunkt()
+        godkjenningService.genererTvungenPlan(oppfolgingsplan, new RSGyldighetstidspunkt()
                 .tom(now())
                 .fom(now())
                 .evalueres(now()
@@ -158,7 +158,7 @@ public class GodkjenningServiceTest {
     @Test
     public void tvungenPlanKompatibelMedVersjon2Avplanen() {
         when(godkjentplanDAO.create(any())).thenReturn(new GodkjentPlan().id(1));
-        oppfoelgingsdialog.tiltakListe = asList(new Tiltak()
+        oppfolgingsplan.tiltakListe = asList(new Tiltak()
                 .beskrivelse("beskrivelse")
                 .navn("navn")
                 .gjennomfoering("gjennomfoering")
@@ -167,7 +167,7 @@ public class GodkjenningServiceTest {
                 .fom(now())
                 .tom(now())
         );
-        godkjenningService.genererTvungenPlan(oppfoelgingsdialog, new RSGyldighetstidspunkt()
+        godkjenningService.genererTvungenPlan(oppfolgingsplan, new RSGyldighetstidspunkt()
                 .tom(now())
                 .fom(now())
                 .evalueres(now()

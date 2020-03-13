@@ -5,8 +5,8 @@ import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.intern.domain.RSHistorikk;
 import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
 import no.nav.syfo.domain.Fnr;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
-import no.nav.syfo.repository.dao.OppfoelingsdialogDAO;
+import no.nav.syfo.domain.Oppfolgingsplan;
+import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import no.nav.syfo.service.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +26,7 @@ public class OppfolgingsplanInternController {
 
     private AktorregisterConsumer aktorregisterConsumer;
     private BrukerprofilService brukerprofilService;
-    private OppfoelingsdialogDAO oppfoelingsdialogDAO;
+    private OppfolgingsplanDAO oppfolgingsplanDAO;
     private OrganisasjonService organisasjonService;
     private VeilederTilgangService veilederTilgangService;
 
@@ -34,22 +34,22 @@ public class OppfolgingsplanInternController {
     public OppfolgingsplanInternController(
             final AktorregisterConsumer aktorregisterConsumer,
             final BrukerprofilService brukerprofilService,
-            final OppfoelingsdialogDAO oppfoelingsdialogDAO,
+            final OppfolgingsplanDAO oppfolgingsplanDAO,
             final OrganisasjonService organisasjonService,
             final VeilederTilgangService veilederTilgangService
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukerprofilService = brukerprofilService;
-        this.oppfoelingsdialogDAO = oppfoelingsdialogDAO;
+        this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.organisasjonService = organisasjonService;
         this.veilederTilgangService = veilederTilgangService;
     }
 
-    private String finnDeltAvNavn(Oppfoelgingsdialog oppfoelgingsdialog) {
-        if (oppfoelgingsdialog.sistEndretAvAktoerId.equals(oppfoelgingsdialog.arbeidstaker.aktoerId)) {
-            return brukerprofilService.hentNavnByAktoerId(oppfoelgingsdialog.sistEndretAvAktoerId);
+    private String finnDeltAvNavn(Oppfolgingsplan oppfolgingsplan) {
+        if (oppfolgingsplan.sistEndretAvAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
+            return brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.sistEndretAvAktoerId);
         }
-        return organisasjonService.finnVirksomhetsnavn(oppfoelgingsdialog.virksomhet.virksomhetsnummer);
+        return organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
@@ -59,9 +59,9 @@ public class OppfolgingsplanInternController {
 
         veilederTilgangService.throwExceptionIfVeilederWithoutAccess(personFnr);
 
-        List<Oppfoelgingsdialog> oppfoelgingsplaner = oppfoelingsdialogDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getFnr()))
+        List<Oppfolgingsplan> oppfoelgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getFnr()))
                 .stream()
-                .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
+                .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
                 .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())
                 .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.get().deltMedNAV)
                 .collect(toList());
@@ -81,9 +81,9 @@ public class OppfolgingsplanInternController {
 
         veilederTilgangService.throwExceptionIfVeilederWithoutAccess(personFnr);
 
-        return mapListe(oppfoelingsdialogDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getFnr()))
+        return mapListe(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getFnr()))
                         .stream()
-                        .map(oppfoelgingsdialog -> oppfoelingsdialogDAO.populate(oppfoelgingsdialog))
+                        .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
                         .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())
                         .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.get().deltMedNAV)
                         .collect(toList()),

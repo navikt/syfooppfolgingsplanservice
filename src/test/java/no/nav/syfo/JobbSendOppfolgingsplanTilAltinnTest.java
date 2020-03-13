@@ -1,11 +1,11 @@
 package no.nav.syfo;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.domain.Oppfoelgingsdialog;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbSendOppfoelgingsdialogTilAltinn;
 import no.nav.syfo.service.*;
-import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
+import no.nav.syfo.util.OppfolgingsplanTestUtils;
 import no.nav.syfo.ws.AltinnConsumer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,13 +15,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
-import static no.nav.syfo.util.OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang;
+import static no.nav.syfo.util.OppfolgingsplanTestUtils.oppfolgingsplanGodkjentTvang;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class JobbSendOppfoelgingsdialogTilAltinnTest {
+public class JobbSendOppfolgingsplanTilAltinnTest {
 
     @Mock
     private Metrikk metrikk;
@@ -48,7 +48,7 @@ public class JobbSendOppfoelgingsdialogTilAltinnTest {
 
     @Test
     public void utfoerOppgaveSendOppfoelgingsdialog() throws Exception {
-        Oppfoelgingsdialog oppfoelgingsplan = oppfolgingsplanGodkjentTvang();
+        Oppfolgingsplan oppfoelgingsplan = oppfolgingsplanGodkjentTvang();
         when(oppfolgingsplanService.hentGodkjentOppfolgingsplan(1L)).thenReturn(oppfolgingsplanGodkjentTvang());
 
         jobbSendOppfoelgingsdialogTilAltinn.utfoerOppgave("1");
@@ -56,8 +56,8 @@ public class JobbSendOppfoelgingsdialogTilAltinnTest {
         verify(altinnConsumer, times(1)).sendOppfolgingsplanTilArbeidsgiver(any());
     }
 
-    private Oppfoelgingsdialog hentOppfoelgingsdialog() {
-        return OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang();
+    private Oppfolgingsplan hentOppfoelgingsdialog() {
+        return OppfolgingsplanTestUtils.oppfolgingsplanGodkjentTvang();
     }
 
     private byte[] hentOppfoelgingsdialogPdf() {

@@ -32,7 +32,7 @@ public class RSBrukerOppfolgingsplanMapper {
                     )
                     .orElse(null);
 
-    private static Function<Oppfoelgingsdialog, RSGodkjentPlan> godkjentplan2rs = oppfoelgingsdialog ->
+    private static Function<Oppfolgingsplan, RSGodkjentPlan> godkjentplan2rs = oppfoelgingsdialog ->
             oppfoelgingsdialog.godkjentPlan
                     .map(godkjentPlan -> new RSGodkjentPlan()
                             .avbruttPlan(mapNullable(godkjentPlan, avbruttplan2rs))
@@ -115,17 +115,17 @@ public class RSBrukerOppfolgingsplanMapper {
                     .sistEndretAv(new RSPerson().fnr(aktorregisterConsumer().hentFnrForAktor(arbeidsoppgave.sistEndretAvAktoerId)))
                     .sistEndretDato(arbeidsoppgave.sistEndretDato);
 
-    private static Function<Oppfoelgingsdialog, RSEvaluering> evalueringSykmeldt2rs = oppfolgingsplan ->
+    private static Function<Oppfolgingsplan, RSEvaluering> evalueringSykmeldt2rs = oppfolgingsplan ->
             oppfolgingsplan.godkjentPlan
                     .map(godkjentPlan -> new RSEvaluering())
                     .orElse(null);
 
-    private static Function<Oppfoelgingsdialog, RSEvaluering> evalueringArbeidsgiver2rs = oppfolgingsplan ->
+    private static Function<Oppfolgingsplan, RSEvaluering> evalueringArbeidsgiver2rs = oppfolgingsplan ->
             oppfolgingsplan.godkjentPlan
                     .map(godkjentPlan -> new RSEvaluering())
                     .orElse(null);
 
-    public static Function<Oppfoelgingsdialog, RSBrukerOppfolgingsplan> oppfolgingsplan2rs = oppfolgingsplan -> new RSBrukerOppfolgingsplan()
+    public static Function<Oppfolgingsplan, RSBrukerOppfolgingsplan> oppfolgingsplan2rs = oppfolgingsplan -> new RSBrukerOppfolgingsplan()
             .id(oppfolgingsplan.id)
             .virksomhet(new RSVirksomhet().virksomhetsnummer(oppfolgingsplan.virksomhet.virksomhetsnummer))
             .arbeidsoppgaveListe(mapListe(oppfolgingsplan.arbeidsoppgaveListe, arbeidsoppgave2rs))
