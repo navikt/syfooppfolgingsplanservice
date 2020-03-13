@@ -57,7 +57,6 @@ public class DokArkivConsumerTest {
     @Value("${dokarkiv.url}")
     private String url;
 
-
     private DokArkivConsumer dokArkivConsumer;
 
     @Inject
@@ -65,8 +64,7 @@ public class DokArkivConsumerTest {
 
     private MockRestServiceServer mockRestServiceServer;
 
-    private final String DOKARKIV_URL = "https://url.nav.no";
-
+    private static final int JOURNALPOST_ID = 123;
     private static final String AKTOR_ID = "K1234";
     private static final Virksomhet KAKEBUA = new Virksomhet()
             .navn("Kakebua")
@@ -75,13 +73,14 @@ public class DokArkivConsumerTest {
             .navn("Kake M. Onster")
             .fnr("01010100099")
             .aktoerId(AKTOR_ID);
+    private static final String JOURNAL_STATUS = "ENDELIG";
 
     @Before
     public void setUp() {
         this.mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build();
 
         when(stsConsumer.token()).thenReturn("token");
-        dokArkivConsumer = new DokArkivConsumer(restTemplate, DOKARKIV_URL, stsConsumer, metrikk);
+        dokArkivConsumer = new DokArkivConsumer(restTemplate, url, stsConsumer, metrikk);
     }
 
     @After
@@ -93,7 +92,7 @@ public class DokArkivConsumerTest {
     public void journalforOppfolgingsplan() {
         String responseBody = journalPostResponseAsJsonString();
         mockRestServiceServer.expect(once(),
-                requestTo(DOKARKIV_URL + "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"))
+                requestTo(url + "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
         Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan()
                 .virksomhet(KAKEBUA)
@@ -105,13 +104,13 @@ public class DokArkivConsumerTest {
 
         Integer journalpostId = dokArkivConsumer.journalforOppfolgingsplan(oppfolgingsplan, godkjentplan);
 
-        assertThat(journalpostId).isEqualTo(123);
+        assertThat(journalpostId).isEqualTo(JOURNALPOST_ID);
     }
 
     @Test(expected = RestClientException.class)
     public void journalforOppfolgingsplanFeiler() throws Exception {
         mockRestServiceServer.expect(once(),
-                requestTo(DOKARKIV_URL + "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"))
+                requestTo(url + "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"))
                 .andRespond(withBadRequest());
         Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan()
                 .virksomhet(KAKEBUA)
@@ -133,9 +132,9 @@ public class DokArkivConsumerTest {
         DokumentInfo dokumentInfo = new DokumentInfo();
         dokumentListe.add(dokumentInfo);
         JournalpostResponse journalpostResponse = new JournalpostResponse()
-                .journalpostId(123)
+                .journalpostId(JOURNALPOST_ID)
                 .journalpostferdigstilt(true)
-                .journalstatus("ENDELIG")
+                .journalstatus(JOURNAL_STATUS)
                 .melding(null)
                 .dokumenter(dokumentListe);
 
