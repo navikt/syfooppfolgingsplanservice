@@ -16,19 +16,3 @@ public class JournalpostResponse {
     public String journalstatus;
     public String melding;
 }
-
-/*
-{
-  "dokumenter": [
-    {
-      "brevkode": "NAV 14-05.09",
-      "dokumentInfoId": 123,
-      "tittel": "Søknad om foreldrepenger ved fødsel"
-    }
-  ],
-  "journalpostId": 12345678,
-  "journalpostferdigstilt": true,
-  "journalstatus": "ENDELIG",
-  "melding": "null"
-}
- */

@@ -33,7 +33,11 @@ public class DokArkivConsumer {
     private final Metrikk metrikk;
 
     @Inject
-    public DokArkivConsumer(@Qualifier("scheduler") RestTemplate restTemplate, @Value("${dokarkiv.url}") String url, StsConsumer stsConsumer, Metrikk metrikk
+    public DokArkivConsumer(
+            @Qualifier("scheduler") RestTemplate restTemplate,
+            @Value("${dokarkiv.url}") String url,
+            StsConsumer stsConsumer,
+            Metrikk metrikk
     ) {
         this.restTemplate = restTemplate;
         this.url = url;
