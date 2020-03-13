@@ -4,7 +4,7 @@ import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbLoggSendOppfoelgingsdialogTilAltinn;
 import no.nav.syfo.service.*;
-import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
+import no.nav.syfo.util.OppfolgingsplanTestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -52,7 +52,7 @@ public class JobbLoggSendOppfolgingsplanTilAltinnTest {
     }
 
     private Oppfolgingsplan hentOppfoelgingsdialog() {
-        return OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang();
+        return OppfolgingsplanTestUtils.oppfolgingsplanGodkjentTvang();
     }
 
     private byte[] getOppfoelgingsdialogPdf() {

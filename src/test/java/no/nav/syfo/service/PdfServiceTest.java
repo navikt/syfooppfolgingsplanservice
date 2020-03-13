@@ -3,7 +3,7 @@ package no.nav.syfo.service;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.DokumentDAO;
-import no.nav.syfo.util.OppfoelgingsdialogTestUtils;
+import no.nav.syfo.util.OppfolgingsplanTestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,7 +27,7 @@ public class PdfServiceTest {
 
     @Test
     public void hentPdfTilAltinn() {
-        Oppfolgingsplan oppfolgingsplan = OppfoelgingsdialogTestUtils.oppfolgingsplanGodkjentTvang();
+        Oppfolgingsplan oppfolgingsplan = OppfolgingsplanTestUtils.oppfolgingsplanGodkjentTvang();
         byte[] oppfoelgingsdialogPdf = hentOppfoelgingsdialogPdf();
         when(dokumentDAO.hent(any())).thenReturn(oppfoelgingsdialogPdf);
 

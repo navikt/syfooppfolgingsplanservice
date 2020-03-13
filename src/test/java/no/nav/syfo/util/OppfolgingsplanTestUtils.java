@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
 
-public class OppfoelgingsdialogTestUtils {
+public class OppfolgingsplanTestUtils {
 
     private static final String SYKMELDT_AKTOERID = "1010101010101";
     private static final String ARBEIDSGIVER_FNR = "10101010100";
