@@ -60,7 +60,6 @@ dependencies {
     implementation("no.nav.syfo.tjenester:dkif-tjenestespesifikasjon:1.2")
     implementation("no.nav.sbl.dialogarena:organisasjonv4-tjenestespesifikasjon:1.0.1")
     implementation("no.nav.syfo.tjenester:sykefravaersoppfoelgingv1-tjenestespesifikasjon:1.0.20")
-    implementation("no.nav.sbl.dialogarena:dial-nav-tjeneste-aktoer_v2:1.2")
     implementation("no.nav.syfo.tjenester:servicemeldingMedKontaktinformasjon-v1:1.0.0")
     implementation("no.nav.syfo.tjenester:behandleSak-v1:1.0.2")
     implementation("no.nav.syfo.tjenester:sak-v1:1.0.0")

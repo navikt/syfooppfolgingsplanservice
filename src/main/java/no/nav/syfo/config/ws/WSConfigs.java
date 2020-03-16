@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({
-        AktoerConfig.class,
         DKIFConfig.class,
         OrganisasjonConfig.class,
         SyfoOppfoelgingConfig.class,
