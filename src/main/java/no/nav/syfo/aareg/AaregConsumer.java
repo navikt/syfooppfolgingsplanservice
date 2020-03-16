@@ -1,5 +1,6 @@
 package no.nav.syfo.aareg;
 
+import no.nav.syfo.fellesKodeverk.FellesKodeverkConsumer;
 import no.nav.syfo.aareg.exceptions.RestErrorFromAareg;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
@@ -30,6 +31,7 @@ public class AaregConsumer {
     private static final Logger LOG = getLogger(AaregConsumer.class);
 
     private final AktorregisterConsumer aktorregisterConsumer;
+    private final FellesKodeverkConsumer fellesKodeverkConsumer;
     private final Metrikk metrikk;
     private final RestTemplate restTemplate;
     private final StsConsumer stsConsumer;
@@ -41,12 +43,14 @@ public class AaregConsumer {
     @Autowired
     public AaregConsumer(
             AktorregisterConsumer aktorregisterConsumer,
+            FellesKodeverkConsumer fellesKodeverkConsumer,
             Metrikk metrikk,
             RestTemplate restTemplate,
             StsConsumer stsConsumer,
             @Value("${aareg.services.url}") String url
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
+        this.fellesKodeverkConsumer = fellesKodeverkConsumer;
         this.metrikk = metrikk;
         this.restTemplate = restTemplate;
         this.stsConsumer = stsConsumer;
@@ -89,7 +93,7 @@ public class AaregConsumer {
                 .filter(arbeidsforhold -> arbeidsforhold.ansettelsesperiode.periode.tom == null || !tilLocalDate(arbeidsforhold.ansettelsesperiode.periode.tom).isBefore(fom))
                 .flatMap(arbeidsforhold -> arbeidsforhold.arbeidsavtaler().stream())
                 .map(arbeidsavtale -> new Stilling()
-                        .yrke(arbeidsavtale.yrke)
+                        .yrke(fellesKodeverkConsumer.stillingsnavnFromKode(arbeidsavtale.yrke))
                         .prosent(stillingsprosentWithMaxScale(arbeidsavtale.stillingsprosent)))
                 .collect(Collectors.toList());
     }

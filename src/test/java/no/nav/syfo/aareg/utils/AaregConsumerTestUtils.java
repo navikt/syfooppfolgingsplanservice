@@ -13,7 +13,8 @@ public class AaregConsumerTestUtils {
     public static final String AT_FNR = "12345678901";
     public static final LocalDate VALID_DATE = LocalDate.now().plusMonths(1);
     public static final LocalDate PASSED_DATE = LocalDate.of(1970, 1, 2);
-    public static final String YRKESKODE = "yrkeskode";
+    public static final String YRKESKODE = "1234567";
+    public static final String YRKESNAVN = "yrkesnavn";
     public static final Double STILLINGSPROSENT = 50.0;
 
     public static Arbeidsforhold simpleArbeidsforhold() {

@@ -61,6 +61,7 @@ virksomhet:
   organisasjonressursenhet.v1.endpointurl: "organisasjonRessursEnhetv1.url"
   sak.v1.endpointurl: "sak.url"
 dokarkiv.url: "http://dokarkiv.url"
+felleskodeverk.url: "http://kodeverk.url"
 
 syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
 ad.accesstoken.url: 'accesstoken.url'
