@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
-import static no.nav.syfo.mocks.AktoerMock.mockAktorId;
+import static no.nav.syfo.testhelper.MockAktorRegKt.mockAktorId;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.*;
