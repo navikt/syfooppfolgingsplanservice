@@ -96,10 +96,6 @@ public class GodkjentplanDAO {
         jdbcTemplate.update("UPDATE godkjentplan SET delt_med_fastlege = 1, delt_med_fastlege_tidspunkt = ? WHERE oppfoelgingsdialog_id = ?", convert(now()), oppfolgingsplanId);
     }
 
-    public List<GodkjentPlan> godkjentePlanerSiden(LocalDateTime timestamp) {
-        return mapListe(jdbcTemplate.query("SELECT * FROM godkjentplan WHERE DELT_MED_NAV_TIDSPUNKT > ?", new GodkjentPlanRowMapper(), convert(timestamp)), p2godkjentplan);
-    }
-
     private class GodkjentPlanRowMapper implements RowMapper<PGodkjentPlan> {
         public PGodkjentPlan mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new PGodkjentPlan()

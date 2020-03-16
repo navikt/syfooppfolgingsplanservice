@@ -1,8 +1,6 @@
 package no.nav.syfo.config;
 
-import no.nav.syfo.api.system.authorization.AuthorizationFilterFeed;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.*;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -49,15 +47,5 @@ public class ApplicationConfig {
     @Bean(name = "scheduler")
     public RestTemplate restTemplateScheduler() {
         return new RestTemplate();
-    }
-
-    @Bean
-    FilterRegistrationBean<AuthorizationFilterFeed> feedFilter() {
-        FilterRegistrationBean<AuthorizationFilterFeed> registrationBean = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(new AuthorizationFilterFeed());
-        registrationBean.addUrlPatterns("/api/system/feed/*");
-
-        return registrationBean;
     }
 }

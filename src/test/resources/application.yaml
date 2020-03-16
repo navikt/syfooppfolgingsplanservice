@@ -88,8 +88,6 @@ sykefravaersoppfoelging.syfoservice.withmock: true
 dev: true
 
 fastlege.dialogmelding.api.v1.url: "https://app-q.adeo.no/fastlgerest//api/dialogmelding/v1/sendOppfolgingsplan"
-syfoveilederoppgaver.systemapi.username: "dummy"
-syfoveilederoppgaver.systemapi.password: "test123"
 
 tilgangskontrollapi.url: "https://www.ikke.no"
 
