@@ -55,7 +55,6 @@ virksomhet:
   arbeidsforhold.v3.endpointurl: "arbeidsforhold.url"
   behandlearbeidogaktivitetoppgave.v1.endpointurl: "behandlearbeidogaktivitetoppgave.url"
   behandlesak.v1.endpointurl: "behandlesak.url"
-  digitalkontakinformasjon.v1.endpointurl: "dkif.url"
   diskresjonskode.v1.endpointurl: "diskresjonskode.url"
   organisasjon.v4.endpointurl: "organisasjonv4.url"
   organisasjonressursenhet.v1.endpointurl: "organisasjonRessursEnhetv1.url"
@@ -80,7 +79,6 @@ client.id: clientId
 client.secret: clientSecret
 
 arena.withmock: true
-dkif.withmock: true
 ereg.withmock: true
 sykefravaersoppfoelging.syfoservice.withmock: true
 
