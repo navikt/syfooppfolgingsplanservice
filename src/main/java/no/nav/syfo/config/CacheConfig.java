@@ -6,6 +6,7 @@ import org.springframework.context.annotation.*;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class CacheConfig {
     public static final String CACHENAME_LEDER = "leder";
     public static final String CACHENAME_ARBEIDSFORHOLD_AT = "arbeidsforholdAT";
     public static final String CACHENAME_TILGANG_TIL_IDENT = "tilgangtilident";
+    public static final String CACHENAME_FELLESKODEVERK_BETYDNINGER = "felleskodeverkBetydninger";
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
@@ -37,6 +39,7 @@ public class CacheConfig {
         cacheConfigurations.put(CACHENAME_LEDER, defaultConfig);
         cacheConfigurations.put(CACHENAME_ARBEIDSFORHOLD_AT, defaultConfig);
         cacheConfigurations.put(CACHENAME_TILGANG_TIL_IDENT, defaultConfig);
+        cacheConfigurations.put(CACHENAME_FELLESKODEVERK_BETYDNINGER, defaultConfig);
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig())

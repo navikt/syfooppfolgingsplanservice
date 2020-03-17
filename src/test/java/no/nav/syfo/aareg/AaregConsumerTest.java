@@ -1,5 +1,6 @@
 package no.nav.syfo.aareg;
 
+import no.nav.syfo.fellesKodeverk.FellesKodeverkConsumer;
 import no.nav.syfo.aareg.exceptions.RestErrorFromAareg;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
@@ -35,6 +36,8 @@ public class AaregConsumerTest {
     @Mock
     private AktorregisterConsumer aktorregisterConsumer;
     @Mock
+    private FellesKodeverkConsumer fellesKodeverkConsumer;
+    @Mock
     private Metrikk metrikk;
     @Mock
     private RestTemplate restTemplate;
@@ -50,6 +53,7 @@ public class AaregConsumerTest {
     public void setup() {
         ReflectionTestUtils.setField(aaregConsumer, "url", AAREG_URL);
         when(stsConsumer.token()).thenReturn("token");
+        when(fellesKodeverkConsumer.stillingsnavnFromKode(anyString())).thenReturn(YRKESNAVN);
     }
 
     @Test
@@ -144,7 +148,7 @@ public class AaregConsumerTest {
 
         Stilling stilling = stillingList.get(0);
 
-        assertThat(stilling.yrke).isEqualTo(YRKESKODE);
+        assertThat(stilling.yrke).isEqualTo(YRKESNAVN);
         assertThat(stilling.prosent).isEqualTo(stillingsprosentWithMaxScale(STILLINGSPROSENT));
     }
 }
