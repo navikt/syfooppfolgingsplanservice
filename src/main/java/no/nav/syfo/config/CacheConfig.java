@@ -19,6 +19,7 @@ public class CacheConfig {
     public static final String CACHENAME_AKTOER_FNR = "aktoerfnr";
     public static final String CACHENAME_ANSATTE = "ansatte";
     public static final String CACHENAME_BEHANDLENDEENHET_FNR = "behandlendeenhetfnr";
+    public static final String CACHENAME_DKIF_IDENT = "dkifident";
     public static final String CACHENAME_LEDER = "leder";
     public static final String CACHENAME_ARBEIDSFORHOLD_AT = "arbeidsforholdAT";
     public static final String CACHENAME_TILGANG_TIL_IDENT = "tilgangtilident";
@@ -36,6 +37,7 @@ public class CacheConfig {
         cacheConfigurations.put(CACHENAME_AKTOER_FNR, defaultConfig);
         cacheConfigurations.put(CACHENAME_ANSATTE, defaultConfig);
         cacheConfigurations.put(CACHENAME_BEHANDLENDEENHET_FNR, defaultConfig);
+        cacheConfigurations.put(CACHENAME_DKIF_IDENT, defaultConfig);
         cacheConfigurations.put(CACHENAME_LEDER, defaultConfig);
         cacheConfigurations.put(CACHENAME_ARBEIDSFORHOLD_AT, defaultConfig);
         cacheConfigurations.put(CACHENAME_TILGANG_TIL_IDENT, defaultConfig);

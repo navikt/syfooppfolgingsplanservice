@@ -3,6 +3,8 @@ package no.nav.syfo.service;
 import no.nav.syfo.aareg.AaregConsumer;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
+import no.nav.syfo.dkif.DigitalKontaktinfo;
+import no.nav.syfo.dkif.DkifConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.sykmelding.Periode;
 import no.nav.syfo.metric.Metrikk;
@@ -24,6 +26,7 @@ import java.util.Optional;
 
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
+import static no.nav.syfo.testhelper.DKIFKontakinformasjonResponseGeneratorKt.generateDigitalKontaktinfo;
 import static no.nav.syfo.util.PropertyUtil.ENVIRONMENT_NAME;
 import static org.mockito.Mockito.*;
 
@@ -43,7 +46,7 @@ public class GodkjenningServiceTest {
     @Mock
     private AktorregisterConsumer aktorregisterConsumer;
     @Mock
-    private DkifService dkifService;
+    private DkifConsumer dkifConsumer;
     @Mock
     private GodkjentplanDAO godkjentplanDAO;
     @Mock
@@ -103,7 +106,8 @@ public class GodkjenningServiceTest {
                 .mobil("mobil")
                 .navn("navn")
         ));
-        when(dkifService.hentKontaktinfoAktoerId(anyString())).thenReturn(new Kontaktinfo().epost("epost").tlf("tlf"));
+        DigitalKontaktinfo digitalKontaktinfo = generateDigitalKontaktinfo();
+        when(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo);
         when(brukerprofilService.hentNavnByAktoerId(anyString())).thenReturn("navn");
         when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn("fnr");
         when(organisasjonService.finnVirksomhetsnavn(anyString())).thenReturn("Virksomhet");
