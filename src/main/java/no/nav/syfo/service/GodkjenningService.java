@@ -3,9 +3,10 @@ package no.nav.syfo.service;
 import no.nav.syfo.aareg.AaregConsumer;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
+import no.nav.syfo.dkif.DigitalKontaktinfo;
+import no.nav.syfo.dkif.DkifConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.pdf.domain.*;
@@ -53,7 +54,7 @@ public class GodkjenningService {
 
     private AktorregisterConsumer aktorregisterConsumer;
 
-    private DkifService dkifService;
+    private DkifConsumer dkifConsumer;
 
     private GodkjentplanDAO godkjentplanDAO;
 
@@ -84,7 +85,7 @@ public class GodkjenningService {
             OppfolgingsplanDAO oppfolgingsplanDAO,
             AktorregisterConsumer aktorregisterConsumer,
             BrukerprofilService brukerprofilService,
-            DkifService dkifService,
+            DkifConsumer dkifConsumer,
             OrganisasjonService organisasjonService,
             NarmesteLederConsumer narmesteLederConsumer,
             ServiceVarselService serviceVarselService,
@@ -101,7 +102,7 @@ public class GodkjenningService {
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukerprofilService = brukerprofilService;
-        this.dkifService = dkifService;
+        this.dkifConsumer = dkifConsumer;
         this.organisasjonService = organisasjonService;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.serviceVarselService = serviceVarselService;
@@ -252,7 +253,7 @@ public class GodkjenningService {
 
         Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
-        Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
+        DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
@@ -307,8 +308,8 @@ public class GodkjenningService {
                         .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)
                 .withSykmeldtNavn(sykmeldtnavn)
-                .withSykmeldtTlf(sykmeldtKontaktinfo.tlf)
-                .withSykmeldtEpost(sykmeldtKontaktinfo.epost)
+                .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
+                .withSykmeldtEpost(sykmeldtKontaktinfo.getEpostadresse())
                 .withVisAdvarsel(false)
                 .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
                 .withOpprettetAv(!erArbeidstakeren(oppfolgingsplan, innloggetAktoerId) ? sykmeldtnavn : naermesteleder.navn)
@@ -347,7 +348,7 @@ public class GodkjenningService {
 
         Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
-        Kontaktinfo sykmeldtKontaktinfo = dkifService.hentKontaktinfoAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
+        DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
@@ -403,8 +404,8 @@ public class GodkjenningService {
                 .withSykmeldtFnr(sykmeldtFnr)
                 .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
                 .withSykmeldtNavn(sykmeldtnavn)
-                .withSykmeldtTlf(sykmeldtKontaktinfo.tlf)
-                .withSykmeldtEpost(sykmeldtKontaktinfo.epost)
+                .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
+                .withSykmeldtEpost(sykmeldtKontaktinfo.getEpostadresse())
                 .withVisAdvarsel(true)
                 .withGodkjentAv(naermesteleder.navn)
                 .withOpprettetAv(naermesteleder.navn)

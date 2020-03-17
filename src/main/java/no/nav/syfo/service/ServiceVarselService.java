@@ -1,9 +1,10 @@
 package no.nav.syfo.service;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.melding.virksomhet.varsel.v1.varsel.*;
-import no.nav.syfo.model.Kontaktinfo;
+import no.nav.syfo.dkif.DigitalKontaktinfo;
+import no.nav.syfo.dkif.DkifConsumer;
 import no.nav.syfo.model.Varseltype;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -12,31 +13,33 @@ import org.springframework.transaction.annotation.Transactional;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.util.JAXB.marshallVarsel;
 import static no.nav.syfo.util.JmsUtil.messageCreator;
+import static org.slf4j.LoggerFactory.getLogger;
 
-@Slf4j
 @Service
 @Transactional
 public class ServiceVarselService {
+
+    private static final Logger log = getLogger(ServiceVarselService.class);
 
     @Value("${tjenester.url}")
     private String tjenesterUrl;
 
     private JmsTemplate servicevarselqueue;
-    private DkifService dkifService;
+    private DkifConsumer dkifConsumer;
 
     @Autowired
     public ServiceVarselService(
             @Qualifier("servicevarselqueue") JmsTemplate servicevarselqueue,
-            DkifService dkifService
+            DkifConsumer dkifConsumer
     ) {
         this.servicevarselqueue = servicevarselqueue;
-        this.dkifService = dkifService;
+        this.dkifConsumer = dkifConsumer;
     }
 
     public void sendServiceVarsel(String aktoerId, Varseltype varseltype, Long oppfoelgingsdialogId) {
-        Kontaktinfo kontaktinfo = dkifService.hentKontaktinfoAktoerId(aktoerId);
-        if (!kontaktinfo.skalHaVarsel) {
-            log.warn("Bruker {} skal ikke ha varsel pga {}", aktoerId, kontaktinfo.feilAarsak.name());
+        DigitalKontaktinfo digitalKontaktinfo = dkifConsumer.kontaktinformasjon(aktoerId);
+        if (!digitalKontaktinfo.getKanVarsles()) {
+            log.warn("Bruker {} skal ikke ha varsel", aktoerId);
             return;
         }
         XMLVarsel xmlVarsel = new XMLVarsel()
