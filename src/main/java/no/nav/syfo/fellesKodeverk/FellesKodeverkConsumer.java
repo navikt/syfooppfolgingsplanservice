@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import static no.nav.syfo.config.CacheConfig.CACHENAME_FELLESKODEVERK_BETYDNINGER;
 import static no.nav.syfo.util.RequestUtilKt.APP_CONSUMER_ID;
 import static no.nav.syfo.util.RequestUtilKt.createCallId;
-import static org.apache.commons.lang.StringUtils.capitalize;
+import static no.nav.syfo.util.StringUtilKt.lowerCapitalize;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 
@@ -64,7 +64,7 @@ public class FellesKodeverkConsumer {
         KodeverkKoderBetydningerResponse response = kodeverkKoderBetydninger();
         try {
             String stillingsnavn = stillingsnavnFromKodeverkKoderBetydningerResponse(response, stillingskode);
-            return capitalize(stillingsnavn);
+            return lowerCapitalize(stillingsnavn);
         } catch (NullPointerException e) {
             LOG.error("Couldn't find navn for stillingskode!");
             throw new MissingStillingsnavn("Didn't get stillingsnavn for stillingskode: " + stillingskode, e);

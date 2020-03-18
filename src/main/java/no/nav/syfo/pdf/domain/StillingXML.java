@@ -1,9 +1,7 @@
 package no.nav.syfo.pdf.domain;
 
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.math.BigDecimal;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -19,7 +17,7 @@ public class StillingXML {
     public BigDecimal prosent;
 
     public StillingXML withYrke(String yrke) {
-        this.yrke = yrke.toLowerCase();
+        this.yrke = yrke;
         return this;
     }
 
