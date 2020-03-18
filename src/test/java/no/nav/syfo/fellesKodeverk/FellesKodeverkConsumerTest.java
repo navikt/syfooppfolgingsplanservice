@@ -34,6 +34,7 @@ public class FellesKodeverkConsumerTest extends TestCase {
     private FellesKodeverkConsumer fellesKodeverkConsumer;
 
     private static final String STILLINGSNAVN = "Special Agent";
+    private static final String STILLINGSNAVN_LOWERCAPITALIZED = "Special agent";
     private static final String WRONG_STILLINGSNAVN = "Deputy Director";
     private static final String STILLINGSKODE = "1234567";
     private static final String WRONG_STILLINGSKODE = "9876543";
@@ -46,7 +47,7 @@ public class FellesKodeverkConsumerTest extends TestCase {
 
         String actualStillingsnavn = fellesKodeverkConsumer.stillingsnavnFromKode(STILLINGSKODE);
 
-        assertThat(actualStillingsnavn).isEqualTo(STILLINGSNAVN);
+        assertThat(actualStillingsnavn).isEqualTo(STILLINGSNAVN_LOWERCAPITALIZED);
 
         verify(metric).tellHendelse("call_felleskodeverk_success");
     }
