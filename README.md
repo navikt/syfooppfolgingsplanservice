@@ -18,3 +18,12 @@ også tilgjengelig i tester. Du kan logge inn og kjøre spørringer på:
 ##Redis Cache
 syfooppfolgingsplanservice bruker redis for cache.
 Redis pod må startes manuelt ved å kjøre følgdende kommando: `kubectl apply -f redis-config.yaml`.
+
+## Alerterator
+Syfooppfolgingsplanservice er satt opp med alerterator, slik når appen er nede vil det sendes en varsling til Slack kanalene #veden-alerts.
+Spec'en for alerts ligger i filen alerts.yaml. Hvis man ønsker å forandre på hvilke varsler som skal sendes må man forandre
+på alerts.yaml og deretter kjøre:
+`kubectl apply -f alerts.yaml`.
+For å se status på syfooppfolgingsplanservice alerts kan man kjøre:
+`kubectl describe alert syfooppfolgingsplanservice-alerts`.
+Dokumentasjon for Alerterator ligger her: https://doc.nais.io/observability/alerts

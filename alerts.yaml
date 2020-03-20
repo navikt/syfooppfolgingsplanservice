@@ -1,0 +1,30 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Alert"
+metadata:
+  name: syfooppfolgingsplanservice-alerts
+  labels:
+    team: teamsykefravr
+spec:
+  receivers:
+    slack:
+      channel: '#veden-alerts'
+      prependText: '<!here> | '
+  alerts:
+    - alert: SYFOOPPFOLGINGSPLAN IS DOWN!
+        expr: up{app="syfooppfolgingsplanservice", job="kubernetes-pods"} == 0
+        for: 2m
+        description: "App {{ $labels.app }} er nede i namespace {{ $labels.kubernetes_namespace }}"
+        action: "Undersøk hvofor {{ $labels.app }} er nede i prod-fss"
+        severity: danger
+    - alert: HIGH RATIO OF HTTP 5XX RESPONSE
+        expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^5\\d\\d", backend=~"syfooppfolgingsplanservice.nais.adeo..+"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"syfooppfolgingsplanservice.nais.adeo..+"}[3m])))) > 1
+        for: 3m
+        description: "App {{ $labels.app }} har en høy andel 500 feil {{ $labels.kubernetes_namespace }}"
+        action: "Sjekk i Grafana eller logger at {{ $labels.backend }} returnerer mange 500-feil"
+        severity: danger
+    - alert: HIGH RATIO OF HTTP 4XX RESPONSE
+        expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^5\\d\\d", backend=~"syfooppfolgingsplanservice.nais.adeo..+"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"syfooppfolgingsplanservice.nais.adeo..+"}[3m])))) > 10
+        for: 3m
+        description: "App {{ $labels.app }} har en høy 400 feil {{ $labels.kubernetes_namespace }}"
+        action: "Sjekk i Grafana eller logger at {{ $labels.backend }} returnerer mange 400-feil"
+        severity: warning
