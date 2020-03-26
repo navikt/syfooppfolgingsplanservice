@@ -57,7 +57,6 @@ virksomhet:
   behandlearbeidogaktivitetoppgave.v1.endpointurl: "behandlearbeidogaktivitetoppgave.url"
   behandlesak.v1.endpointurl: "behandlesak.url"
   diskresjonskode.v1.endpointurl: "diskresjonskode.url"
-  organisasjon.v4.endpointurl: "organisasjonv4.url"
   organisasjonressursenhet.v1.endpointurl: "organisasjonRessursEnhetv1.url"
   sak.v1.endpointurl: "sak.url"
 dokarkiv.url: "http://dokarkiv.url"
@@ -80,7 +79,6 @@ client.id: clientId
 client.secret: clientSecret
 
 arena.withmock: true
-ereg.withmock: true
 sykefravaersoppfoelging.syfoservice.withmock: true
 
 dev: true
