@@ -5,6 +5,7 @@ import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.sts.StsConsumer
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.*
@@ -17,7 +18,7 @@ import javax.inject.Inject
 class EregConsumer @Inject constructor(
         @Value("\${ereg.baseurl}") private val baseUrl: String,
         private val metric: Metrikk,
-        private val restTemplate: RestTemplate,
+        @param:Qualifier("scheduler") private val restTemplate: RestTemplate,
         private val stsConsumer: StsConsumer
 ) {
     fun eregReponse(virksomhetsnummer: String): EregOrganisasjonResponse {

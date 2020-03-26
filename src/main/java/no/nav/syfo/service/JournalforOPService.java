@@ -1,9 +1,8 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.dokarkiv.DokArkivConsumer;
-import no.nav.syfo.domain.GodkjentPlan;
-import no.nav.syfo.domain.Oppfolgingsplan;
-import no.nav.syfo.domain.Person;
+import no.nav.syfo.domain.*;
+import no.nav.syfo.ereg.EregConsumer;
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +13,8 @@ import javax.inject.Inject;
 public class JournalforOPService {
 
     private OppfolgingsplanDAO oppfolgingsplanDAO;
-    private OrganisasjonService organisasjonService;
     private DokArkivConsumer dokArkivConsumer;
+    private EregConsumer eregConsumer;
     private BrukerprofilService brukerprofilService;
     private DokumentService dokumentService;
 
@@ -23,21 +22,21 @@ public class JournalforOPService {
     @Inject
     public JournalforOPService(
             OppfolgingsplanDAO oppfolgingsplanDAO,
-            OrganisasjonService organisasjonService,
             DokArkivConsumer dokArkivConsumer,
+            EregConsumer eregConsumer,
             BrukerprofilService brukerprofilService,
             DokumentService dokumentService
     ) {
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
-        this.organisasjonService = organisasjonService;
         this.dokArkivConsumer = dokArkivConsumer;
+        this.eregConsumer = eregConsumer;
         this.brukerprofilService = brukerprofilService;
         this.dokumentService = dokumentService;
     }
 
     public Integer opprettJournalpost(GodkjentPlan godkjentPlan) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(godkjentPlan.oppfoelgingsdialogId);
-        String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
+        String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         oppfolgingsplan.virksomhet.navn(virksomhetsnavn);
         setArbeidstakerinfo(oppfolgingsplan);
         setPDF(godkjentPlan);

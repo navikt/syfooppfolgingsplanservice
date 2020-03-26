@@ -6,6 +6,7 @@ import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.dkif.DigitalKontaktinfo;
 import no.nav.syfo.dkif.DkifConsumer;
 import no.nav.syfo.domain.*;
+import no.nav.syfo.ereg.EregConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
@@ -62,7 +63,7 @@ public class GodkjenningService {
 
     private BrukerprofilService brukerprofilService;
 
-    private OrganisasjonService organisasjonService;
+    private EregConsumer eregConsumer;
 
     private ServiceVarselService serviceVarselService;
 
@@ -86,7 +87,7 @@ public class GodkjenningService {
             AktorregisterConsumer aktorregisterConsumer,
             BrukerprofilService brukerprofilService,
             DkifConsumer dkifConsumer,
-            OrganisasjonService organisasjonService,
+            EregConsumer eregConsumer,
             NarmesteLederConsumer narmesteLederConsumer,
             ServiceVarselService serviceVarselService,
             SykeforloepService sykeforloepService,
@@ -103,7 +104,7 @@ public class GodkjenningService {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukerprofilService = brukerprofilService;
         this.dkifConsumer = dkifConsumer;
-        this.organisasjonService = organisasjonService;
+        this.eregConsumer = eregConsumer;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.serviceVarselService = serviceVarselService;
         this.sykeforloepService = sykeforloepService;
@@ -256,7 +257,7 @@ public class GodkjenningService {
         DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
-        String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
+        String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
                 .withArbeidsgiverEpost(naermesteleder.epost)
                 .withArbeidsgivernavn(naermesteleder.navn)
@@ -351,7 +352,7 @@ public class GodkjenningService {
         DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
-        String virksomhetsnavn = organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
+        String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
                 .withArbeidsgiverEpost(naermesteleder.epost)
                 .withArbeidsgivernavn(naermesteleder.navn)

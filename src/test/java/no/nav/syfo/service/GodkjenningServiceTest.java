@@ -7,6 +7,7 @@ import no.nav.syfo.dkif.DigitalKontaktinfo;
 import no.nav.syfo.dkif.DkifConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.domain.sykmelding.Periode;
+import no.nav.syfo.ereg.EregConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Kontaktinfo;
 import no.nav.syfo.model.Naermesteleder;
@@ -54,7 +55,7 @@ public class GodkjenningServiceTest {
     @Mock
     private BrukerprofilService brukerprofilService;
     @Mock
-    private OrganisasjonService organisasjonService;
+    private EregConsumer eregConsumer;
     @Mock
     private ServiceVarselService serviceVarselService;
     @Mock
@@ -110,7 +111,7 @@ public class GodkjenningServiceTest {
         when(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo);
         when(brukerprofilService.hentNavnByAktoerId(anyString())).thenReturn("navn");
         when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn("fnr");
-        when(organisasjonService.finnVirksomhetsnavn(anyString())).thenReturn("Virksomhet");
+        when(eregConsumer.virksomhetsnavn(anyString())).thenReturn("Virksomhet");
         when(aaregConsumer.arbeidstakersStillingerForOrgnummer(anyString(), any(), anyString())).thenReturn(Collections.emptyList());
         when(sykeforloepService.hentSykeforlopperiode(anyString(), anyString(), anyString())).thenReturn(
                 asList(new Periode()
