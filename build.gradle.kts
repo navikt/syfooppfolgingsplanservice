@@ -57,7 +57,6 @@ dependencies {
     implementation("no.nav.syfo.tjeneste:altinn-correspondence-agency-external-sf-tjenestespesifikasjon:1.1")
     implementation("no.nav.tjenestespesifikasjoner:nav-arbeidsforhold-v3-tjenestespesifikasjon:1.2019.03.05-14.13-d95264192bc7")
     implementation("no.nav.syfo.tjenester:behandleJournal-v2:1.0.2")
-    implementation("no.nav.sbl.dialogarena:organisasjonv4-tjenestespesifikasjon:1.0.1")
     implementation("no.nav.syfo.tjenester:sykefravaersoppfoelgingv1-tjenestespesifikasjon:1.0.20")
     implementation("no.nav.syfo.tjenester:servicemeldingMedKontaktinformasjon-v1:1.0.0")
     implementation("no.nav.syfo.tjenester:behandleSak-v1:1.0.2")
