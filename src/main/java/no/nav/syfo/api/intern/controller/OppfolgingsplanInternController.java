@@ -6,8 +6,10 @@ import no.nav.syfo.api.intern.domain.RSHistorikk;
 import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
 import no.nav.syfo.domain.Fnr;
 import no.nav.syfo.domain.Oppfolgingsplan;
+import no.nav.syfo.ereg.EregConsumer;
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
-import no.nav.syfo.service.*;
+import no.nav.syfo.service.BrukerprofilService;
+import no.nav.syfo.service.VeilederTilgangService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -26,22 +28,22 @@ public class OppfolgingsplanInternController {
 
     private AktorregisterConsumer aktorregisterConsumer;
     private BrukerprofilService brukerprofilService;
+    private EregConsumer eregConsumer;
     private OppfolgingsplanDAO oppfolgingsplanDAO;
-    private OrganisasjonService organisasjonService;
     private VeilederTilgangService veilederTilgangService;
 
     @Inject
     public OppfolgingsplanInternController(
             final AktorregisterConsumer aktorregisterConsumer,
             final BrukerprofilService brukerprofilService,
+            final EregConsumer eregConsumer,
             final OppfolgingsplanDAO oppfolgingsplanDAO,
-            final OrganisasjonService organisasjonService,
             final VeilederTilgangService veilederTilgangService
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukerprofilService = brukerprofilService;
+        this.eregConsumer = eregConsumer;
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
-        this.organisasjonService = organisasjonService;
         this.veilederTilgangService = veilederTilgangService;
     }
 
@@ -49,7 +51,7 @@ public class OppfolgingsplanInternController {
         if (oppfolgingsplan.sistEndretAvAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
             return brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.sistEndretAvAktoerId);
         }
-        return organisasjonService.finnVirksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
+        return eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)

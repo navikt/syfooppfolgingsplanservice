@@ -51,6 +51,7 @@ syfonarmesteleder.id: "syfonarmestelederID"
 pdl.url: "https://pdl.url"
 aareg.services.url: "http://aareg-services.url"
 aktorregister.rest.url: "http://aktorregister.url"
+ereg.baseurl: "http://ereg"
 virksomhet:
   arbeidsforhold.v3.endpointurl: "arbeidsforhold.url"
   behandlearbeidogaktivitetoppgave.v1.endpointurl: "behandlearbeidogaktivitetoppgave.url"

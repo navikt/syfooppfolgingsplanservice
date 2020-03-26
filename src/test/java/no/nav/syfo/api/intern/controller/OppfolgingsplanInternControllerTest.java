@@ -2,6 +2,7 @@ package no.nav.syfo.api.intern.controller;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest;
+import no.nav.syfo.ereg.EregConsumer;
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import no.nav.syfo.service.*;
 import org.junit.*;
@@ -21,11 +22,11 @@ public class OppfolgingsplanInternControllerTest extends AbstractRessursTilgangT
     @MockBean
     private AktorregisterConsumer aktorregisterConsumer;
     @MockBean
+    private EregConsumer eregConsumer;
+    @MockBean
     private OppfolgingsplanDAO oppfolgingsplanDAO;
     @MockBean
     private BrukerprofilService brukerprofilService;
-    @MockBean
-    private OrganisasjonService organisasjonService;
 
     @Inject
     private OppfolgingsplanInternController oppfolgingsplanInternController;
