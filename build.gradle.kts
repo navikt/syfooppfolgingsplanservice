@@ -13,6 +13,7 @@ val springBootVersion = "2.0.4.RELEASE"
 val kotlinLibVersion = "1.3.50"
 val kotlinJacksonVersion = "2.9.8"
 val lombokVersion = "1.16.20"
+val tjenesteSpesifikasjonerVersion = "1.2019.09.25-00.21-49b69f0625e0"
 
 plugins {
     kotlin("jvm") version "1.3.50"
@@ -46,6 +47,7 @@ repositories {
     maven(url = "https://repo.adeo.no/repository/maven-releases/")
     maven(url = "https://dl.bintray.com/kotlin/kotlinx/")
     maven(url = "http://packages.confluent.io/maven/")
+    maven(url = "https://repo1.maven.org/maven2/")
 }
 
 dependencies {
@@ -83,7 +85,7 @@ dependencies {
 
     implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.4.0")
     implementation("no.nav.syfo.tjenester:servicemeldingMedKontaktinformasjon-v1:1.0.0")
-    implementation("no.nav.sbl.dialogarena:varsel-inn:1.0.5")
+    implementation("no.nav.tjenestespesifikasjoner:varsel-inn:$tjenesteSpesifikasjonerVersion")
 
     runtime("com.oracle:ojdbc6:11.2.0.3")
     implementation("org.flywaydb:flyway-core:4.0.3")
