@@ -42,7 +42,6 @@ elector.path: "www.kanskje.no"
 
 syfobrukertilgang.url: "http://syfobrukertilgang"
 ekstern.altinn.behandlealtinnmelding.v1.endpointurl: "behandlealtinnmelding.url"
-behandlejournal.v2.endpointurl: "behandlejournal.url"
 brukeroppgave.v1.endpointurl: "brukeroppgavev1.url"
 lagrejuridisklogg.rest.url: "juridisklogg-lagre.url"
 sykefravaersoppfoelging.v1.endpointurl: "sykefravaeroppfoelgingv1.url"
@@ -52,13 +51,6 @@ pdl.url: "https://pdl.url"
 aareg.services.url: "http://aareg-services.url"
 aktorregister.rest.url: "http://aktorregister.url"
 ereg.baseurl: "http://ereg"
-virksomhet:
-  arbeidsforhold.v3.endpointurl: "arbeidsforhold.url"
-  behandlearbeidogaktivitetoppgave.v1.endpointurl: "behandlearbeidogaktivitetoppgave.url"
-  behandlesak.v1.endpointurl: "behandlesak.url"
-  diskresjonskode.v1.endpointurl: "diskresjonskode.url"
-  organisasjonressursenhet.v1.endpointurl: "organisasjonRessursEnhetv1.url"
-  sak.v1.endpointurl: "sak.url"
 dokarkiv.url: "http://dokarkiv.url"
 felleskodeverk.url: "http://kodeverk.url"
 
@@ -78,7 +70,6 @@ srvsyfooppfolgingsplanservice.password: srvpassword
 client.id: clientId
 client.secret: clientSecret
 
-arena.withmock: true
 sykefravaersoppfoelging.syfoservice.withmock: true
 
 dev: true
