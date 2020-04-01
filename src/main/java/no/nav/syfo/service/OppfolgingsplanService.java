@@ -221,7 +221,7 @@ public class OppfolgingsplanService {
     private void sendVarsler(String innloggetAktoerId, Oppfolgingsplan oppfolgingsplan) {
         if (innloggetAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
             Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
-            tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanOpprettetNL, naermesteleder, oppfolgingsplan.id);
+            tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanOpprettetNL, naermesteleder);
         } else {
             serviceVarselService.sendServiceVarsel(oppfolgingsplan.arbeidstaker.aktoerId, SyfoplanOpprettetSyk, oppfolgingsplan.id);
         }
@@ -343,7 +343,7 @@ public class OppfolgingsplanService {
 
         if (erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
             Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
-            tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanRevideringNL, naermesteleder, oppfolgingsplan.id);
+            tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanRevideringNL, naermesteleder);
         } else {
             serviceVarselService.sendServiceVarsel(oppfolgingsplan.arbeidstaker.aktoerId, SyfoplanRevideringSyk, oppfolgingsplan.id);
         }

@@ -1,16 +1,14 @@
 package no.nav.syfo.service;
 
 import no.nav.melding.virksomhet.servicemeldingmedkontaktinformasjon.v1.servicemeldingmedkontaktinformasjon.*;
-import no.nav.syfo.model.Naermesteleder;
-import no.nav.syfo.model.Varseltype;
+import no.nav.syfo.model.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
-import static java.lang.System.getProperty;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.util.JAXB.marshallTredjepartsServiceMelding;
@@ -30,10 +28,9 @@ public class TredjepartsvarselService {
         this.tredjepartsvarselqueue = tredjepartsvarselqueue;
     }
 
-    public void sendVarselTilNaermesteLeder(Varseltype varseltype, Naermesteleder naermesteleder, Long oppfoelgingsdialogId) {
-        List<WSParameter> parametere = asList(
-                createParameter("url", tjenesterUrl + "/sykefravaerarbeidsgiver/"),
-                createParameter("dittnavUrl", tjenesterUrl + "/sykefravaerarbeidsgiver/" + naermesteleder.naermesteLederAktoerId + "/oppfolgingsplaner/" + oppfoelgingsdialogId)
+    public void sendVarselTilNaermesteLeder(Varseltype varseltype, Naermesteleder naermesteleder) {
+        List<WSParameter> parametere = Collections.singletonList(
+                createParameter("url", tjenesterUrl + "/sykefravaerarbeidsgiver/")
         );
         WSServicemeldingMedKontaktinformasjon melding = new WSServicemeldingMedKontaktinformasjon();
         populerServiceMelding(melding, kontaktinformasjon(naermesteleder), naermesteleder, varseltype, parametere);
