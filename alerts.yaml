@@ -12,7 +12,7 @@ spec:
   alerts:
     - alert: SYFOOPPFOLGINGSPLAN IS DOWN!
         expr: up{app="syfooppfolgingsplanservice", job="kubernetes-pods"} == 0
-        for: 2m
+        for: 5m
         description: "App {{ $labels.app }} er nede i namespace {{ $labels.kubernetes_namespace }}"
         action: "Undersøk hvofor {{ $labels.app }} er nede i prod-fss"
         severity: danger
