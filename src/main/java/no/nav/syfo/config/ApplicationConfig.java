@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import static java.util.Arrays.asList;
@@ -24,8 +23,11 @@ public class ApplicationConfig {
     // Sørger for at flyway migrering skjer etter at JTA transaction manager er ferdig satt opp av Spring.
     // Forhindrer WARNING: transaction manager not running? loggspam fra Atomikos.
 
-    @Inject
-    private DataSource dataSource;
+    private final DataSource dataSource;
+
+    public ApplicationConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Bean
     FlywayMigrationStrategy flywayMigrationStrategy(final JtaTransactionManager jtaTransactionManager) {

@@ -25,11 +25,4 @@ public class LocalApplicationConfig {
         System.setProperty("VARSELPRODUKSJON_VARSLINGER_QUEUENAME", requireNonNull(environment.getProperty("varselproduksjon.varslinger.queuename")));
         System.setProperty("VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME", requireNonNull(environment.getProperty("varselproduksjon.best.srvmled.m.kontakt.queuename")));
     }
-
-    @Bean
-    public RestTemplate restTemplate(ClientHttpRequestInterceptor... interceptors) {
-        RestTemplate template = new RestTemplate();
-        template.setInterceptors(asList(interceptors));
-        return template;
-    }
 }
