@@ -7,24 +7,27 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 val cxfVersion = "3.3.3"
-val oidcSupportVersion = "0.2.7"
+val oidcSupportVersion = "0.2.18"
 val oidcSupportTestVersion = "0.2.4"
-val springBootVersion = "2.0.4.RELEASE"
 val kotlinLibVersion = "1.3.50"
 val kotlinJacksonVersion = "2.9.8"
 val lombokVersion = "1.16.20"
 val tjenesteSpesifikasjonerVersion = "1.2019.09.25-00.21-49b69f0625e0"
+
+val flywayVersion = "5.1.4"
+val ojdbc8Version = "19.3.0.0"
 
 plugins {
     kotlin("jvm") version "1.3.50"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.3.50"
     id("com.github.johnrengelman.shadow") version "4.0.3"
     id("java")
+    id("org.springframework.boot") version "2.1.8.RELEASE"
+    id("io.spring.dependency-management") version "1.0.9.RELEASE"
 }
 
 buildscript {
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.4.RELEASE")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.0")
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
         classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
@@ -58,21 +61,21 @@ dependencies {
     implementation("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-jersey:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-logging:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-jta-atomikos:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis:$springBootVersion")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-jersey")
+    implementation("org.springframework.boot:spring-boot-starter-logging")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-jta-atomikos")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    implementation("org.springframework:spring-jms:5.0.7.RELEASE")
-    implementation("org.springframework:spring-context:5.0.7.RELEASE")
+    implementation("org.springframework:spring-jms")
 
-    implementation("no.nav.security:oidc-support:$oidcSupportVersion")
+    implementation("org.apache.httpcomponents:httpclient:4.5.6")
+
     implementation("no.nav.security:oidc-spring-support:$oidcSupportVersion")
-    testImplementation("no.nav.security:oidc-spring-test:$oidcSupportTestVersion")
+    testImplementation("no.nav.security:oidc-test-support:$oidcSupportVersion")
 
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
@@ -87,9 +90,9 @@ dependencies {
     implementation("no.nav.syfo.tjenester:servicemeldingMedKontaktinformasjon-v1:1.0.0")
     implementation("no.nav.tjenestespesifikasjoner:varsel-inn:$tjenesteSpesifikasjonerVersion")
 
-    runtime("com.oracle:ojdbc6:11.2.0.3")
-    implementation("org.flywaydb:flyway-core:4.0.3")
-    testImplementation("com.h2database:h2:1.4.197")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
+    implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
+    testImplementation("com.h2database:h2")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.0.6")
     implementation("net.logstash.logback:logstash-logback-encoder:4.10")
