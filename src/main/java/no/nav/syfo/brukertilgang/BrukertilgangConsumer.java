@@ -3,6 +3,7 @@ package no.nav.syfo.brukertilgang;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oidc.OIDCUtil;
+import no.nav.syfo.util.RequestUtilKt;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
+import static no.nav.syfo.util.RequestUtilKt.*;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
@@ -42,11 +44,12 @@ public class BrukertilgangConsumer {
     }
 
     public boolean hasAccessToAnsatt(String ansattFnr) {
+        HttpEntity httpEntity = entity();
         try {
             ResponseEntity<Boolean> response = restTemplate.exchange(
                     arbeidstakerUrl(ansattFnr),
                     GET,
-                    entity(),
+                    httpEntity,
                     new ParameterizedTypeReference<Boolean>() {
                     }
             );
@@ -57,7 +60,7 @@ public class BrukertilgangConsumer {
             if (e.getRawStatusCode() == 401) {
                 throw new RequestUnauthorizedException("Unauthorized request to get access to Ansatt from Syfobrukertilgang");
             } else {
-                LOG.error("Error requesting ansatt access from syfobrukertilgang: ", e);
+                LOG.error("Error requesting ansatt access from syfobrukertilgang with callId {}: ", httpEntity.getHeaders().get(NAV_CALL_ID_HEADER), e);
                 throw e;
             }
         }
@@ -66,6 +69,8 @@ public class BrukertilgangConsumer {
     private HttpEntity entity() {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(OIDCUtil.getIssuerToken(oidcContextHolder, EKSTERN)));
+        headers.add(NAV_CALL_ID_HEADER, createCallId());
+        headers.add(NAV_CONSUMER_ID_HEADER, APP_CONSUMER_ID);
         return new HttpEntity<>(headers);
     }
 
