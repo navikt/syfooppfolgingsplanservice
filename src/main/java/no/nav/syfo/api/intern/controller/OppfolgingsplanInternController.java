@@ -2,14 +2,11 @@ package no.nav.syfo.api.intern.controller;
 
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.api.intern.domain.RSHistorikk;
-import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
-import no.nav.syfo.domain.Fnr;
-import no.nav.syfo.domain.Oppfolgingsplan;
+import no.nav.syfo.api.intern.domain.*;
+import no.nav.syfo.domain.*;
 import no.nav.syfo.ereg.EregConsumer;
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
-import no.nav.syfo.service.BrukerprofilService;
-import no.nav.syfo.service.VeilederTilgangService;
+import no.nav.syfo.service.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -57,11 +54,11 @@ public class OppfolgingsplanInternController {
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/historikk")
     public List<RSHistorikk> getHistorikk(@PathVariable("fnr") String fnr) {
-        Fnr personFnr = Fnr.of(fnr);
+        Fodselsnummer personFnr = new Fodselsnummer(fnr);
 
         veilederTilgangService.throwExceptionIfVeilederWithoutAccess(personFnr);
 
-        List<Oppfolgingsplan> oppfoelgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getFnr()))
+        List<Oppfolgingsplan> oppfoelgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getValue()))
                 .stream()
                 .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
                 .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())
@@ -79,11 +76,11 @@ public class OppfolgingsplanInternController {
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<RSOppfoelgingsdialog> getOppfolgingsplaner(@PathVariable("fnr") String fnr) {
-        Fnr personFnr = Fnr.of(fnr);
+        Fodselsnummer personFnr = new Fodselsnummer(fnr);
 
         veilederTilgangService.throwExceptionIfVeilederWithoutAccess(personFnr);
 
-        return mapListe(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getFnr()))
+        return mapListe(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getValue()))
                         .stream()
                         .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
                         .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())

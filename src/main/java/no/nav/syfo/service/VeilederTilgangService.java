@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.syfo.domain.Fnr;
+import no.nav.syfo.domain.*;
 import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.oidc.OIDCUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,15 +46,15 @@ public class VeilederTilgangService {
         this.template = template;
     }
 
-    public void throwExceptionIfVeilederWithoutAccess(Fnr fnr) {
+    public void throwExceptionIfVeilederWithoutAccess(Fodselsnummer fnr) {
         boolean harTilgang = harVeilederTilgangTilPersonViaAzure(fnr);
         if (!harTilgang) {
             throw new ForbiddenException();
         }
     }
 
-    public boolean harVeilederTilgangTilPersonViaAzure(Fnr fnr) {
-        URI tilgangTilBrukerViaAzureUriMedFnr = tilgangTilBrukerViaAzureUriTemplate.build(singletonMap(FNR, fnr.getFnr()));
+    public boolean harVeilederTilgangTilPersonViaAzure(Fodselsnummer fnr) {
+        URI tilgangTilBrukerViaAzureUriMedFnr = tilgangTilBrukerViaAzureUriTemplate.build(singletonMap(FNR, fnr.getValue()));
         return checkAccess(tilgangTilBrukerViaAzureUriMedFnr, OIDCIssuer.AZURE);
     }
 
