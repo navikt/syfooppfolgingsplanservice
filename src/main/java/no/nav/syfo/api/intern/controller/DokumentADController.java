@@ -7,6 +7,7 @@ import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
 import no.nav.syfo.service.*;
+import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,25 +27,25 @@ public class DokumentADController {
     private DokumentService dokumentService;
     private GodkjentplanDAO godkjentplanDAO;
     private PdfService pdfService;
-    private VeilederTilgangService veilederTilgangService;
+    private VeilederTilgangConsumer veilederTilgangConsumer;
 
     @Inject
     public DokumentADController(
             final DokumentService dokumentService,
             final GodkjentplanDAO godkjentplanDAO,
             final PdfService pdfService,
-            final VeilederTilgangService veilederTilgangService
+            final VeilederTilgangConsumer veilederTilgangConsumer
     ) {
         this.dokumentService = dokumentService;
         this.godkjentplanDAO = godkjentplanDAO;
         this.pdfService = pdfService;
-        this.veilederTilgangService = veilederTilgangService;
+        this.veilederTilgangConsumer = veilederTilgangConsumer;
     }
 
     @GetMapping
     @RequestMapping(value = "/side/{side}")
     public ResponseEntity bilde(@PathVariable("oppfoelgingsdialogId") long oppfoelgingsdialogId, @PathVariable("side") int side) throws IOException {
-        veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilTjenestenViaAzure();
+        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessToSYFO();
 
         try {
             byte[] pdf = getPdf(oppfoelgingsdialogId);
@@ -60,7 +61,7 @@ public class DokumentADController {
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/dokumentinfo")
     public Dokumentinfo dokumentinfo(@PathVariable("oppfoelgingsdialogId") long oppfoelgingsdialogId) {
-        veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilTjenestenViaAzure();
+        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessToSYFO();
 
         byte[] pdf = getPdf(oppfoelgingsdialogId);
         return new Dokumentinfo().antallSider(pdfService.hentAntallSiderIDokument(pdf));
@@ -75,7 +76,7 @@ public class DokumentADController {
 
     @GetMapping
     public ResponseEntity dokument(@PathVariable("oppfoelgingsdialogId") long oppfoelgingsdialogId) {
-        veilederTilgangService.kastExceptionHvisIkkeVeilederHarTilgangTilTjenestenViaAzure();
+        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessToSYFO();
 
         byte[] pdf = getPdf(oppfoelgingsdialogId);
         return ResponseEntity.ok()

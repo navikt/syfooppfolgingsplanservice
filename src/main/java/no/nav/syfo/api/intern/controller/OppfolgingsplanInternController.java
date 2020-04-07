@@ -7,6 +7,7 @@ import no.nav.syfo.domain.*;
 import no.nav.syfo.ereg.EregConsumer;
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import no.nav.syfo.service.*;
+import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -27,7 +28,7 @@ public class OppfolgingsplanInternController {
     private BrukerprofilService brukerprofilService;
     private EregConsumer eregConsumer;
     private OppfolgingsplanDAO oppfolgingsplanDAO;
-    private VeilederTilgangService veilederTilgangService;
+    private VeilederTilgangConsumer veilederTilgangConsumer;
 
     @Inject
     public OppfolgingsplanInternController(
@@ -35,13 +36,13 @@ public class OppfolgingsplanInternController {
             final BrukerprofilService brukerprofilService,
             final EregConsumer eregConsumer,
             final OppfolgingsplanDAO oppfolgingsplanDAO,
-            final VeilederTilgangService veilederTilgangService
+            final VeilederTilgangConsumer veilederTilgangConsumer
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukerprofilService = brukerprofilService;
         this.eregConsumer = eregConsumer;
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
-        this.veilederTilgangService = veilederTilgangService;
+        this.veilederTilgangConsumer = veilederTilgangConsumer;
     }
 
     private String finnDeltAvNavn(Oppfolgingsplan oppfolgingsplan) {
@@ -56,7 +57,7 @@ public class OppfolgingsplanInternController {
     public List<RSHistorikk> getHistorikk(@PathVariable("fnr") String fnr) {
         Fodselsnummer personFnr = new Fodselsnummer(fnr);
 
-        veilederTilgangService.throwExceptionIfVeilederWithoutAccess(personFnr);
+        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccess(personFnr);
 
         List<Oppfolgingsplan> oppfoelgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getValue()))
                 .stream()
@@ -78,7 +79,7 @@ public class OppfolgingsplanInternController {
     public List<RSOppfoelgingsdialog> getOppfolgingsplaner(@PathVariable("fnr") String fnr) {
         Fodselsnummer personFnr = new Fodselsnummer(fnr);
 
-        veilederTilgangService.throwExceptionIfVeilederWithoutAccess(personFnr);
+        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccess(personFnr);
 
         return mapListe(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getValue()))
                         .stream()
