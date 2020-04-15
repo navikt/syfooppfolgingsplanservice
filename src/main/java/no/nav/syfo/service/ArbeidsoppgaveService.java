@@ -20,7 +20,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Service
 public class ArbeidsoppgaveService {
 
-    private static final Logger LOG = getLogger(AaregConsumer.class);
+    private static final Logger LOG = getLogger(ArbeidsoppgaveService.class);
 
     private AktorregisterConsumer aktorregisterConsumer;
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
