@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aareg.AaregConsumer;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
