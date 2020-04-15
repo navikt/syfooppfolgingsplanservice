@@ -1,11 +1,13 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.aareg.AaregConsumer;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.domain.Arbeidsoppgave;
-import no.nav.syfo.domain.Oppfolgingsplan;
+import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
+import org.slf4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +15,12 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeArbeidsoppgaveHoererTilDialog;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class ArbeidsoppgaveService {
+
+    private static final Logger LOG = getLogger(AaregConsumer.class);
 
     private AktorregisterConsumer aktorregisterConsumer;
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
@@ -75,16 +80,20 @@ public class ArbeidsoppgaveService {
     @Transactional
     public void slettArbeidsoppgave(Long arbeidsoppgaveId, String fnr) throws ConflictException {
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
-        Arbeidsoppgave arbeidsoppgave = arbeidsoppgaveDAO.finnArbeidsoppgave(arbeidsoppgaveId);
+        try {
+            Arbeidsoppgave arbeidsoppgave = arbeidsoppgaveDAO.finnArbeidsoppgave(arbeidsoppgaveId);
+            if (!arbeidsoppgave.opprettetAvAktoerId.equals(innloggetAktoerId)) {
+                throw new ForbiddenException("Ikke tilgang");
+            }
+            if (godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(arbeidsoppgave.oppfoelgingsdialogId).stream().anyMatch(pGodkjenning -> pGodkjenning.godkjent)) {
+                throw new ConflictException();
+            }
 
-        if (!arbeidsoppgave.opprettetAvAktoerId.equals(innloggetAktoerId)) {
-            throw new ForbiddenException("Ikke tilgang");
+            oppfolgingsplanDAO.sistEndretAv(arbeidsoppgave.oppfoelgingsdialogId, innloggetAktoerId);
+            arbeidsoppgaveDAO.delete(arbeidsoppgave.id);
+        } catch (EmptyResultDataAccessException e) {
+            LOG.error("EmptyResultDataAccessException for Arbeidsoppgave {}", arbeidsoppgaveId);
+            throw e;
         }
-        if (godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(arbeidsoppgave.oppfoelgingsdialogId).stream().anyMatch(pGodkjenning -> pGodkjenning.godkjent)) {
-            throw new ConflictException();
-        }
-
-        oppfolgingsplanDAO.sistEndretAv(arbeidsoppgave.oppfoelgingsdialogId, innloggetAktoerId);
-        arbeidsoppgaveDAO.delete(arbeidsoppgave.id);
     }
 }
