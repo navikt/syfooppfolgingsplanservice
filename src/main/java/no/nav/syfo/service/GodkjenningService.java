@@ -15,6 +15,7 @@ import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.repository.domain.Dokument;
 import no.nav.syfo.util.ConflictException;
 import no.nav.syfo.util.JAXB;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +23,7 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -37,11 +37,15 @@ import static no.nav.syfo.pdf.PdfFabrikk.tilPdf;
 import static no.nav.syfo.util.DatoUtil.antallDagerIPeriode;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.*;
+import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidsgiveren;
 import static no.nav.syfo.util.time.DateUtil.tilKortDato;
 import static no.nav.syfo.util.time.DateUtil.tilMuntligDatoAarFormat;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class GodkjenningService {
+
+    private static final Logger LOG = getLogger(GodkjenningService.class);
 
     private AaregConsumer aaregConsumer;
 
@@ -131,7 +135,19 @@ public class GodkjenningService {
 
         oppfolgingsplan = oppfolgingsplanDAO.populate(oppfolgingsplan);
 
-        if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId) && tvungenGodkjenning) {
+        if (tvungenGodkjenning && erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
+            Optional<Naermesteleder> narmesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer);
+            if (narmesteleder.isPresent() && narmesteleder.get().naermesteLederAktoerId.equals(innloggetAktoerId)) {
+                genererTvungenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
+                godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
+                sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
+            } else {
+                String message = "Tvangsgodkjenning av plan feilet fordi Arbeidstaker ikke er sin egen leder";
+                LOG.error(message);
+                metrikk.tellHendelse("feil_godkjenn_tvang_egen_leder");
+                throw new RuntimeException(message);
+            }
+        } else if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId) && tvungenGodkjenning) {
             genererTvungenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
             sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
