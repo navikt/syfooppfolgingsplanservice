@@ -66,7 +66,7 @@ public class PdfService {
         } else {
             metrikk.tellHendelse("hent_pdf_missing_godkjentplan");
             log.error("Did not find PDF due to missing GodkjentPlan for plan {}", oppfolgingsplanId);
-            throw new RuntimeException();
+            throw new RuntimeException("Did not find PDF due to missing GodkjentPlan for plan");
         }
     }
 
