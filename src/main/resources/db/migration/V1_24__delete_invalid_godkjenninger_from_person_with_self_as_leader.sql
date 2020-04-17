@@ -1,0 +1,15 @@
+DELETE
+FROM GODKJENNING go
+WHERE go.OPPFOELGINGSDIALOG_ID IN (
+    SELECT go.OPPFOELGINGSDIALOG_ID
+    FROM GODKJENNING go JOIN (
+        SELECT *
+        FROM (
+                 SELECT AKTOER_ID as aktorF, OPPFOELGINGSDIALOG_ID AS oid, count(AKTOER_ID) AS countF
+                 FROM GODKJENNING
+                 GROUP BY AKTOER_ID, OPPFOELGINGSDIALOG_ID
+             )
+        WHERE  countF > 1
+    )
+    ON go.OPPFOELGINGSDIALOG_ID = oid
+);
