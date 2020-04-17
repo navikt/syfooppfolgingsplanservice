@@ -138,6 +138,7 @@ public class GodkjenningService {
         if (tvungenGodkjenning && erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
             Optional<Naermesteleder> narmesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer);
             if (narmesteleder.isPresent() && narmesteleder.get().naermesteLederAktoerId.equals(innloggetAktoerId)) {
+                LOG.info("TRACE: Arbeidstaker attempting to Tvangsgodkjenne oppfolginsplan {}", oppfoelgingsdialogId);
                 genererTvungenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
                 godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
                 sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
