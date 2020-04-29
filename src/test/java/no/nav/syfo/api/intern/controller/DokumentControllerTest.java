@@ -1,5 +1,6 @@
 package no.nav.syfo.api.intern.controller;
 
+import no.nav.syfo.api.intern.DokumentADController;
 import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
