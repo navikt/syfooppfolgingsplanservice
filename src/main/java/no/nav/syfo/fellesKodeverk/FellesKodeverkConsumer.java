@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 import static no.nav.syfo.config.CacheConfig.CACHENAME_FELLESKODEVERK_BETYDNINGER;
 import static no.nav.syfo.util.RequestUtilKt.APP_CONSUMER_ID;
 import static no.nav.syfo.util.RequestUtilKt.createCallId;
@@ -66,8 +69,8 @@ public class FellesKodeverkConsumer {
             String stillingsnavn = stillingsnavnFromKodeverkKoderBetydningerResponse(response, stillingskode);
             return lowerCapitalize(stillingsnavn);
         } catch (NullPointerException e) {
-            LOG.error("Couldn't find navn for stillingskode!");
-            throw new MissingStillingsnavn("Didn't get stillingsnavn for stillingskode: " + stillingskode, e);
+            LOG.error("Couldn't find navn for stillingskode: " + stillingskode);
+            return "Ugyldig yrkeskode " + stillingskode;
         }
     }
 

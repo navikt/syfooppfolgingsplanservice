@@ -1,7 +1,6 @@
 package no.nav.syfo.fellesKodeverk;
 
 import junit.framework.TestCase;
-import no.nav.syfo.fellesKodeverk.exceptions.MissingStillingsnavn;
 import no.nav.syfo.metric.Metrikk;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,12 +51,14 @@ public class FellesKodeverkConsumerTest extends TestCase {
         verify(metric).tellHendelse("call_felleskodeverk_success");
     }
 
-    @Test(expected = MissingStillingsnavn.class)
-    public void stillingsnavnFromKode_throws_exception_if_navn_not_found() {
+    @Test
+    public void stillingsnavnFromKode_return_custom_message_if_navn_not_found() {
         KodeverkKoderBetydningerResponse expectedResponse = responseBodyWithWrongKode();
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(KodeverkKoderBetydningerResponse.class))).thenReturn(new ResponseEntity<>(expectedResponse, OK));
 
-        fellesKodeverkConsumer.stillingsnavnFromKode(STILLINGSKODE);
+        String actualStillingsnavn = fellesKodeverkConsumer.stillingsnavnFromKode(STILLINGSKODE);
+
+        assertThat(actualStillingsnavn).isEqualTo("Ugyldig yrkeskode " + STILLINGSKODE);
 
         verify(metric).tellHendelse("call_felleskodeverk_success");
     }
