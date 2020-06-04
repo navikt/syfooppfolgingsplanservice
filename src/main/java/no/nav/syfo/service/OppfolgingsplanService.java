@@ -180,6 +180,12 @@ public class OppfolgingsplanService {
         if (!tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfolgingsplan)) {
             throw new ForbiddenException();
         }
+        String sykmeldtAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
+
+        if (parteneHarEkisterendeAktivOppfolgingsplan(sykmeldtAktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer)) {
+            log.warn("Kan ikke opprette en plan når det allerede eksisterer en aktiv plan mellom partene!");
+            throw new ConflictException();
+        }
 
         long nyOppfoelgingsdialogId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId);
         overfoerDataFraDialogTilNyDialog(oppfoelgingsdialogId, nyOppfoelgingsdialogId);
