@@ -24,6 +24,7 @@ plugins {
     id("java")
     id("org.springframework.boot") version "2.1.8.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
+    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
 }
 
 buildscript {

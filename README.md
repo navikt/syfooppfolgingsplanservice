@@ -5,6 +5,8 @@ Tidligere serviceoppfoelgingsdialog, håndterer digitale oppfølgigngsplaner
 ## Lokal utvikling
 Start opp via `LocalApplication.main`. Kjører på port 8583.
 
+### Lint
+Kjør `./gradlew --continue ktlintCheck`
 
 ## Veien til prod
 Bygg og Pipeline jobber ligger i jenkins: https://jenkins-digisyfo.adeo.no/job/digisyfo/job/syfooppfolgingsplanservice/
