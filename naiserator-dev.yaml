@@ -1,0 +1,120 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: syfooppfolgingsplanservice
+  namespace: default
+  labels:
+    team: teamsykefravr
+spec:
+  image: {{ image }}
+  port: 8080
+  team: teamsykefravr
+  liveness:
+    path: /syfooppfolgingsplanservice/internal/isAlive
+    initialDelay: 60
+    timeout: 1
+    periodSeconds: 10
+    failureThreshold: 5
+  readiness:
+    path: /syfooppfolgingsplanservice/internal/isReady
+    initialDelay: 60
+    timeout: 1
+  resources:
+    limits:
+      cpu: 3000m
+      memory: 3060Mi
+    requests:
+      cpu: 1000m
+      memory: 2048Mi
+  replicas:
+    min: 2
+    max: 4
+    cpuThresholdPercentage: 80
+  prometheus:
+    enabled: true
+    path: /syfooppfolgingsplanservice/internal/prometheus
+  ingresses:
+    - "https://syfooppfolgingsplanservice.nais.preprod.local"
+    - "https://app-q1.adeo.no/syfooppfolgingsplanservice"
+  vault:
+    enabled: true
+  leaderElection: true
+  env:
+    - name: APP_NAME
+      value: "syfooppfolgingsplanservice"
+    - name: APPDYNAMICS_CONTROLLER_HOST_NAME
+      value: appdynamics.adeo.no
+    - name: APPDYNAMICS_CONTROLLER_PORT
+      value: "443"
+    - name: APPDYNAMICS_CONTROLLER_SSL_ENABLED
+      value: "true"
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_SELVBETJENING_ACCEPTEDAUDIENCE
+      value: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_SELVBETJENING_DISCOVERYURL
+      value: https://login.microsoftonline.com/NAVtestB2C.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_INTERN_DISCOVERYURL
+      value: https://isso-q.adeo.no:443/isso/oauth2/.well-known/openid-configuration
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_VEILEDER_DISCOVERYURL
+      value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/.well-known/openid-configuration
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_VEILEDER_ACCEPTEDAUDIENCE
+      value: 38e07d31-659d-4595-939a-f18dce3446c5
+    - name: ALTINN_TEST_WHITELIST_ORGNR
+      value: "910067494"
+    - name: SECURITYTOKENSERVICE_URL
+      value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
+    - name: MODAPP_URL
+      value: https://modapp-q1.adeo.no
+    - name: TJENESTER_URL
+      value: https://tjenester-q1.nav.no
+    - name: BEHANDLEJOURNAL_V2_ENDPOINTURL
+      value: https://dokarkiv-q1.nais.preprod.local/services/behandlejournal/v2
+    - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
+      value: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/BehandleAltinnMelding/v1
+    - name: SYKEFRAVAERSOPPFOELGING_V1_ENDPOINTURL
+      value: https://modapp-q1.adeo.no/syfo/services/Sykefravaersoppfoelging_v1
+    - name: MQGATEWAY03_HOSTNAME
+      value: b27apvl173.preprod.local
+    - name: MQGATEWAY03_PORT
+      value: "1413"
+    - name: MQGATEWAY03_NAME
+      value: MQ1LSC03
+    - name: SYFOOPPFOLGINGSPLANSERVICE_CHANNEL_QUEUEMANAGER
+      value: mq://b27apvl173.preprod.local:1413/MQ1LSC03
+    - name: SYFOOPPFOLGINGSPLANSERVICE_CHANNEL_NAME
+      value: Q1_SYFOOPPFOLGINGSPL
+    - name: VARSELPRODUKSJON_VARSLINGER_QUEUENAME
+      value: QA.Q1_VARSELPRODUKSJON.SEND_VARSEL
+    - name: VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME
+      value: QA.Q1_VARSELPRODUKSJON.BEST_SRVMLD_M_KONTAKT
+    - name: FASTLEGE_DIALOGMELDING_API_V1_URL
+      value: https://fastlegerest.nais.preprod.local/fastlegerest/api/dialogmelding/v1
+    - name: LAGREJURIDISKLOGG_REST_URL
+      value: https://app-q1.adeo.no/juridisklogg/api/rest/logg
+    - name: TILGANGSKONTROLLAPI_URL
+      value: https://syfo-tilgangskontroll.nais.preprod.local/syfo-tilgangskontroll/api/tilgang
+    - name: SYFOBEHANDLENDEENHET_URL
+      value: https://syfobehandlendeenhet.nais.preprod.local
+    - name: DOKARKIV_URL
+      value: https://dokarkiv-q1.nais.preprod.local
+    - name: AD_ACCESSTOKEN_URL
+      value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
+    - name: SYFONARMESTELEDER_URL
+      value: https://syfonarmesteleder.nais.preprod.local
+    - name: SYFONARMESTELEDER_ID
+      value: a7e7ad0e-4e17-4f19-8aa6-39d73e62fff8
+    - name: CLIENT_ID
+      value: 41561812-fdcc-4933-a147-f481a8b9fb18
+    - name: PDL_URL
+      value: https://pdl-api.nais.preprod.local/graphql
+    - name: SECURITY_TOKEN_SERVICE_REST_URL
+      value: https://security-token-service.nais.preprod.local
+    - name: AKTORREGISTER_REST_URL
+      value: https://app-q1.adeo.no/aktoerregister/api/v1
+    - name: AAREG_SERVICES_URL
+      value: https://modapp-q1.adeo.no/aareg-services/api
+    - name: EREG_BASEURL
+      value: https://modapp-q1.adeo.no
+    - name: SYFOBRUKERTILGANG_URL
+      value: https://syfobrukertilgang.nais.preprod.local
+    - name: FELLESKODEVERK_URL
+      value: https://kodeverk.nais.preprod.local/api/v1

@@ -1,0 +1,124 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: syfooppfolgingsplanservice
+  namespace: default
+  labels:
+    team: teamsykefravr
+spec:
+  image: {{ image }}
+  port: 8080
+  team: teamsykefravr
+  liveness:
+    path: /syfooppfolgingsplanservice/internal/isAlive
+    initialDelay: 60
+    timeout: 1
+    periodSeconds: 10
+    failureThreshold: 5
+  readiness:
+    path: /syfooppfolgingsplanservice/internal/isReady
+    initialDelay: 60
+    timeout: 1
+  resources:
+    limits:
+      cpu: 3000m
+      memory: 3060Mi
+    requests:
+      cpu: 1000m
+      memory: 2048Mi
+  replicas:
+    min: 2
+    max: 4
+    cpuThresholdPercentage: 80
+  prometheus:
+    enabled: true
+    path: /syfooppfolgingsplanservice/internal/prometheus
+  ingresses:
+    - "https://syfooppfolgingsplanservice.nais.adeo.no"
+    - "https://app.adeo.no/syfooppfolgingsplanservice"
+  vault:
+    enabled: true
+  leaderElection: true
+  env:
+    - name: APP_NAME
+      value: "syfooppfolgingsplanservice"
+    - name: APPDYNAMICS_CONTROLLER_HOST_NAME
+      value: appdynamics.adeo.no
+    - name: APPDYNAMICS_CONTROLLER_PORT
+      value: "443"
+    - name: APPDYNAMICS_CONTROLLER_SSL_ENABLED
+      value: "true"
+    - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
+      value: PROD
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_SELVBETJENING_ACCEPTEDAUDIENCE
+      value: 45104d6a-f5bc-4e8c-b352-4bbfc9381f25
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_SELVBETJENING_DISCOVERYURL
+      value: https://login.microsoftonline.com/navnob2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_INTERN_DISCOVERYURL
+      value: https://isso.adeo.no:443/isso/oauth2/.well-known/openid-configuration
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_VEILEDER_DISCOVERYURL
+      value: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_VEILEDER_ACCEPTEDAUDIENCE
+      value: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
+    - name: SECURITYTOKENSERVICE_URL
+      value: https://sts.adeo.no/SecurityTokenServiceProvider/
+    - name: MODAPP_URL
+      value: https://modapp.adeo.no
+    - name: TJENESTER_URL
+      value: https://tjenester.nav.no
+    - name: BEHANDLEJOURNAL_V2_ENDPOINTURL
+      value: https://dokarkiv.nais.adeo.no/services/behandlejournal/v2
+    - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
+      value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
+    - name: SYKEFRAVAERSOPPFOELGING_V1_ENDPOINTURL
+      value: https://modapp.adeo.no/syfo/services/Sykefravaersoppfoelging_v1
+    - name: MQGATEWAY03_HOSTNAME
+      value: a01apvl062.adeo.no
+    - name: MQGATEWAY03_PORT
+      value: "1414"
+    - name: MQGATEWAY03_NAME
+      value: MPLSC03
+    - name: SYFOOPPFOLGINGSPLANSERVICE_CHANNEL_QUEUEMANAGER
+      value: mq://a01apvl062.adeo.no:1414/MPLSC03
+    - name: SYFOOPPFOLGINGSPLANSERVICE_CHANNEL_NAME
+      value: P_SYFOOPPFOLGINGSPL
+    - name: VARSELPRODUKSJON_VARSLINGER_QUEUENAME
+      value: QA.P_VARSELPRODUKSJON.SEND_VARSEL
+    - name: VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME
+      value: QA.P_VARSELPRODUKSJON.BEST_SRVMLD_M_KONTAKT
+    - name: FASTLEGE_DIALOGMELDING_API_V1_URL
+      value: https://fastlegerest.nais.adeo.no/fastlegerest/api/dialogmelding/v1
+    - name: LAGREJURIDISKLOGG_REST_URL
+      value: https://app.adeo.no/juridisklogg/api/rest/logg
+    - name: TILGANGSKONTROLLAPI_URL
+      value: https://syfo-tilgangskontroll.nais.adeo.no/syfo-tilgangskontroll/api/tilgang
+    - name: SYFOBEHANDLENDEENHET_URL
+      value: https://syfobehandlendeenhet.nais.adeo.no
+    - name: DOKARKIV_URL
+      value: https://dokarkiv.nais.adeo.no
+    - name: SYFOVEILEDEROPPGAVER_SYSTEM_V1_URL
+      value: https://syfoveilederoppgaver.nais.adeo.no/syfoveilederoppgaver/api/system/veilederoppgaver/v1
+    - name: SYFOVEILEDEROPPGAVER_ACTIONS_SYSTEM_V1_URL
+      value: https://syfoveilederoppgaver.nais.adeo.no/syfoveilederoppgaver/api/system/veilederoppgaver/v1/actions
+    - name: AD_ACCESSTOKEN_URL
+      value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
+    - name: SYFONARMESTELEDER_URL
+      value: https://syfonarmesteleder.nais.adeo.no
+    - name: SYFONARMESTELEDER_ID
+      value: ccf8c36f-27e6-4e76-8250-9a49939df7ef
+    - name: CLIENT_ID
+      value: 970b2069-0b53-492f-bd7a-acadfa211e9f
+    - name: PDL_URL
+      value: https://pdl-api.nais.adeo.no/graphql
+    - name: SECURITY_TOKEN_SERVICE_REST_URL
+      value: https://security-token-service.nais.adeo.no
+    - name: AKTORREGISTER_REST_URL
+      value: https://app.adeo.no/aktoerregister/api/v1
+    - name: AAREG_SERVICES_URL
+      value: https://modapp.adeo.no/aareg-services/api
+    - name: EREG_BASEURL
+      value: https://modapp.adeo.no
+    - name: SYFOBRUKERTILGANG_URL
+      value: https://syfobrukertilgang.nais.adeo.no
+    - name: FELLESKODEVERK_URL
+      value: https://kodeverk.nais.adeo.no/api/v1
