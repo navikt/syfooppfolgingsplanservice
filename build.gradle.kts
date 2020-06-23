@@ -79,7 +79,8 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
 
-    implementation("no.nav.syfo.tjeneste:altinn-correspondence-agency-external-sf-tjenestespesifikasjon:1.1")
+    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external:$tjenesteSpesifikasjonerVersion")
+    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$tjenesteSpesifikasjonerVersion")
     implementation("no.nav.syfo.tjenester:sykefravaersoppfoelgingv1-tjenestespesifikasjon:1.0.20")
 
     implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.4.0")
