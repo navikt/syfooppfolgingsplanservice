@@ -47,8 +47,6 @@ repositories {
     mavenCentral()
     jcenter()
     maven(url = "https://repo.adeo.no/repository/maven-releases/")
-    maven(url = "https://dl.bintray.com/kotlin/kotlinx/")
-    maven(url = "http://packages.confluent.io/maven/")
 }
 
 dependencies {
