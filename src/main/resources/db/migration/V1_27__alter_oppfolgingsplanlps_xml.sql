@@ -1,0 +1,2 @@
+alter table OPPFOLGINGSPLANLPS
+  MODIFY xml CLOB;
