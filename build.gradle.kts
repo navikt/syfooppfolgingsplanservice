@@ -11,8 +11,7 @@ val oidcSupportVersion = "0.2.18"
 val kotlinLibVersion = "1.3.50"
 val kotlinJacksonVersion = "2.9.8"
 val lombokVersion = "1.16.20"
-val tjenesteSpesifikasjonerVersion = "1.2019.09.25-00.21-49b69f0625e0"
-val tjenesteSpesifikasjonerGithubVersion = "1.2020.06.23-15.31-57b909d0a05c"
+val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
 
 val flywayVersion = "5.1.4"
 val ojdbc8Version = "19.3.0.0"
@@ -50,7 +49,6 @@ repositories {
     mavenCentral()
     jcenter()
     maven(url="https://dl.bintray.com/kotlin/kotlinx/")
-    maven(url = "https://repo1.maven.org/maven2/")
     maven {
         url = uri("https://maven.pkg.github.com/navikt/tjenestespesifikasjoner")
         credentials {
@@ -90,13 +88,14 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
 
+    implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.4.0")
+
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external:$tjenesteSpesifikasjonerVersion")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$tjenesteSpesifikasjonerVersion")
-    implementation("no.nav.tjenestespesifikasjoner:sykefravaersoppfoelgingv1-tjenestespesifikasjon:$tjenesteSpesifikasjonerGithubVersion")
-
-    implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.4.0")
-    implementation("no.nav.tjenestespesifikasjoner:servicemeldingMedKontaktinformasjon-v1-tjenestespesifikasjon:$tjenesteSpesifikasjonerGithubVersion")
+    implementation("no.nav.tjenestespesifikasjoner:servicemeldingMedKontaktinformasjon-v1-tjenestespesifikasjon:$tjenesteSpesifikasjonerVersion")
+    implementation("no.nav.tjenestespesifikasjoner:sykefravaersoppfoelgingv1-tjenestespesifikasjon:$tjenesteSpesifikasjonerVersion")
     implementation("no.nav.tjenestespesifikasjoner:varsel-inn:$tjenesteSpesifikasjonerVersion")
+
 
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
