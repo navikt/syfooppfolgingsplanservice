@@ -21,6 +21,7 @@ import java.util.Map;
 
 import static no.nav.syfo.aktorregister.AktorregisterUtils.currentIdentFromAktorregisterResponse;
 import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
+import static no.nav.syfo.util.RequestUtilKt.NAV_PERSONIDENTER_HEADER;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -51,7 +52,6 @@ public class AktorregisterConsumer implements InitializingBean {
 
     private static final String NAV_CONSUMER_ID_HEADER = "Nav-Consumer-Id";
     private static final String NAV_CALL_ID_HEADER = "Nav-Call-Id";
-    private static final String NAV_PERSONIDENTER_HEADER = "Nav-Personidenter";
 
     public static final String IDENT_GROUP_FNR = "NorskIdent";
     public static final String IDENT_GROUP_AKTOR_ID = "AktoerId";

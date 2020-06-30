@@ -7,7 +7,7 @@ import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.oidc.OIDCUtil
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.BrukertilgangService
-import no.nav.syfo.util.HeaderUtil
+import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import org.slf4j.LoggerFactory
 import org.springframework.util.MultiValueMap
 import org.springframework.util.StringUtils
@@ -49,7 +49,7 @@ class BrukerTilgangController @Inject constructor(
     @GetMapping(path = ["/ansatt"])
     @ResponseBody
     fun accessToAnsatt(@RequestHeader headers: MultiValueMap<String, String>): BrukerTilgang {
-        val oppslaattIdent = headers.getFirst(HeaderUtil.NAV_PERSONIDENT.toLowerCase())
+        val oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase())
         return if (StringUtils.isEmpty(oppslaattIdent)) {
             throw IllegalArgumentException("Fant ikke Ident i Header ved sjekk av tilgang til Ident")
         } else {
