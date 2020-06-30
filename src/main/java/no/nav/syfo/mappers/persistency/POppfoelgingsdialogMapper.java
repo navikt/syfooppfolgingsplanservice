@@ -51,23 +51,6 @@ public class POppfoelgingsdialogMapper {
                     )
                     .godkjenningsTidspunkt(pGodkjenning.created);
 
-    public static Function<PTiltak, Tiltak> p2tiltak = pTiltak ->
-            new Tiltak()
-                    .id(pTiltak.id)
-                    .oppfoelgingsdialogId(pTiltak.oppfoelgingsdialogId)
-                    .navn(pTiltak.navn)
-                    .fom(ofNullable(pTiltak.fom).map(LocalDateTime::toLocalDate).orElse(null))
-                    .tom(ofNullable(pTiltak.tom).map(LocalDateTime::toLocalDate).orElse(null))
-                    .beskrivelse(pTiltak.beskrivelse)
-                    .opprettetAvAktoerId(pTiltak.opprettetAvAktoerId)
-                    .opprettetDato(pTiltak.opprettetDato)
-                    .sistEndretAvAktoerId(pTiltak.sistEndretAvAktoerId)
-                    .sistEndretDato(pTiltak.sistEndretDato)
-                    .status(pTiltak.status)
-                    .gjennomfoering(pTiltak.gjennomfoering)
-                    .beskrivelseIkkeAktuelt(pTiltak.beskrivelseIkkeAktuelt);
-
-
     public static Function<POppfoelgingsdialog, Oppfolgingsplan> p2oppfoelgingsdialog = pOppfoelgingsdialog ->
             new Oppfolgingsplan()
                     .id(pOppfoelgingsdialog.id)

@@ -118,7 +118,7 @@ class OppfolgingsplanServiceTest {
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(Optional.of(Naermesteleder()))
         Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("1234567890123")
         Mockito.`when`(tilgangskontrollService.aktorTilhorerOppfolgingsplan(ArgumentMatchers.anyString(), ArgumentMatchers.any())).thenReturn(true)
-        Mockito.`when`(tiltakDAO.create(ArgumentMatchers.any())).thenReturn(Tiltak().id(1L))
+        Mockito.`when`(tiltakDAO.create(any())).thenReturn(Tiltak().id(1L))
         Mockito.`when`(arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(ArgumentMatchers.anyLong())).thenReturn(listOf(Arbeidsoppgave().id(1L)))
         Mockito.`when`(tiltakDAO.finnTiltakByOppfoelgingsdialogId(ArgumentMatchers.anyLong())).thenReturn(listOf(Tiltak()
             .id(1L)
@@ -127,7 +127,7 @@ class OppfolgingsplanServiceTest {
             ))))
         oppfolgingsplanService.avbrytPlan(1L, "12345678901")
         Mockito.verify(arbeidsoppgaveDAO).create(ArgumentMatchers.any())
-        Mockito.verify(tiltakDAO).create(ArgumentMatchers.any())
+        Mockito.verify(tiltakDAO).create(any())
         Mockito.verify(kommentarDAO).create(any())
     }
 
@@ -152,7 +152,7 @@ class OppfolgingsplanServiceTest {
         Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("1234567890123")
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(Optional.of(Naermesteleder()))
         Mockito.`when`(tilgangskontrollService.aktorTilhorerOppfolgingsplan(ArgumentMatchers.anyString(), ArgumentMatchers.any())).thenReturn(true)
-        Mockito.`when`(tiltakDAO.create(ArgumentMatchers.any())).thenReturn(Tiltak().id(1L))
+        Mockito.`when`(tiltakDAO.create(any())).thenReturn(Tiltak().id(1L))
         Mockito.`when`(arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(ArgumentMatchers.anyLong())).thenReturn(listOf(Arbeidsoppgave().id(1L)))
         Mockito.`when`(tiltakDAO.finnTiltakByOppfoelgingsdialogId(ArgumentMatchers.anyLong())).thenReturn(listOf(Tiltak()
             .id(1L)
@@ -161,7 +161,7 @@ class OppfolgingsplanServiceTest {
             ))))
         oppfolgingsplanService.kopierOppfoelgingsdialog(1L, "12345678901")
         Mockito.verify(arbeidsoppgaveDAO).create(ArgumentMatchers.any())
-        Mockito.verify(tiltakDAO).create(ArgumentMatchers.any())
+        Mockito.verify(tiltakDAO).create(any())
         Mockito.verify(kommentarDAO).create(any())
     }
 
