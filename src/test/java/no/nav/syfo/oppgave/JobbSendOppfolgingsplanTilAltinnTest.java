@@ -1,4 +1,4 @@
-package no.nav.syfo;
+package no.nav.syfo.oppgave;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfolgingsplan;

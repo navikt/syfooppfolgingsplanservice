@@ -1,5 +1,6 @@
-package no.nav.syfo;
+package no.nav.syfo.oppgave;
 
+import no.nav.syfo.LocalApplication;
 import no.nav.syfo.domain.AsynkOppgave;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.*;
