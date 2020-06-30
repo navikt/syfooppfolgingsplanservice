@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static no.nav.syfo.util.RestUtils.bearerHeader;
+import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 

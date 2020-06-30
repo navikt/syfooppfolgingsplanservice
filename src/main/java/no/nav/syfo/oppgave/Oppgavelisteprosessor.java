@@ -2,7 +2,7 @@ package no.nav.syfo.oppgave;
 
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO;
-import no.nav.syfo.util.Toggle;
+import no.nav.syfo.toggle.Toggle;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 

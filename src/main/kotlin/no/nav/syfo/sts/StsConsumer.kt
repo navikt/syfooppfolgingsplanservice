@@ -1,8 +1,7 @@
 package no.nav.syfo.sts
 
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.sts.StsToken
-import no.nav.syfo.util.RestUtils
+import no.nav.syfo.util.basicCredentials
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -48,7 +47,7 @@ class StsConsumer @Autowired constructor(
         get() = "$url/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
 
     private fun authorizationHeader(): HttpHeaders {
-        val credentials = RestUtils.basicCredentials(username, password)
+        val credentials = basicCredentials(username, password)
         val headers = HttpHeaders()
         headers.add(HttpHeaders.AUTHORIZATION, credentials)
         return headers

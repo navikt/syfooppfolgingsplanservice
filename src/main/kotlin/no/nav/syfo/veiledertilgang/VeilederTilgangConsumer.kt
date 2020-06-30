@@ -78,7 +78,7 @@ class VeilederTilgangConsumer(
     private fun entity(): HttpEntity<String> {
         val headers = HttpHeaders()
         headers.accept = listOf(MediaType.APPLICATION_JSON)
-        headers[HttpHeaders.AUTHORIZATION] = RestUtils.bearerHeader(OIDCUtil.getIssuerToken(oidcContextHolder, OIDCIssuer.AZURE))
+        headers[HttpHeaders.AUTHORIZATION] = bearerHeader(OIDCUtil.getIssuerToken(oidcContextHolder, OIDCIssuer.AZURE))
         headers[NAV_CALL_ID_HEADER] = createCallId()
         headers[NAV_CONSUMER_ID_HEADER] = APP_CONSUMER_ID
         return HttpEntity(headers)

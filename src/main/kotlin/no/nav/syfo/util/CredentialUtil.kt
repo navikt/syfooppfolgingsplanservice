@@ -1,5 +1,11 @@
 package no.nav.syfo.util
 
-fun bearerHeader(token: String): String {
+import java.util.*
+
+fun basicCredentials(credentialUsername: String?, credentialPassword: String?): String {
+    return "Basic " + Base64.getEncoder().encodeToString(String.format("%s:%s", credentialUsername, credentialPassword).toByteArray())
+}
+
+fun bearerHeader(token: String?): String {
     return "Bearer $token"
 }

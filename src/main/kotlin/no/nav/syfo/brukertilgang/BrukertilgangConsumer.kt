@@ -46,7 +46,7 @@ class BrukertilgangConsumer @Autowired constructor(
 
     private fun entity(): HttpEntity<*> {
         val headers = HttpHeaders()
-        headers.add(HttpHeaders.AUTHORIZATION, RestUtils.bearerHeader(OIDCUtil.getIssuerToken(oidcContextHolder, OIDCIssuer.EKSTERN)))
+        headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(OIDCUtil.getIssuerToken(oidcContextHolder, OIDCIssuer.EKSTERN)))
         headers.add(NAV_CALL_ID_HEADER, createCallId())
         headers.add(NAV_CONSUMER_ID_HEADER, APP_CONSUMER_ID)
         return HttpEntity<Any>(headers)

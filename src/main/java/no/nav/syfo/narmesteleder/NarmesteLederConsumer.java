@@ -21,8 +21,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
+import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
 import static no.nav.syfo.util.MapUtil.mapListe;
-import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;

@@ -6,7 +6,7 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
 import no.nav.syfo.oppgave.Oppgavetype;
 import no.nav.syfo.service.*;
-import no.nav.syfo.util.Toggle;
+import no.nav.syfo.toggle.Toggle;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

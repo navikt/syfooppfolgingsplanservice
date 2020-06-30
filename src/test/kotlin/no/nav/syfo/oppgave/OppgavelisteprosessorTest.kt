@@ -5,7 +5,7 @@ import no.nav.syfo.domain.AsynkOppgave
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oppgave.exceptions.OppgaveFinnerIkkeElementException
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO
-import no.nav.syfo.util.Toggle
+import no.nav.syfo.toggle.Toggle
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test

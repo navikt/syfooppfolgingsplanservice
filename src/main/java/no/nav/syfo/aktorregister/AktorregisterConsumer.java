@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import java.util.Map;
 
 import static no.nav.syfo.aktorregister.AktorregisterUtils.currentIdentFromAktorregisterResponse;
-import static no.nav.syfo.util.RestUtils.bearerHeader;
+import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;

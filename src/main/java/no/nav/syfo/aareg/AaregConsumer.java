@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static no.nav.syfo.aareg.AaregUtils.stillingsprosentWithMaxScale;
 import static no.nav.syfo.aareg.OpplysningspliktigArbeidsgiver.Type.Organisasjon;
-import static no.nav.syfo.util.RestUtils.bearerHeader;
+import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 

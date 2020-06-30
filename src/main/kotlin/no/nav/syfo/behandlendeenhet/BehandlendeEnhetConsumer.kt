@@ -3,7 +3,7 @@ package no.nav.syfo.behandlendeenhet
 import no.nav.syfo.config.CacheConfig
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.sts.StsConsumer
-import no.nav.syfo.util.RestUtils.bearerHeader
+import no.nav.syfo.util.bearerHeader
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.ParameterizedTypeReference
