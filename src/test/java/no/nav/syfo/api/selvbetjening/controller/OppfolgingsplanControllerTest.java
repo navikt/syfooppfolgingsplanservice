@@ -17,8 +17,8 @@ import static no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.rs2arb
 import static no.nav.syfo.api.selvbetjening.mapper.RSTiltakMapper.rs2tiltak;
 import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.KAN;
 import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.TILRETTELEGGING;
-import static no.nav.syfo.mock.MockSelvbetjeningRS.rsTiltakLagreEksisterende;
-import static no.nav.syfo.mock.MockSelvbetjeningRS.rsTiltakLagreNytt;
+import static no.nav.syfo.testhelper.MockSelvbetjeningRSKt.rsTiltakLagreEksisterende;
+import static no.nav.syfo.testhelper.MockSelvbetjeningRSKt.rsTiltakLagreNytt;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
