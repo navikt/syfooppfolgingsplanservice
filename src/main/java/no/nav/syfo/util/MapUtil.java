@@ -17,14 +17,6 @@ public class MapUtil {
     private MapUtil() {
     }
 
-    public static <T, R, S extends R> S mapNullable(T fra, S til, BiConsumer<T, R> exp) {
-        return ofNullable(fra).map(f -> {exp.accept(f, til); return til;}).orElse(null);
-    }
-
-    public static <T, R, S extends R> S mapNullable(T fra, S til, BiConsumer<T, R> exp, S other) {
-        return ofNullable(fra).map(f -> {exp.accept(f, til); return til;}).orElse(other);
-    }
-
     public static <T, R, S extends R> S map(T fra, S til, BiConsumer<T, R> exp) {
         return of(fra).map(f -> {exp.accept(f, til); return til;}).orElseThrow(() -> new RuntimeException("Resultatet fra exp ble null"));
     }
@@ -57,24 +49,8 @@ public class MapUtil {
         return ofNullable(fra).map(exp).orElse(null);
     }
 
-    public static <T, R> R mapNullable(T fra, Function<T, R> exp, R other) {
-        return ofNullable(fra).map(exp).orElse(other);
-    }
-
-    public static <T, R> R mapNullable(T fra, Predicate<T> filter, Function<T, R> exp) {
-        return ofNullable(fra).filter(filter).map(exp).orElse(null);
-    }
-
-    public static <T> T mapNullable(T fra, T other) {
-        return ofNullable(fra).orElse(other);
-    }
-
     public static <T, R> R map(T fra, Function<T, R> exp) {
         return of(fra).map(exp).orElseThrow(() -> new RuntimeException("Resultatet fra exp ble null"));
-    }
-
-    public static <T, R> R mapMangetilEn(List<T> fra, Predicate<T> selector, Function<T, R> exp) {
-        return ofNullable(fra).flatMap(g -> g.stream().filter(selector).map(exp).findFirst()).orElse(null);
     }
 
     public static <T, R> List<R> mapListe(List<T> fra, Predicate<T> filter, Function<T, R> exp) {

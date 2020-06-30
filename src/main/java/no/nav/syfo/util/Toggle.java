@@ -20,14 +20,6 @@ public class Toggle {
         this.envName = envName;
     }
 
-    public boolean toggleBatch() {
-        return toggleBatch;
-    }
-
-    public boolean toggleBatchSak() {
-        return toggleBatchSak;
-    }
-
     public boolean erPreprod() {
         return envName.contains("dev-fss");
     }

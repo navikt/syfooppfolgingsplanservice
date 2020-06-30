@@ -1,13 +1,8 @@
 package no.nav.syfo.util;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -15,30 +10,9 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.charset.Charset;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 public class XmlUtil {
 
-    private static final Logger log = getLogger(XmlUtil.class);
-
-    public static Document parseXml(String xml) {
-        return parseXml(xml, true);
-    }
-
-    private static Document parseXml(String xml, boolean namespaceAware) {
-        try {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            builderFactory.setNamespaceAware(namespaceAware); // needed for use of NamespaceContext in XPath
-            DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
-            return documentBuilder.parse(new InputSource(new StringReader(xml)));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            log.error("Feil i parsing av XML", e);
-        }
-        return null;
-    }
-
-
-    public static String xmlTilHtml(String xml, InputStream xslPath) throws JAXBException, FileNotFoundException, TransformerException {
+    public static String xmlTilHtml(String xml, InputStream xslPath) throws TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
 
         Source xslDoc = new StreamSource(xslPath);
