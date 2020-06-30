@@ -11,6 +11,7 @@ import no.nav.syfo.repository.dao.*
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
+import no.nav.syfo.testhelper.any
 import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
@@ -127,7 +128,7 @@ class OppfolgingsplanServiceTest {
         oppfolgingsplanService.avbrytPlan(1L, "12345678901")
         Mockito.verify(arbeidsoppgaveDAO).create(ArgumentMatchers.any())
         Mockito.verify(tiltakDAO).create(ArgumentMatchers.any())
-        Mockito.verify(kommentarDAO).create(ArgumentMatchers.any())
+        Mockito.verify(kommentarDAO).create(any())
     }
 
     @Test
@@ -161,7 +162,7 @@ class OppfolgingsplanServiceTest {
         oppfolgingsplanService.kopierOppfoelgingsdialog(1L, "12345678901")
         Mockito.verify(arbeidsoppgaveDAO).create(ArgumentMatchers.any())
         Mockito.verify(tiltakDAO).create(ArgumentMatchers.any())
-        Mockito.verify(kommentarDAO).create(ArgumentMatchers.any())
+        Mockito.verify(kommentarDAO).create(any())
     }
 
     @Test

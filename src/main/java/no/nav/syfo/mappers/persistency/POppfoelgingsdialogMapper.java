@@ -36,17 +36,6 @@ public class POppfoelgingsdialogMapper {
                     .opprettetDato(pArbeidsoppgave.opprettetDato)
                     .gjennomfoering(map(pArbeidsoppgave, p2gjennomfoering));
 
-
-    public static Function<PKommentar, Kommentar> p2kommentar = pKommentar ->
-            new Kommentar()
-                    .id(pKommentar.id)
-                    .tiltakId(pKommentar.tiltakId)
-                    .tekst(pKommentar.tekst)
-                    .sistEndretAvAktoerId(pKommentar.sistEndretAvAktoerId)
-                    .sistEndretDato(pKommentar.sistEndretDato)
-                    .opprettetAvAktoerId(pKommentar.opprettetAvAktoerId)
-                    .opprettetDato(pKommentar.opprettetDato);
-
     public static Function<PGodkjenning, Godkjenning> p2godkjenning = pGodkjenning ->
             new Godkjenning()
                     .id(pGodkjenning.id)
