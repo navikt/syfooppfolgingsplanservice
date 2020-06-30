@@ -1,13 +1,13 @@
 package no.nav.syfo.oppgave.oppfoelgingsdialog;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.OppfolgingsplanAltinn;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
 import no.nav.syfo.oppgave.Oppgavetype;
-import no.nav.syfo.service.*;
+import no.nav.syfo.service.OppfolgingsplanService;
+import no.nav.syfo.service.PdfService;
 import no.nav.syfo.ws.AltinnConsumer;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,6 @@ import java.util.Optional;
 import static java.time.LocalDateTime.now;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
 
-@Slf4j
 @Service
 public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 

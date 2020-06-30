@@ -1,12 +1,12 @@
 package no.nav.syfo.service;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.syfo.config.ws.wsconfig.SyfoOppfoelgingConfig;
 import no.nav.syfo.domain.sykmelding.Periode;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.HentSykeforlopperiodeSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.informasjon.WSSykeforlopperiode;
 import no.nav.tjeneste.virksomhet.sykefravaersoppfoelging.v1.meldinger.WSHentSykeforlopperiodeRequest;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -14,10 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static no.nav.syfo.oidc.OIDCUtil.getIssuerToken;
+import static org.slf4j.LoggerFactory.getLogger;
 
-@Slf4j
 @Service
 public class SykeforloepService {
+
+    private static final Logger log = getLogger(SykeforloepService.class);
 
     private final OIDCRequestContextHolder contextHolder;
     private final SyfoOppfoelgingConfig sykefravaersoppfoelgingConfig;

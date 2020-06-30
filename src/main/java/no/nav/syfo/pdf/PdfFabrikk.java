@@ -2,7 +2,7 @@ package no.nav.syfo.pdf;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.*;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.xhtmlrenderer.pdf.DefaultPDFCreationListener;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -16,9 +16,11 @@ import static java.util.Optional.ofNullable;
 import static no.nav.syfo.util.ToggleUtil.kjorerLokalt;
 import static no.nav.syfo.util.XmlUtil.xmlTilHtml;
 import static org.apache.commons.io.IOUtils.toByteArray;
+import static org.slf4j.LoggerFactory.getLogger;
 
-@Slf4j
 public class PdfFabrikk {
+
+    private static final Logger log = getLogger(PdfFabrikk.class);
 
     @Value("${dev}")
     private boolean dev;

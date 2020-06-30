@@ -1,9 +1,9 @@
 package no.nav.syfo.oppgave;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.AsynkOppgaveDAO;
 import no.nav.syfo.util.Toggle;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -11,9 +11,12 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
-@Slf4j
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Service
 public class Oppgavelisteprosessor {
+
+    private static final Logger log = getLogger(Oppgavelisteprosessor.class);
 
     private Oppgaveelementprosessor oppgaveelementprosessor;
     private AsynkOppgaveDAO asynkOppgaveDAO;

@@ -1,30 +1,31 @@
 package no.nav.syfo.dokarkiv;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-@Slf4j
 @Service
 public class DokArkivConsumer {
+
+    private static final Logger log = getLogger(DokArkivConsumer.class);
+
     private static final String JOURNALPOSTAPI_PATH = "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true";
 
     private final RestTemplate restTemplate;

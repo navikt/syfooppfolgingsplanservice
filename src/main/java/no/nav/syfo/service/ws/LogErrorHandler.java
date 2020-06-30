@@ -1,12 +1,12 @@
 package no.nav.syfo.service.ws;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.jaxws.handler.soap.SOAPMessageContextImpl;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.service.Service;
 import org.apache.cxf.service.model.OperationInfo;
+import org.slf4j.Logger;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.MessageContext;
@@ -14,8 +14,11 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.Set;
 
-@Slf4j
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class LogErrorHandler implements SOAPHandler<SOAPMessageContext> {
+
+    private static final Logger log = getLogger(LogErrorHandler.class);
 
     @Override
     public Set<QName> getHeaders() {

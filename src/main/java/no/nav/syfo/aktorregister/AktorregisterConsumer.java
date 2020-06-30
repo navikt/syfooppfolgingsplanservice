@@ -1,10 +1,10 @@
 package no.nav.syfo.aktorregister;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.aktorregister.exceptions.IncorrectAktorIDFormat;
 import no.nav.syfo.aktorregister.exceptions.IncorrectFNRFormat;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,17 +17,18 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
-
 import java.util.Map;
 
 import static no.nav.syfo.aktorregister.AktorregisterUtils.currentIdentFromAktorregisterResponse;
 import static no.nav.syfo.util.RestUtils.bearerHeader;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-@Slf4j
 @Service
 public class AktorregisterConsumer implements InitializingBean {
+
+    private static final Logger log = getLogger(AktorregisterConsumer.class);
 
     private static AktorregisterConsumer instance;
     public static final String CACHENAME_AKTOR_ID = "aktoerid";

@@ -1,12 +1,12 @@
 package no.nav.syfo.ws;
 
-import lombok.extern.slf4j.Slf4j;
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptExternal;
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage;
 import no.nav.syfo.domain.OppfolgingsplanAltinn;
 import no.nav.syfo.pdl.PdlConsumer;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +15,12 @@ import javax.xml.ws.soap.SOAPFaultException;
 import java.util.Optional;
 
 import static no.nav.syfo.ws.mappers.OppfoelgingsdialogAltinnMapper.oppfoelgingsdialogTilCorrespondence;
+import static org.slf4j.LoggerFactory.getLogger;
 
-@Slf4j
 @Service
 public class AltinnConsumer {
+
+    private static final Logger log = getLogger(AltinnConsumer.class);
 
     @Value("${altinnuser.username}")
     private String alltinnUsername;

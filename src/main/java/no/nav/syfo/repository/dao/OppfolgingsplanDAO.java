@@ -1,8 +1,8 @@
 package no.nav.syfo.repository.dao;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.repository.domain.POppfoelgingsdialog;
+import org.slf4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,10 +23,12 @@ import static no.nav.syfo.repository.DbUtil.nesteSekvensverdi;
 import static no.nav.syfo.util.MapUtil.map;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
+import static org.slf4j.LoggerFactory.getLogger;
 
-@Slf4j
 @Repository
 public class OppfolgingsplanDAO {
+
+    private static final Logger log = getLogger(OppfolgingsplanDAO.class);
 
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;

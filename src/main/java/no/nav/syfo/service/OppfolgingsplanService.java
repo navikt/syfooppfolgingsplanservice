@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.behandlendeenhet.BehandlendeEnhet;
@@ -13,6 +12,7 @@ import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +32,12 @@ import static no.nav.syfo.api.selvbetjening.mapper.RSBrukerOppfolgingsplanMapper
 import static no.nav.syfo.model.Varseltype.*;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
+import static org.slf4j.LoggerFactory.getLogger;
 
-@Slf4j
 @Service
 public class OppfolgingsplanService {
+
+    private static final Logger log = getLogger(OppfolgingsplanService.class);
 
     private OppfolgingsplanDAO oppfolgingsplanDAO;
 

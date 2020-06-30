@@ -1,6 +1,5 @@
 package no.nav.syfo.oppgave.oppfoelgingsdialog;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.OppfolgingsplanAltinn;
 import no.nav.syfo.metric.Metrikk;
@@ -14,7 +13,6 @@ import javax.inject.Inject;
 
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
 
-@Slf4j
 @Service
 public class JobbLoggSendOppfoelgingsdialogTilAltinn implements Jobb {
 

@@ -1,11 +1,11 @@
 package no.nav.syfo.service.ws;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 import org.apache.cxf.rt.security.SecurityConstants;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -17,8 +17,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Base64;
 
-@Slf4j
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class OnBehalfOfOutInterceptor extends AbstractPhaseInterceptor<Message> {
+
+    private static final Logger log = getLogger(OnBehalfOfOutInterceptor.class);
 
     public static final String REQUEST_CONTEXT_ONBEHALFOF_TOKEN_TYPE = "request.onbehalfof.tokentype";
     public static final String REQUEST_CONTEXT_ONBEHALFOF_TOKEN = "request.onbehalfof.token";

@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.*;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -11,11 +11,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static no.nav.syfo.util.RestUtils.basicCredentials;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-@Slf4j
 @Service
 public class JuridiskLoggService {
+
+    private static final Logger log = getLogger(JuridiskLoggService.class);
 
     @Value("${lagrejuridisklogg.rest.url}")
     private String altinnUrl;

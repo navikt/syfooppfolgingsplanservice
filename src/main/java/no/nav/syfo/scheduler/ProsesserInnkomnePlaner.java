@@ -1,9 +1,9 @@
 package no.nav.syfo.scheduler;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.repository.dao.GodkjentplanDAO;
-import no.nav.syfo.service.*;
+import no.nav.syfo.service.JournalforOPService;
+import no.nav.syfo.service.LeaderElectionService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import static java.lang.System.getProperty;
 import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
 
-@Slf4j
 @Service
 public class ProsesserInnkomnePlaner {
     private GodkjentplanDAO godkjentplanDAO;

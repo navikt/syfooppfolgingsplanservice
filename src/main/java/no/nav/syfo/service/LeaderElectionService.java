@@ -1,9 +1,9 @@
 package no.nav.syfo.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.LeaderPod;
 import no.nav.syfo.metric.Metrikk;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,12 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Service
-@Slf4j
 public class LeaderElectionService {
+
+    private static final Logger log = getLogger(LeaderElectionService.class);
 
     private final Metrikk metrikk;
     private final RestTemplate restTemplateScheduler;

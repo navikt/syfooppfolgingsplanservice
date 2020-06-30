@@ -1,10 +1,10 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.service.PdfService;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +16,16 @@ import java.util.List;
 
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.oidc.OIDCUtil.getSubjectEksternMedThrows;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.MediaType.APPLICATION_PDF;
 import static org.springframework.http.MediaType.IMAGE_PNG;
 
-@Slf4j
 @RestController
 @ProtectedWithClaims(issuer = EKSTERN)
 @RequestMapping(value = "/api/dokument/{oppfolgingsplanId}/ekstern")
 public class DokumentController {
+
+    private static final Logger log = getLogger(DokumentController.class);
 
     @Value("${nais.cluster.name}")
     private String envName;

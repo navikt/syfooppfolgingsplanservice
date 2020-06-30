@@ -1,7 +1,7 @@
 package no.nav.syfo.util;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -15,8 +15,11 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.charset.Charset;
 
-@Slf4j
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class XmlUtil {
+
+    private static final Logger log = getLogger(XmlUtil.class);
 
     public static Document parseXml(String xml) {
         return parseXml(xml, true);

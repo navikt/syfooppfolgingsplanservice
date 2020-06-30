@@ -1,8 +1,8 @@
 package no.nav.syfo.service;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.metric.Metrikk;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -11,11 +11,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
-@Slf4j
 @Service
 public class FastlegeService {
+
+    private static final Logger log = getLogger(FastlegeService.class);
 
     public static final String SEND_OPPFOLGINGSPLAN_PATH = "/sendOppfolgingsplanFraSelvbetjening";
     private final RestTemplate template;
