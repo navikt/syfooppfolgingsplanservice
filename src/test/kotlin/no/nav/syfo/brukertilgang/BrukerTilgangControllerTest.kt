@@ -1,6 +1,6 @@
 package no.nav.syfo.brukertilgang
 
-import no.nav.syfo.api.intern.ressurs.AbstractRessursTilgangTest
+import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.testhelper.OidcTestHelper
