@@ -6,14 +6,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val cxfVersion = "3.3.3"
-val oidcSupportVersion = "0.2.18"
-val kotlinJacksonVersion = "2.9.8"
-val lombokVersion = "1.16.20"
-val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
-
-val flywayVersion = "5.1.4"
-val ojdbc8Version = "19.3.0.0"
+object Versions {
+    const val cxfVersion = "3.3.3"
+    const val flywayVersion = "5.1.4"
+    const val kotlinJacksonVersion = "2.9.8"
+    const val lombokVersion = "1.16.20"
+    const val oidcSupportVersion = "0.2.18"
+    const val ojdbc8Version = "19.3.0.0"
+    const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
+}
 
 plugins {
     kotlin("jvm") version "1.3.72"
@@ -60,7 +61,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$kotlinJacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.kotlinJacksonVersion}")
 
     implementation("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -78,26 +79,26 @@ dependencies {
 
     implementation("org.apache.httpcomponents:httpclient:4.5.6")
 
-    implementation("no.nav.security:oidc-spring-support:$oidcSupportVersion")
-    testImplementation("no.nav.security:oidc-test-support:$oidcSupportVersion")
+    implementation("no.nav.security:oidc-spring-support:${Versions.oidcSupportVersion}")
+    testImplementation("no.nav.security:oidc-test-support:${Versions.oidcSupportVersion}")
 
-    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-features-logging:${Versions.cxfVersion}")
+    implementation("org.apache.cxf:cxf-rt-ws-security:${Versions.cxfVersion}")
+    implementation("org.apache.cxf:cxf-rt-ws-policy:${Versions.cxfVersion}")
+    implementation("org.apache.cxf:cxf-rt-transports-http:${Versions.cxfVersion}")
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:${Versions.cxfVersion}")
 
     implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.4.0")
 
-    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external:$tjenesteSpesifikasjonerVersion")
-    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:$tjenesteSpesifikasjonerVersion")
-    implementation("no.nav.tjenestespesifikasjoner:servicemeldingMedKontaktinformasjon-v1-tjenestespesifikasjon:$tjenesteSpesifikasjonerVersion")
-    implementation("no.nav.tjenestespesifikasjoner:sykefravaersoppfoelgingv1-tjenestespesifikasjon:$tjenesteSpesifikasjonerVersion")
-    implementation("no.nav.tjenestespesifikasjoner:varsel-inn:$tjenesteSpesifikasjonerVersion")
+    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external:${Versions.tjenesteSpesifikasjonerVersion}")
+    implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:${Versions.tjenesteSpesifikasjonerVersion}")
+    implementation("no.nav.tjenestespesifikasjoner:servicemeldingMedKontaktinformasjon-v1-tjenestespesifikasjon:${Versions.tjenesteSpesifikasjonerVersion}")
+    implementation("no.nav.tjenestespesifikasjoner:sykefravaersoppfoelgingv1-tjenestespesifikasjon:${Versions.tjenesteSpesifikasjonerVersion}")
+    implementation("no.nav.tjenestespesifikasjoner:varsel-inn:${Versions.tjenesteSpesifikasjonerVersion}")
 
 
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
-    implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
+    implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
+    implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
     testImplementation("com.h2database:h2")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.0.6")
