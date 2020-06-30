@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.xhtmlrenderer.pdf.DefaultPDFCreationListener;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 import java.io.*;
 import java.net.URL;
@@ -99,7 +98,7 @@ public class PdfFabrikk {
         String html;
         try {
             html = xmlTilHtml(xml, PdfFabrikk.class.getClassLoader().getResourceAsStream("oppfoelgingsdialog.xsl"));
-        } catch (JAXBException | FileNotFoundException | TransformerException e) {
+        } catch (TransformerException e) {
             log.error("Feil i konvertering av xml til HTML", e);
             throw new RuntimeException();
         }
