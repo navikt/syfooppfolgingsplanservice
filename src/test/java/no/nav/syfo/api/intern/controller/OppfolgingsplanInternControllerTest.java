@@ -12,8 +12,8 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.text.ParseException;
 
-import static no.nav.syfo.testhelper.OidcTestHelper.loggInnVeilederAzure;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
+import static no.nav.syfo.testhelper.OidcTestHelperKt.loggInnVeilederAzure;
 import static no.nav.syfo.testhelper.UserConstants.*;
 import static org.springframework.http.HttpStatus.*;
 

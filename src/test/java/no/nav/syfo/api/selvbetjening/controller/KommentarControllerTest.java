@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
 import static no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 public class KommentarControllerTest extends AbstractRessursTilgangTest {

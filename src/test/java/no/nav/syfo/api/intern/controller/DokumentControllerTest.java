@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Optional;
 
-import static no.nav.syfo.testhelper.OidcTestHelper.loggInnVeilederAzure;
 import static no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle;
+import static no.nav.syfo.testhelper.OidcTestHelperKt.loggInnVeilederAzure;
 import static no.nav.syfo.testhelper.UserConstants.VEILEDER_ID;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.*;

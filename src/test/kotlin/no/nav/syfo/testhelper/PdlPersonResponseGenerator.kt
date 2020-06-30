@@ -1,6 +1,7 @@
 package no.nav.syfo.testhelper
 
 import no.nav.syfo.pdl.*
+import no.nav.syfo.testhelper.UserConstants
 
 fun generatePdlPersonNavn(): PdlPersonNavn {
     return PdlPersonNavn(
