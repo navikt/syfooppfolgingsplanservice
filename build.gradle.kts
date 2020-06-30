@@ -8,7 +8,6 @@ version = "1.0.0"
 
 val cxfVersion = "3.3.3"
 val oidcSupportVersion = "0.2.18"
-val kotlinLibVersion = "1.3.50"
 val kotlinJacksonVersion = "2.9.8"
 val lombokVersion = "1.16.20"
 val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
