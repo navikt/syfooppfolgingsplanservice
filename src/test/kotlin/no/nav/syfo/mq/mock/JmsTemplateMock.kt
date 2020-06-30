@@ -11,7 +11,7 @@ class JmsTemplateMock(private val name: String) : JmsTemplate(ConnectionFactoryM
     @Throws(JmsException::class)
     override fun send(messageCreator: MessageCreator) {
         try {
-            val message = messageCreator.createMessage(SessionMock()) as TextMessage
+            messageCreator.createMessage(SessionMock()) as TextMessage
         } catch (e: JMSException) {
             throw UncategorizedJmsException(e)
         }

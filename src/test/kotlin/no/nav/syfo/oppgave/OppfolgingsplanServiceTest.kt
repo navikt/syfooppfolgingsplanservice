@@ -45,7 +45,7 @@ class OppfolgingsplanServiceTest {
     fun oppfolgingsplanerFraAndreBedrifterBlirFiltrertBort() {
         val dialog1 = Oppfolgingsplan().id(1L).arbeidstaker(Person().aktoerId("sykmeldt")).virksomhet(Virksomhet().virksomhetsnummer("1"))
         val dialog2 = Oppfolgingsplan().id(2L).arbeidstaker(Person().aktoerId("sykmeldt")).virksomhet(Virksomhet().virksomhetsnummer("2"))
-        Mockito.`when`(aktorregisterConsumer!!.hentAktorIdForFnr("123")).thenReturn(LEDER_FNR)
+        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr("123")).thenReturn(LEDER_FNR)
         Mockito.`when`(narmesteLederConsumer.ansatte(ArgumentMatchers.anyString())).thenReturn(Arrays.asList(Ansatt().aktoerId("sykmeldt").virksomhetsnummer("1")))
         Mockito.`when`(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ArgumentMatchers.anyString())).thenReturn(Arrays.asList(
             dialog1,

@@ -55,5 +55,5 @@ class JobbLoggSendOppfolgingsplanTilAltinnTest {
     }
 
     private val oppfoelgingsdialogPdf: ByteArray
-        private get() = ByteArray(2)
+        get() = ByteArray(2)
 }

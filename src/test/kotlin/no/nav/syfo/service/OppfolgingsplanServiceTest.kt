@@ -210,7 +210,7 @@ class OppfolgingsplanServiceTest {
         mockRestServiceServer.verify()
     }
 
-    fun mockSvarFraSendOppfolgingsplanTilFastlegerest(status: HttpStatus?) {
+    fun mockSvarFraSendOppfolgingsplanTilFastlegerest(status: HttpStatus) {
         val uriString = UriComponentsBuilder.fromHttpUrl(fastlegerestUrl)
             .path(FastlegeService.SEND_OPPFOLGINGSPLAN_PATH)
             .toUriString()

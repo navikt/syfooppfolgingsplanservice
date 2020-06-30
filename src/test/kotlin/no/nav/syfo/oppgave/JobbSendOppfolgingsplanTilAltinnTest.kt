@@ -1,7 +1,6 @@
 package no.nav.syfo.oppgave
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer
-import no.nav.syfo.domain.Oppfolgingsplan
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbSendOppfoelgingsdialogTilAltinn
 import no.nav.syfo.service.OppfolgingsplanService
@@ -49,17 +48,8 @@ class JobbSendOppfolgingsplanTilAltinnTest {
     @Test
     @Throws(Exception::class)
     fun utfoerOppgaveSendOppfoelgingsdialog() {
-        val oppfoelgingsplan = oppfolgingsplanGodkjentTvang()
         Mockito.`when`(oppfolgingsplanService.hentGodkjentOppfolgingsplan(1L)).thenReturn(oppfolgingsplanGodkjentTvang())
         jobbSendOppfoelgingsdialogTilAltinn.utfoerOppgave("1")
         Mockito.verify(altinnConsumer, Mockito.times(1)).sendOppfolgingsplanTilArbeidsgiver(ArgumentMatchers.any())
-    }
-
-    private fun hentOppfoelgingsdialog(): Oppfolgingsplan {
-        return oppfolgingsplanGodkjentTvang()
-    }
-
-    private fun hentOppfoelgingsdialogPdf(): ByteArray {
-        return ByteArray(2)
     }
 }
