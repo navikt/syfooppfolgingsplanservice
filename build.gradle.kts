@@ -10,7 +10,6 @@ object Versions {
     const val cxfVersion = "3.3.6"
     const val flywayVersion = "5.1.4"
     const val kotlinJacksonVersion = "2.9.8"
-    const val lombokVersion = "1.16.20"
     const val oidcSupportVersion = "0.2.18"
     const val ojdbc8Version = "19.3.0.0"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
