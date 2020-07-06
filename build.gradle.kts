@@ -88,7 +88,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-transports-http:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:${Versions.cxfVersion}")
 
-    implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.4.0")
+    implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.5.0")
 
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external:${Versions.tjenesteSpesifikasjonerVersion}")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:${Versions.tjenesteSpesifikasjonerVersion}")
