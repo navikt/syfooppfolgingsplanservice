@@ -7,7 +7,7 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 object Versions {
-    const val cxfVersion = "3.3.3"
+    const val cxfVersion = "3.3.6"
     const val flywayVersion = "5.1.4"
     const val kotlinJacksonVersion = "2.9.8"
     const val lombokVersion = "1.16.20"
