@@ -1,2 +1,0 @@
-alter table OPPFOLGINGSPLANLPS
-  MODIFY pdf BLOB;
