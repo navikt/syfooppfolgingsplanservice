@@ -36,7 +36,6 @@ class OppfolgingsplanLPSDAO @Inject constructor(
     fun create(
         arbeidstakerFnr: Fodselsnummer,
         virksomhetsnummer: String,
-        pdf: ByteArray?,
         xml: String,
         delt_med_nav: Boolean,
         del_med_fastlege: Boolean,
@@ -52,7 +51,6 @@ class OppfolgingsplanLPSDAO @Inject constructor(
                 virksomhetsnummer,
                 opprettet,
                 sist_endret,
-                pdf,
                 xml,
                 delt_med_nav,
                 del_med_fastlege,
@@ -65,7 +63,6 @@ class OppfolgingsplanLPSDAO @Inject constructor(
                 :virksomhetsnummer,
                 :opprettet,
                 :sist_endret,
-                :pdf,
                 :xml,
                 :delt_med_nav,
                 :del_med_fastlege,
@@ -78,11 +75,10 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         val mapSaveSql = MapSqlParameterSource()
             .addValue("oppfolgingsplanlps_id", id)
             .addValue("oppfolgingsplanlps_uuid", uuid.toString())
-            .addValue("fnr", arbeidstakerFnr)
+            .addValue("fnr", arbeidstakerFnr.value)
             .addValue("virksomhetsnummer", virksomhetsnummer)
             .addValue("opprettet", created)
             .addValue("sist_endret", created)
-            .addValue("pdf", SqlLobValue(pdf), Types.BLOB)
             .addValue("xml", SqlLobValue(xml), Types.CLOB)
             .addValue("delt_med_nav", delt_med_nav)
             .addValue("del_med_fastlege", del_med_fastlege)
