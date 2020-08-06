@@ -94,3 +94,5 @@ varselproduksjon.best.srvmled.m.kontakt.queuename: mqbestbarsel
 varselproduksjon.varslinger.queuename: mqvarslinger
 
 tjenester.url: https://tjenester-q.nav.no
+
+kafka.bootstrap.servers.url: localhost://9092

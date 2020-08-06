@@ -7,12 +7,19 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 object Versions {
+    const val avroVersion = "1.8.2"
+    const val confluentVersion = "4.0.0"
     const val cxfVersion = "3.3.7"
     const val flywayVersion = "5.1.4"
     const val kotlinJacksonVersion = "2.9.8"
     const val oidcSupportVersion = "0.2.18"
     const val ojdbc8Version = "19.3.0.0"
+    const val helseXmlVersion = "1.5d21db9"
+    const val syfotjenesterVersion = "1.2020.07.02-07.44-62078cd74f7e"
+    const val syfoAltinnkanalSchemasVersion = "1.202008051358-aa0b562"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
+    const val kafkaVersion = "2.0.0"
+    const val altinnKanalSchemasVersion = "1.0.0"
 }
 
 plugins {
@@ -48,6 +55,21 @@ repositories {
     mavenCentral()
     jcenter()
     maven(url="https://dl.bintray.com/kotlin/kotlinx/")
+    maven(url="http://packages.confluent.io/maven/")
+    maven {
+        url = uri("https://maven.pkg.github.com/navikt/syfo-xml-codegen")
+        credentials {
+            username = githubUser
+            password = githubPassword
+        }
+    }
+    maven {
+        url = uri("https://maven.pkg.github.com/navikt/syfotjenester")
+        credentials {
+            username = githubUser
+            password = githubPassword
+        }
+    }
     maven {
         url = uri("https://maven.pkg.github.com/navikt/tjenestespesifikasjoner")
         credentials {
@@ -61,6 +83,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.kotlinJacksonVersion}")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${Versions.kotlinJacksonVersion}")
 
     implementation("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -72,6 +95,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jta-atomikos")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     implementation("org.springframework:spring-jms")
@@ -89,12 +113,19 @@ dependencies {
 
     implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.5.0")
 
+    implementation("no.nav.helse.xml:oppfolgingsplan:${Versions.helseXmlVersion}")
+
+    implementation("no.nav.syfotjenester:oppfolgingsplanlps:${Versions.syfotjenesterVersion}")
+    implementation("no.nav.syfo.altinnkanal:syfo-altinnkanal-schemas:${Versions.syfoAltinnkanalSchemasVersion}")
+
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external:${Versions.tjenesteSpesifikasjonerVersion}")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:${Versions.tjenesteSpesifikasjonerVersion}")
     implementation("no.nav.tjenestespesifikasjoner:servicemeldingMedKontaktinformasjon-v1-tjenestespesifikasjon:${Versions.tjenesteSpesifikasjonerVersion}")
     implementation("no.nav.tjenestespesifikasjoner:sykefravaersoppfoelgingv1-tjenestespesifikasjon:${Versions.tjenesteSpesifikasjonerVersion}")
     implementation("no.nav.tjenestespesifikasjoner:varsel-inn:${Versions.tjenesteSpesifikasjonerVersion}")
 
+    implementation("org.apache.avro:avro:${Versions.avroVersion}")
+    implementation("io.confluent:kafka-avro-serializer:${Versions.confluentVersion}")
 
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
@@ -113,6 +144,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.5")
     implementation("org.slf4j:slf4j-api:1.7.25")
     implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
+    implementation("org.apache.kafka:kafka_2.12:${Versions.kafkaVersion}")
 }
 
 tasks {
