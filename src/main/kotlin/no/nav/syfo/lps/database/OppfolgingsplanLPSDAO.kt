@@ -87,6 +87,22 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         return id
     }
 
+    fun update(
+        id: Long,
+        pdf: ByteArray
+    ) {
+        val query = """
+            UPDATE OPPFOLGINGSPLANLPS
+            SET pdf = :pdf
+            WHERE oppfolgingsplanlps_id = :id
+            """.trimIndent()
+
+        val mapSaveSql = MapSqlParameterSource()
+            .addValue("pdf", SqlLobValue(pdf), Types.BLOB)
+            .addValue("id", id)
+        namedParameterJdbcTemplate.update(query, mapSaveSql)
+    }
+
     val oppfolgingsplanLPSRowMapper = RowMapper { resultSet, _ ->
         POppfolgingsplanLPS(
             id = resultSet.getLong("oppfolgingsplanlps_id"),
