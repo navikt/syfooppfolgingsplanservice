@@ -1,10 +1,10 @@
-package no.nav.syfo.lps.database
+package no.nav.syfo.lps
 
-import no.nav.syfo.lps.OppfolgingsplanLPS
+import no.nav.syfo.lps.api.domain.RSOppfolgingsplanLPS
 import java.time.LocalDateTime
 import java.util.*
 
-data class POppfolgingsplanLPS(
+data class OppfolgingsplanLPS(
     val id: Long,
     val uuid: UUID,
     val fnr: String,
@@ -18,18 +18,12 @@ data class POppfolgingsplanLPS(
     val deltMedFastlege: Boolean
 )
 
-fun POppfolgingsplanLPS.mapToOppfolgingsplanLPS(): OppfolgingsplanLPS {
-    return OppfolgingsplanLPS(
-        id = this.id,
+fun OppfolgingsplanLPS.mapToRSOppfolgingsplanLPS(): RSOppfolgingsplanLPS {
+    return RSOppfolgingsplanLPS(
         uuid = this.uuid,
         fnr = this.fnr,
         virksomhetsnummer = this.virksomhetsnummer,
         opprettet = this.opprettet,
-        sistEndret = this.sistEndret,
-        pdf = this.pdf,
-        xml = this.xml,
-        deltMedNav = this.deltMedNav,
-        delMedFastlege = this.delMedFastlege,
-        deltMedFastlege = this.deltMedFastlege
+        sistEndret = this.sistEndret
     )
 }
