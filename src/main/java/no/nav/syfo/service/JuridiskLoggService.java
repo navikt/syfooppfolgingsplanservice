@@ -7,7 +7,7 @@ import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import static no.nav.syfo.util.CredentialUtilKt.basicCredentials;
@@ -48,8 +48,8 @@ public class JuridiskLoggService {
 
             rt.exchange(altinnUrl, HttpMethod.POST, requestPost, LoggMelding.class);
             log.info("Logget sending av oppfølgingsplan med id {} i juridisk loggSendOppfoelgingsdialogTilAltinn", oppfolgingsplan.id);
-        } catch (HttpClientErrorException e) {
-            log.error("Klientfeil mot JuridiskLogg ved logging av sendt oppfølgingsplan med id {} til Altinn", oppfolgingsplan.id, e);
+        } catch (RestClientResponseException e) {
+            log.error("Klientfeil mot JuridiskLogg ved logging av sendt oppfølgingsplan med id {} til Altinn. HTTP-status: {} og {}", oppfolgingsplan.id, e.getRawStatusCode(), e.getStatusText(), e);
             throw e;
         }
     }
