@@ -4,31 +4,48 @@ import no.nav.helse.op2016.Skjemainnhold
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import javax.inject.Inject
 
 @Repository
 class OppfolgingsplanLPSService @Inject constructor(
-    private val oppfolgingsplanLPSDAO: OppfolgingsplanLPSDAO
+    private val oppfolgingsplanLPSDAO: OppfolgingsplanLPSDAO,
+    private val opPdfGenConsumer: OPPdfGenConsumer
 ) {
+    private val log = LoggerFactory.getLogger(OppfolgingsplanLPSService::class.java)
+
     fun receivePlan(
+        archiveReference: String,
         batch: String,
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer
     ) {
-        savePlan(
+        val planId = savePlan(
             batch,
             skjemainnhold,
             virksomhetsnummer
         )
+
+        val incomingMetadata = IncomingMetadata(
+            archiveReference = archiveReference,
+            senderOrgName = skjemainnhold.arbeidsgiver.orgnavn,
+            senderOrgId = skjemainnhold.arbeidsgiver.orgnr,
+            userPersonNumber = skjemainnhold.sykmeldtArbeidstaker.fnr
+        )
+
+        val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
+        val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
+        log.info("KAFKA-trace: pdf generated $pdf");
+        oppfolgingsplanLPSDAO.update(planId, pdf)
     }
 
     private fun savePlan(
         batch: String,
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer
-    ) {
-        oppfolgingsplanLPSDAO.create(
+    ): Long {
+        return oppfolgingsplanLPSDAO.create(
             arbeidstakerFnr = Fodselsnummer(skjemainnhold.sykmeldtArbeidstaker.fnr),
             virksomhetsnummer = virksomhetsnummer.value,
             xml = batch,

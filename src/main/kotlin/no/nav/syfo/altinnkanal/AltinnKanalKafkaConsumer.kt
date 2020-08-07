@@ -57,6 +57,7 @@ class AltinnKanalKafkaConsumer @Inject constructor(
 
                 val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
                 oppfolgingsplanLPSService.receivePlan(
+                    consumerRecord.value().getArchiveReference(),
                     consumerRecord.value().getBatch(),
                     skjemainnhold,
                     virksomhetsnummer
