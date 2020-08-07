@@ -4,8 +4,10 @@ import no.nav.helse.op2016.Skjemainnhold
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
+import no.nav.syfo.lps.database.mapToOppfolgingsplanLPS
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
+import java.util.*
 import javax.inject.Inject
 
 @Repository
@@ -14,6 +16,23 @@ class OppfolgingsplanLPSService @Inject constructor(
     private val opPdfGenConsumer: OPPdfGenConsumer
 ) {
     private val log = LoggerFactory.getLogger(OppfolgingsplanLPSService::class.java)
+
+    fun getSharedWithNAV(
+        fodselsnummer: Fodselsnummer
+    ): List<OppfolgingsplanLPS> {
+        return oppfolgingsplanLPSDAO.get(fodselsnummer)
+            .filter { it.deltMedNav }
+            .filter { it.pdf != null }
+            .map {
+                it.mapToOppfolgingsplanLPS()
+            }
+    }
+
+    fun get(
+        oppfolgingsplanLPSUUID: UUID
+    ): OppfolgingsplanLPS {
+        return oppfolgingsplanLPSDAO.get(oppfolgingsplanLPSUUID).mapToOppfolgingsplanLPS()
+    }
 
     fun receivePlan(
         archiveReference: String,

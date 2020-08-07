@@ -33,6 +33,21 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         )
     }
 
+    fun get(uuid: UUID): POppfolgingsplanLPS {
+        val query = """
+            SELECT *
+            FROM OPPFOLGINGSPLANLPS
+            WHERE oppfolgingsplanlps_uuid = :uuid
+            """.trimIndent()
+        val mapSql = MapSqlParameterSource()
+            .addValue("uuid", uuid.toString())
+        return namedParameterJdbcTemplate.query(
+            query,
+            mapSql,
+            oppfolgingsplanLPSRowMapper
+        ).first()
+    }
+
     fun create(
         arbeidstakerFnr: Fodselsnummer,
         virksomhetsnummer: String,
