@@ -4,6 +4,7 @@ import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
+import static no.nav.syfo.util.RequestUtilKt.*;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
@@ -45,7 +47,7 @@ public class FastlegeService {
 
     private void kallUriMedTemplate(URI uri, RSOppfoelgingsplan rsOppfoelgingsplan) {
         try {
-            template.postForLocation(uri, rsOppfoelgingsplan);
+            template.postForLocation(uri, entity(rsOppfoelgingsplan));
             tellPlanDeltMedFastlegeKall(true);
         } catch (HttpClientErrorException e) {
             int responsekode = e.getRawStatusCode();
@@ -62,6 +64,14 @@ public class FastlegeService {
             tellPlanDeltMedFastlegeKall(false);
             throw e;
         }
+    }
+
+    private HttpEntity<RSOppfoelgingsplan> entity(RSOppfoelgingsplan rsOppfoelgingsplan) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add(NAV_CONSUMER_ID_HEADER, APP_CONSUMER_ID);
+        headers.add(NAV_CALL_ID_HEADER, createCallId());
+        return new HttpEntity<>(rsOppfoelgingsplan, headers);
     }
 
     private void tellPlanDeltMedFastlegeKall(boolean delt) {
