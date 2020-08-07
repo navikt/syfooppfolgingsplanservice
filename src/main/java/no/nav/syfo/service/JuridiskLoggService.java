@@ -43,6 +43,7 @@ public class JuridiskLoggService {
 
             String credentials = basicCredentials(altinnUsername, systemPassword);
             HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
             headers.add(AUTHORIZATION, credentials);
             HttpEntity<LoggMelding> requestPost = new HttpEntity<>(loggMelding, headers);
 
