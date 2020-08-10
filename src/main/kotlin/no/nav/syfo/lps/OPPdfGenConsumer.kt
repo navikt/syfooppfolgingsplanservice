@@ -18,7 +18,7 @@ class OPPdfGenConsumer @Inject constructor(
     fun pdfgenResponse(fagmelding: Fagmelding): ByteArray {
         try {
             val response = restTemplate.exchange(
-                getPdfGenUrl(),
+                opPdfGenUrl,
                 HttpMethod.POST,
                 entity(fagmelding),
                 ByteArray::class.java
@@ -34,10 +34,6 @@ class OPPdfGenConsumer @Inject constructor(
         }
     }
 
-    private fun getPdfGenUrl(): String {
-        return "http://syfooppdfgen/api/v1/genpdf/opservice/oppfolgingsplanlps"
-    }
-
     private fun entity(fagmelding: Fagmelding): HttpEntity<Fagmelding> {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
@@ -48,6 +44,8 @@ class OPPdfGenConsumer @Inject constructor(
 
     companion object {
         private val LOG = LoggerFactory.getLogger(OPPdfGenConsumer::class.java)
+
+        private const val opPdfGenUrl = "http://syfooppdfgen/api/v1/genpdf/opservice/oppfolgingsplanlps"
 
         private const val METRIC_CALL_OPPDFGEN_SUCCESS = "call_oppdfgen_success"
         private const val METRIC_CALL_OPPDFGEN_FAIL = "call_oppdfgen_fail"
