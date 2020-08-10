@@ -16,10 +16,9 @@ object Versions {
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.5d21db9"
     const val syfotjenesterVersion = "1.2020.07.02-07.44-62078cd74f7e"
-    const val syfoAltinnkanalSchemasVersion = "1.202008051358-aa0b562"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
     const val kafkaVersion = "2.0.0"
-    const val altinnKanalSchemasVersion = "1.0.0"
+    const val altinnKanalSchemasVersion = "1.0.1"
 }
 
 plugins {
@@ -116,7 +115,7 @@ dependencies {
     implementation("no.nav.helse.xml:oppfolgingsplan:${Versions.helseXmlVersion}")
 
     implementation("no.nav.syfotjenester:oppfolgingsplanlps:${Versions.syfotjenesterVersion}")
-    implementation("no.nav.syfo.altinnkanal:syfo-altinnkanal-schemas:${Versions.syfoAltinnkanalSchemasVersion}")
+    implementation("no.nav.altinnkanal.avro:altinnkanal-schemas:${Versions.altinnKanalSchemasVersion}")
 
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external:${Versions.tjenesteSpesifikasjonerVersion}")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:${Versions.tjenesteSpesifikasjonerVersion}")
