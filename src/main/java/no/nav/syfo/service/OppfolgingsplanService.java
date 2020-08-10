@@ -5,7 +5,6 @@ import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.behandlendeenhet.BehandlendeEnhet;
 import no.nav.syfo.behandlendeenhet.BehandlendeEnhetConsumer;
 import no.nav.syfo.domain.*;
-import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
@@ -291,7 +290,7 @@ public class OppfolgingsplanService {
                 .map(dokumentDAO::hent)
                 .orElseThrow(() -> new RuntimeException("Finner ikke pdf for oppfølgingsplan med id " + oppfolgingsplanId));
 
-        fastlegeService.sendOppfolgingsplan(new RSOppfoelgingsplan(sendesTilFnr, pdf));
+        fastlegeService.sendOppfolgingsplan(sendesTilFnr, pdf);
 
         godkjentplanDAO.delMedFastlege(oppfolgingsplanId);
     }

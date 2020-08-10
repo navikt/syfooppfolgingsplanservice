@@ -37,7 +37,8 @@ public class FastlegeService {
         this.template = template;
     }
 
-    public void sendOppfolgingsplan(RSOppfoelgingsplan rsOppfoelgingsplan) {
+    public void sendOppfolgingsplan(String sendesTilFnr, byte[] pdf) {
+        RSOppfoelgingsplan rsOppfoelgingsplan = new RSOppfoelgingsplan(sendesTilFnr, pdf);
         URI tilgangTilBrukerUriMedFnr = delMedFastlegeUriTemplate.build().toUri();
 
         kallUriMedTemplate(tilgangTilBrukerUriMedFnr, rsOppfoelgingsplan);
