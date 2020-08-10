@@ -106,14 +106,17 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         id: Long,
         pdf: ByteArray
     ) {
+        val updated = DbUtil.convert(LocalDateTime.now());
+
         val query = """
             UPDATE OPPFOLGINGSPLANLPS
-            SET pdf = :pdf
+            SET pdf = :pdf, sist_endret = :sist_endret
             WHERE oppfolgingsplanlps_id = :id
             """.trimIndent()
 
         val mapSaveSql = MapSqlParameterSource()
             .addValue("pdf", SqlLobValue(pdf), Types.BLOB)
+            .addValue("sist_endret", updated)
             .addValue("id", id)
         namedParameterJdbcTemplate.update(query, mapSaveSql)
     }
