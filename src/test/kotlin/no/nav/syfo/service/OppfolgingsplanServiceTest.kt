@@ -16,6 +16,7 @@ import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -79,6 +80,7 @@ class OppfolgingsplanServiceTest {
     lateinit var oidcRequestContextHolder: OIDCRequestContextHolder
 
     @Inject
+    @Qualifier("scheduler")
     private lateinit var restTemplate: RestTemplate
     private lateinit var mockRestServiceServer: MockRestServiceServer
 
