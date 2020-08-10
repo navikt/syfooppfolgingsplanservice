@@ -5,6 +5,7 @@ import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
 import no.nav.syfo.lps.database.mapToOppfolgingsplanLPS
+import no.nav.syfo.service.FastlegeService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -12,6 +13,7 @@ import javax.inject.Inject
 
 @Repository
 class OppfolgingsplanLPSService @Inject constructor(
+    private val fastlegeService: FastlegeService,
     private val oppfolgingsplanLPSDAO: OppfolgingsplanLPSDAO,
     private val opPdfGenConsumer: OPPdfGenConsumer
 ) {
@@ -57,6 +59,10 @@ class OppfolgingsplanLPSService @Inject constructor(
         val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
         oppfolgingsplanLPSDAO.updatePdf(planId, pdf)
         log.info("KAFKA-trace: pdf generated and stored")
+        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege) {
+            fastlegeService.sendOppfolgingsplanLPS(incomingMetadata.userPersonNumber, pdf)
+            oppfolgingsplanLPSDAO.updateSharedFastlege(planId)
+        }
     }
 
     private fun savePlan(

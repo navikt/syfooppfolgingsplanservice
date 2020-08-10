@@ -5,6 +5,7 @@ import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.oidc.OIDCUtil;
+import no.nav.syfo.sts.StsConsumer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,21 +28,28 @@ public class FastlegeService {
     private static final Logger log = getLogger(FastlegeService.class);
 
     public static final String SEND_OPPFOLGINGSPLAN_PATH = "/sendOppfolgingsplanFraSelvbetjening";
+    public static final String SEND_OPPFOLGINGSPLAN_LPS_PATH = "/oppfolgingsplan/lps";
     private final OIDCRequestContextHolder oidcContextHolder;
     private final RestTemplate template;
     private final UriComponentsBuilder delMedFastlegeUriTemplate;
+    private final UriComponentsBuilder delLPSMedFastlegeUriTemplate;
     private final Metrikk metrikk;
+    private final StsConsumer stsConsumer;
 
     public FastlegeService(
             @Value("${fastlege.dialogmelding.api.v1.url}") String dialogfordelerUrl,
             Metrikk metrikk,
             OIDCRequestContextHolder oidcContextHolder,
+            StsConsumer stsConsumer,
             @Qualifier("scheduler") RestTemplate template
     ) {
         delMedFastlegeUriTemplate = fromHttpUrl(dialogfordelerUrl)
                 .path(SEND_OPPFOLGINGSPLAN_PATH);
+        delLPSMedFastlegeUriTemplate = fromHttpUrl(dialogfordelerUrl)
+                .path(SEND_OPPFOLGINGSPLAN_LPS_PATH);
         this.metrikk = metrikk;
         this.oidcContextHolder = oidcContextHolder;
+        this.stsConsumer = stsConsumer;
         this.template = template;
     }
 
@@ -58,6 +66,19 @@ public class FastlegeService {
         );
 
         log.info("Sendt oppfølgingsplan til dialogfordeler");
+    }
+
+    public void sendOppfolgingsplanLPS(String sendesTilFnr, byte[] pdf) {
+        RSOppfoelgingsplan rsOppfoelgingsplan = new RSOppfoelgingsplan(sendesTilFnr, pdf);
+        URI tilgangTilBrukerUriMedFnr = delLPSMedFastlegeUriTemplate.build().toUri();
+        String token = stsConsumer.token();
+
+        kallUriMedTemplate(
+                tilgangTilBrukerUriMedFnr,
+                rsOppfoelgingsplan,
+                token
+        );
+        log.info("Sendt oppfølgingsplanLPS til dialogfordeler");
     }
 
     private void kallUriMedTemplate(URI uri, RSOppfoelgingsplan rsOppfoelgingsplan, String token) {

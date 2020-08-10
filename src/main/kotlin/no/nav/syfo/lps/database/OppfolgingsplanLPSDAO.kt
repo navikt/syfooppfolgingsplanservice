@@ -121,6 +121,24 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         namedParameterJdbcTemplate.update(query, mapSaveSql)
     }
 
+    fun updateSharedFastlege(
+        id: Long
+    ) {
+        val updated = DbUtil.convert(LocalDateTime.now());
+
+        val query = """
+            UPDATE OPPFOLGINGSPLANLPS
+            SET delt_med_fastlege = :delt_med_fastlege, sist_endret = :sist_endret
+            WHERE oppfolgingsplanlps_id = :id
+            """.trimIndent()
+
+        val mapSaveSql = MapSqlParameterSource()
+            .addValue("delt_med_fastlege", true)
+            .addValue("sist_endret", updated)
+            .addValue("id", id)
+        namedParameterJdbcTemplate.update(query, mapSaveSql)
+    }
+
     val oppfolgingsplanLPSRowMapper = RowMapper { resultSet, _ ->
         POppfolgingsplanLPS(
             id = resultSet.getLong("oppfolgingsplanlps_id"),
