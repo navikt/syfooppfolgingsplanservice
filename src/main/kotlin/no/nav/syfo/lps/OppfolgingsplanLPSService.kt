@@ -55,7 +55,7 @@ class OppfolgingsplanLPSService @Inject constructor(
 
         val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
         val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
-        oppfolgingsplanLPSDAO.update(planId, pdf)
+        oppfolgingsplanLPSDAO.updatePdf(planId, pdf)
         log.info("KAFKA-trace: pdf generated and stored")
     }
 

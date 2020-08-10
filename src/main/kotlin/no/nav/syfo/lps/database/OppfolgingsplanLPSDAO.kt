@@ -102,7 +102,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         return id
     }
 
-    fun update(
+    fun updatePdf(
         id: Long,
         pdf: ByteArray
     ) {
