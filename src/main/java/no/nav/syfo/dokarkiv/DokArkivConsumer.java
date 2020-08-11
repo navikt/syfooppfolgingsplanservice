@@ -2,6 +2,7 @@ package no.nav.syfo.dokarkiv;
 
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfolgingsplan;
+import no.nav.syfo.lps.OppfolgingsplanLPS;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
 import org.slf4j.Logger;
@@ -52,6 +53,26 @@ public class DokArkivConsumer {
                 oppfolgingsplan.arbeidstaker.fnr,
                 godkjentPlan.dokument,
                 hentSistEndret(oppfolgingsplan)
+        );
+        return journalfor(request);
+    }
+
+    public Integer journalforOppfolgingsplanLPS(
+            String virksomhetsnavn,
+            String arbeidstakerFnr,
+            String arbeidstakerNavn,
+            byte[] dokumentPdf
+    ) {
+        AvsenderMottaker avsenderMottaker = new AvsenderMottaker()
+                .id(arbeidstakerFnr)
+                .idType("FNR")
+                .navn(arbeidstakerNavn);
+
+        JournalpostRequest request = createJournalpostRequest(
+                virksomhetsnavn,
+                arbeidstakerFnr,
+                dokumentPdf,
+                avsenderMottaker
         );
         return journalfor(request);
     }

@@ -5,7 +5,9 @@ import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
 import no.nav.syfo.lps.database.mapToOppfolgingsplanLPS
+import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.FastlegeService
+import no.nav.syfo.service.JournalforOPService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -14,6 +16,8 @@ import javax.inject.Inject
 @Repository
 class OppfolgingsplanLPSService @Inject constructor(
     private val fastlegeService: FastlegeService,
+    private val journalforOPService: JournalforOPService,
+    private val metrikk: Metrikk,
     private val oppfolgingsplanLPSDAO: OppfolgingsplanLPSDAO,
     private val opPdfGenConsumer: OPPdfGenConsumer
 ) {
@@ -78,5 +82,18 @@ class OppfolgingsplanLPSService @Inject constructor(
             del_med_fastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege,
             delt_med_fastlege = false
         )
+    }
+
+    fun createOppfolgingsplanLPSJournalposter() {
+        oppfolgingsplanLPSDAO.getPlanListToJournalpost().map {
+            it.mapToOppfolgingsplanLPS()
+        }.forEach { planLPS ->
+            val journalpostId = journalforOPService.createJournalpostPlanLPS(planLPS).toString();
+            oppfolgingsplanLPSDAO.updateJournalpostId(
+                planLPS.id,
+                journalpostId
+            )
+            metrikk.tellHendelse("plan_lps_opprettet_journal_gosys")
+        }
     }
 }
