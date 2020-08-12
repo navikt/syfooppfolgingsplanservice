@@ -47,8 +47,16 @@ public class DokArkivConsumer {
     }
 
     public Integer journalforOppfolgingsplan(Oppfolgingsplan oppfolgingsplan, GodkjentPlan godkjentPlan) {
+        JournalpostRequest request = createJournalpostRequest(
+                oppfolgingsplan.virksomhet.navn,
+                oppfolgingsplan.arbeidstaker.fnr,
+                godkjentPlan.dokument,
+                hentSistEndret(oppfolgingsplan)
+        );
+        return journalfor(request);
+    }
 
-        JournalpostRequest request = createJournalpostRequest(oppfolgingsplan, godkjentPlan);
+    public Integer journalfor(JournalpostRequest request) {
         HttpEntity<JournalpostRequest> entity = createRequestEntity(request);
 
         try {
@@ -68,29 +76,20 @@ public class DokArkivConsumer {
         }
     }
 
-    private AvsenderMottaker hentSistEndret(Oppfolgingsplan oppfolgingsplan) {
-        if (oppfolgingsplan.sistEndretAvAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
-            return new AvsenderMottaker()
-                    .id(oppfolgingsplan.arbeidstaker.fnr)
-                    .idType("FNR")
-                    .navn(oppfolgingsplan.arbeidstaker.navn);
-        }
-
-        return new AvsenderMottaker()
-                .navn(oppfolgingsplan.virksomhet.navn)
-                .idType("ORGNR")
-                .id(oppfolgingsplan.virksomhet.virksomhetsnummer);
-    }
-
-    private JournalpostRequest createJournalpostRequest(Oppfolgingsplan oppfolgingsplan, GodkjentPlan godkjentPlan) {
-        String dokumentNavn = format("Oppfølgingsplan %s", oppfolgingsplan.virksomhet.navn);
+    private JournalpostRequest createJournalpostRequest(
+            String virksomhetsnavn,
+            String arbeidstakerFnr,
+            byte[] dokumentPdf,
+            AvsenderMottaker avsenderMottaker
+    ) {
+        String dokumentNavn = format("Oppfølgingsplan %s", virksomhetsnavn);
         Sak sak = new Sak()
                 .sakstype("GENERELL_SAK");
         Bruker bruker = new Bruker()
-                .id(oppfolgingsplan.arbeidstaker.fnr)
+                .id(arbeidstakerFnr)
                 .idType("FNR");
 
-        List<Dokument> dokumenter = lagDokumenter(dokumentNavn, godkjentPlan);
+        List<Dokument> dokumenter = lagDokumenter(dokumentNavn, dokumentPdf);
 
         return new JournalpostRequest()
                 .tema("OPP")
@@ -99,23 +98,23 @@ public class DokArkivConsumer {
                 .journalpostType("INNGAAENDE")
                 .kanal("NAV_NO")
                 .sak(sak)
-                .avsenderMottaker(hentSistEndret(oppfolgingsplan))
+                .avsenderMottaker(avsenderMottaker)
                 .bruker(bruker)
                 .dokumenter(dokumenter);
     }
 
-    private List<Dokument> lagDokumenter(String dokumentNavn, GodkjentPlan godkjentPlan) {
+    private List<Dokument> lagDokumenter(String dokumentNavn, byte[] dokumentPdf) {
 
         Dokumentvariant dokumentvariant = new Dokumentvariant()
                 .filnavn(dokumentNavn)
                 .filtype("PDFA")
                 .variantformat("ARKIV")
-                .fysiskDokument(godkjentPlan.dokument);
+                .fysiskDokument(dokumentPdf);
 
         List<Dokumentvariant> dokumentvarianter = new ArrayList<>();
         dokumentvarianter.add(dokumentvariant);
 
-        Dokument dokument =  new Dokument()
+        Dokument dokument = new Dokument()
                 .dokumentKategori("ES")
                 .brevkode("OPPF_PLA")
                 .tittel(dokumentNavn)
@@ -137,5 +136,18 @@ public class DokArkivConsumer {
 
         return new HttpEntity<>(request, headers);
     }
-};
 
+    private AvsenderMottaker hentSistEndret(Oppfolgingsplan oppfolgingsplan) {
+        if (oppfolgingsplan.sistEndretAvAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
+            return new AvsenderMottaker()
+                    .id(oppfolgingsplan.arbeidstaker.fnr)
+                    .idType("FNR")
+                    .navn(oppfolgingsplan.arbeidstaker.navn);
+        }
+
+        return new AvsenderMottaker()
+                .navn(oppfolgingsplan.virksomhet.navn)
+                .idType("ORGNR")
+                .id(oppfolgingsplan.virksomhet.virksomhetsnummer);
+    }
+}
