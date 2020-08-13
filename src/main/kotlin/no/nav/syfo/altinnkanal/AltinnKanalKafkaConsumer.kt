@@ -12,6 +12,7 @@ import no.nav.altinnkanal.avro.ExternalAttachment
 import no.nav.helse.op2016.Oppfoelgingsplan4UtfyllendeInfoM
 import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.lps.OppfolgingsplanLPSService
+import no.nav.syfo.lps.mq.EiaMottakProducer
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -36,6 +37,7 @@ val xmlMapper: ObjectMapper = XmlMapper(JacksonXmlModule().apply {
 @Component
 class AltinnKanalKafkaConsumer @Inject constructor(
     @Value("\${nais.cluster.name}") private val naisClusterName: String,
+    private val eiaMottakProducer: EiaMottakProducer,
     private val oppfolgingsplanLPSService: OppfolgingsplanLPSService
 ) {
     private val log = LoggerFactory.getLogger(AltinnKanalKafkaConsumer::class.java)
@@ -57,6 +59,11 @@ class AltinnKanalKafkaConsumer @Inject constructor(
                 val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
                 val skjemainnhold = oppfolgingsplan.skjemainnhold
 
+                eiaMottakProducer.sendOppfolgingsplanLPS(
+                    consumerRecord.value(),
+                    payload,
+                    skjemainnhold.arbeidsgiver.orgnr
+                )
                 val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
                 oppfolgingsplanLPSService.receivePlan(
                     consumerRecord.value().getArchiveReference(),
@@ -65,7 +72,7 @@ class AltinnKanalKafkaConsumer @Inject constructor(
                     virksomhetsnummer
                 )
             } catch (e: Exception) {
-                log.info("KAFKA-TRACE: Klarte ikke prosessere melding med offset ${e.message}")
+                log.error("KAFKA-TRACE: Klarte ikke prosessere melding", e)
             }
         } else {
             log.info("KAFKA-TRACE: Skipping record")
