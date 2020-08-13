@@ -63,7 +63,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
         oppfolgingsplanLPSDAO.updatePdf(planId, pdf)
         log.info("KAFKA-trace: pdf generated and stored")
-        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege) {
+        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
             fastlegeService.sendOppfolgingsplanLPS(incomingMetadata.userPersonNumber, pdf)
             oppfolgingsplanLPSDAO.updateSharedFastlege(planId)
         }
@@ -78,8 +78,8 @@ class OppfolgingsplanLPSService @Inject constructor(
             arbeidstakerFnr = Fodselsnummer(skjemainnhold.sykmeldtArbeidstaker.fnr),
             virksomhetsnummer = virksomhetsnummer.value,
             xml = batch,
-            delt_med_nav = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav,
-            del_med_fastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege,
+            delt_med_nav = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav ?: false,
+            del_med_fastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege ?: false,
             delt_med_fastlege = false
         )
     }
