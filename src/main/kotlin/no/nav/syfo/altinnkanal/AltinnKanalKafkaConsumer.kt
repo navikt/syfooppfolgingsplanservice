@@ -48,9 +48,11 @@ class AltinnKanalKafkaConsumer @Inject constructor(
     ) {
         if (isDev) {
             try {
-                log.info("Mottatt melding aapen-altinn-oppfolgingsplan-Mottatt");
+                log.info("Mottatt melding aapen-altinn-oppfolgingsplan-Mottatt")
 
-                val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(consumerRecord.value().getBatch())) as DataBatch
+                val recordBatch = consumerRecord.value().getBatch()
+
+                val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(recordBatch)) as DataBatch
                 val payload = dataBatch.dataUnits.dataUnit.first().formTask.form.first().formData
                 val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
                 val skjemainnhold = oppfolgingsplan.skjemainnhold
@@ -58,7 +60,7 @@ class AltinnKanalKafkaConsumer @Inject constructor(
                 val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
                 oppfolgingsplanLPSService.receivePlan(
                     consumerRecord.value().getArchiveReference(),
-                    consumerRecord.value().getBatch(),
+                    recordBatch,
                     skjemainnhold,
                     virksomhetsnummer
                 )
