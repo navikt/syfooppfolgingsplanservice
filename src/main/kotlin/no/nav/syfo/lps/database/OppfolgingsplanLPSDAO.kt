@@ -48,6 +48,34 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         ).first()
     }
 
+    fun getPlanListToJournalpost(): List<POppfolgingsplanLPS> {
+        val query = """
+            SELECT *
+            FROM OPPFOLGINGSPLANLPS
+            WHERE journalpost_id IS NULL AND delt_med_nav = 1 AND pdf IS NOT NULL
+            """.trimIndent()
+        return namedParameterJdbcTemplate.query(
+            query,
+            oppfolgingsplanLPSRowMapper
+        )
+    }
+
+    fun updateJournalpostId(id: Long, journalpostId: String) {
+        val updated = DbUtil.convert(LocalDateTime.now())
+
+        val query = """
+            UPDATE OPPFOLGINGSPLANLPS
+            SET journalpost_id = :journalpost_id, sist_endret = :sist_endret
+            WHERE oppfolgingsplanlps_id = :id
+            """.trimIndent()
+
+        val mapSaveSql = MapSqlParameterSource()
+            .addValue("journalpost_id", journalpostId)
+            .addValue("sist_endret", updated)
+            .addValue("id", id)
+        namedParameterJdbcTemplate.update(query, mapSaveSql)
+    }
+
     fun create(
         arbeidstakerFnr: Fodselsnummer,
         virksomhetsnummer: String,

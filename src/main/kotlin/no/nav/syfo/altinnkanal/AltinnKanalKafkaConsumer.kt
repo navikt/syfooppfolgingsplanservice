@@ -40,7 +40,7 @@ class AltinnKanalKafkaConsumer @Inject constructor(
 ) {
     private val log = LoggerFactory.getLogger(AltinnKanalKafkaConsumer::class.java)
 
-    private val isDev = naisClusterName == "dev-fss";
+    private val isDev = naisClusterName == "dev-fss"
 
     @KafkaListener(topics = ["aapen-altinn-oppfolgingsplan-Mottatt"])
     fun handleIncomingAltinnOP(
