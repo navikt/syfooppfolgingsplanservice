@@ -80,7 +80,7 @@ fun mapFormdataToFagmelding(
                 ) null else BehovForBistandFraAndre(
                     bedriftsHelsetjenesten = it.isBistandBedriftshelsetjenesten,
                     andre = it.isBistandAndre,
-                    andreFritekts = it.bistandAndreBeskrivelse
+                    andreFritekst = it.bistandAndreBeskrivelse
                 ),
                 behovForAvklaringMedLegeSykmeleder = it.behovForAvklaringLegeSykmelder,
                 vurderingEffektAvTiltak = VurderingEffektAvTiltak(

@@ -74,7 +74,7 @@ data class BehovForBistandFraNav(
 data class BehovForBistandFraAndre(
     val bedriftsHelsetjenesten: Boolean?,
     val andre: Boolean?,
-    val andreFritekts: String?
+    val andreFritekst: String?
 )
 
 data class VurderingEffektAvTiltak(
