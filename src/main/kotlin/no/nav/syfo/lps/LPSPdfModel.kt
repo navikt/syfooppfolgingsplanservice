@@ -32,7 +32,6 @@ data class OpplysningerOmArbeidstakeren(
     val tlf: String?,
     val stillingAvdeling: String?,
     val ordineareArbeidsoppgaver: String?
-
 )
 
 data class OpplysingerOmSykefravaeret(
@@ -63,9 +62,13 @@ data class TiltaketGjennonforesIPerioden(
 
 data class BehovForBistandFraNav(
     val raadOgVeiledning: Boolean?,
+    val raadOgVeiledningBeskrivelse: String?,
     val dialogmoteMed: Boolean?,
+    val dialogmoteMedBeskrivelse: String?,
     val arbeidsrettedeTiltak: Boolean?,
-    val hjelpemidler: Boolean?
+    val arbeidsrettedeTiltakBeskrivelse: String?,
+    val hjelpemidler: Boolean?,
+    val hjelpemidlerBeskrivelse: String?
 )
 
 data class BehovForBistandFraAndre(
