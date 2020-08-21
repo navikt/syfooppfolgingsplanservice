@@ -58,20 +58,18 @@ public class DokArkivConsumer {
     }
 
     public Integer journalforOppfolgingsplanLPS(
-            String virksomhetsnavn,
-            String arbeidstakerFnr,
-            String arbeidstakerNavn,
-            byte[] dokumentPdf
+            OppfolgingsplanLPS oppfolgingsplanLPS,
+            String virksomhetsnavn
     ) {
         AvsenderMottaker avsenderMottaker = new AvsenderMottaker()
-                .id(arbeidstakerFnr)
-                .idType("FNR")
-                .navn(arbeidstakerNavn);
+                .id(oppfolgingsplanLPS.getVirksomhetsnummer())
+                .idType("ORGNR")
+                .navn(virksomhetsnavn);
 
         JournalpostRequest request = createJournalpostRequest(
                 virksomhetsnavn,
-                arbeidstakerFnr,
-                dokumentPdf,
+                oppfolgingsplanLPS.getFnr(),
+                oppfolgingsplanLPS.getPdf(),
                 avsenderMottaker
         );
         return journalfor(request);
@@ -172,3 +170,4 @@ public class DokArkivConsumer {
                 .id(oppfolgingsplan.virksomhet.virksomhetsnummer);
     }
 }
+
