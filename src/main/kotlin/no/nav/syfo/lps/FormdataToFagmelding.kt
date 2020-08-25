@@ -1,7 +1,6 @@
 package no.nav.syfo.lps
 
 import no.nav.helse.op2016.Skjemainnhold
-import java.time.*
 
 fun mapFormdataToFagmelding(
     skjemainnhold: Skjemainnhold,
@@ -40,8 +39,8 @@ fun mapFormdataToFagmelding(
             && skjemainnhold.sykefravaerForSykmeldtArbeidstaker?.sykmeldingsdato == null
             && skjemainnhold.sykefravaerForSykmeldtArbeidstaker?.sykmeldingsprosentVedSykmeldingsDato == null
         ) null else OpplysingerOmSykefravaeret(
-            forsteFravearsdag = skjemainnhold.sykefravaerForSykmeldtArbeidstaker?.foersteFravaersdag?.toZonedDateTime(),
-            sykmeldingsDato = skjemainnhold.sykefravaerForSykmeldtArbeidstaker?.sykmeldingsdato?.toZonedDateTime(),
+            forsteFravearsdag = skjemainnhold.sykefravaerForSykmeldtArbeidstaker?.foersteFravaersdag,
+            sykmeldingsDato = skjemainnhold.sykefravaerForSykmeldtArbeidstaker?.sykmeldingsdato,
             sykmeldingsProsentVedSykmeldDato = skjemainnhold.sykefravaerForSykmeldtArbeidstaker?.sykmeldingsprosentVedSykmeldingsDato
         ),
         tiltak = skjemainnhold.tiltak.tiltaksinformasjon.map {
@@ -50,8 +49,8 @@ fun mapFormdataToFagmelding(
                 beskrivelseAvTiltak = it.beskrivelseAvTiltaket,
                 maalMedTiltaket = it.maalMedTiltaket,
                 tiltaketGjennonforesIPerioden = TiltaketGjennonforesIPerioden(
-                    fraDato = it?.tidsrom?.periodeFra?.toZonedDateTime(),
-                    tilDato = it?.tidsrom?.periodeTil?.toZonedDateTime()
+                    fraDato = it?.tidsrom?.periodeFra,
+                    tilDato = it?.tidsrom?.periodeTil
                 ),
                 tilrettelagtArbeidIkkeMulig = it.tilrettelagtArbeidIkkeMulig,
                 sykmeldingsprosendIPerioden = it.sykmeldingsprosentIPerioden,
@@ -82,7 +81,7 @@ fun mapFormdataToFagmelding(
                 ),
                 fremdrift = it.oppfoelgingssamtaler,
                 underskrift = Underskift(
-                    datoforUnderskift = it.underskriftsdato?.toZonedDateTime(),
+                    datoforUnderskift = it.underskriftsdato,
                     signertPapirkopiForeliggerPaaArbeidsplasssen = it.isSignertPapirkopiForeligger
                 )
             )
@@ -96,5 +95,3 @@ fun mapFormdataToFagmelding(
         utfyllendeInfo = skjemainnhold.utfyllendeOpplysninger
     )
 )
-
-fun LocalDate.toZonedDateTime(): ZonedDateTime = atStartOfDay(ZoneId.systemDefault())

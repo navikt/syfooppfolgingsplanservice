@@ -1,6 +1,6 @@
 package no.nav.syfo.lps
 
-import java.time.ZonedDateTime
+import java.time.LocalDate
 
 data class Fagmelding(
     val oppfolgingsplan: Oppfolgingsplan
@@ -36,8 +36,8 @@ data class OpplysningerOmArbeidstakeren(
 )
 
 data class OpplysingerOmSykefravaeret(
-    val forsteFravearsdag: ZonedDateTime?,
-    val sykmeldingsDato: ZonedDateTime?,
+    val forsteFravearsdag: LocalDate?,
+    val sykmeldingsDato: LocalDate?,
     val sykmeldingsProsentVedSykmeldDato: String?
 )
 
@@ -57,8 +57,8 @@ data class Tiltak(
 )
 
 data class TiltaketGjennonforesIPerioden(
-    val fraDato: ZonedDateTime?,
-    val tilDato: ZonedDateTime?
+    val fraDato: LocalDate?,
+    val tilDato: LocalDate?
 )
 
 data class BehovForBistandFraNav(
@@ -80,7 +80,7 @@ data class VurderingEffektAvTiltak(
 )
 
 data class Underskift(
-    val datoforUnderskift: ZonedDateTime?,
+    val datoforUnderskift: LocalDate?,
     val signertPapirkopiForeliggerPaaArbeidsplasssen: Boolean?
 )
 
