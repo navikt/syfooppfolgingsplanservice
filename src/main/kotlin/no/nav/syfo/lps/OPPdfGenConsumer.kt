@@ -1,5 +1,9 @@
 package no.nav.syfo.lps
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
@@ -34,12 +38,13 @@ class OPPdfGenConsumer @Inject constructor(
         }
     }
 
-    private fun entity(fagmelding: Fagmelding): HttpEntity<Fagmelding> {
+    private fun entity(fagmelding: Fagmelding): HttpEntity<String> {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         headers[NAV_CONSUMER_ID_HEADER] = APP_CONSUMER_ID
         headers[NAV_CALL_ID_HEADER] = createCallId()
-        return HttpEntity(fagmelding, headers)
+        val jsonBody = mapper.writeValueAsString(fagmelding)
+        return HttpEntity(jsonBody, headers)
     }
 
     companion object {
@@ -51,3 +56,8 @@ class OPPdfGenConsumer @Inject constructor(
         private const val METRIC_CALL_OPPDFGEN_FAIL = "call_oppdfgen_fail"
     }
 }
+
+private val mapper: ObjectMapper = ObjectMapper()
+    .registerModule(KotlinModule())
+    .registerModule(JavaTimeModule())
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
