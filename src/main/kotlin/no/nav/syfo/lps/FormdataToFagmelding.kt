@@ -56,14 +56,22 @@ fun mapFormdataToFagmelding(
                 sykmeldingsprosendIPerioden = it.sykmeldingsprosentIPerioden,
                 behovForBistandFraNav = if (
                     it.isBistandRaadOgVeiledning == null
+                    && it.bistandRaadOgVeiledningBeskrivelse == null
                     && it.isBistandDialogMoeteMedNav == null
+                    && it.bistandDialogMoeteMedNavBeskrivelse == null
                     && it.isBistandArbeidsrettedeTiltakOgVirkemidler == null
+                    && it.bistandArbeidsrettedeTiltakOgVirkemidlerBeskrivelse == null
                     && it.isBistandHjelpemidler == null
+                    && it.bistandHjelpemidlerBeskrivelse == null
                 ) null else BehovForBistandFraNav(
                     raadOgVeiledning = it.isBistandRaadOgVeiledning,
+                    raadOgVeiledningBeskrivelse = it.bistandRaadOgVeiledningBeskrivelse,
                     dialogmoteMed = it.isBistandDialogMoeteMedNav,
+                    dialogmoteMedBeskrivelse = it.bistandDialogMoeteMedNavBeskrivelse,
                     arbeidsrettedeTiltak = it.isBistandArbeidsrettedeTiltakOgVirkemidler,
-                    hjelpemidler = it.isBistandHjelpemidler
+                    arbeidsrettedeTiltakBeskrivelse = it.bistandArbeidsrettedeTiltakOgVirkemidlerBeskrivelse,
+                    hjelpemidler = it.isBistandHjelpemidler,
+                    hjelpemidlerBeskrivelse = it.bistandHjelpemidlerBeskrivelse
                 ),
                 behovForBistandFraAndre = if (
                     it.isBistandBedriftshelsetjenesten == null
@@ -72,7 +80,7 @@ fun mapFormdataToFagmelding(
                 ) null else BehovForBistandFraAndre(
                     bedriftsHelsetjenesten = it.isBistandBedriftshelsetjenesten,
                     andre = it.isBistandAndre,
-                    andreFritekts = it.bistandAndreBeskrivelse
+                    andreFritekst = it.bistandAndreBeskrivelse
                 ),
                 behovForAvklaringMedLegeSykmeleder = it.behovForAvklaringLegeSykmelder,
                 vurderingEffektAvTiltak = VurderingEffektAvTiltak(
