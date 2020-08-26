@@ -82,7 +82,7 @@ fun mapFormdataToFagmelding(
                     andre = it.isBistandAndre,
                     andreFritekst = it.bistandAndreBeskrivelse
                 ),
-                behovForAvklaringMedLegeSykmeleder = it.behovForAvklaringLegeSykmelder,
+                behovForAvklaringMedLegeSykmelder = it.behovForAvklaringLegeSykmelder,
                 vurderingEffektAvTiltak = VurderingEffektAvTiltak(
                     behovForNyeTiltak = it.isBehovForNyeTiltak,
                     vurderingEffektAvTiltakFritekst = it.vurderingAvTiltak

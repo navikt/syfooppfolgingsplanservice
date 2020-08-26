@@ -48,7 +48,7 @@ data class Tiltak(
     val sykmeldingsprosendIPerioden: String?,
     val behovForBistandFraNav: BehovForBistandFraNav?,
     val behovForBistandFraAndre: BehovForBistandFraAndre?,
-    val behovForAvklaringMedLegeSykmeleder: String?,
+    val behovForAvklaringMedLegeSykmelder: String?,
     val tilrettelagtArbeidIkkeMulig: String?,
     val vurderingEffektAvTiltak: VurderingEffektAvTiltak,
     val fremdrift: String?,
