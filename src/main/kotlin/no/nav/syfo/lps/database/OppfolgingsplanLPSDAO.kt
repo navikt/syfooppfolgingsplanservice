@@ -83,7 +83,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         delt_med_nav: Boolean,
         del_med_fastlege: Boolean,
         delt_med_fastlege: Boolean
-    ): Long {
+    ): Pair<Long, UUID> {
         val id = DbUtil.nesteSekvensverdi("OPPFOLGINGSPLANLPS_ID_SEQ", jdbcTemplate)
         val uuid = UUID.randomUUID()
         val query = """
@@ -127,7 +127,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             .addValue("del_med_fastlege", del_med_fastlege)
             .addValue("delt_med_fastlege", delt_med_fastlege)
         namedParameterJdbcTemplate.update(query, mapSaveSql)
-        return id
+        return Pair(id, uuid)
     }
 
     fun updatePdf(

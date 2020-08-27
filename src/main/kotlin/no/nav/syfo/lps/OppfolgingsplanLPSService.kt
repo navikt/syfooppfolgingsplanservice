@@ -46,7 +46,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer
     ) {
-        val planId = savePlan(
+        val idList: Pair<Long, UUID> = savePlan(
             batch,
             skjemainnhold,
             virksomhetsnummer
@@ -61,11 +61,11 @@ class OppfolgingsplanLPSService @Inject constructor(
 
         val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
         val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
-        oppfolgingsplanLPSDAO.updatePdf(planId, pdf)
+        oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
         log.info("KAFKA-trace: pdf generated and stored")
         if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
             fastlegeService.sendOppfolgingsplanLPS(incomingMetadata.userPersonNumber, pdf)
-            oppfolgingsplanLPSDAO.updateSharedFastlege(planId)
+            oppfolgingsplanLPSDAO.updateSharedFastlege(idList.first)
         }
     }
 
@@ -73,7 +73,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         batch: String,
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer
-    ): Long {
+    ): Pair<Long, UUID> {
         return oppfolgingsplanLPSDAO.create(
             arbeidstakerFnr = Fodselsnummer(skjemainnhold.sykmeldtArbeidstaker.fnr),
             virksomhetsnummer = virksomhetsnummer.value,
