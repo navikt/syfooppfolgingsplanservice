@@ -5,11 +5,14 @@ import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
 import no.nav.syfo.lps.database.mapToOppfolgingsplanLPS
+import no.nav.syfo.lps.kafka.OppfolgingsplanLPSNAVProducer
 import no.nav.syfo.metric.Metrikk
+import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
 import no.nav.syfo.service.FastlegeService
 import no.nav.syfo.service.JournalforOPService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
 
@@ -17,6 +20,7 @@ import javax.inject.Inject
 class OppfolgingsplanLPSService @Inject constructor(
     private val fastlegeService: FastlegeService,
     private val journalforOPService: JournalforOPService,
+    private val oppfolgingsplanLPSNAVProducer: OppfolgingsplanLPSNAVProducer,
     private val metrikk: Metrikk,
     private val oppfolgingsplanLPSDAO: OppfolgingsplanLPSDAO,
     private val opPdfGenConsumer: OPPdfGenConsumer
@@ -63,6 +67,17 @@ class OppfolgingsplanLPSService @Inject constructor(
         val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
         oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
         log.info("KAFKA-trace: pdf generated and stored")
+
+        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
+            val kOppfolgingsplanLPSNAV = KOppfolgingsplanLPSNAV(
+                idList.second.toString(),
+                incomingMetadata.userPersonNumber,
+                virksomhetsnummer.value,
+                lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
+                LocalDate.now().toEpochDay().toInt()
+            )
+            oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
+        }
         if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
             fastlegeService.sendOppfolgingsplanLPS(incomingMetadata.userPersonNumber, pdf)
             oppfolgingsplanLPSDAO.updateSharedFastlege(idList.first)

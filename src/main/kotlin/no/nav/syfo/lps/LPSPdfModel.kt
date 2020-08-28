@@ -96,3 +96,13 @@ data class ArbeidstakersDeltakelse(
     val arbeidstakerMedvirkGjeonnforingOppfolginsplan: Boolean?,
     val hvorforHarIkkeArbeidstakerenMedvirket: String?
 )
+
+fun Oppfolgingsplan.isBehovForBistandFraNAV(): Boolean {
+    return this.tiltak.any {
+        val behovForBistandFraNav = it.behovForBistandFraNav
+        return behovForBistandFraNav?.raadOgVeiledning == true
+            || behovForBistandFraNav?.dialogmoteMed == true
+            || behovForBistandFraNav?.arbeidsrettedeTiltak == true
+            || behovForBistandFraNav?.hjelpemidler == true
+    }
+}
