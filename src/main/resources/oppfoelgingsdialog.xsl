@@ -316,7 +316,7 @@
                         </div>
                         <label class="varseltekst"><b>Opprettet av: </b> <xsl:value-of select="opprettetAv"/></label><xsl:value-of select="opprettetDato"/>
                         <xsl:if test="visAdvarsel='true'">
-                            <label class="varseltekst">Denne planen ble opprettet uten godkjenning fra den sykmeldte</label>
+                            <label class="varseltekst">Denne planen ble opprettet uten godkjenning fra arbeidstakeren</label>
                         </xsl:if>
                         <xsl:if test="visAdvarsel='false'">
                             <label class="varseltekst"><b>Godkjent av:</b> <xsl:value-of select="godkjentAv"/></label> <label><xsl:value-of select="godkjentDato"/></label>
