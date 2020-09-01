@@ -1,5 +1,6 @@
 package no.nav.syfo.lps.kafka
 
+import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
 import org.apache.kafka.common.config.SaslConfigs
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -16,9 +17,8 @@ class OppfolgingsplanLPSNAVConfig(
     @Value("\${kafka.bootstrap.servers.url}") private val kafkaBootstrapServers: String
 ) {
     @Bean
-    fun producerFactory(): ProducerFactory<String, Any> {
+    fun producerFactory(): ProducerFactory<String, KOppfolgingsplanLPSNAV> {
         val producerProperties = HashMap<String, Any>()
-        producerProperties["group.id"] = "syfoopservice"
         producerProperties["schema.registry.url"] = "http://kafka-schema-registry.tpa:8081"
         producerProperties["security.protocol"] = "SASL_SSL"
         producerProperties["sasl.mechanism"] = "PLAIN"
@@ -26,12 +26,11 @@ class OppfolgingsplanLPSNAVConfig(
         producerProperties["bootstrap.servers"] = kafkaBootstrapServers
         producerProperties["key.serializer"] = "io.confluent.kafka.serializers.KafkaAvroSerializer"
         producerProperties["value.serializer"] = "io.confluent.kafka.serializers.KafkaAvroSerializer"
-        producerProperties["specific.avro.reader"] = true
         return DefaultKafkaProducerFactory(producerProperties)
     }
 
     @Bean
-    fun kafkaTemplate(producerFactory: ProducerFactory<String, Any>): KafkaTemplate<String, Any> {
+    fun kafkaTemplate(producerFactory: ProducerFactory<String, KOppfolgingsplanLPSNAV>): KafkaTemplate<String, KOppfolgingsplanLPSNAV> {
         return KafkaTemplate(producerFactory)
     }
 }

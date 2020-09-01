@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @Component
 class OppfolgingsplanLPSNAVProducer @Inject constructor(
-    private val kafkaTemplate: KafkaTemplate<String, Any>
+    private val kafkaTemplate: KafkaTemplate<String, KOppfolgingsplanLPSNAV>
 ) {
     fun sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV: KOppfolgingsplanLPSNAV) {
         try {
