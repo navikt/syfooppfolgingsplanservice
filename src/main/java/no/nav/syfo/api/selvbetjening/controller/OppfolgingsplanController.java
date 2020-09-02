@@ -75,20 +75,28 @@ public class OppfolgingsplanController {
 
     @PostMapping(path = "/delmedfastlege")
     public void delMedFastlege(@PathVariable("id") Long id) {
-        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+        try {
+            String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        oppfolgingsplanService.delMedFastlege(id, innloggetIdent);
+            oppfolgingsplanService.delMedFastlege(id, innloggetIdent);
 
-        metrikk.tellHendelse("del_plan_med_fastlege");
+            metrikk.tellHendelse("del_plan_med_fastlege");
+        } catch (Exception e) {
+            metrikk.tellHendelse("del_plan_med_fastlege_feilet");
+        }
     }
 
     @PostMapping(path = "/delmednav")
     public void delMedNav(@PathVariable("id") Long id) {
-        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+        try {
+            String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
 
-        oppfolgingsplanService.delMedNav(id, innloggetIdent);
+            oppfolgingsplanService.delMedNav(id, innloggetIdent);
 
-        metrikk.tellHendelse("del_plan_med_nav");
+            metrikk.tellHendelse("del_plan_med_nav");
+        } catch (Exception e) {
+            metrikk.tellHendelse("del_plan_med_nav_feilet");
+        }
     }
 
     @PostMapping(path = "/godkjenn", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
