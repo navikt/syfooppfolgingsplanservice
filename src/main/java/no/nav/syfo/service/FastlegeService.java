@@ -62,7 +62,8 @@ public class FastlegeService {
         kallUriMedTemplate(
                 tilgangTilBrukerUriMedFnr,
                 rsOppfoelgingsplan,
-                token
+                token,
+                false
         );
 
         log.info("Sendt oppfølgingsplan til dialogfordeler");
@@ -76,18 +77,19 @@ public class FastlegeService {
         kallUriMedTemplate(
                 tilgangTilBrukerUriMedFnr,
                 rsOppfoelgingsplan,
-                token
+                token,
+                true
         );
         log.info("Sendt oppfølgingsplanLPS til dialogfordeler");
     }
 
-    private void kallUriMedTemplate(URI uri, RSOppfoelgingsplan rsOppfoelgingsplan, String token) {
+    private void kallUriMedTemplate(URI uri, RSOppfoelgingsplan rsOppfoelgingsplan, String token, boolean lps) {
         try {
             template.postForLocation(uri, entity(rsOppfoelgingsplan, token));
-            tellPlanDeltMedFastlegeKall(true);
+            tellPlanDeltMedFastlegeKall(lps, true);
         } catch (HttpClientErrorException e) {
             int responsekode = e.getRawStatusCode();
-            tellPlanDeltMedFastlegeKall(false);
+            tellPlanDeltMedFastlegeKall(lps, false);
             if (responsekode == 500) {
                 throw new RuntimeException("Kunne ikke dele med fastlege");
             } else if (responsekode >= 300) {
@@ -97,7 +99,7 @@ public class FastlegeService {
                 throw e;
             }
         } catch (Exception e) {
-            tellPlanDeltMedFastlegeKall(false);
+            tellPlanDeltMedFastlegeKall(lps, false);
             throw e;
         }
     }
@@ -111,7 +113,8 @@ public class FastlegeService {
         return new HttpEntity<>(rsOppfoelgingsplan, headers);
     }
 
-    private void tellPlanDeltMedFastlegeKall(boolean delt) {
+    private void tellPlanDeltMedFastlegeKall(boolean lps, boolean delt) {
+        if(lps) metrikk.tellHendelseMedTag("lps_plan_delt_med_fastlege", "delt", delt);
         metrikk.tellHendelseMedTag("plan_delt_med_fastlege", "delt", delt);
     }
 }
