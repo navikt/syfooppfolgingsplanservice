@@ -111,7 +111,7 @@ class OppfolgingsplanLPSService @Inject constructor(
 
         if (oppfolgingsplan.pdf != null) {
             log.info("Prøver å sende oppfolgingsplan med id {} på nytt.", oppfolgingsplan.id)
-            sendLpsOppfolgingsplanTilFastlege(oppfolgingsplan.fnr, oppfolgingsplan.pdf, oppfolgingsplan.id, feiletSending.retries)
+            sendLpsOppfolgingsplanTilFastlege(oppfolgingsplan.fnr, oppfolgingsplan.pdf, oppfolgingsplan.id, feiletSending.number_of_tries)
         }
     }
 
