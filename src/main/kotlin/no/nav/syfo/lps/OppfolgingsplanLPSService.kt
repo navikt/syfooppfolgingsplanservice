@@ -1,15 +1,20 @@
 package no.nav.syfo.lps
 
 import no.nav.helse.op2016.Skjemainnhold
+import no.nav.syfo.domain.FeiletSending
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
+import no.nav.syfo.lps.database.POppfolgingsplanLPS
 import no.nav.syfo.lps.database.mapToOppfolgingsplanLPS
 import no.nav.syfo.lps.kafka.OppfolgingsplanLPSNAVProducer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
 import no.nav.syfo.service.FastlegeService
+import no.nav.syfo.service.FeiletSendingService
 import no.nav.syfo.service.JournalforOPService
+import no.nav.syfo.util.InnsendingFeiletException
+import no.nav.syfo.util.OppslagFeiletException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
@@ -23,7 +28,8 @@ class OppfolgingsplanLPSService @Inject constructor(
     private val oppfolgingsplanLPSNAVProducer: OppfolgingsplanLPSNAVProducer,
     private val metrikk: Metrikk,
     private val oppfolgingsplanLPSDAO: OppfolgingsplanLPSDAO,
-    private val opPdfGenConsumer: OPPdfGenConsumer
+    private val opPdfGenConsumer: OPPdfGenConsumer,
+    private val feiletSendingService: FeiletSendingService
 ) {
     private val log = LoggerFactory.getLogger(OppfolgingsplanLPSService::class.java)
 
@@ -79,8 +85,7 @@ class OppfolgingsplanLPSService @Inject constructor(
             oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
         }
         if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
-            fastlegeService.sendOppfolgingsplanLPS(incomingMetadata.userPersonNumber, pdf)
-            oppfolgingsplanLPSDAO.updateSharedFastlege(idList.first)
+            sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
         }
     }
 
@@ -97,6 +102,34 @@ class OppfolgingsplanLPSService @Inject constructor(
             del_med_fastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege ?: false,
             delt_med_fastlege = false
         )
+    }
+
+    fun retrySendLpsPlanTilFastlege(
+        feiletSending: FeiletSending
+    ) {
+        val oppfolgingsplan: POppfolgingsplanLPS = oppfolgingsplanLPSDAO.get(feiletSending.oppfolgingsplanId)
+
+        if (oppfolgingsplan.pdf != null) {
+            log.info("Prøver å sende oppfolgingsplan med id {} på nytt.", oppfolgingsplan.id)
+            sendLpsOppfolgingsplanTilFastlege(oppfolgingsplan.fnr, oppfolgingsplan.pdf, oppfolgingsplan.id, feiletSending.retries)
+        }
+    }
+
+    fun sendLpsOppfolgingsplanTilFastlege(
+        fnr: String,
+        pdf: ByteArray,
+        oppfolgingsplanId: Long,
+        retry_num: Int
+    ) {
+        try {
+            fastlegeService.sendOppfolgingsplanLPS(fnr, pdf)
+            oppfolgingsplanLPSDAO.updateSharedFastlege(oppfolgingsplanId)
+            if(retry_num > 0) feiletSendingService.fjernSendtOppfolgingsplan(oppfolgingsplanId);
+        } catch (e: InnsendingFeiletException) {
+            feiletSendingService.opprettEllerOppdatertFeiletSending(oppfolgingsplanId, retry_num)
+        } catch (e: OppslagFeiletException) {
+            feiletSendingService.opprettEllerOppdatertFeiletSending(oppfolgingsplanId, retry_num)
+        }
     }
 
     fun createOppfolgingsplanLPSJournalposter() {

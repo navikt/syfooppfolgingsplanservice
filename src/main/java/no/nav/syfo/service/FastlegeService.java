@@ -6,6 +6,8 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.oidc.OIDCUtil;
 import no.nav.syfo.sts.StsConsumer;
+import no.nav.syfo.util.InnsendingFeiletException;
+import no.nav.syfo.util.OppslagFeiletException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,7 +93,9 @@ public class FastlegeService {
             int responsekode = e.getRawStatusCode();
             tellPlanDeltMedFastlegeKall(lps, false);
             if (responsekode == 500) {
-                throw new RuntimeException("Kunne ikke dele med fastlege");
+                throw new InnsendingFeiletException("Kunne ikke dele med fastlege");
+            } else if(responsekode == 404) {
+                throw new OppslagFeiletException("Feil ved oppslag av av fastlege eller partnerinformasjon");
             } else if (responsekode >= 300) {
                 log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
                 throw new RuntimeException("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
