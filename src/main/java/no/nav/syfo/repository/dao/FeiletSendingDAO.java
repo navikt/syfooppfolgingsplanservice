@@ -63,7 +63,7 @@ public class FeiletSendingDAO {
 
         namedParameterJdbcTemplate.update("update feilet_sending " +
                 "set number_of_tries=:number_of_tries, sistEndretDato=:sistEndretDato" +
-                "where oppfolgingsplanlps_id=:oppfolgingsplanlps_id, ", namedParameters);
+                "where oppfolgingsplanlps_id=:oppfolgingsplanlps_id", namedParameters);
     }
 
     public void remove(Long oppfolgingsplanId) {
@@ -71,7 +71,7 @@ public class FeiletSendingDAO {
                 .addValue("oppfolgingsplanlps_id", oppfolgingsplanId);
 
         namedParameterJdbcTemplate.update("delete from feilet_sending " +
-                "where oppfolgingsplanlps_id=:oppfolgingsplanlps_id, ", namedParameters);
+                "where oppfolgingsplanlps_id=:oppfolgingsplanlps_id", namedParameters);
     }
 
     private class FeiletSendingRowMapper implements RowMapper<PFeiletSending> {
