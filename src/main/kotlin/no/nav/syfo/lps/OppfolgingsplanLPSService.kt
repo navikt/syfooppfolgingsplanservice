@@ -107,7 +107,10 @@ class OppfolgingsplanLPSService @Inject constructor(
     fun retrySendLpsPlanTilFastlege(
         feiletSending: FeiletSending
     ) {
-        val oppfolgingsplan: POppfolgingsplanLPS = oppfolgingsplanLPSDAO.get(feiletSending.oppfolgingsplanId)
+        val oppfolgingsplanId: Long = feiletSending.oppfolgingsplanId
+                ?: throw RuntimeException("Fant ikke oppfolgingsplanId for feiletSending")
+
+        val oppfolgingsplan: POppfolgingsplanLPS = oppfolgingsplanLPSDAO.get(oppfolgingsplanId)
 
         if (oppfolgingsplan.pdf != null) {
             log.info("Prøver å sende oppfolgingsplan med id {} på nytt.", oppfolgingsplan.id)
@@ -119,16 +122,16 @@ class OppfolgingsplanLPSService @Inject constructor(
         fnr: String,
         pdf: ByteArray,
         oppfolgingsplanId: Long,
-        retry_num: Int
+        try_num: Int
     ) {
         try {
             fastlegeService.sendOppfolgingsplanLPS(fnr, pdf)
             oppfolgingsplanLPSDAO.updateSharedFastlege(oppfolgingsplanId)
-            if(retry_num > 0) feiletSendingService.fjernSendtOppfolgingsplan(oppfolgingsplanId);
+            if(try_num > 0) feiletSendingService.fjernSendtOppfolgingsplan(oppfolgingsplanId);
         } catch (e: InnsendingFeiletException) {
-            feiletSendingService.opprettEllerOppdatertFeiletSending(oppfolgingsplanId, retry_num)
+            feiletSendingService.opprettEllerOppdatertFeiletSending(oppfolgingsplanId, try_num)
         } catch (e: OppslagFeiletException) {
-            feiletSendingService.opprettEllerOppdatertFeiletSending(oppfolgingsplanId, retry_num)
+            feiletSendingService.opprettEllerOppdatertFeiletSending(oppfolgingsplanId, try_num)
         }
     }
 

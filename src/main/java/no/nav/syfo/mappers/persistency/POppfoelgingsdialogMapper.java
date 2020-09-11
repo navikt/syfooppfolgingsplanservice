@@ -36,16 +36,6 @@ public class POppfoelgingsdialogMapper {
                     .opprettetDato(pArbeidsoppgave.opprettetDato)
                     .gjennomfoering(map(pArbeidsoppgave, p2gjennomfoering));
 
-    public static Function<PFeiletSending, FeiletSending> p2feiletSending = pFeiletSending ->
-            new FeiletSending()
-                    .id(pFeiletSending.id)
-                    .oppfolgingsplanId(pFeiletSending.oppfolgingsplanId)
-                    .number_of_tries(pFeiletSending.number_of_tries)
-                    .max_retries(pFeiletSending.max_retries)
-                    .sistEndretDato(pFeiletSending.sistEndretDato)
-                    .opprettetDato(pFeiletSending.opprettetDato)
-            ;
-
     public static Function<PGodkjenning, Godkjenning> p2godkjenning = pGodkjenning ->
             new Godkjenning()
                     .id(pGodkjenning.id)
