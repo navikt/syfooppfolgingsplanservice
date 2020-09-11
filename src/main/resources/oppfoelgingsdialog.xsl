@@ -314,12 +314,14 @@
                         <div class="innholdoverskrift innholdoverskrift--ingenborder">
                             <h2 class="left">Om denne planen</h2>
                         </div>
-                        <label class="varseltekst"><b>Opprettet av: </b> <xsl:value-of select="opprettetAv"/></label><xsl:value-of select="opprettetDato"/>
+                        <label class="varseltekst"><b>Opprettet av: </b><xsl:value-of select="opprettetAv"/></label>
+                        <label class="varseltekst"><b>Opprettet dato: </b><xsl:value-of select="opprettetDato"/></label>
                         <xsl:if test="visAdvarsel='true'">
                             <label class="varseltekst">Denne planen ble opprettet uten godkjenning fra arbeidstakeren</label>
                         </xsl:if>
                         <xsl:if test="visAdvarsel='false'">
-                            <label class="varseltekst"><b>Godkjent av:</b> <xsl:value-of select="godkjentAv"/></label> <label><xsl:value-of select="godkjentDato"/></label>
+                            <label class="varseltekst"><b>Godkjent av: </b> <xsl:value-of select="godkjentAv"/></label>
+                            <label class="varseltekst"><b>Godkjent dato: </b><xsl:value-of select="godkjentDato"/></label>
                         </xsl:if>
                         <label class="varseltekst"><b>Varer: </b> <xsl:value-of select="gyldigfra"/> - <xsl:value-of select="gyldigtil"/></label>
                         <label class="varseltekst"><b>Evalueres: </b> <xsl:value-of select="evalueres"/></label>
