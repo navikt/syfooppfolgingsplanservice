@@ -107,10 +107,7 @@ class OppfolgingsplanLPSService @Inject constructor(
     fun retrySendLpsPlanTilFastlege(
         feiletSending: FeiletSending
     ) {
-        val oppfolgingsplanId: Long = feiletSending.oppfolgingsplanId
-                ?: throw RuntimeException("Fant ikke oppfolgingsplanId for feiletSending")
-
-        val oppfolgingsplan: POppfolgingsplanLPS = oppfolgingsplanLPSDAO.get(oppfolgingsplanId)
+        val oppfolgingsplan: POppfolgingsplanLPS = oppfolgingsplanLPSDAO.get(feiletSending.oppfolgingsplanId)
 
         if (oppfolgingsplan.pdf != null) {
             log.info("Prøver å sende oppfolgingsplan med id {} på nytt.", oppfolgingsplan.id)
