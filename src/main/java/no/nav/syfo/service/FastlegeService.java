@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -90,7 +91,6 @@ public class FastlegeService {
             template.postForLocation(uri, entity(rsOppfoelgingsplan, token));
             tellPlanDeltMedFastlegeKall(lps, true);
         } catch (HttpClientErrorException e) {
-            log.error("Feil fra postkall", e);
             int responsekode = e.getRawStatusCode();
             log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             tellPlanDeltMedFastlegeKall(lps, false);
@@ -103,8 +103,12 @@ public class FastlegeService {
             } else {
                 throw e;
             }
+        } catch (HttpServerErrorException e) {
+            int responsekode = e.getRawStatusCode();
+            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode ", responsekode);
+            tellPlanDeltMedFastlegeKall(lps, false);
+            throw new InnsendingFeiletException("Kunne ikke dele med fastlege");
         } catch (Exception e) {
-            log.error("Fanget exception", e);
             tellPlanDeltMedFastlegeKall(lps, false);
             throw e;
         }
