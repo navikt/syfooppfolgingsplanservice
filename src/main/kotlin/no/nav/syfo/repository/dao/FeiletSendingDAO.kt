@@ -30,7 +30,12 @@ class FeiletSendingDAO @Inject constructor(
     }
 
     fun hentFeiledeSendinger(): List<FeiletSending> {
-        val feiletSendingList = Optional.ofNullable(jdbcTemplate.query("select * from feilet_sending where max_retries > number_of_tries", FeiletSendingRowMapper())).orElse(emptyList())
+        val query = """
+            SELECT * 
+            FROM feilet_sending 
+            WHERE max_retries > number_of_tries
+            """.trimIndent()
+        val feiletSendingList = Optional.ofNullable(jdbcTemplate.query(query, FeiletSendingRowMapper())).orElse(emptyList())
         return feiletSendingList.stream()
                 .map { pFeiletSending: PFeiletSending -> mapPFeiletSendingToFeiletSending(pFeiletSending) }
                 .collect(Collectors.toList())
@@ -90,7 +95,7 @@ class FeiletSendingDAO @Inject constructor(
         override fun mapRow(rs: ResultSet, rowNum: Int): PFeiletSending {
             return PFeiletSending(
                     id = rs.getLong("id"),
-                    oppfolgingsplanId = rs.getLong("oppfoelgingsplanlps_id"),
+                    oppfolgingsplanId = rs.getLong("oppfolgingsplanlps_id"),
                     number_of_tries = rs.getInt("number_of_tries"),
                     max_retries = rs.getInt("max_retries"),
                     opprettet = DbUtil.convert(rs.getTimestamp("opprettet")),
