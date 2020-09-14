@@ -90,6 +90,7 @@ public class FastlegeService {
             template.postForLocation(uri, entity(rsOppfoelgingsplan, token));
             tellPlanDeltMedFastlegeKall(lps, true);
         } catch (HttpClientErrorException e) {
+            log.error("Feil fra postkall", e);
             int responsekode = e.getRawStatusCode();
             log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             tellPlanDeltMedFastlegeKall(lps, false);
@@ -103,6 +104,7 @@ public class FastlegeService {
                 throw e;
             }
         } catch (Exception e) {
+            log.error("Fanget exception", e);
             tellPlanDeltMedFastlegeKall(lps, false);
             throw e;
         }
