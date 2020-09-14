@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class FeiletSendingService @Autowired constructor(private val feiletSendingDAO: FeiletSendingDAO) {
-    fun opprettEllerOppdatertFeiletSending(oppfolgingsplanId: Long, number_of_tries: Int) {
+    fun opprettEllerOppdaterFeiletSending(oppfolgingsplanId: Long, number_of_tries: Int) {
         if (number_of_tries == 0) {
-            feiletSendingDAO.create(oppfolgingsplanId = oppfolgingsplanId, max_retries = FeiletSending.MAX_RETRIES)
+            feiletSendingDAO.create(
+                    oppfolgingsplanId = oppfolgingsplanId,
+                    max_retries = FeiletSending.MAX_RETRIES)
             log.info("Fikk ikke sendt oppfolgingsplan med id {} til fastlege. Lagrer og prøver igjen senere.", oppfolgingsplanId)
         } else {
             val feiletSending = feiletSendingDAO.findByOppfolgingsplanId(oppfolgingsplanId)
