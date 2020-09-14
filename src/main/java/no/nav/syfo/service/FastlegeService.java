@@ -6,12 +6,15 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.oidc.OIDCUtil;
 import no.nav.syfo.sts.StsConsumer;
+import no.nav.syfo.util.InnsendingFeiletException;
+import no.nav.syfo.util.OppslagFeiletException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -89,15 +92,22 @@ public class FastlegeService {
             tellPlanDeltMedFastlegeKall(lps, true);
         } catch (HttpClientErrorException e) {
             int responsekode = e.getRawStatusCode();
+            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             tellPlanDeltMedFastlegeKall(lps, false);
             if (responsekode == 500) {
-                throw new RuntimeException("Kunne ikke dele med fastlege");
+                throw new InnsendingFeiletException("Kunne ikke dele med fastlege");
+            } else if(responsekode == 404) {
+                throw new OppslagFeiletException("Feil ved oppslag av av fastlege eller partnerinformasjon");
             } else if (responsekode >= 300) {
-                log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
                 throw new RuntimeException("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             } else {
                 throw e;
             }
+        } catch (HttpServerErrorException e) {
+            int responsekode = e.getRawStatusCode();
+            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode ", responsekode);
+            tellPlanDeltMedFastlegeKall(lps, false);
+            throw new InnsendingFeiletException("Kunne ikke dele med fastlege");
         } catch (Exception e) {
             tellPlanDeltMedFastlegeKall(lps, false);
             throw e;
