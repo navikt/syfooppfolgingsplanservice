@@ -78,8 +78,8 @@ class FeiletSendingDAO @Inject constructor(
                     oppfolgingsplanId = rs.getLong("oppfoelgingsplanlps_id"),
                     number_of_tries = rs.getInt("number_of_tries"),
                     max_retries = rs.getInt("max_retries"),
-                    opprettetDato = DbUtil.convert(rs.getTimestamp("opprettetDato")),
-                    sistEndretDato = DbUtil.convert(rs.getTimestamp("sistEndretDato")))
+                    opprettet = DbUtil.convert(rs.getTimestamp("opprettetDato")),
+                    sist_endret = DbUtil.convert(rs.getTimestamp("sistEndretDato")))
         }
     }
 }
@@ -90,7 +90,7 @@ private fun mapPFeiletSendingToFeiletSending(pFeiletSending: PFeiletSending): Fe
             oppfolgingsplanId = pFeiletSending.oppfolgingsplanId,
             number_of_tries = pFeiletSending.number_of_tries,
             max_retries = pFeiletSending.max_retries,
-            sistEndretDato = pFeiletSending.sistEndretDato,
-            opprettetDato = pFeiletSending.opprettetDato
+            sist_endret = pFeiletSending.sist_endret,
+            opprettet = pFeiletSending.opprettet
     )
 }
