@@ -91,13 +91,13 @@ public class FastlegeService {
             tellPlanDeltMedFastlegeKall(lps, true);
         } catch (HttpClientErrorException e) {
             int responsekode = e.getRawStatusCode();
+            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             tellPlanDeltMedFastlegeKall(lps, false);
             if (responsekode == 500) {
                 throw new InnsendingFeiletException("Kunne ikke dele med fastlege");
             } else if(responsekode == 404) {
                 throw new OppslagFeiletException("Feil ved oppslag av av fastlege eller partnerinformasjon");
             } else if (responsekode >= 300) {
-                log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
                 throw new RuntimeException("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             } else {
                 throw e;
