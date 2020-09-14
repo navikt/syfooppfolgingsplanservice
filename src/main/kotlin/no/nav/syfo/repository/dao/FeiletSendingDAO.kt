@@ -41,33 +41,48 @@ class FeiletSendingDAO @Inject constructor(
             max_retries: Int
     ) {
         val feiletSendingId = DbUtil.nesteSekvensverdi("FEILET_SENDING_ID_SEQ", jdbcTemplate)
+
+        val query = """
+            INSERT INTO feilet_sending (id, oppfolgingsplanlps_id, number_of_tries, max_retries, opprettet, sist_endret)
+            values (:id, :oppfolgingsplanlps_id, :number_of_tries, :max_retries, :opprettet, :sist_endret)
+            """.trimIndent()
+
         val namedParameters = MapSqlParameterSource()
                 .addValue("id", feiletSendingId)
                 .addValue("oppfolgingsplanlps_id", oppfolgingsplanId)
                 .addValue("number_of_tries", 1)
                 .addValue("max_retries", max_retries)
-                .addValue("opprettetDato", DbUtil.convert(LocalDateTime.now()))
-                .addValue("sistEndretDato", DbUtil.convert(LocalDateTime.now()))
-        namedParameterJdbcTemplate.update("insert into feilet_sending " +
-                "(id, oppfolgingsplanlps_id, number_of_tries, max_retries, opprettetDato, sistEndretDato) values" +
-                "(:id, :oppfolgingsplanlps_id, :number_of_tries, :max_retries, :opprettetDato, :sistEndretDato)", namedParameters)
+                .addValue("opprettet", DbUtil.convert(LocalDateTime.now()))
+                .addValue("sist_endret", DbUtil.convert(LocalDateTime.now()))
+
+        namedParameterJdbcTemplate.update(query, namedParameters)
     }
 
     fun updateAfterRetry(feiletSending: FeiletSending) {
+        val query = """
+            UPDATE feilet_sending
+            SET number_of_tries=:number_of_tries, sist_endret=:sist_endret
+            where id=:id
+            """.trimIndent()
+
         val namedParameters = MapSqlParameterSource()
                 .addValue("id", feiletSending.id)
                 .addValue("number_of_tries", feiletSending.number_of_tries)
-                .addValue("sistEndretDato", DbUtil.convert(LocalDateTime.now()))
-        namedParameterJdbcTemplate.update("update feilet_sending " +
-                "set number_of_tries=:number_of_tries, sistEndretDato=:sistEndretDato" +
-                "where id=:id", namedParameters)
+                .addValue("sist_endret", DbUtil.convert(LocalDateTime.now()))
+
+        namedParameterJdbcTemplate.update(query, namedParameters)
     }
 
     fun remove(oppfolgingsplanId: Long?) {
+        val query = """
+            DELETE FROM feilet_sending
+            WHERE oppfolgingsplanlps_id=:oppfolgingsplanlps_id
+            """.trimIndent()
+
         val namedParameters = MapSqlParameterSource()
                 .addValue("oppfolgingsplanlps_id", oppfolgingsplanId)
-        namedParameterJdbcTemplate.update("delete from feilet_sending " +
-                "where oppfolgingsplanlps_id=:oppfolgingsplanlps_id", namedParameters)
+
+        namedParameterJdbcTemplate.update(query, namedParameters)
     }
 
     private inner class FeiletSendingRowMapper : RowMapper<PFeiletSending> {
@@ -78,8 +93,8 @@ class FeiletSendingDAO @Inject constructor(
                     oppfolgingsplanId = rs.getLong("oppfoelgingsplanlps_id"),
                     number_of_tries = rs.getInt("number_of_tries"),
                     max_retries = rs.getInt("max_retries"),
-                    opprettet = DbUtil.convert(rs.getTimestamp("opprettetDato")),
-                    sist_endret = DbUtil.convert(rs.getTimestamp("sistEndretDato")))
+                    opprettet = DbUtil.convert(rs.getTimestamp("opprettet")),
+                    sist_endret = DbUtil.convert(rs.getTimestamp("sist_endret")))
         }
     }
 }
