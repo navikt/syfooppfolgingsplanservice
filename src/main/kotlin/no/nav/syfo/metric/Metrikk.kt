@@ -4,13 +4,13 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import no.nav.syfo.domain.AsynkOppgave
 import no.nav.syfo.util.DatoUtil
-import org.springframework.stereotype.Controller
+import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
-@Controller
+@Component
 class Metrikk @Inject constructor(
         private val registry: MeterRegistry
 ) {

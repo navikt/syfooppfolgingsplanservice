@@ -1,11 +1,8 @@
 package no.nav.syfo.repository.dao
 
 import no.nav.syfo.domain.Kommentar
-import no.nav.syfo.mappers.persistency.POppfoelgingsdialogMapper
 import no.nav.syfo.repository.DbUtil
 import no.nav.syfo.repository.domain.PKommentar
-import no.nav.syfo.util.MapUtil
-import org.omg.SendingContext.RunTime
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
@@ -16,7 +13,6 @@ import java.lang.RuntimeException
 import java.sql.*
 import java.time.LocalDateTime
 import java.util.*
-import java.util.function.Function
 import java.util.stream.Collectors
 import javax.inject.Inject
 

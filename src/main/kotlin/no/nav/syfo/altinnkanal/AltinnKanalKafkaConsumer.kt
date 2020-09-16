@@ -13,6 +13,8 @@ import no.nav.helse.op2016.Oppfoelgingsplan4UtfyllendeInfoM
 import no.nav.syfo.domain.Virksomhetsnummer
 import no.nav.syfo.lps.OppfolgingsplanLPSService
 import no.nav.syfo.lps.mq.EiaMottakProducer
+import no.nav.syfo.metric.Metrikk
+import no.nav.syfo.util.FnrUtil
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -36,34 +38,38 @@ val xmlMapper: ObjectMapper = XmlMapper(JacksonXmlModule().apply {
 @Profile("remote")
 @Component
 class AltinnKanalKafkaConsumer @Inject constructor(
-    @Value("\${nais.cluster.name}") private val naisClusterName: String,
+    @Value("\${lps.eia.threshold.day}") private var thresholdDay: String,
     private val eiaMottakProducer: EiaMottakProducer,
-    private val oppfolgingsplanLPSService: OppfolgingsplanLPSService
+    private val oppfolgingsplanLPSService: OppfolgingsplanLPSService,
+    private val metrikk: Metrikk
 ) {
     private val log = LoggerFactory.getLogger(AltinnKanalKafkaConsumer::class.java)
-
-    private val isDev = naisClusterName == "dev-fss"
 
     @KafkaListener(topics = ["aapen-altinn-oppfolgingsplan-Mottatt"])
     fun handleIncomingAltinnOP(
         consumerRecord: ConsumerRecord<String, ExternalAttachment>
     ) {
-        if (isDev) {
-            try {
-                log.info("Mottatt melding aapen-altinn-oppfolgingsplan-Mottatt")
+        try {
+            log.info("Mottatt melding aapen-altinn-oppfolgingsplan-Mottatt")
 
-                val recordBatch = consumerRecord.value().getBatch()
+            val recordBatch = consumerRecord.value().getBatch()
 
-                val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(recordBatch)) as DataBatch
-                val payload = dataBatch.dataUnits.dataUnit.first().formTask.form.first().formData
-                val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
-                val skjemainnhold = oppfolgingsplan.skjemainnhold
+            val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(recordBatch)) as DataBatch
+            val payload = dataBatch.dataUnits.dataUnit.first().formTask.form.first().formData
+            val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
+            val skjemainnhold = oppfolgingsplan.skjemainnhold
+            val sykmeldtFnr = oppfolgingsplan.skjemainnhold.sykmeldtArbeidstaker.fnr
 
+            val skalSendeTilEia = FnrUtil.fodtEtterDagIMaaned(sykmeldtFnr, thresholdDay.toInt())
+
+            if (skalSendeTilEia) {
                 eiaMottakProducer.sendOppfolgingsplanLPS(
                     consumerRecord.value(),
                     payload,
                     skjemainnhold.arbeidsgiver.orgnr
                 )
+                metrikk.tellHendelse("sendt_lps_plan_til_eia")
+            } else {
                 val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
                 oppfolgingsplanLPSService.receivePlan(
                     consumerRecord.value().getArchiveReference(),
@@ -71,11 +77,12 @@ class AltinnKanalKafkaConsumer @Inject constructor(
                     skjemainnhold,
                     virksomhetsnummer
                 )
-            } catch (e: Exception) {
-                log.error("KAFKA-TRACE: Klarte ikke prosessere melding", e)
+                metrikk.tellHendelse("lagret_lps_plan")
             }
-        } else {
-            log.info("KAFKA-TRACE: Skipping record")
+            metrikk.tellHendelse("prosessering_av_lps_plan_vellykket") }
+        catch (e: Exception) {
+            log.error("KAFKA-TRACE: Klarte ikke prosessere melding", e)
+            metrikk.tellHendelse("prosessering_av_lps_plan_feilet")
         }
     }
 }
