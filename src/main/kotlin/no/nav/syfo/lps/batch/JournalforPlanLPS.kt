@@ -16,7 +16,7 @@ class JournalforPlanLPS @Inject constructor(
 ) {
     private val isDev = naisClusterName == "dev-fss"
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 60 * 60 * 1000)
     fun createOppfolgingsplanLPSJournalposter() {
         if (isDev && leaderElectionService.isLeader && "true" != System.getProperty(PropertyUtil.LOCAL_MOCK)) {
             oppfolgingsplanLPSService.createOppfolgingsplanLPSJournalposter()
