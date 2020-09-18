@@ -82,6 +82,7 @@ class OppfolgingsplanLPSService @Inject constructor(
                 lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
                 LocalDate.now().toEpochDay().toInt()
             )
+            metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand",  lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV());
             oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
         }
         if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
