@@ -120,3 +120,5 @@ spec:
       value: https://syfobrukertilgang.nais.preprod.local
     - name: FELLESKODEVERK_URL
       value: https://kodeverk.nais.preprod.local/api/v1
+    - name: LPS_EIA_THRESHOLD_DAY
+      value: "0"

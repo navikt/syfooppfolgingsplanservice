@@ -2,6 +2,7 @@ package no.nav.syfo.lps.mq
 
 import no.nav.altinnkanal.avro.ExternalAttachment
 import org.slf4j.LoggerFactory
+import net.sf.saxon.TransformerFactoryImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.jms.core.JmsTemplate
@@ -12,6 +13,8 @@ import java.io.StringWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.jms.Session
+import javax.xml.transform.stream.StreamSource
+import javax.xml.transform.stream.StreamResult
 import javax.transaction.Transactional
 
 @Service
@@ -22,10 +25,10 @@ class EiaMottakProducer @Autowired constructor(
     private val log = LoggerFactory.getLogger(EiaMottakProducer::class.java)
 
     private val xsltFilePath = "/altinn2eifellesformat2018_03_16.xsl"
-    private val xFactory = net.sf.saxon.TransformerFactoryImpl()
+    private val xFactory = TransformerFactoryImpl()
     private val xslt = xFactory
         .newTransformer(
-            javax.xml.transform.stream.StreamSource(
+            StreamSource(
                 EiaMottakProducer::class.java.getResourceAsStream(xsltFilePath)))
 
     fun sendOppfolgingsplanLPS(
@@ -54,8 +57,8 @@ class EiaMottakProducer @Autowired constructor(
         val resultWriter = StringWriter()
         return try {
             xslt.transform(
-                javax.xml.transform.stream.StreamSource(StringReader(xml)),
-                javax.xml.transform.stream.StreamResult(resultWriter))
+                StreamSource(StringReader(xml)),
+                StreamResult(resultWriter))
             MessageCreator { session: Session ->
                 session.createTextMessage().apply {
                     this.text = resultWriter.toString()
