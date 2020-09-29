@@ -6,7 +6,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
-import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class OppfolgingsplanUtilTest {

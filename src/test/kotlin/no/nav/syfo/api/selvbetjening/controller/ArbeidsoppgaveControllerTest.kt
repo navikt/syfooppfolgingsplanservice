@@ -1,7 +1,6 @@
 package no.nav.syfo.api.selvbetjening.controller
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.api.selvbetjening.controller.ArbeidsoppgaveController
 import no.nav.syfo.service.ArbeidsoppgaveService
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle

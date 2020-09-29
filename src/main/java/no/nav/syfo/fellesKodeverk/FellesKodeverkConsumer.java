@@ -1,6 +1,5 @@
 package no.nav.syfo.fellesKodeverk;
 
-import no.nav.syfo.fellesKodeverk.exceptions.MissingStillingsnavn;
 import no.nav.syfo.metric.Metrikk;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Optional;
-
-import static java.util.Optional.ofNullable;
 import static no.nav.syfo.config.CacheConfig.CACHENAME_FELLESKODEVERK_BETYDNINGER;
 import static no.nav.syfo.util.RequestUtilKt.APP_CONSUMER_ID;
 import static no.nav.syfo.util.RequestUtilKt.createCallId;

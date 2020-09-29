@@ -2,7 +2,6 @@ package no.nav.syfo.api.intern.controller
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.api.intern.controller.OppfolgingsplanInternController
 import no.nav.syfo.ereg.EregConsumer
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO
 import no.nav.syfo.service.BrukerprofilService
