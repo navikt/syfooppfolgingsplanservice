@@ -73,7 +73,7 @@ class AltinnKanalKafkaConsumer @Inject constructor(
                 )
                 metrikk.tellHendelse("sendt_lps_plan_til_eia")
             } else {
-                log.info("Sender plan til Modia")
+                log.info("Lagrer plan i DB")
                 val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
                 oppfolgingsplanLPSService.receivePlan(
                     consumerRecord.value().getArchiveReference(),
