@@ -59,10 +59,13 @@ class AltinnKanalKafkaConsumer @Inject constructor(
             val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
             val skjemainnhold = oppfolgingsplan.skjemainnhold
             val sykmeldtFnr = oppfolgingsplan.skjemainnhold.sykmeldtArbeidstaker.fnr
+            val fnrDag = sykmeldtFnr.substring(0, 2).toInt()
 
             val skalSendeTilEia = FnrUtil.fodtEtterDagIMaaned(sykmeldtFnr, thresholdDay.toInt())
 
+            log.info("Fnr dato/dag: $fnrDag")
             if (skalSendeTilEia) {
+                log.info("Sender plan til EIA")
                 eiaMottakProducer.sendOppfolgingsplanLPS(
                     consumerRecord.value(),
                     payload,
@@ -70,6 +73,7 @@ class AltinnKanalKafkaConsumer @Inject constructor(
                 )
                 metrikk.tellHendelse("sendt_lps_plan_til_eia")
             } else {
+                log.info("Sender plan til Modia")
                 val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
                 oppfolgingsplanLPSService.receivePlan(
                     consumerRecord.value().getArchiveReference(),
