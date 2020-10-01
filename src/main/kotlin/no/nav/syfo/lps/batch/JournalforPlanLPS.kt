@@ -18,7 +18,7 @@ class JournalforPlanLPS @Inject constructor(
 
     @Scheduled(fixedRate = 60 * 60 * 1000)
     fun createOppfolgingsplanLPSJournalposter() {
-        if (isDev && leaderElectionService.isLeader && "true" != System.getProperty(PropertyUtil.LOCAL_MOCK)) {
+        if (leaderElectionService.isLeader && "true" != System.getProperty(PropertyUtil.LOCAL_MOCK)) {
             oppfolgingsplanLPSService.createOppfolgingsplanLPSJournalposter()
         }
     }
