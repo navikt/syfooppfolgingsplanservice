@@ -82,8 +82,6 @@ spec:
       value: mq://a01apvl062.adeo.no:1414/MPLSC03
     - name: SYFOOPPFOLGINGSPLANSERVICE_CHANNEL_NAME
       value: P_SYFOOPPFOLGINGSPL
-    - name: EIA_MOTTAK_QUEUENAME
-      value: QA.P414.FS06_EIA_MELDINGER
     - name: VARSELPRODUKSJON_VARSLINGER_QUEUENAME
       value: QA.P_VARSELPRODUKSJON.SEND_VARSEL
     - name: VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME
@@ -124,5 +122,3 @@ spec:
       value: https://syfobrukertilgang.nais.adeo.no
     - name: FELLESKODEVERK_URL
       value: https://kodeverk.nais.adeo.no/api/v1
-    - name: LPS_EIA_THRESHOLD_DAY
-      value: "23"

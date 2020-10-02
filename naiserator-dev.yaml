@@ -82,8 +82,6 @@ spec:
       value: mq://b27apvl173.preprod.local:1413/MQ1LSC03
     - name: SYFOOPPFOLGINGSPLANSERVICE_CHANNEL_NAME
       value: Q1_SYFOOPPFOLGINGSPL
-    - name: EIA_MOTTAK_QUEUENAME
-      value: QA.Q414.FS06_EIA_MELDINGER
     - name: VARSELPRODUKSJON_VARSLINGER_QUEUENAME
       value: QA.Q1_VARSELPRODUKSJON.SEND_VARSEL
     - name: VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME
@@ -120,5 +118,3 @@ spec:
       value: https://syfobrukertilgang.nais.preprod.local
     - name: FELLESKODEVERK_URL
       value: https://kodeverk.nais.preprod.local/api/v1
-    - name: LPS_EIA_THRESHOLD_DAY
-      value: "23"

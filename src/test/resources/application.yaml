@@ -90,7 +90,6 @@ mqgateway03.name: mq
 mqgateway03.hostname: mq
 mqgateway03.port: "0001"
 syfooppfolgingsplanservice.channel.name: mq
-eia.mottak.queuename: mqeiamottak
 varselproduksjon.best.srvmled.m.kontakt.queuename: mqbestbarsel
 varselproduksjon.varslinger.queuename: mqvarslinger
 
