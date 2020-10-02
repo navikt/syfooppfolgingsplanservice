@@ -30,14 +30,12 @@ import static java.util.Optional.ofNullable;
 import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.*;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningNl;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningSyk;
-import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
 import static no.nav.syfo.pdf.PdfFabrikk.tilPdf;
-import static no.nav.syfo.util.DatoUtil.antallDagerIPeriode;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.*;
-import static no.nav.syfo.util.time.DateUtil.tilKortDato;
+import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidsgiveren;
 import static no.nav.syfo.util.time.DateUtil.tilMuntligDatoAarFormat;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -72,8 +70,6 @@ public class GodkjenningService {
 
     private TredjepartsvarselService tredjepartsvarselService;
 
-    private SykeforloepService sykeforloepService;
-
     private GodkjenningerDAO godkjenningerDAO;
 
     private AsynkOppgaveDAO asynkOppgaveDAO;
@@ -93,7 +89,6 @@ public class GodkjenningService {
             EregConsumer eregConsumer,
             NarmesteLederConsumer narmesteLederConsumer,
             ServiceVarselService serviceVarselService,
-            SykeforloepService sykeforloepService,
             TredjepartsvarselService tredjepartsvarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
@@ -110,7 +105,6 @@ public class GodkjenningService {
         this.eregConsumer = eregConsumer;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.serviceVarselService = serviceVarselService;
-        this.sykeforloepService = sykeforloepService;
         this.tredjepartsvarselService = tredjepartsvarselService;
         this.tilgangskontrollService = tilgangskontrollService;
     }
@@ -283,15 +277,6 @@ public class GodkjenningService {
                 .withEvalueres(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.evalueres))
                 .withGyldigfra(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom))
                 .withGyldigtil(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom))
-                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer, EKSTERN), periode -> new SykeforloepsperioderXML()
-                        .withFom(tilKortDato(periode.fom))
-                        .withTom(tilKortDato(periode.tom))
-                        .withAntallDager(antallDagerIPeriode(periode.fom, periode.tom))
-                        .withGradering(periode.grad)
-                        .withBehandlingsdager(periode.behandlingsdager)
-                        .withReisetilskudd(periode.reisetilskudd)
-                        .withAvventende(periode.avventende)
-                ))
                 .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
                                 .withNavn(arbeidsoppgave.navn)))
@@ -378,15 +363,6 @@ public class GodkjenningService {
                 .withEvalueres(tilMuntligDatoAarFormat(gyldighetstidspunkt.evalueres()))
                 .withGyldigfra(tilMuntligDatoAarFormat(gyldighetstidspunkt.fom))
                 .withGyldigtil(tilMuntligDatoAarFormat(gyldighetstidspunkt.tom))
-                .withSykeforloepsperioderXMLList(mapListe(sykeforloepService.hentSykeforlopperiode(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer, EKSTERN), periode -> new SykeforloepsperioderXML()
-                        .withFom(tilKortDato(periode.fom))
-                        .withTom(tilKortDato(periode.tom))
-                        .withAntallDager(antallDagerIPeriode(periode.fom, periode.tom))
-                        .withGradering(periode.grad)
-                        .withBehandlingsdager(periode.behandlingsdager)
-                        .withReisetilskudd(periode.reisetilskudd)
-                        .withAvventende(periode.avventende)
-                ))
                 .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
                         arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
                                 .withNavn(arbeidsoppgave.navn)))

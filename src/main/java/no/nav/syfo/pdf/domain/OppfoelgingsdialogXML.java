@@ -24,7 +24,6 @@ import java.util.List;
                 "arbeidsgiverOrgnr",
                 "arbeidsgiverTlf",
                 "arbeidsgiverEpost",
-                "sykeforloepsperioderListe",
                 "ikkeTattStillingTilArbeidsoppgaveListe",
                 "kanGjennomfoeresArbeidsoppgaveListe",
                 "kanGjennomfoeresMedTilretteleggingArbeidsoppgaveListe",
@@ -61,7 +60,6 @@ public class OppfoelgingsdialogXML {
     public String arbeidsgiverOrgnr;
     public String arbeidsgiverTlf;
     public String arbeidsgiverEpost;
-    public List<SykeforloepsperioderXML> sykeforloepsperioderListe = new ArrayList<>();
     public List<IkkeTattStillingTilArbeidsoppgaveXML> ikkeTattStillingTilArbeidsoppgaveListe = new ArrayList<>();
     public List<KanGjennomfoeresArbeidsoppgaveXML> kanGjennomfoeresArbeidsoppgaveListe = new ArrayList<>();
     public List<KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML> kanGjennomfoeresMedTilretteleggingArbeidsoppgaveListe = new ArrayList<>();
@@ -128,11 +126,6 @@ public class OppfoelgingsdialogXML {
     }
     public OppfoelgingsdialogXML withArbeidsgiverEpost(String arbeidsgiverEpost) {
         this.arbeidsgiverEpost = arbeidsgiverEpost;
-        return this;
-    }
-
-    public OppfoelgingsdialogXML withSykeforloepsperioderXMLList(List<SykeforloepsperioderXML> sykeforloepsperioderListe) {
-        this.sykeforloepsperioderListe = sykeforloepsperioderListe;
         return this;
     }
 

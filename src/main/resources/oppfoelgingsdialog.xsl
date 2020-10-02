@@ -152,10 +152,6 @@
                     margin-bottom: 16pt;
                     }
 
-                    .sykeforloepsperioder {
-                    page-break-inside: avoid;
-                    }
-
                     .arbeidsoppgaver h3 {
                     margin-top: 0pt;
                     margin-bottom: 0pt;
@@ -402,43 +398,6 @@
                             <tr>
                                 <td></td>
                                 <td><xsl:value-of select="arbeidsgiverTlf"/></td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <div class="innhold sykeforloepsperioder">
-                        <div class="innholdoverskrift">
-                            <h2 class="left">Informasjon fra dette sykefraværet</h2>
-                        </div>
-                        <table>
-                            <tr>
-                                <th>Sykmeldingsprosent</th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <xsl:for-each select="sykeforloepsperioderListe">
-                                        <p><strong><xsl:value-of select="fom"/> &#8211; <xsl:value-of select="tom"/></strong> &#8226; <xsl:value-of select="antallDager"/> dager</p>
-                                        <xsl:if test="gradering > 0">
-                                            <xsl:choose>
-                                                <xsl:when test="reisetilskudd and reisetilskudd='true'">
-                                                    <p><xsl:value-of select="gradering"/> &#37; sykmeldt med reisetilskudd</p>
-                                                </xsl:when>
-                                                <xsl:otherwise>
-                                                    <p><xsl:value-of select="gradering"/> &#37; sykmeldt</p>
-                                                </xsl:otherwise>
-                                            </xsl:choose>
-                                        </xsl:if>
-                                        <xsl:if test="behandlingsdager='true'">
-                                            <p>Behandlingsdag(er)</p>
-                                        </xsl:if>
-                                        <xsl:if test="reisetilskudd='true' and gradering = 0">
-                                            <p>Reisetilskudd</p>
-                                        </xsl:if>
-                                        <xsl:if test="avventende='true'">
-                                            <P>Avventende sykmelding</P>
-                                        </xsl:if>
-                                    </xsl:for-each>
-                                </td>
                             </tr>
                         </table>
                     </div>
