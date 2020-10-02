@@ -105,7 +105,7 @@ public class FastlegeService {
             }
         } catch (HttpServerErrorException e) {
             int responsekode = e.getRawStatusCode();
-            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode ", responsekode);
+            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             tellPlanDeltMedFastlegeKall(lps, false);
             throw new InnsendingFeiletException("Kunne ikke dele med fastlege");
         } catch (Exception e) {
