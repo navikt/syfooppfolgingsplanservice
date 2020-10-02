@@ -41,29 +41,10 @@ public class MQConfig {
 
     private static final String VARSELPRODUKSJON_VARSLINGER_QUEUENAME = "VARSELPRODUKSJON_VARSLINGER_QUEUENAME";
     private static final String VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME = "VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME";
-    private static final String EIA_MOTTAK_QUEUENAME = "EIA_MOTTAK_QUEUENAME";
 
     @Bean
     public DestinationResolver destinationResolver(ApplicationContext context) {
         return (session, destinationName, pubSubDomain) -> context.getBean(destinationName, Queue.class);
-    }
-
-    @Bean(name = "eiaMottakDestination")
-    public Queue eiaMottakDestination() throws JMSException {
-        return new MQQueue(getenv(EIA_MOTTAK_QUEUENAME));
-    }
-
-
-    @Bean(name = "eiaMottakQueue")
-    public JmsTemplate eiaMottakQueue(
-            @Autowired @Qualifier("eiaMottakDestination") Queue eiaMottakDestination,
-            ConnectionFactory connectionFactory
-    ) {
-        JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestination(eiaMottakDestination);
-        jmsTemplate.setConnectionFactory(connectionFactory);
-        jmsTemplate.setSessionTransacted(true);
-        return jmsTemplate;
     }
 
     @Bean(name = "serviceVarselDestination")
