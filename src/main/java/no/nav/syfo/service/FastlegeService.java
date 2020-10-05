@@ -97,7 +97,7 @@ public class FastlegeService {
             if(responsekode == 404) {
                 throw new OppslagFeiletException("Feil ved oppslag av av fastlege eller partnerinformasjon");
             } else if (responsekode >= 300) {
-                throw new RuntimeException("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
+                throw new RuntimeException("RuntimeException: Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             } else {
                 throw e;
             }
