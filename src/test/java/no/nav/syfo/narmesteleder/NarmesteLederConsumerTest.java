@@ -23,7 +23,6 @@ import static java.util.Collections.singletonList;
 import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;

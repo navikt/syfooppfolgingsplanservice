@@ -164,7 +164,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         namedParameterJdbcTemplate.update(query, mapSaveSql)
     }
 
-    fun updateSharedFastlege(
+    fun updateSharedWithFastlege(
         id: Long
     ) {
         val updated = DbUtil.convert(LocalDateTime.now());

@@ -116,7 +116,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         }
     }
 
-    fun sendLpsOppfolgingsplanTilFastlege(
+    private fun sendLpsOppfolgingsplanTilFastlege(
         fnr: String,
         pdf: ByteArray,
         oppfolgingsplanId: Long,
@@ -124,7 +124,7 @@ class OppfolgingsplanLPSService @Inject constructor(
     ) {
         try {
             fastlegeService.sendOppfolgingsplanLPS(fnr, pdf)
-            oppfolgingsplanLPSDAO.updateSharedFastlege(oppfolgingsplanId)
+            oppfolgingsplanLPSDAO.updateSharedWithFastlege(oppfolgingsplanId)
             if(try_num > 0) feiletSendingService.fjernSendtOppfolgingsplan(oppfolgingsplanId);
         } catch (e: InnsendingFeiletException) {
             log.error("Fanget InnsendingFeiletException", e)
