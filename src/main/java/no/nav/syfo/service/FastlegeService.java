@@ -92,7 +92,7 @@ public class FastlegeService {
             tellPlanDeltMedFastlegeKall(lps, true);
         } catch (HttpClientErrorException e) {
             int responsekode = e.getRawStatusCode();
-            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
+            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode, e);
             tellPlanDeltMedFastlegeKall(lps, false);
             if(responsekode == 404) {
                 throw new OppslagFeiletException("Feil ved oppslag av av fastlege eller partnerinformasjon");
