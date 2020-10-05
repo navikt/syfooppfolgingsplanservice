@@ -131,7 +131,6 @@ class OppfolgingsplanLPSService @Inject constructor(
             feiletSendingService.opprettEllerOppdaterFeiletSending(oppfolgingsplanId, try_num)
         } catch (e: OppslagFeiletException) {
             log.error("Fanget OppslagFeiletException", e)
-            feiletSendingService.opprettEllerOppdaterFeiletSending(oppfolgingsplanId, try_num)
         } catch (e: Exception) {
             log.error("Fanget uventet exception", e)
             feiletSendingService.opprettEllerOppdaterFeiletSending(oppfolgingsplanId, try_num)
