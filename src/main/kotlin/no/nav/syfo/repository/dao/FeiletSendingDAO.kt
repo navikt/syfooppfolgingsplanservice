@@ -55,7 +55,7 @@ class FeiletSendingDAO @Inject constructor(
         val namedParameters = MapSqlParameterSource()
                 .addValue("id", feiletSendingId)
                 .addValue("oppfolgingsplanlps_id", oppfolgingsplanId)
-                .addValue("number_of_tries", 1)
+                .addValue("number_of_tries", 0)
                 .addValue("max_retries", max_retries)
                 .addValue("opprettet", DbUtil.convert(LocalDateTime.now()))
                 .addValue("sist_endret", DbUtil.convert(LocalDateTime.now()))
