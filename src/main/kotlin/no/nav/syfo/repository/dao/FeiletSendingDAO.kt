@@ -21,7 +21,7 @@ class FeiletSendingDAO @Inject constructor(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) {
     fun findByOppfolgingsplanId(oppfolgingsplanId: Long?): FeiletSending {
-        val pFeiletSending = jdbcTemplate.queryForObject("select * from feilet_sending where oppfolgingsplanId = ?", FeiletSendingRowMapper(), oppfolgingsplanId)
+        val pFeiletSending = jdbcTemplate.queryForObject("select * from feilet_sending where oppfolgingsplanlps_id = ?", FeiletSendingRowMapper(), oppfolgingsplanId)
         if(pFeiletSending != null) {
             return mapPFeiletSendingToFeiletSending(pFeiletSending)
         } else {
