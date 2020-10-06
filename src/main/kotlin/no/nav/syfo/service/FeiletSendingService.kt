@@ -8,9 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class FeiletSendingService @Autowired constructor(private val feiletSendingDAO: FeiletSendingDAO,
-                                                  private val metrikk: Metrikk) {
-
+class FeiletSendingService @Autowired constructor(
+        private val feiletSendingDAO: FeiletSendingDAO,
+        private val metrikk: Metrikk
+) {
     fun opprettEllerOppdaterFeiletSending(oppfolgingsplanId: Long, number_of_tries: Int) {
         if (number_of_tries == 0) {
             feiletSendingDAO.create(
