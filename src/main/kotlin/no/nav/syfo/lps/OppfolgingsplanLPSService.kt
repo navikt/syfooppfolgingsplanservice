@@ -126,7 +126,7 @@ class OppfolgingsplanLPSService @Inject constructor(
             fastlegeService.sendOppfolgingsplanLPS(fnr, pdf)
             oppfolgingsplanLPSDAO.updateSharedWithFastlege(oppfolgingsplanId)
             if(try_num > 0) {
-                metrikk.tellHendelse("lps_plan_delt_etter_feil")
+                metrikk.tellHendelse("lps_plan_delt_etter_feilet_sending")
                 feiletSendingService.fjernSendtOppfolgingsplan(oppfolgingsplanId)
             }
         } catch (e: InnsendingFeiletException) {
