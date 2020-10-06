@@ -65,9 +65,6 @@ class GodkjenningServiceTest {
     private lateinit var tredjepartsvarselService: TredjepartsvarselService
 
     @Mock
-    private lateinit var sykeforloepService: SykeforloepService
-
-    @Mock
     private lateinit var godkjenningerDAO: GodkjenningerDAO
 
     @InjectMocks
@@ -118,15 +115,6 @@ class GodkjenningServiceTest {
         Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(ArgumentMatchers.anyString())).thenReturn("fnr")
         Mockito.`when`(eregConsumer.virksomhetsnavn(ArgumentMatchers.anyString())).thenReturn("Virksomhet")
         Mockito.`when`(aaregConsumer.arbeidstakersStillingerForOrgnummer(ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.anyString())).thenReturn(emptyList())
-        Mockito.`when`(sykeforloepService.hentSykeforlopperiode(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(
-            Arrays.asList(Periode()
-                .withFom(LocalDate.now().minusDays(2))
-                .withTom(LocalDate.now().plusDays(2))
-                .withGrad(100)
-                .withAvventende(true)
-                .withReisetilskudd(false)
-                .withBehandlingsdager(true))
-        )
         System.setProperty(PropertyUtil.ENVIRONMENT_NAME, ToggleUtil.ENVIRONMENT_MODE.dev.name)
     }
 

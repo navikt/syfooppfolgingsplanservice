@@ -5,13 +5,7 @@ import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-
 public class DatoUtil {
-
-    public static int antallDagerIPeriode(LocalDate fom, LocalDate tom) {
-        return (int) (DAYS.between(fom, tom) + 1);
-    }
 
     public static int dagerMellom(LocalDate tidspunkt1, LocalDate tidspunkt2) {
         Set helgedager = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
