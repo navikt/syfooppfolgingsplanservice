@@ -9,9 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-import static java.lang.System.getProperty;
-import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
-
 @Service
 public class ProsesserInnkomnePlaner {
     private GodkjentplanDAO godkjentplanDAO;
@@ -35,7 +32,7 @@ public class ProsesserInnkomnePlaner {
 
     @Scheduled(fixedRate = 60000)
     public void opprettJournalposter() {
-        if (leaderElectionService.isLeader() && !"true".equals(getProperty(LOCAL_MOCK))) {
+        if (leaderElectionService.isLeader()) {
             godkjentplanDAO.hentIkkeJournalfoertePlaner()
                     .forEach(godkjentPlan -> {
                         godkjentplanDAO.journalpostId(
