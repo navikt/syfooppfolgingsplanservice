@@ -13,6 +13,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import static java.lang.System.getProperty;
+import static no.nav.syfo.util.PropertyUtil.LOCAL_MOCK;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -36,6 +38,8 @@ public class LeaderElectionService {
     }
 
     public boolean isLeader() {
+        if (isLocal())
+            return false;
         metrikk.tellHendelse("isLeader_kalt");
         ObjectMapper objectMapper = new ObjectMapper();
         String url = "http://" + electorpath;
@@ -61,5 +65,9 @@ public class LeaderElectionService {
         String leaderName = leader.getName();
 
         return hostName.equals(leaderName);
+    }
+
+    private boolean isLocal() {
+        return "true".equals(getProperty(LOCAL_MOCK));
     }
 }
