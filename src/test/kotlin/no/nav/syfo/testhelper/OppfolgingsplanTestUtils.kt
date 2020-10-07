@@ -6,7 +6,6 @@ import java.time.LocalDateTime
 import java.util.*
 
 private const val SYKMELDT_AKTOERID = "1010101010101"
-private const val ARBEIDSGIVER_FNR = "10101010100"
 private const val ARBEIDSGIVER_AKTOERID = "1010101010100"
 const val VIRKSOMHETSNUMMER = "123456789"
 private fun arbeidstakeren(): Person {

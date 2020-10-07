@@ -1,7 +1,6 @@
 package no.nav.syfo.util.time;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
     public DateUtil() { }

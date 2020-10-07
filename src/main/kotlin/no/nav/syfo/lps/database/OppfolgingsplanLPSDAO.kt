@@ -128,7 +128,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             )
             """.trimIndent()
 
-        val created = DbUtil.convert(LocalDateTime.now());
+        val created = DbUtil.convert(LocalDateTime.now())
 
         val mapSaveSql = MapSqlParameterSource()
             .addValue("oppfolgingsplanlps_id", id)
@@ -149,7 +149,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         id: Long,
         pdf: ByteArray
     ) {
-        val updated = DbUtil.convert(LocalDateTime.now());
+        val updated = DbUtil.convert(LocalDateTime.now())
 
         val query = """
             UPDATE OPPFOLGINGSPLANLPS
@@ -167,7 +167,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
     fun updateSharedWithFastlege(
         id: Long
     ) {
-        val updated = DbUtil.convert(LocalDateTime.now());
+        val updated = DbUtil.convert(LocalDateTime.now())
 
         val query = """
             UPDATE OPPFOLGINGSPLANLPS

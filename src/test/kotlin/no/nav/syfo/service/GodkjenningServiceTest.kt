@@ -5,7 +5,6 @@ import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
 import no.nav.syfo.dkif.DkifConsumer
 import no.nav.syfo.domain.*
-import no.nav.syfo.domain.sykmelding.Periode
 import no.nav.syfo.ereg.EregConsumer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.model.Naermesteleder

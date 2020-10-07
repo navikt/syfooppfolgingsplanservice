@@ -42,8 +42,6 @@ class BrukertilgangServiceTest {
 
     companion object {
         private const val INNLOGGET_FNR = "12345678901"
-        private const val INNLOGGET_AKTOERID = "1234567890123"
         private const val SPOR_OM_FNR = "12345678902"
-        private const val SPOR_OM_AKTOERID = "1234567890122"
     }
 }

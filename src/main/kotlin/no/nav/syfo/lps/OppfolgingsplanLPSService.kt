@@ -82,7 +82,7 @@ class OppfolgingsplanLPSService @Inject constructor(
                 lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
                 LocalDate.now().toEpochDay().toInt()
             )
-            metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand",  lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV());
+            metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand",  lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
             oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
         }
         if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
@@ -145,7 +145,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         oppfolgingsplanLPSDAO.getPlanListToJournalpost().map {
             it.mapToOppfolgingsplanLPS()
         }.forEach { planLPS ->
-            val journalpostId = journalforOPService.createJournalpostPlanLPS(planLPS).toString();
+            val journalpostId = journalforOPService.createJournalpostPlanLPS(planLPS).toString()
             oppfolgingsplanLPSDAO.updateJournalpostId(
                 planLPS.id,
                 journalpostId

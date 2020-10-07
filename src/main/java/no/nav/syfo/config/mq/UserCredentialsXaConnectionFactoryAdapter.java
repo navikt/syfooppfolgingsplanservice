@@ -1,4 +1,4 @@
-package no.nav.syfo.config.mqconfigs.mq;
+package no.nav.syfo.config.mq;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.NamedThreadLocal;

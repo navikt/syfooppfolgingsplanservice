@@ -35,7 +35,6 @@ import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
 import static no.nav.syfo.pdf.PdfFabrikk.tilPdf;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.*;
-import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidsgiveren;
 import static no.nav.syfo.util.time.DateUtil.tilMuntligDatoAarFormat;
 import static org.slf4j.LoggerFactory.getLogger;
 
