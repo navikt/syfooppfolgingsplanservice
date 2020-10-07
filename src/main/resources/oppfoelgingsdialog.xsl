@@ -29,7 +29,7 @@
                     }
 
                     .header {
-                    margin-bottom: 20pt;
+                    margin-bottom: 40pt;
                     font-size: 24pt;
                     font-weight: 600;
                     margin-top: 0;
@@ -71,22 +71,13 @@
                     .innholdoverskrift {
                     width: 100%;
                     height: 20pt;
-                    border-bottom: 1pt solid #CFCFCF;
-                    }
-
-                    .innholdoverskrift--ingenborder {
-                    border-bottom: none;
+                    margin-top: 0;
+                    margin-bottom: 4pt;
                     }
 
                     .innhold {
                     margin-top: 0;
                     margin-bottom: 32pt;
-                    }
-
-                    .innholdoverskrift {
-                    margin-top: 0;
-                    margin-bottom: 8pt;
-                    padding-bottom: 4pt;
                     }
 
                     h2 {
@@ -171,6 +162,10 @@
 
                     .innhold-tiltak div:last-child {
                     margin-bottom: 0;
+                    }
+
+                    .innhold-kontaktinfo-leder {
+                    page-break-after: always;
                     }
 
                     .panel--ok,
@@ -307,7 +302,7 @@
                     </div>
 
                     <div class="innhold">
-                        <div class="innholdoverskrift innholdoverskrift--ingenborder">
+                        <div class="innholdoverskrift">
                             <h2 class="left">Om denne planen</h2>
                         </div>
                         <label class="varseltekst"><b>Opprettet av: </b><xsl:value-of select="opprettetAv"/></label>
@@ -327,79 +322,31 @@
                         <div class="innholdoverskrift">
                             <h2 class="left">Den sykmeldtes kontaktinformasjon</h2>
                         </div>
-                        <table>
-                            <tr>
-                                <th>Navn</th>
-                                <th>Fødselsnummer</th>
-                            </tr>
-                            <tr>
-                                <td><xsl:value-of select="$sykmeldtnavn"/></td>
-                                <td><xsl:value-of select="sykmeldtFnr"/></td>
-                            </tr>
-                        </table>
-
-                        <table>
-                            <tr>
-                                <th>Telefonnummer</th>
-                                <th>E-post</th>
-                            </tr>
-                            <tr>
-                                <td><xsl:value-of select="sykmeldtTlf"/></td>
-                                <td><xsl:value-of select="sykmeldtEpost"/></td>
-                            </tr>
-                        </table>
-                        <table>
-                            <tr>
-                                <th>Stilling</th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <xsl:for-each select="stillingListe">
-                                        <xsl:if test="prosent > -1">
-                                            <xsl:value-of select="yrke"/>: <xsl:value-of select="prosent"/> %<br/>
-                                        </xsl:if>
-                                    </xsl:for-each>
-                                </td>
-                            </tr>
-                        </table>
+                        <b>Navn: </b> <xsl:value-of select="$sykmeldtnavn"/> <br/>
+                        <b>Fødselsnummer: </b> <xsl:value-of select="sykmeldtFnr"/> <br/>
+                        <b>Telefonnummer: </b> <xsl:value-of select="sykmeldtTlf"/> <br/>
+                        <b>E-post: </b> <xsl:value-of select="sykmeldtEpost"/> <br/>
+                        <b>Stilling(er):</b> <br/>
+                        <ul>
+                            <xsl:for-each select="stillingListe">
+                                <li>
+                                    <xsl:if test="prosent > -1">
+                                        <xsl:value-of select="yrke"/>: <xsl:value-of select="prosent"/> %<br/>
+                                    </xsl:if>
+                                </li>
+                            </xsl:for-each>
+                        </ul>
                     </div>
 
-                    <div class="innhold">
+                    <div class="innhold innhold-kontaktinfo-leder">
                         <div class="innholdoverskrift">
                             <h2 class="left">Arbeidsgiverens kontaktinformasjon</h2>
                         </div>
-                        <table>
-                            <tr>
-                                <th>Bedriftens navn</th>
-                                <th>Navn på nærmeste leder</th>
-                            </tr>
-                            <tr>
-                                <td><xsl:value-of select="virksomhetsnavn"/></td>
-                                <td><xsl:value-of select="$arbeidsgivernavn"/></td>
-                            </tr>
-                        </table>
-
-                        <table>
-                            <tr>
-                                <th>Organisasjonsnummer</th>
-                                <th>E-post</th>
-                            </tr>
-                            <tr>
-                                <td><xsl:value-of select="arbeidsgiverOrgnr"/></td>
-                                <td><xsl:value-of select="arbeidsgiverEpost"/></td>
-                            </tr>
-                        </table>
-
-                        <table>
-                            <tr>
-                                <th></th>
-                                <th>Telefonnummer</th>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td><xsl:value-of select="arbeidsgiverTlf"/></td>
-                            </tr>
-                        </table>
+                        <b>Bedriftens navn: </b> <xsl:value-of select="virksomhetsnavn"/> <br/>
+                        <b>Navn på nærmeste leder: </b> <xsl:value-of select="$arbeidsgivernavn"/> <br/>
+                        <b>Organisasjonsnummer: </b> <xsl:value-of select="arbeidsgiverOrgnr"/> <br/>
+                        <b>E-post: </b> <xsl:value-of select="arbeidsgiverEpost"/> <br/>
+                        <b>Telefonnummer: </b> <xsl:value-of select="arbeidsgiverTlf"/> <br/>
                     </div>
 
                     <div class="innhold arbeidsoppgaver">
@@ -486,7 +433,7 @@
                     </div>
 
                     <div class="innhold-tiltak">
-                        <div class="innholdoverskrift innholdoverskrift--ingenborder">
+                        <div class="innholdoverskrift">
                             <h3 class="left">Tiltak</h3>
                         </div>
                         <xsl:for-each select="tiltakListe">
