@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import javax.inject.Inject
 
+const val TWENTY_MINUTES_MILLISECONDS : Long = 20 * 60 * 1000
+
 @Service
 class OppfolgingsplanLPS @Inject constructor(
     private val leaderElectionService: LeaderElectionService,
@@ -15,7 +17,7 @@ class OppfolgingsplanLPS @Inject constructor(
     private val feiletSendingDAO: FeiletSendingDAO
 ) {
 
-    @Scheduled(fixedDelay = 60 * 1000)
+    @Scheduled(fixedDelay = TWENTY_MINUTES_MILLISECONDS)
     fun retrySendOppfolgingsplanLpsTilFastlege() {
         if (leaderElectionService.isLeader) {
             val liste: List<FeiletSending> = feiletSendingDAO.hentFeiledeSendinger()
