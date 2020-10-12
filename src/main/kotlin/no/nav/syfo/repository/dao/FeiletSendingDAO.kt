@@ -34,7 +34,7 @@ class FeiletSendingDAO @Inject constructor(
         val query = """
             SELECT * 
             FROM feilet_sending 
-            WHERE number_of_tries < $MAX_RETRIES
+            WHERE number_of_tries <= $MAX_RETRIES
             """.trimIndent()
         val feiletSendingList = Optional.ofNullable(jdbcTemplate.query(query, FeiletSendingRowMapper())).orElse(emptyList())
         return feiletSendingList.stream()
