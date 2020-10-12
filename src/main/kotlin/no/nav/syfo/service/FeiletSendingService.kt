@@ -14,9 +14,7 @@ class FeiletSendingService @Autowired constructor(
 ) {
     fun opprettEllerOppdaterFeiletSending(oppfolgingsplanId: Long, number_of_tries: Int) {
         if (number_of_tries == 0) {
-            feiletSendingDAO.create(
-                    oppfolgingsplanId = oppfolgingsplanId,
-                    max_retries = FeiletSending.MAX_RETRIES)
+            feiletSendingDAO.create(oppfolgingsplanId)
             metrikk.tellHendelse("lps_plan_feilet_sending")
             log.info("Fikk ikke sendt oppfolgingsplan med id {} til fastlege. Lagrer og prøver igjen senere.", oppfolgingsplanId)
         } else {
