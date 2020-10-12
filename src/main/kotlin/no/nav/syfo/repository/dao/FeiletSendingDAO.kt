@@ -1,7 +1,6 @@
 package no.nav.syfo.repository.dao
 
 import no.nav.syfo.domain.FeiletSending
-import no.nav.syfo.domain.MAX_RETRIES
 import no.nav.syfo.repository.DbUtil
 import no.nav.syfo.repository.domain.PFeiletSending
 import org.springframework.jdbc.core.JdbcTemplate
@@ -15,6 +14,8 @@ import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Collectors
 import javax.inject.Inject
+
+const val MAX_RETRIES = 6;
 
 @Repository
 class FeiletSendingDAO @Inject constructor(
