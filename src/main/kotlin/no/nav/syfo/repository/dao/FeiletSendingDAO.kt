@@ -15,6 +15,8 @@ import java.util.*
 import java.util.stream.Collectors
 import javax.inject.Inject
 
+const val MAX_RETRIES = 6;
+
 @Repository
 class FeiletSendingDAO @Inject constructor(
     private val jdbcTemplate: JdbcTemplate,
@@ -33,7 +35,7 @@ class FeiletSendingDAO @Inject constructor(
         val query = """
             SELECT * 
             FROM feilet_sending 
-            WHERE max_retries > number_of_tries
+            WHERE number_of_tries <= $MAX_RETRIES
             """.trimIndent()
         val feiletSendingList = Optional.ofNullable(jdbcTemplate.query(query, FeiletSendingRowMapper())).orElse(emptyList())
         return feiletSendingList.stream()
@@ -41,22 +43,18 @@ class FeiletSendingDAO @Inject constructor(
                 .collect(Collectors.toList())
     }
 
-    fun create(
-            oppfolgingsplanId: Long,
-            max_retries: Int
-    ) {
+    fun create(oppfolgingsplanId: Long) {
         val feiletSendingId = DbUtil.nesteSekvensverdi("FEILET_SENDING_ID_SEQ", jdbcTemplate)
 
         val query = """
-            INSERT INTO feilet_sending (id, oppfolgingsplanlps_id, number_of_tries, max_retries, opprettet, sist_endret)
-            values (:id, :oppfolgingsplanlps_id, :number_of_tries, :max_retries, :opprettet, :sist_endret)
+            INSERT INTO feilet_sending (id, oppfolgingsplanlps_id, number_of_tries, opprettet, sist_endret)
+            values (:id, :oppfolgingsplanlps_id, :number_of_tries, :opprettet, :sist_endret)
             """.trimIndent()
 
         val namedParameters = MapSqlParameterSource()
                 .addValue("id", feiletSendingId)
                 .addValue("oppfolgingsplanlps_id", oppfolgingsplanId)
                 .addValue("number_of_tries", 1)
-                .addValue("max_retries", max_retries)
                 .addValue("opprettet", DbUtil.convert(LocalDateTime.now()))
                 .addValue("sist_endret", DbUtil.convert(LocalDateTime.now()))
 
@@ -97,7 +95,6 @@ class FeiletSendingDAO @Inject constructor(
                     id = rs.getLong("id"),
                     oppfolgingsplanId = rs.getLong("oppfolgingsplanlps_id"),
                     number_of_tries = rs.getInt("number_of_tries"),
-                    max_retries = rs.getInt("max_retries"),
                     opprettet = DbUtil.convert(rs.getTimestamp("opprettet")),
                     sist_endret = DbUtil.convert(rs.getTimestamp("sist_endret")))
         }
@@ -109,7 +106,6 @@ private fun mapPFeiletSendingToFeiletSending(pFeiletSending: PFeiletSending): Fe
             id = pFeiletSending.id,
             oppfolgingsplanId = pFeiletSending.oppfolgingsplanId,
             number_of_tries = pFeiletSending.number_of_tries,
-            max_retries = pFeiletSending.max_retries,
             sist_endret = pFeiletSending.sist_endret,
             opprettet = pFeiletSending.opprettet
     )
