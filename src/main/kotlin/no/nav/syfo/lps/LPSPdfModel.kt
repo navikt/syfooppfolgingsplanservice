@@ -99,10 +99,9 @@ data class ArbeidstakersDeltakelse(
 
 fun Oppfolgingsplan.isBehovForBistandFraNAV(): Boolean {
     return this.tiltak.any {
-        val behovForBistandFraNav = it.behovForBistandFraNav
-        return behovForBistandFraNav?.raadOgVeiledning == true
-            || behovForBistandFraNav?.dialogmoteMed == true
-            || behovForBistandFraNav?.arbeidsrettedeTiltak == true
-            || behovForBistandFraNav?.hjelpemidler == true
+        it.behovForBistandFraNav?.raadOgVeiledning == true
+            || it.behovForBistandFraNav?.dialogmoteMed == true
+            || it.behovForBistandFraNav?.arbeidsrettedeTiltak == true
+            || it.behovForBistandFraNav?.hjelpemidler == true
     }
 }
