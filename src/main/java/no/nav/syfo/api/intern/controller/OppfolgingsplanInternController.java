@@ -1,6 +1,6 @@
 package no.nav.syfo.api.intern.controller;
 
-import no.nav.security.oidc.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.intern.domain.*;
 import no.nav.syfo.domain.*;

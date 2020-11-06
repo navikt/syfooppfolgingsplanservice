@@ -1,6 +1,6 @@
 package no.nav.syfo.service
 
-import no.nav.security.oidc.context.OIDCRequestContextHolder
+import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.LocalApplication
 import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.domain.*
@@ -77,7 +77,7 @@ class OppfolgingsplanServiceTest {
     private lateinit var fastlegerestUrl: String
 
     @Inject
-    lateinit var oidcRequestContextHolder: OIDCRequestContextHolder
+    lateinit var contextHolder: TokenValidationContextHolder
 
     @Inject
     @Qualifier("scheduler")
@@ -90,12 +90,12 @@ class OppfolgingsplanServiceTest {
     @Before
     fun setUp() {
         mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build()
-        loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR)
+        loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
     }
 
     @After
     fun tearDown() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
     }
 
     @Test
@@ -217,7 +217,7 @@ class OppfolgingsplanServiceTest {
         val uriString = UriComponentsBuilder.fromHttpUrl(fastlegerestUrl)
             .path(FastlegeService.SEND_OPPFOLGINGSPLAN_PATH)
             .toUriString()
-        val idToken = oidcRequestContextHolder.oidcValidationContext.getToken(OIDCIssuer.EKSTERN).idToken
+        val idToken = contextHolder.tokenValidationContext.getJwtToken(OIDCIssuer.EKSTERN).tokenAsString
         mockRestServiceServer.expect(ExpectedCount.manyTimes(), MockRestRequestMatchers.requestTo(uriString))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
             .andExpect(MockRestRequestMatchers.header(HttpHeaders.AUTHORIZATION, "Bearer $idToken"))

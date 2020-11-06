@@ -1,7 +1,7 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
-import no.nav.security.oidc.api.ProtectedWithClaims;
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
@@ -27,7 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/api/arbeidsgiver/oppfolgingsplaner")
 public class ArbeidsgiverOppfolgingsplanController {
 
-    private final OIDCRequestContextHolder contextHolder;
+    private final TokenValidationContextHolder contextHolder;
     private final AktorregisterConsumer aktorService;
     private final NarmesteLederConsumer narmesteLederConsumer;
     private final OppfolgingsplanService oppfolgingsplanService;
@@ -35,7 +35,7 @@ public class ArbeidsgiverOppfolgingsplanController {
 
     @Inject
     public ArbeidsgiverOppfolgingsplanController(
-            OIDCRequestContextHolder contextHolder,
+            TokenValidationContextHolder contextHolder,
             AktorregisterConsumer aktorService,
             NarmesteLederConsumer narmesteLederConsumer,
             OppfolgingsplanService oppfolgingsplanService,

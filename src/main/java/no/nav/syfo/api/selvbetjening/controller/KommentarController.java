@@ -1,7 +1,7 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
-import no.nav.security.oidc.api.ProtectedWithClaims;
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.service.KommentarService;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +16,13 @@ import static no.nav.syfo.oidc.OIDCUtil.getSubjectEksternMedThrows;
 @RequestMapping(value = "/api/kommentar/actions/{id}")
 public class KommentarController {
 
-    private final OIDCRequestContextHolder contextHolder;
+    private final TokenValidationContextHolder contextHolder;
     private final KommentarService kommentarService;
     private final Metrikk metrikk;
 
     @Inject
     public KommentarController(
-            OIDCRequestContextHolder contextHolder,
+            TokenValidationContextHolder contextHolder,
             KommentarService kommentarService,
             Metrikk metrikk
     ) {

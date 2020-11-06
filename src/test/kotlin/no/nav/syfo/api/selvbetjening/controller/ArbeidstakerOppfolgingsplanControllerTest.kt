@@ -26,7 +26,7 @@ class ArbeidstakerOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Before
     fun setup() {
-        loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR)
+        loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
     }
 
     @Test
@@ -38,7 +38,7 @@ class ArbeidstakerOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         arbeidstakerOppfolgingsplanController.hentArbeidstakersOppfolgingsplaner()
     }
 
@@ -56,7 +56,7 @@ class ArbeidstakerOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun opprett_oppfolgingsplan_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
         arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(rsOpprettOppfoelgingsdialog)
     }

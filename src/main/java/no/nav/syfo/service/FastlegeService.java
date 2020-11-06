@@ -1,6 +1,6 @@
 package no.nav.syfo.service;
 
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oidc.OIDCIssuer;
@@ -32,7 +32,7 @@ public class FastlegeService {
 
     public static final String SEND_OPPFOLGINGSPLAN_PATH = "/sendOppfolgingsplanFraSelvbetjening";
     public static final String SEND_OPPFOLGINGSPLAN_LPS_PATH = "/oppfolgingsplan/lps";
-    private final OIDCRequestContextHolder oidcContextHolder;
+    private final TokenValidationContextHolder contextHolder;
     private final RestTemplate template;
     private final UriComponentsBuilder delMedFastlegeUriTemplate;
     private final UriComponentsBuilder delLPSMedFastlegeUriTemplate;
@@ -42,7 +42,7 @@ public class FastlegeService {
     public FastlegeService(
             @Value("${fastlege.dialogmelding.api.v1.url}") String dialogfordelerUrl,
             Metrikk metrikk,
-            OIDCRequestContextHolder oidcContextHolder,
+            TokenValidationContextHolder contextHolder,
             StsConsumer stsConsumer,
             @Qualifier("scheduler") RestTemplate template
     ) {
@@ -51,7 +51,7 @@ public class FastlegeService {
         delLPSMedFastlegeUriTemplate = fromHttpUrl(dialogfordelerUrl)
                 .path(SEND_OPPFOLGINGSPLAN_LPS_PATH);
         this.metrikk = metrikk;
-        this.oidcContextHolder = oidcContextHolder;
+        this.contextHolder = contextHolder;
         this.stsConsumer = stsConsumer;
         this.template = template;
     }
@@ -60,7 +60,7 @@ public class FastlegeService {
         RSOppfoelgingsplan rsOppfoelgingsplan = new RSOppfoelgingsplan(sendesTilFnr, pdf);
         URI tilgangTilBrukerUriMedFnr = delMedFastlegeUriTemplate.build().toUri();
 
-        String token = OIDCUtil.getIssuerToken(oidcContextHolder, OIDCIssuer.EKSTERN);
+        String token = OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.EKSTERN);
 
         kallUriMedTemplate(
                 tilgangTilBrukerUriMedFnr,

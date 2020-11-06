@@ -46,7 +46,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_ansatt_ok() {
-        loggInnBruker(oidcRequestContextHolder, LEDER_FNR)
+        loggInnBruker(contextHolder, LEDER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_AKTORID, VIRKSOMHETSNUMMER))
             .thenReturn(Optional.of(naermesteleder))
@@ -58,7 +58,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_self_ok() {
-        loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR)
+        loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_AKTORID, VIRKSOMHETSNUMMER))
             .thenReturn(Optional.of(naermesteleder))
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(httpHeaders, VIRKSOMHETSNUMMER)
@@ -69,7 +69,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_noContent() {
-        loggInnBruker(oidcRequestContextHolder, LEDER_FNR)
+        loggInnBruker(contextHolder, LEDER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_AKTORID, VIRKSOMHETSNUMMER)).thenReturn(Optional.empty())
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(httpHeaders, VIRKSOMHETSNUMMER)
@@ -78,7 +78,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_forbidden() {
-        loggInnBruker(oidcRequestContextHolder, LEDER_FNR)
+        loggInnBruker(contextHolder, LEDER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(httpHeaders, VIRKSOMHETSNUMMER)
         Assert.assertEquals(403, res.statusCodeValue.toLong())

@@ -1,6 +1,6 @@
 package no.nav.syfo.api
 
-import no.nav.security.oidc.context.OIDCRequestContextHolder
+import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.LocalApplication
 import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
@@ -37,7 +37,7 @@ abstract class AbstractRessursTilgangTest {
     private lateinit var dev: String
 
     @Inject
-    lateinit var oidcRequestContextHolder: OIDCRequestContextHolder
+    lateinit var contextHolder: TokenValidationContextHolder
 
     @Inject
     private lateinit var restTemplate: RestTemplate
@@ -51,7 +51,7 @@ abstract class AbstractRessursTilgangTest {
     @After
     open fun tearDown() {
         mockRestServiceServer.verify()
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
     }
 
     fun mockSvarFraTilgangTilBrukerViaAzure(fnr: String, status: HttpStatus) {
@@ -59,7 +59,7 @@ abstract class AbstractRessursTilgangTest {
             .path(VeilederTilgangConsumer.TILGANG_TIL_BRUKER_VIA_AZURE_PATH)
             .queryParam(VeilederTilgangConsumer.FNR, fnr)
             .toUriString()
-        val idToken = oidcRequestContextHolder.oidcValidationContext.getToken(OIDCIssuer.AZURE).idToken
+        val idToken = contextHolder.tokenValidationContext.getJwtToken(OIDCIssuer.AZURE).tokenAsString
         mockRestServiceServer.expect(ExpectedCount.manyTimes(), MockRestRequestMatchers.requestTo(uriString))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andExpect(MockRestRequestMatchers.header(HttpHeaders.AUTHORIZATION, "Bearer $idToken"))
@@ -70,7 +70,7 @@ abstract class AbstractRessursTilgangTest {
         val uriString = UriComponentsBuilder.fromHttpUrl(tilgangskontrollUrl)
             .path(VeilederTilgangConsumer.TILGANG_TIL_TJENESTEN_VIA_AZURE_PATH)
             .toUriString()
-        val idToken = oidcRequestContextHolder.oidcValidationContext.getToken(OIDCIssuer.AZURE).idToken
+        val idToken = contextHolder.tokenValidationContext.getJwtToken(OIDCIssuer.AZURE).tokenAsString
         mockRestServiceServer.expect(ExpectedCount.manyTimes(), MockRestRequestMatchers.requestTo(uriString))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andExpect(MockRestRequestMatchers.header(HttpHeaders.AUTHORIZATION, "Bearer $idToken"))

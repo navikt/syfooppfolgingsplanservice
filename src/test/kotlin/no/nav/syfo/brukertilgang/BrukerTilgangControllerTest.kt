@@ -30,7 +30,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun sjekk_tilgang_til_bruker() {
-        loggInnBruker(oidcRequestContextHolder, UserConstants.LEDER_FNR)
+        loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         `when`(pdlConsumer.isKode6Or7(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.LEDER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
 
@@ -44,7 +44,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun sjekk_tilgang_til_seg_selv() {
-        loggInnBruker(oidcRequestContextHolder, UserConstants.ARBEIDSTAKER_FNR)
+        loggInnBruker(contextHolder, UserConstants.ARBEIDSTAKER_FNR)
         `when`(pdlConsumer.isKode6Or7(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.ARBEIDSTAKER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
 
@@ -55,7 +55,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun sjekk_tilgang_til_bruker_diskresjonsmerket() {
-        loggInnBruker(oidcRequestContextHolder, UserConstants.LEDER_FNR)
+        loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         `when`(pdlConsumer.isKode6Or7(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.LEDER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
 
@@ -66,7 +66,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun sjekk_tilgang_til_seg_selv_diskresjonsmerket() {
-        loggInnBruker(oidcRequestContextHolder, UserConstants.ARBEIDSTAKER_FNR)
+        loggInnBruker(contextHolder, UserConstants.ARBEIDSTAKER_FNR)
         `when`(pdlConsumer.isKode6Or7(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.ARBEIDSTAKER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
 
@@ -77,7 +77,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = ForbiddenException::class)
     fun sjekk_tilgang_til_bruker_ikke_tilgang() {
-        loggInnBruker(oidcRequestContextHolder, UserConstants.LEDER_FNR)
+        loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.LEDER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
 
         brukerTilgangController.harTilgang(UserConstants.ARBEIDSTAKER_FNR)
@@ -85,7 +85,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = ForbiddenException::class)
     fun sjekk_tilgang_til_seg_selv_ikke_tilgang() {
-        loggInnBruker(oidcRequestContextHolder, UserConstants.ARBEIDSTAKER_FNR)
+        loggInnBruker(contextHolder, UserConstants.ARBEIDSTAKER_FNR)
         `when`(brukertilgangService.tilgangTilOppslattIdent(UserConstants.ARBEIDSTAKER_FNR, UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
 
         brukerTilgangController.harTilgang(null)
@@ -93,19 +93,19 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker() {
-        OidcTestHelper.loggUtAlle(oidcRequestContextHolder)
+        OidcTestHelper.loggUtAlle(contextHolder)
         brukerTilgangController.harTilgang(null)
     }
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_ved_oppslag() {
-        OidcTestHelper.loggUtAlle(oidcRequestContextHolder)
+        OidcTestHelper.loggUtAlle(contextHolder)
         brukerTilgangController.harTilgang("")
     }
 
     @Test
     fun accessToIdent_granted() {
-        loggInnBruker(oidcRequestContextHolder, UserConstants.LEDER_FNR)
+        loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
         headers.add(NAV_PERSONIDENT_HEADER, UserConstants.ARBEIDSTAKER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
@@ -116,7 +116,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun accessToIdent_denied() {
-        loggInnBruker(oidcRequestContextHolder, UserConstants.LEDER_FNR)
+        loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
         headers.add(NAV_PERSONIDENT_HEADER, UserConstants.ARBEIDSTAKER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)

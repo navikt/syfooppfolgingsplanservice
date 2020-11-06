@@ -1,6 +1,6 @@
 package no.nav.syfo.veiledertilgang
 
-import no.nav.security.oidc.context.OIDCRequestContextHolder
+import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oidc.OIDCIssuer
@@ -22,10 +22,10 @@ import javax.ws.rs.ForbiddenException
 
 @Service
 class VeilederTilgangConsumer(
-        @Value("\${tilgangskontrollapi.url}") tilgangskontrollUrl: String,
-        private val metric: Metrikk,
-        private val oidcContextHolder: OIDCRequestContextHolder,
-        private val template: RestTemplate
+    @Value("\${tilgangskontrollapi.url}") tilgangskontrollUrl: String,
+    private val metric: Metrikk,
+    private val contextHolder: TokenValidationContextHolder,
+    private val template: RestTemplate
 ) {
     private val accessToPersonUriTemplate: UriComponentsBuilder
     private val accessToSYFOUriTemplate: UriComponentsBuilder
@@ -78,7 +78,7 @@ class VeilederTilgangConsumer(
     private fun entity(): HttpEntity<String> {
         val headers = HttpHeaders()
         headers.accept = listOf(MediaType.APPLICATION_JSON)
-        headers[HttpHeaders.AUTHORIZATION] = bearerHeader(OIDCUtil.getIssuerToken(oidcContextHolder, OIDCIssuer.AZURE))
+        headers[HttpHeaders.AUTHORIZATION] = bearerHeader(OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.AZURE))
         headers[NAV_CALL_ID_HEADER] = createCallId()
         headers[NAV_CONSUMER_ID_HEADER] = APP_CONSUMER_ID
         return HttpEntity(headers)

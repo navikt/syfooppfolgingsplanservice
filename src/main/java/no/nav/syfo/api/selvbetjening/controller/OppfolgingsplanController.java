@@ -1,7 +1,7 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
-import no.nav.security.oidc.api.ProtectedWithClaims;
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.domain.Arbeidsoppgave;
 import no.nav.syfo.domain.Tiltak;
@@ -29,7 +29,7 @@ public class OppfolgingsplanController {
     final static String METRIC_SHARE_WITH_NAV_AT_APPROVAL = "del_plan_med_nav_ved_godkjenning";
 
     private final Metrikk metrikk;
-    private final OIDCRequestContextHolder contextHolder;
+    private final TokenValidationContextHolder contextHolder;
     private final ArbeidsoppgaveService arbeidsoppgaveService;
     private final GodkjenningService godkjenningService;
     private final OppfolgingsplanService oppfolgingsplanService;
@@ -39,7 +39,7 @@ public class OppfolgingsplanController {
     @Inject
     public OppfolgingsplanController(
             Metrikk metrikk,
-            OIDCRequestContextHolder contextHolder,
+            TokenValidationContextHolder contextHolder,
             ArbeidsoppgaveService arbeidsoppgaveService,
             GodkjenningService godkjenningService,
             OppfolgingsplanService oppfolgingsplanService,

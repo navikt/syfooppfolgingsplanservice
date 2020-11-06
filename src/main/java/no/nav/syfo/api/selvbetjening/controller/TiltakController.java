@@ -1,7 +1,7 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
-import no.nav.security.oidc.api.ProtectedWithClaims;
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.syfo.api.selvbetjening.domain.RSKommentar;
 import no.nav.syfo.domain.Kommentar;
 import no.nav.syfo.metric.Metrikk;
@@ -22,14 +22,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/api/tiltak/actions/{id}")
 public class TiltakController {
 
-    private final OIDCRequestContextHolder contextHolder;
+    private final TokenValidationContextHolder contextHolder;
     private final KommentarService kommentarService;
     private final TiltakService tiltakService;
     private final Metrikk metrikk;
 
     @Inject
     public TiltakController(
-            OIDCRequestContextHolder contextHolder,
+            TokenValidationContextHolder contextHolder,
             KommentarService kommentarService,
             TiltakService tiltakService,
             Metrikk metrikk

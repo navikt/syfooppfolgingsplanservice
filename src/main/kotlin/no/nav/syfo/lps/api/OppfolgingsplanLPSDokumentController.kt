@@ -1,6 +1,6 @@
 package no.nav.syfo.lps.api
 
-import no.nav.security.oidc.api.ProtectedWithClaims
+import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.lps.OppfolgingsplanLPSService
 import no.nav.syfo.oidc.OIDCIssuer

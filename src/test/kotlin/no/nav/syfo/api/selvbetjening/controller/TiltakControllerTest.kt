@@ -31,7 +31,7 @@ class TiltakControllerTest : AbstractRessursTilgangTest() {
 
     @Before
     fun setup() {
-        loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR)
+        loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
     }
 
     @Test
@@ -42,7 +42,7 @@ class TiltakControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_slett_tiltak() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         tiltakController.slettTiltak(tiltakId)
     }
 
@@ -61,7 +61,7 @@ class TiltakControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_lagre_kommentar() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         val kommentar = RSKommentar()
         tiltakController.lagreKommentar(tiltakId, kommentar)
     }

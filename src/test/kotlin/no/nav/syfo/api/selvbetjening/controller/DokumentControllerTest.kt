@@ -25,7 +25,7 @@ class DokumentControllerTest : AbstractRessursTilgangTest() {
 
     @Before
     fun setup() {
-        loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR)
+        loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
     }
 
     @Test
@@ -40,7 +40,7 @@ class DokumentControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_hent_pdf() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         dokumentController.hentPdf(oppfolgingsplanId)
     }
 
@@ -64,7 +64,7 @@ class DokumentControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_hentSidebilde() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         try {
             dokumentController.hentSidebilde(oppfolgingsplanId, sideId)
         } catch (e: IOException) {
@@ -89,7 +89,7 @@ class DokumentControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_hentPdfurler() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         dokumentController.hentPdfurler(oppfolgingsplanId)
     }
 

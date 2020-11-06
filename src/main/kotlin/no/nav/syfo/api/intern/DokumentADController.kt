@@ -1,6 +1,6 @@
 package no.nav.syfo.api.intern
 
-import no.nav.security.oidc.api.ProtectedWithClaims
+import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.syfo.domain.GodkjentPlan
 import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.repository.dao.GodkjentplanDAO
