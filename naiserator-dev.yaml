@@ -39,6 +39,8 @@ spec:
   vault:
     enabled: true
   leaderElection: true
+  envFrom:
+    - configmap: loginservice-idporten
   env:
     - name: APP_NAME
       value: "syfooppfolgingsplanservice"
@@ -48,10 +50,6 @@ spec:
       value: "443"
     - name: APPDYNAMICS_CONTROLLER_SSL_ENABLED
       value: "true"
-    - name: NO_NAV_SECURITY_OIDC_ISSUER_SELVBETJENING_ACCEPTEDAUDIENCE
-      value: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
-    - name: NO_NAV_SECURITY_OIDC_ISSUER_SELVBETJENING_DISCOVERYURL
-      value: https://login.microsoftonline.com/NAVtestB2C.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1
     - name: NO_NAV_SECURITY_OIDC_ISSUER_INTERN_DISCOVERYURL
       value: https://isso-q.adeo.no:443/isso/oauth2/.well-known/openid-configuration
     - name: NO_NAV_SECURITY_OIDC_ISSUER_VEILEDER_DISCOVERYURL
