@@ -35,12 +35,12 @@ class DokumentControllerTest : AbstractRessursTilgangTest() {
     @Before
     @Throws(ParseException::class)
     fun setup() {
-        loggInnVeilederAzure(oidcRequestContextHolder, VEILEDER_ID)
+        loggInnVeilederAzure(contextHolder, VEILEDER_ID)
     }
 
     @After
     override fun tearDown() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
     }
 
     @Test

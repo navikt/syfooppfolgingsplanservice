@@ -46,7 +46,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Before
     fun setup() {
-        loggInnBruker(oidcRequestContextHolder, ARBEIDSTAKER_FNR)
+        loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
     }
 
     @Test
@@ -58,7 +58,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun avbryt_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.avbryt(oppfolgingsplanId)
     }
 
@@ -71,7 +71,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun avvis_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.delMedNav(oppfolgingsplanId)
     }
 
@@ -84,7 +84,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun delmedfastlege_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.delMedFastlege(oppfolgingsplanId)
     }
 
@@ -97,7 +97,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun delmednav_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.delMedNav(oppfolgingsplanId)
     }
 
@@ -123,8 +123,8 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun godkjenn_plan_som_bruker_tvungen() {
-        loggUtAlle(oidcRequestContextHolder)
-        loggInnBruker(oidcRequestContextHolder, LEDER_FNR)
+        loggUtAlle(contextHolder)
+        loggInnBruker(contextHolder, LEDER_FNR)
         val gyldighetstidspunkt = RSGyldighetstidspunkt()
         val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "tvungenGodkjenning", "arbeidsgiver", null)
         Mockito.verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true, false)
@@ -135,8 +135,8 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun godkjenn_plan_som_bruker_tvungen_del_med_nav() {
-        loggUtAlle(oidcRequestContextHolder)
-        loggInnBruker(oidcRequestContextHolder, LEDER_FNR)
+        loggUtAlle(contextHolder)
+        loggInnBruker(contextHolder, LEDER_FNR)
         val gyldighetstidspunkt = RSGyldighetstidspunkt()
         val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "tvungenGodkjenning", "arbeidsgiver", true)
         Mockito.verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true, true)
@@ -147,7 +147,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun godkjenn_plan_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, RSGyldighetstidspunkt(), "true", "arbeidsgiver", null)
     }
 
@@ -177,8 +177,8 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun godkjennsist_plan_som_arbeidsgiver() {
-        loggUtAlle(oidcRequestContextHolder)
-        loggInnBruker(oidcRequestContextHolder, LEDER_FNR)
+        loggUtAlle(contextHolder)
+        loggInnBruker(contextHolder, LEDER_FNR)
         val gyldighetstidspunkt = RSGyldighetstidspunkt()
         Mockito.`when`(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR)).thenReturn(gyldighetstidspunkt)
         val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver", null)
@@ -191,8 +191,8 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun godkjennsist_plan_som_arbeidsgiver_del_med_nav() {
-        loggUtAlle(oidcRequestContextHolder)
-        loggInnBruker(oidcRequestContextHolder, LEDER_FNR)
+        loggUtAlle(contextHolder)
+        loggInnBruker(contextHolder, LEDER_FNR)
         val gyldighetstidspunkt = RSGyldighetstidspunkt()
         Mockito.`when`(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR)).thenReturn(gyldighetstidspunkt)
         val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver", true)
@@ -205,7 +205,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun godkjennsist_plan_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver", null)
     }
 
@@ -220,7 +220,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun kopier_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.kopier(oppfolgingsplanId)
     }
 
@@ -261,7 +261,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_lagre_arbeidsoppgave() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         val rsArbeidsoppgave = RSArbeidsoppgave()
         oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, rsArbeidsoppgave)
     }
@@ -290,7 +290,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun lagre_tiltak_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         val rsTiltak = RSTiltak()
         oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak)
     }
@@ -304,7 +304,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun forespor_revidering_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.foresporRevidering(oppfolgingsplanId)
     }
 
@@ -317,7 +317,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun nullstill_godkjenning_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.foresporRevidering(oppfolgingsplanId)
     }
 
@@ -330,7 +330,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun sett_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.sett(oppfolgingsplanId)
     }
 
@@ -343,7 +343,7 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun samtykk_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         oppfolgingsplanController.samtykk(oppfolgingsplanId, true)
     }
 

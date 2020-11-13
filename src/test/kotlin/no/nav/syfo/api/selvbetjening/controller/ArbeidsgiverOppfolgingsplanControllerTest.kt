@@ -39,7 +39,7 @@ class ArbeidsgiverOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Before
     fun setup() {
-        loggInnBruker(oidcRequestContextHolder, LEDER_FNR)
+        loggInnBruker(contextHolder, LEDER_FNR)
         mockAktorregisterConsumer()
     }
 
@@ -52,7 +52,7 @@ class ArbeidsgiverOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun hent_oppfolgingsplaner_finner_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplaner()
     }
 
@@ -80,7 +80,7 @@ class ArbeidsgiverOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun opprett_oppfolgingsplan_ikke_innlogget_bruker() {
-        loggUtAlle(oidcRequestContextHolder)
+        loggUtAlle(contextHolder)
         val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
         arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog)
     }

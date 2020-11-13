@@ -1,6 +1,6 @@
 package no.nav.syfo
 
-import no.nav.security.oidc.test.support.spring.TokenGeneratorConfiguration
+import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration
 import no.nav.syfo.util.PropertyUtil
 import no.nav.syfo.util.ToggleUtil
 import org.springframework.context.annotation.Configuration

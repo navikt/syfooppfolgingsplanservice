@@ -1,7 +1,7 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
-import no.nav.security.oidc.api.ProtectedWithClaims;
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.service.PdfService;
 import org.slf4j.Logger;
@@ -29,13 +29,13 @@ public class DokumentController {
 
     @Value("${nais.cluster.name}")
     private String envName;
-    private final OIDCRequestContextHolder contextHolder;
+    private final TokenValidationContextHolder contextHolder;
     private final PdfService pdfService;
     private final Metrikk metrikk;
 
     @Inject
     public DokumentController(
-            OIDCRequestContextHolder contextHolder,
+            TokenValidationContextHolder contextHolder,
             PdfService pdfService,
             Metrikk metrikk
     ) {

@@ -1,6 +1,6 @@
 package no.nav.syfo.exception;
 
-import no.nav.security.spring.oidc.validation.interceptor.OIDCUnauthorizedException;
+import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException;
 import no.nav.syfo.brukertilgang.RequestUnauthorizedException;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.util.ConflictException;
@@ -43,16 +43,16 @@ public class ControllerExceptionHandler {
             ConstraintViolationException.class,
             ForbiddenException.class,
             IllegalArgumentException.class,
-            OIDCUnauthorizedException.class,
+            JwtTokenUnauthorizedException.class,
             NotFoundException.class
     })
     public final ResponseEntity<ApiError> handleException(Exception ex, WebRequest request) {
         HttpHeaders headers = new HttpHeaders();
 
-        if (ex instanceof OIDCUnauthorizedException) {
-            OIDCUnauthorizedException notAuthorizedException = (OIDCUnauthorizedException) ex;
+        if (ex instanceof JwtTokenUnauthorizedException) {
+            JwtTokenUnauthorizedException notAuthorizedException = (JwtTokenUnauthorizedException) ex;
 
-            return handleOIDCUnauthorizedException(notAuthorizedException, headers, request);
+            return handleJwtTokenUnauthorizedException(notAuthorizedException, headers, request);
         } else if (ex instanceof RequestUnauthorizedException) {
             RequestUnauthorizedException notAuthorizedException = (RequestUnauthorizedException) ex;
 
@@ -102,7 +102,7 @@ public class ControllerExceptionHandler {
         return handleExceptionInternal(ex, new ApiError(status.value(), BAD_REQUEST_MSG), headers, status, request);
     }
 
-    private ResponseEntity<ApiError> handleOIDCUnauthorizedException(OIDCUnauthorizedException ex, HttpHeaders headers, WebRequest request) {
+    private ResponseEntity<ApiError> handleJwtTokenUnauthorizedException(JwtTokenUnauthorizedException ex, HttpHeaders headers, WebRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         return handleExceptionInternal(ex, new ApiError(status.value(), UNAUTHORIZED_MSG), headers, status, request);
     }

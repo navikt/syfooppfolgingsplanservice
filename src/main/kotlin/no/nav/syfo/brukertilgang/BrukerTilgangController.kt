@@ -1,7 +1,7 @@
 package no.nav.syfo.brukertilgang
 
-import no.nav.security.oidc.api.ProtectedWithClaims
-import no.nav.security.oidc.context.OIDCRequestContextHolder
+import no.nav.security.token.support.core.api.ProtectedWithClaims
+import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.oidc.OIDCUtil
@@ -20,11 +20,11 @@ import javax.ws.rs.ForbiddenException
 @ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
 @RequestMapping(value = ["/api/tilgang"])
 class BrukerTilgangController @Inject constructor(
-        private val contextHolder: OIDCRequestContextHolder,
-        private val brukertilgangConsumer: BrukertilgangConsumer,
-        private val brukertilgangService: BrukertilgangService,
-        private val pdlConsumer: PdlConsumer,
-        private val metrikk: Metrikk
+    private val contextHolder: TokenValidationContextHolder,
+    private val brukertilgangConsumer: BrukertilgangConsumer,
+    private val brukertilgangService: BrukertilgangService,
+    private val pdlConsumer: PdlConsumer,
+    private val metrikk: Metrikk
 ) {
     @GetMapping
     fun harTilgang(@RequestParam(value = "fnr", required = false) oppslaattFnr: String?): RSTilgang {

@@ -1,6 +1,6 @@
 package no.nav.syfo.brukertilgang
 
-import no.nav.security.oidc.context.OIDCRequestContextHolder
+import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.oidc.OIDCUtil
@@ -17,10 +17,10 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class BrukertilgangConsumer @Autowired constructor(
-        private val oidcContextHolder: OIDCRequestContextHolder,
-        private val restTemplate: RestTemplate,
-        private val metrikk: Metrikk,
-        @Value("\${syfobrukertilgang.url}") private val baseUrl: String
+    private val contextHolder: TokenValidationContextHolder,
+    private val restTemplate: RestTemplate,
+    private val metrikk: Metrikk,
+    @Value("\${syfobrukertilgang.url}") private val baseUrl: String
 ) {
     fun hasAccessToAnsatt(ansattFnr: String): Boolean {
         val httpEntity = entity()
@@ -46,7 +46,7 @@ class BrukertilgangConsumer @Autowired constructor(
 
     private fun entity(): HttpEntity<*> {
         val headers = HttpHeaders()
-        headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(OIDCUtil.getIssuerToken(oidcContextHolder, OIDCIssuer.EKSTERN)))
+        headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.EKSTERN)))
         headers.add(NAV_CALL_ID_HEADER, createCallId())
         headers.add(NAV_CONSUMER_ID_HEADER, APP_CONSUMER_ID)
         return HttpEntity<Any>(headers)

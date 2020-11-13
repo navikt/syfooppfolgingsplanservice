@@ -1,7 +1,7 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
-import no.nav.security.oidc.api.ProtectedWithClaims;
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
@@ -29,7 +29,7 @@ public class NarmesteLederController {
 
     private static final Logger LOG = getLogger(NarmesteLederController.class);
 
-    private final OIDCRequestContextHolder oidcContextHolder;
+    private final TokenValidationContextHolder oidcContextHolder;
     private final Metrikk metrikk;
     private final AktorregisterConsumer aktorregisterConsumer;
     private final BrukertilgangService brukertilgangService;
@@ -37,7 +37,7 @@ public class NarmesteLederController {
 
     @Inject
     public NarmesteLederController(
-            OIDCRequestContextHolder oidcContextHolder,
+            TokenValidationContextHolder oidcContextHolder,
             Metrikk metrikk,
             AktorregisterConsumer aktorregisterConsumer,
             BrukertilgangService brukertilgangService,
