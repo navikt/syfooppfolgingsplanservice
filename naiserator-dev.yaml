@@ -68,8 +68,6 @@ spec:
       value: https://dokarkiv-q1.nais.preprod.local/services/behandlejournal/v2
     - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
       value: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/BehandleAltinnMelding/v1
-    - name: SYKEFRAVAERSOPPFOELGING_V1_ENDPOINTURL
-      value: https://modapp-q1.adeo.no/syfo/services/Sykefravaersoppfoelging_v1
     - name: MQGATEWAY03_HOSTNAME
       value: b27apvl173.preprod.local
     - name: MQGATEWAY03_PORT

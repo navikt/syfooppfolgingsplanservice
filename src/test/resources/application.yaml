@@ -43,7 +43,6 @@ syfobrukertilgang.url: "http://syfobrukertilgang"
 ekstern.altinn.behandlealtinnmelding.v1.endpointurl: "behandlealtinnmelding.url"
 brukeroppgave.v1.endpointurl: "brukeroppgavev1.url"
 lagrejuridisklogg.rest.url: "juridisklogg-lagre.url"
-sykefravaersoppfoelging.v1.endpointurl: "sykefravaeroppfoelgingv1.url"
 syfonarmesteleder.url: "http://syfonarmesteleder.url"
 syfonarmesteleder.id: "syfonarmestelederID"
 pdl.url: "https://pdl.url"
@@ -68,8 +67,6 @@ srvsyfooppfolgingsplanservice.username: srvusr
 srvsyfooppfolgingsplanservice.password: srvpassword
 client.id: clientId
 client.secret: clientSecret
-
-sykefravaersoppfoelging.syfoservice.withmock: true
 
 dev: true
 

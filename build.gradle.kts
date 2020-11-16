@@ -132,7 +132,6 @@ dependencies {
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external:${Versions.tjenesteSpesifikasjonerVersion}")
     implementation("no.nav.tjenestespesifikasjoner:altinn-correspondence-agency-external-basic:${Versions.tjenesteSpesifikasjonerVersion}")
     implementation("no.nav.tjenestespesifikasjoner:servicemeldingMedKontaktinformasjon-v1-tjenestespesifikasjon:${Versions.tjenesteSpesifikasjonerVersion}")
-    implementation("no.nav.tjenestespesifikasjoner:sykefravaersoppfoelgingv1-tjenestespesifikasjon:${Versions.tjenesteSpesifikasjonerVersion}")
     implementation("no.nav.tjenestespesifikasjoner:varsel-inn:${Versions.tjenesteSpesifikasjonerVersion}")
 
     implementation("org.apache.avro:avro:${Versions.avroVersion}")
