@@ -68,8 +68,6 @@ spec:
       value: https://dokarkiv.nais.adeo.no/services/behandlejournal/v2
     - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
       value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
-    - name: SYKEFRAVAERSOPPFOELGING_V1_ENDPOINTURL
-      value: https://modapp.adeo.no/syfo/services/Sykefravaersoppfoelging_v1
     - name: MQGATEWAY03_HOSTNAME
       value: a01apvl062.adeo.no
     - name: MQGATEWAY03_PORT
