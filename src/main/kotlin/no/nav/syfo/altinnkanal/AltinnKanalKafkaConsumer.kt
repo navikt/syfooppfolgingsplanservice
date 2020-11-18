@@ -56,6 +56,7 @@ class AltinnKanalKafkaConsumer @Inject constructor(
 
             log.info("KAFKA-TRACE(LPS): Lagrer LPS-plan i DB with reference ${consumerRecord.value().getArchiveReference()}")
             val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
+
             oppfolgingsplanLPSService.receivePlan(
                 consumerRecord.value().getArchiveReference(),
                 recordBatch,
