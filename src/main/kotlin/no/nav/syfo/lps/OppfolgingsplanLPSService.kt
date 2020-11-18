@@ -4,12 +4,12 @@ import no.nav.helse.op2016.Skjemainnhold
 import no.nav.syfo.domain.FeiletSending
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.domain.Virksomhetsnummer
-import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
-import no.nav.syfo.lps.database.POppfolgingsplanLPS
-import no.nav.syfo.lps.database.mapToOppfolgingsplanLPS
+import no.nav.syfo.lps.database.*
 import no.nav.syfo.lps.kafka.OppfolgingsplanLPSNAVProducer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
+import no.nav.syfo.pdl.PdlConsumer
+import no.nav.syfo.pdl.isKode6Or7
 import no.nav.syfo.service.FastlegeService
 import no.nav.syfo.service.FeiletSendingService
 import no.nav.syfo.service.JournalforOPService
@@ -28,7 +28,9 @@ class OppfolgingsplanLPSService @Inject constructor(
     private val oppfolgingsplanLPSNAVProducer: OppfolgingsplanLPSNAVProducer,
     private val metrikk: Metrikk,
     private val oppfolgingsplanLPSDAO: OppfolgingsplanLPSDAO,
+    private val oppfolgingsplanLPSRetryDAO: OppfolgingsplanLPSRetryDAO,
     private val opPdfGenConsumer: OPPdfGenConsumer,
+    private val pdlConsumer: PdlConsumer,
     private val feiletSendingService: FeiletSendingService
 ) {
     private val log = LoggerFactory.getLogger(OppfolgingsplanLPSService::class.java)
@@ -56,12 +58,6 @@ class OppfolgingsplanLPSService @Inject constructor(
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer
     ) {
-        val idList: Pair<Long, UUID> = savePlan(
-            batch,
-            skjemainnhold,
-            virksomhetsnummer
-        )
-
         val incomingMetadata = IncomingMetadata(
             archiveReference = archiveReference,
             senderOrgName = skjemainnhold.arbeidsgiver.orgnavn,
@@ -69,25 +65,52 @@ class OppfolgingsplanLPSService @Inject constructor(
             userPersonNumber = skjemainnhold.sykmeldtArbeidstaker.fnr
         )
 
-        val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
-        val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
-        oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
-        log.info("KAFKA-trace: pdf generated and stored")
-
-        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
-            val kOppfolgingsplanLPSNAV = KOppfolgingsplanLPSNAV(
-                idList.second.toString(),
-                incomingMetadata.userPersonNumber,
-                virksomhetsnummer.value,
-                lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
-                LocalDate.now().toEpochDay().toInt()
+        val isUserDiskresjonsmerket = pdlConsumer.person(incomingMetadata.userPersonNumber)?.isKode6Or7()
+        if (isUserDiskresjonsmerket == null) {
+            log.warn("Diskresjosnkode was not received from PDL and LPS-plan is stored in retry table.")
+            saveLPSPlanRetry(incomingMetadata.archiveReference, batch)
+            metrikk.tellHendelse("lps_plan_retry_created")
+        } else if (isUserDiskresjonsmerket) {
+            log.warn("Received Oppfolgingsplan from LPS for a person that is denied access to Oppfolgingsplan")
+            metrikk.tellHendelse("lps_plan_diskresjonsmerket")
+            return
+        } else {
+            val idList: Pair<Long, UUID> = savePlan(
+                batch,
+                skjemainnhold,
+                virksomhetsnummer
             )
-            metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand",  lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
-            oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
+
+            val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
+            val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
+            oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
+            log.info("KAFKA-trace: pdf generated and stored")
+
+            if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
+                val kOppfolgingsplanLPSNAV = KOppfolgingsplanLPSNAV(
+                    idList.second.toString(),
+                    incomingMetadata.userPersonNumber,
+                    virksomhetsnummer.value,
+                    lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
+                    LocalDate.now().toEpochDay().toInt()
+                )
+                metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand",  lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
+                oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
+            }
+            if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
+                sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
+            }
         }
-        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
-            sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
-        }
+    }
+
+    private fun saveLPSPlanRetry(
+        archiveReference: String,
+        xml: String
+    ): Long {
+        return oppfolgingsplanLPSRetryDAO.create(
+            archiveReference = archiveReference,
+            xml = xml
+        )
     }
 
     private fun savePlan(
