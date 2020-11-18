@@ -54,7 +54,7 @@ class AltinnKanalKafkaConsumer @Inject constructor(
             val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
             val skjemainnhold = oppfolgingsplan.skjemainnhold
 
-            log.info("KAFKA-TRACE(LPS): Lagrer LPS-plan i DB")
+            log.info("KAFKA-TRACE(LPS): Lagrer LPS-plan i DB with reference ${consumerRecord.value().getArchiveReference()}")
             val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
             oppfolgingsplanLPSService.receivePlan(
                 consumerRecord.value().getArchiveReference(),
