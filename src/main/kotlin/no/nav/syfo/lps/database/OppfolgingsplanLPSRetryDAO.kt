@@ -19,7 +19,7 @@ class OppfolgingsplanLPSRetryDAO @Inject constructor(
         archiveReference: String,
         xml: String
     ): Long {
-        val id = DbUtil.nesteSekvensverdi("OPPFOLGINGSPLANLPS_RETRY_ID_SEQ", jdbcTemplate)
+        val id = DbUtil.nesteSekvensverdi("PLANLPS_RETRY_ID_SEQ", jdbcTemplate)
         val query = """
             INSERT INTO OPPFOLGINGSPLANLPS_RETRY (
                 oppfolgingsplanlps_retry_id,
