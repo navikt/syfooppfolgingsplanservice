@@ -38,6 +38,13 @@ spec:
     - "https://app.adeo.no/syfooppfolgingsplanservice"
   vault:
     enabled: true
+    paths:
+      - kvPath: "/oracle/data/prod/creds/serviceoppfoelgingsdialog-user"
+        mountPath: "/secrets/oppfolgingsplandb/credentials"
+      - kvPath: "/oracle/data/prod/config/serviceoppfoelgingsdialog"
+        mountPath: "/secrets/oppfolgingsplandb/config"
+      - kvPath: "/kv/prod/fss/syfooppfolgingsplanservice/default"
+        mountPath: "/var/run/secrets/nais.io/vault"
   leaderElection: true
   envFrom:
     - configmap: loginservice-idporten
