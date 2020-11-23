@@ -1,25 +1,42 @@
 package no.nav.syfo.lps
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import generated.DataBatch
+import no.nav.helse.op2016.Oppfoelgingsplan4UtfyllendeInfoM
 import no.nav.helse.op2016.Skjemainnhold
-import no.nav.syfo.domain.FeiletSending
-import no.nav.syfo.domain.Fodselsnummer
-import no.nav.syfo.domain.Virksomhetsnummer
+import no.nav.syfo.domain.*
 import no.nav.syfo.lps.database.*
 import no.nav.syfo.lps.kafka.OppfolgingsplanLPSNAVProducer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.pdl.isKode6Or7
-import no.nav.syfo.service.FastlegeService
-import no.nav.syfo.service.FeiletSendingService
-import no.nav.syfo.service.JournalforOPService
+import no.nav.syfo.service.*
 import no.nav.syfo.util.InnsendingFeiletException
 import no.nav.syfo.util.OppslagFeiletException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
+import java.io.StringReader
 import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
+import javax.xml.bind.JAXBContext
+import javax.xml.bind.Unmarshaller
+
+val dataBatchJaxBContext: JAXBContext = JAXBContext.newInstance(DataBatch::class.java)
+val dataBatchUnmarshaller: Unmarshaller = dataBatchJaxBContext.createUnmarshaller()
+
+val xmlMapper: ObjectMapper = XmlMapper(JacksonXmlModule().apply {
+    setDefaultUseWrapper(false)
+}).registerModule(JaxbAnnotationModule())
+    .registerKotlinModule()
+    .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
 
 @Repository
 class OppfolgingsplanLPSService @Inject constructor(
@@ -28,7 +45,7 @@ class OppfolgingsplanLPSService @Inject constructor(
     private val oppfolgingsplanLPSNAVProducer: OppfolgingsplanLPSNAVProducer,
     private val metrikk: Metrikk,
     private val oppfolgingsplanLPSDAO: OppfolgingsplanLPSDAO,
-    private val oppfolgingsplanLPSRetryDAO: OppfolgingsplanLPSRetryDAO,
+    private val oppfolgingsplanLPSRetryService: OppfolgingsplanLPSRetryService,
     private val opPdfGenConsumer: OPPdfGenConsumer,
     private val pdlConsumer: PdlConsumer,
     private val feiletSendingService: FeiletSendingService
@@ -54,9 +71,31 @@ class OppfolgingsplanLPSService @Inject constructor(
 
     fun receivePlan(
         archiveReference: String,
+        recordBatch: String,
+        isRetry: Boolean
+    ) {
+        val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(recordBatch)) as DataBatch
+        val payload = dataBatch.dataUnits.dataUnit.first().formTask.form.first().formData
+        val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
+        val skjemainnhold = oppfolgingsplan.skjemainnhold
+        val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
+
+        processPlan(
+            archiveReference,
+            recordBatch,
+            skjemainnhold,
+            virksomhetsnummer,
+            isRetry
+        )
+        metrikk.tellHendelse("prosessering_av_lps_plan_vellykket")
+    }
+
+    private fun processPlan(
+        archiveReference: String,
         batch: String,
         skjemainnhold: Skjemainnhold,
-        virksomhetsnummer: Virksomhetsnummer
+        virksomhetsnummer: Virksomhetsnummer,
+        isRetry: Boolean
     ) {
         val incomingMetadata = IncomingMetadata(
             archiveReference = archiveReference,
@@ -67,12 +106,15 @@ class OppfolgingsplanLPSService @Inject constructor(
 
         val isUserDiskresjonsmerket = pdlConsumer.person(incomingMetadata.userPersonNumber)?.isKode6Or7()
         if (isUserDiskresjonsmerket == null) {
-            saveLPSPlanRetry(incomingMetadata.archiveReference, batch)
-            log.warn("Diskresjonskode was not received from PDL and LPS-plan was stored in retry table.")
+            oppfolgingsplanLPSRetryService.getOrCreate(incomingMetadata.archiveReference, batch)
+            log.warn("Diskresjonskode was not received from PDL and LPS-plan is stored for retry.")
             metrikk.tellHendelse("lps_plan_retry_created")
         } else if (isUserDiskresjonsmerket) {
             log.warn("Received Oppfolgingsplan from LPS for a person that is denied access to Oppfolgingsplan")
             metrikk.tellHendelse("lps_plan_diskresjonsmerket")
+            if (isRetry) {
+                oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
+            }
             return
         } else {
             val idList: Pair<Long, UUID> = savePlan(
@@ -80,6 +122,9 @@ class OppfolgingsplanLPSService @Inject constructor(
                 skjemainnhold,
                 virksomhetsnummer
             )
+            if (isRetry) {
+                oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
+            }
 
             val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
             val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
@@ -94,23 +139,13 @@ class OppfolgingsplanLPSService @Inject constructor(
                     lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
                     LocalDate.now().toEpochDay().toInt()
                 )
-                metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand",  lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
+                metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand", lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
                 oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
             }
             if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
                 sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
             }
         }
-    }
-
-    private fun saveLPSPlanRetry(
-        archiveReference: String,
-        xml: String
-    ): Long {
-        return oppfolgingsplanLPSRetryDAO.create(
-            archiveReference = archiveReference,
-            xml = xml
-        )
     }
 
     private fun savePlan(
@@ -148,7 +183,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         try {
             fastlegeService.sendOppfolgingsplanLPS(fnr, pdf)
             oppfolgingsplanLPSDAO.updateSharedWithFastlege(oppfolgingsplanId)
-            if(try_num > 0) {
+            if (try_num > 0) {
                 metrikk.tellHendelse("lps_plan_delt_etter_feilet_sending")
                 feiletSendingService.fjernSendtOppfolgingsplan(oppfolgingsplanId)
             }

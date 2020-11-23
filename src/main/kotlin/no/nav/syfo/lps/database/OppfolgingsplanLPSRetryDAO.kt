@@ -2,6 +2,7 @@ package no.nav.syfo.lps.database
 
 import no.nav.syfo.repository.DbUtil
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.support.SqlLobValue
@@ -44,5 +45,53 @@ class OppfolgingsplanLPSRetryDAO @Inject constructor(
             .addValue("opprettet", created)
         namedParameterJdbcTemplate.update(query, mapSaveSql)
         return id
+    }
+
+    fun get(): List<POppfolgingsplanLPSRetry> {
+        val query = """
+            SELECT *
+            FROM OPPFOLGINGSPLANLPS_RETRY
+            """.trimIndent()
+        val mapSql = MapSqlParameterSource()
+        return namedParameterJdbcTemplate.query(
+            query,
+            mapSql,
+            oppfolgingsplanLPSRetryRowMapper
+        )
+    }
+
+    fun get(archiveReference: String): List<POppfolgingsplanLPSRetry> {
+        val query = """
+            SELECT *
+            FROM OPPFOLGINGSPLANLPS_RETRY
+            WHERE archive_reference = :archiveReference
+            """.trimIndent()
+        val mapSql = MapSqlParameterSource()
+            .addValue("archiveReference", archiveReference)
+        return namedParameterJdbcTemplate.query(
+            query,
+            mapSql,
+            oppfolgingsplanLPSRetryRowMapper
+        )
+    }
+
+    fun delete(archiveReference: String) {
+        val query = """
+            DELETE
+            FROM OPPFOLGINGSPLANLPS_RETRY
+            WHERE archive_reference = :archiveReference
+            """.trimIndent()
+        val mapSql = MapSqlParameterSource()
+            .addValue("archiveReference", archiveReference)
+        namedParameterJdbcTemplate.update(query, mapSql)
+    }
+
+    val oppfolgingsplanLPSRetryRowMapper = RowMapper { resultSet, _ ->
+        POppfolgingsplanLPSRetry(
+            id = resultSet.getLong("oppfolgingsplanlps_retry_id"),
+            archiveReference = resultSet.getString("archive_reference"),
+            xml = resultSet.getString("xml"),
+            opprettet = resultSet.getTimestamp("opprettet").toLocalDateTime()
+        )
     }
 }
