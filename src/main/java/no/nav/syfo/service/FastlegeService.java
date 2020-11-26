@@ -87,6 +87,7 @@ public class FastlegeService {
     }
 
     private void kallUriMedTemplate(URI uri, RSOppfoelgingsplan rsOppfoelgingsplan, String token, boolean lps) {
+        minMetrikk();
         try {
             template.postForLocation(uri, entity(rsOppfoelgingsplan, token));
             tellPlanDeltMedFastlegeKall(lps, true);
@@ -111,6 +112,10 @@ public class FastlegeService {
             tellPlanDeltMedFastlegeKall(lps, false);
             throw e;
         }
+    }
+
+    private void minMetrikk()  {
+        metrikk.tellHendelse("tell_antall_lps_forsokt_delt_fastlege");
     }
 
     private HttpEntity<RSOppfoelgingsplan> entity(RSOppfoelgingsplan rsOppfoelgingsplan, String token) {
