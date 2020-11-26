@@ -107,6 +107,7 @@ public class FastlegeService {
             tellPlanDeltMedFastlegeKall(lps, false);
             throw new InnsendingFeiletException("Kunne ikke dele med fastlege");
         } catch (Exception e) {
+            log.error("Feil ved sending av oppfølgingsdialog til fastlege", e);
             tellPlanDeltMedFastlegeKall(lps, false);
             throw e;
         }
