@@ -115,7 +115,7 @@ public class FastlegeService {
     }
 
     private void minMetrikk()  {
-
+        metrikk.tellHendelse("tell_antall_lps_forsokt_delt_fastlege");
     }
 
     private HttpEntity<RSOppfoelgingsplan> entity(RSOppfoelgingsplan rsOppfoelgingsplan, String token) {
