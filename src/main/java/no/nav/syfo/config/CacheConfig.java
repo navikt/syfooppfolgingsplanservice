@@ -17,11 +17,11 @@ import java.util.Map;
 public class CacheConfig {
     public static final String CACHENAME_AKTOER_ID = "aktoerid";
     public static final String CACHENAME_AKTOER_FNR = "aktoerfnr";
-    public static final String CACHENAME_ANSATTE = "ansatte";
+    public static final String CACHENAME_ANSATTE = "lederansatte";
     public static final String CACHENAME_BEHANDLENDEENHET_FNR = "behandlendeenhetfnr";
     public static final String CACHENAME_DKIF_IDENT = "dkifident";
     public static final String CACHENAME_EREG_VIRKSOMHETSNAVN = "virksomhetsnavn";
-    public static final String CACHENAME_LEDER = "leder";
+    public static final String CACHENAME_LEDER = "narmesteleder";
     public static final String CACHENAME_ARBEIDSFORHOLD_AT = "arbeidsforholdAT";
     public static final String CACHENAME_TILGANG_TIL_IDENT = "tilgangtilident";
     public static final String CACHENAME_FELLESKODEVERK_BETYDNINGER = "felleskodeverkBetydninger";

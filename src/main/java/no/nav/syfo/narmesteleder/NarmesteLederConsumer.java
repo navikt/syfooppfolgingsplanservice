@@ -21,6 +21,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
+import static no.nav.syfo.config.CacheConfig.CACHENAME_ANSATTE;
+import static no.nav.syfo.config.CacheConfig.CACHENAME_LEDER;
 import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -67,7 +69,7 @@ public class NarmesteLederConsumer {
         this.syfonarmestelederId = syfonarmestelederId;
     }
 
-    @Cacheable(value = "ansatte", key = "#aktorId", condition = "#aktorId != null")
+    @Cacheable(value = CACHENAME_ANSATTE, key = "#aktorId", condition = "#aktorId != null")
     public List<Ansatt> ansatte(String aktorId) {
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
@@ -86,7 +88,7 @@ public class NarmesteLederConsumer {
         return mapListe(response.getBody(), narmestelederRelasjon2Ansatt);
     }
 
-    @Cacheable(value = "leder", key = "#aktorId + #virksomhetsnummer", condition = "#aktorId != null && #virksomhetsnummer != null")
+    @Cacheable(value = CACHENAME_LEDER, key = "#aktorId + #virksomhetsnummer", condition = "#aktorId != null && #virksomhetsnummer != null")
     public Optional<Naermesteleder> narmesteLeder(String aktorId, String virksomhetsnummer) {
         metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
