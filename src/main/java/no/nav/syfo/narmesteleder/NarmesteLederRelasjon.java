@@ -17,6 +17,7 @@ public class NarmesteLederRelasjon {
     public String narmesteLederTelefonnummer;
     public String narmesteLederEpost;
     public LocalDate aktivFom;
+    public LocalDate aktivTom;
     public boolean arbeidsgiverForskutterer;
     public boolean skrivetilgang;
     public List<Tilgang> tilganger;
