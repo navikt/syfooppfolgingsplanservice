@@ -67,12 +67,8 @@ spec:
       value: "910067494"
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
-    - name: MODAPP_URL
-      value: https://modapp-q1.adeo.no
     - name: TJENESTER_URL
       value: https://tjenester-q1.nav.no
-    - name: BEHANDLEJOURNAL_V2_ENDPOINTURL
-      value: https://dokarkiv-q1.nais.preprod.local/services/behandlejournal/v2
     - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
       value: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/BehandleAltinnMelding/v1
     - name: MQGATEWAY03_HOSTNAME
@@ -99,7 +95,7 @@ spec:
       value: https://syfobehandlendeenhet.nais.preprod.local
     - name: DOKARKIV_URL
       value: https://dokarkiv-q1.nais.preprod.local
-    - name: AD_ACCESSTOKEN_URL
+    - name: AAD_ACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
     - name: SYFONARMESTELEDER_URL
       value: https://syfonarmesteleder.nais.preprod.local

@@ -53,7 +53,7 @@ dokarkiv.url: "http://dokarkiv.url"
 felleskodeverk.url: "http://kodeverk.url"
 
 syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
-ad.accesstoken.url: 'accesstoken.url'
+aad.accesstoken.url: 'accesstoken.url'
 security.token.service.rest.url: "http://security-token-service.url"
 
 nais.cluster.name: 'local'
