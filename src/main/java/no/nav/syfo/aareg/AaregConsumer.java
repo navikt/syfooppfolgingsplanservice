@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import static no.nav.syfo.aareg.AaregUtils.stillingsprosentWithMaxScale;
 import static no.nav.syfo.aareg.OpplysningspliktigArbeidsgiver.Type.Organisasjon;
 import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
-import static no.nav.syfo.util.RequestUtilKt.NAV_PERSONIDENT_HEADER;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 
@@ -39,6 +38,7 @@ public class AaregConsumer {
     private final String url;
 
     public static final String NAV_CONSUMER_TOKEN_HEADER = "Nav-Consumer-Token";
+    public static final String NAV_PERSONIDENT_HEADER = "Nav-Personident";
 
     @Autowired
     public AaregConsumer(

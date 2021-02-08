@@ -7,7 +7,6 @@ import no.nav.syfo.lps.api.domain.RSOppfolgingsplanLPS
 import no.nav.syfo.lps.mapToRSOppfolgingsplanLPS
 import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
-import no.nav.syfo.util.NAV_PERSONIDENT_HEADER_DEPRECATED
 import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.util.MultiValueMap
@@ -25,7 +24,7 @@ class OppfolgingsplanLPSController @Inject constructor(
     fun oppfolgingsplanlpsList(
         @RequestHeader headers: MultiValueMap<String, String>
     ): List<RSOppfolgingsplanLPS> {
-        val personIdent = headers.getFirst(NAV_PERSONIDENT_HEADER)?: throw IllegalArgumentException("No PersonIdent supplied")
+        val personIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase())?: throw IllegalArgumentException("No PersonIdent supplied")
         val personFnr = Fodselsnummer(personIdent)
 
         veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccess(personFnr)
