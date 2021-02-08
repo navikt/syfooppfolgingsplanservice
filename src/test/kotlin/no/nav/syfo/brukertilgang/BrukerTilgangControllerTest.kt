@@ -6,7 +6,7 @@ import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.testhelper.OidcTestHelper
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.UserConstants
-import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
+import no.nav.syfo.util.NAV_PERSONIDENT_HEADER_DEPRECATED
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.`when`
@@ -107,7 +107,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
     fun accessToIdent_granted() {
         loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
-        headers.add(NAV_PERSONIDENT_HEADER, UserConstants.ARBEIDSTAKER_FNR)
+        headers.add(NAV_PERSONIDENT_HEADER_DEPRECATED, UserConstants.ARBEIDSTAKER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
 
         val (tilgang) = brukerTilgangController.accessToAnsatt(headers)
@@ -118,7 +118,7 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
     fun accessToIdent_denied() {
         loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
-        headers.add(NAV_PERSONIDENT_HEADER, UserConstants.ARBEIDSTAKER_FNR)
+        headers.add(NAV_PERSONIDENT_HEADER_DEPRECATED, UserConstants.ARBEIDSTAKER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
 
         val (tilgang) = brukerTilgangController.accessToAnsatt(headers)

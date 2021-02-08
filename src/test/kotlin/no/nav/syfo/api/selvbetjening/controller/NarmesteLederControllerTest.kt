@@ -12,7 +12,7 @@ import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
-import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
+import no.nav.syfo.util.NAV_PERSONIDENT_HEADER_DEPRECATED
 import org.junit.*
 import org.mockito.Mockito
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -86,7 +86,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
 
     private fun getHttpHeaders(): MultiValueMap<String, String> {
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
-        headers.add(NAV_PERSONIDENT_HEADER, ARBEIDSTAKER_FNR)
+        headers.add(NAV_PERSONIDENT_HEADER_DEPRECATED, ARBEIDSTAKER_FNR)
         return headers
     }
 }
