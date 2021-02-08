@@ -12,6 +12,7 @@ import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
+import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER_DEPRECATED
 import org.junit.*
 import org.mockito.Mockito
@@ -57,6 +58,22 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
     }
 
     @Test
+    fun narmesteLeder_ansatt_ok_v1() {
+        loggInnBruker(contextHolder, LEDER_FNR)
+        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
+        Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_AKTORID, VIRKSOMHETSNUMMER))
+            .thenReturn(Optional.of(naermesteleder))
+
+        val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
+        headers.add(NAV_PERSONIDENT_HEADER_DEPRECATED, ARBEIDSTAKER_FNR)
+
+        val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(headers, VIRKSOMHETSNUMMER)
+        val body = res.body as Naermesteleder
+        Assert.assertEquals(200, res.statusCodeValue.toLong())
+        Assert.assertEquals(naermesteleder, body)
+    }
+
+    @Test
     fun narmesteLeder_self_ok() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_AKTORID, VIRKSOMHETSNUMMER))
@@ -86,7 +103,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
 
     private fun getHttpHeaders(): MultiValueMap<String, String> {
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
-        headers.add(NAV_PERSONIDENT_HEADER_DEPRECATED, ARBEIDSTAKER_FNR)
+        headers.add(NAV_PERSONIDENT_HEADER, ARBEIDSTAKER_FNR)
         return headers
     }
 }
