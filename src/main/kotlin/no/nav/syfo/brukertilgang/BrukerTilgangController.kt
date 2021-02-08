@@ -7,7 +7,6 @@ import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.oidc.OIDCUtil
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.BrukertilgangService
-import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER_DEPRECATED
 import org.slf4j.LoggerFactory
 import org.springframework.util.MultiValueMap
@@ -39,8 +38,8 @@ class BrukerTilgangController @Inject constructor(
         val isKode6Or7 = pdlConsumer.isKode6Or7(oppslaattIdent!!)
         return if (isKode6Or7) {
             RSTilgang(
-                false,
-                IKKE_TILGANG_GRUNN_DISKRESJONSMERKET
+                    false,
+                    IKKE_TILGANG_GRUNN_DISKRESJONSMERKET
             )
         } else {
             RSTilgang(true)
@@ -51,12 +50,11 @@ class BrukerTilgangController @Inject constructor(
     @ResponseBody
     fun accessToAnsatt(@RequestHeader headers: MultiValueMap<String, String>): BrukerTilgang {
         val oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER_DEPRECATED.toLowerCase())
-            ?: headers.getFirst(NAV_PERSONIDENT_HEADER)
-        if (oppslaattIdent.isNullOrEmpty()) {
+        return if (StringUtils.isEmpty(oppslaattIdent)) {
             throw IllegalArgumentException("Fant ikke Ident i Header ved sjekk av tilgang til Ident")
         } else {
             metrikk.tellHendelse("accessToIdent")
-            return BrukerTilgang(brukertilgangConsumer.hasAccessToAnsatt(oppslaattIdent))
+            BrukerTilgang(brukertilgangConsumer.hasAccessToAnsatt(oppslaattIdent))
         }
     }
 

@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.oidc.OIDCUtil.getSubjectEksternMedThrows;
-import static no.nav.syfo.util.RequestUtilKt.NAV_PERSONIDENT_HEADER;
 import static no.nav.syfo.util.RequestUtilKt.NAV_PERSONIDENT_HEADER_DEPRECATED;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -59,14 +58,7 @@ public class NarmesteLederController {
     ) {
         metrikk.tellHendelse("get_narmesteleder");
 
-        String headerIdent = headers.getFirst(NAV_PERSONIDENT_HEADER_DEPRECATED.toLowerCase());
-
-        String oppslaattIdent;
-        if (StringUtils.isEmpty(headerIdent)) {
-            oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER);
-        } else {
-            oppslaattIdent = headerIdent;
-        }
+        String oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER_DEPRECATED.toLowerCase());
 
         if (StringUtils.isEmpty(oppslaattIdent)) {
             LOG.error("Fant ikke oppslaatt Ident ved henting av narmeste leder for Ident");

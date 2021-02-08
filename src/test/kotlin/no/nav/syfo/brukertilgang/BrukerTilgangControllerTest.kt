@@ -6,7 +6,6 @@ import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.testhelper.OidcTestHelper
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.UserConstants
-import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER_DEPRECATED
 import org.junit.Assert.*
 import org.junit.Test
@@ -106,17 +105,6 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
 
     @Test
     fun accessToIdent_granted() {
-        loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
-        val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
-        headers.add(NAV_PERSONIDENT_HEADER, UserConstants.ARBEIDSTAKER_FNR)
-        `when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
-
-        val (tilgang) = brukerTilgangController.accessToAnsatt(headers)
-        assertFalse(tilgang)
-    }
-
-    @Test
-    fun accessToIdent_granted_v1() {
         loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
         headers.add(NAV_PERSONIDENT_HEADER_DEPRECATED, UserConstants.ARBEIDSTAKER_FNR)
