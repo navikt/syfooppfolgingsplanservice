@@ -7,7 +7,6 @@ import no.nav.syfo.lps.api.domain.RSOppfolgingsplanLPS
 import no.nav.syfo.lps.mapToRSOppfolgingsplanLPS
 import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
-import no.nav.syfo.util.NAV_PERSONIDENT_HEADER_DEPRECATED
 import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.util.MultiValueMap
