@@ -27,7 +27,7 @@ spec:
       cpu: 1000m
       memory: 2048Mi
   replicas:
-    min: 2
+    min: 3
     max: 4
     cpuThresholdPercentage: 80
   prometheus:
