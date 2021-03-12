@@ -6,6 +6,7 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.*;
 import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
