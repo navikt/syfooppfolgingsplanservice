@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -74,20 +74,20 @@ public class NermesteLedereConsumer {
         metrikk.tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
 
-        ResponseEntity<NermesteledereResponse> response = restTemplate.exchange(
+        ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
                 getLedereUrl(aktorId),
                 GET,
                 entity(token),
-                NermesteledereResponse.class
+                new ParameterizedTypeReference<List<NarmesteLederRelasjon>>(){}
         );
 
         throwExceptionIfError(response.getStatusCode(), HENT_LEDERE_SYFONARMESTELEDER_FEILET);
 
-        if (Objects.requireNonNull(response.getBody()).narmesteLederRelasjoner == null) {
+        if (Objects.requireNonNull(response.getBody()).isEmpty()) {
             return Optional.empty();
         }
 
-        List<NarmesteLederRelasjon> relasjoner = response.getBody().narmesteLederRelasjoner;
+        List<NarmesteLederRelasjon> relasjoner = response.getBody();
         List<Naermesteleder> nermesteLedere = new ArrayList<>();
 
         for (NarmesteLederRelasjon relasjon : relasjoner) {
