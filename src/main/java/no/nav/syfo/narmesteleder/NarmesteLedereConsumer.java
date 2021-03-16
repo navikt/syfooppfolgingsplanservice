@@ -27,17 +27,17 @@ import static org.springframework.http.HttpStatus.OK;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.model.NaermesteLederStatus;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
 
 @Component
-public class NermesteLedereConsumer {
-    private static final Logger LOG = getLogger(NermesteLedereConsumer.class);
+public class NarmesteLedereConsumer {
+    private static final Logger LOG = getLogger(NarmesteLedereConsumer.class);
 
     private final AktorregisterConsumer aktorregisterConsumer;
     private final AzureAdTokenConsumer azureAdTokenConsumer;
+    private final NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
     private final Metrikk metrikk;
     private final PdlConsumer pdlConsumer;
     private final RestTemplate restTemplate;
@@ -46,14 +46,15 @@ public class NermesteLedereConsumer {
 
     public static final String HENT_LEDERE_SYFONARMESTELEDER = "hent_ledere_syfonarmesteleder";
     public static final String HENT_LEDERE_SYFONARMESTELEDER_FEILET = "hent_ledere_syfonarmesteleder_feilet";
-    public static final String HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET = "hent_leder_syfonarmesteleder_vellykket";
+    public static final String HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET = "hent_ledere_syfonarmesteleder_vellykket";
 
     public static final String ERROR_MESSAGE_BASE = "Kall mot syfonarmesteleder feiler med HTTP-";
 
     @Autowired
-    public NermesteLedereConsumer(
+    public NarmesteLedereConsumer(
             AktorregisterConsumer aktorregisterConsumer,
             AzureAdTokenConsumer azureAdTokenConsumer,
+            NarmesteLederRelasjonConverter narmesteLederRelasjonConverter,
             Metrikk metrikk,
             PdlConsumer pdlConsumer,
             RestTemplate restTemplateMedProxy,
@@ -62,6 +63,7 @@ public class NermesteLedereConsumer {
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.azureAdTokenConsumer = azureAdTokenConsumer;
+        this.narmesteLederRelasjonConverter = narmesteLederRelasjonConverter;
         this.metrikk = metrikk;
         this.pdlConsumer = pdlConsumer;
         this.restTemplate = restTemplateMedProxy;
@@ -70,7 +72,7 @@ public class NermesteLedereConsumer {
     }
 
     @Cacheable(value = CACHENAME_LEDER, key = "#aktorId", condition = "#aktorId != null")
-    public Optional<List<Naermesteleder>> nermesteLedere(String aktorId) {
+    public Optional<List<Naermesteleder>> narmesteLedere(String aktorId) {
         metrikk.tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
 
@@ -81,25 +83,25 @@ public class NermesteLedereConsumer {
                 new ParameterizedTypeReference<List<NarmesteLederRelasjon>>(){}
         );
 
-        throwExceptionIfError(response.getStatusCode(), HENT_LEDERE_SYFONARMESTELEDER_FEILET);
+         throwExceptionIfError(response.getStatusCode(), HENT_LEDERE_SYFONARMESTELEDER_FEILET);
 
-        if (Objects.requireNonNull(response.getBody()).isEmpty()) {
+        if (Objects.requireNonNull(response).getBody() == null) {
             return Optional.empty();
         }
 
         List<NarmesteLederRelasjon> relasjoner = response.getBody();
-        List<Naermesteleder> nermesteLedere = new ArrayList<>();
+        List<Naermesteleder> narmesteLedere = new ArrayList<>();
 
         for (NarmesteLederRelasjon relasjon : relasjoner) {
             String lederAktorId = relasjon.narmesteLederAktorId;
             String lederFnr = aktorregisterConsumer.hentFnrForAktor(lederAktorId);
             String lederNavn = Optional.ofNullable(pdlConsumer.personName(lederFnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of leader was null"));
-            nermesteLedere.add(narmestelederRelasjon2Leder(relasjon, lederNavn));
+            narmesteLedere.add(narmesteLederRelasjonConverter.convert(relasjon, lederNavn));
         }
 
         metrikk.tellHendelse(HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET);
 
-        return Optional.of(nermesteLedere);
+        return Optional.of(narmesteLedere);
     }
 
     private void throwExceptionIfError(HttpStatus statusCode, String metricEventKey) {
@@ -119,20 +121,5 @@ public class NermesteLedereConsumer {
 
     private String getLedereUrl(String aktoerId) {
         return UriComponentsBuilder.fromHttpUrl(url + "/syfonarmesteleder/sykmeldt/" + aktoerId + "/narmesteledere").toUriString();
-    }
-
-    //todo: REFACTOR DUPLICATES
-    private Naermesteleder narmestelederRelasjon2Leder(NarmesteLederRelasjon narmesteLederRelasjon, String lederNavn) {
-        return new Naermesteleder()
-                .epost(narmesteLederRelasjon.narmesteLederEpost)
-                .mobil(narmesteLederRelasjon.narmesteLederTelefonnummer)
-                .naermesteLederStatus(
-                        new NaermesteLederStatus()
-                                .erAktiv(narmesteLederRelasjon.aktivTom == null)
-                                .aktivFom(narmesteLederRelasjon.aktivFom)
-                                .aktivTom(narmesteLederRelasjon.aktivTom))
-                .orgnummer(narmesteLederRelasjon.orgnummer)
-                .navn(lederNavn)
-                .naermesteLederAktoerId(narmesteLederRelasjon.narmesteLederAktorId);
     }
 }

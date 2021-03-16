@@ -25,43 +25,43 @@ import static org.slf4j.LoggerFactory.getLogger;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
-import no.nav.syfo.narmesteleder.NermesteLedereConsumer;
+import no.nav.syfo.narmesteleder.NarmesteLedereConsumer;
 import no.nav.syfo.service.BrukertilgangService;
 
 @RestController
 @ProtectedWithClaims(issuer = EKSTERN)
-@RequestMapping(value = "/api/nermesteledere")
-public class NermesteLedereController {
+@RequestMapping(value = "/api/narmesteledere")
+public class NarmesteLedereController {
 
-    private static final Logger LOG = getLogger(NermesteLedereController.class);
+    private static final Logger LOG = getLogger(NarmesteLedereController.class);
 
     private final TokenValidationContextHolder oidcContextHolder;
     private final Metrikk metrikk;
     private final AktorregisterConsumer aktorregisterConsumer;
     private final BrukertilgangService brukertilgangService;
-    private final NermesteLedereConsumer nermesteLedereConsumer;
+    private final NarmesteLedereConsumer narmesteLedereConsumer;
 
     @Inject
-    public NermesteLedereController(
+    public NarmesteLedereController(
             TokenValidationContextHolder oidcContextHolder,
             Metrikk metrikk,
             AktorregisterConsumer aktorregisterConsumer,
             BrukertilgangService brukertilgangService,
-            NermesteLedereConsumer nermesteLedereConsumer
+            NarmesteLedereConsumer narmesteLedereConsumer
     ) {
         this.oidcContextHolder = oidcContextHolder;
         this.metrikk = metrikk;
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukertilgangService = brukertilgangService;
-        this.nermesteLedereConsumer = nermesteLedereConsumer;
+        this.narmesteLedereConsumer = narmesteLedereConsumer;
     }
 
     @ResponseBody
     @GetMapping
-    public ResponseEntity<List<Naermesteleder>> getNermesteLedere(
+    public ResponseEntity<List<Naermesteleder>> getNarmesteLedere(
             @RequestHeader MultiValueMap<String, String> headers
     ) {
-        metrikk.tellHendelse("get_nermesteledere");
+        metrikk.tellHendelse("get_narmesteledere");
 
         String oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase());
 
@@ -78,13 +78,13 @@ public class NermesteLedereController {
             }
             String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
 
-            Optional<List<Naermesteleder>> narmesteLeder = nermesteLedereConsumer.nermesteLedere(oppslattIdentAktorId);
+            Optional<List<Naermesteleder>> narmesteLeder = narmesteLedereConsumer.narmesteLedere(oppslattIdentAktorId);
             if (narmesteLeder.isPresent()) {
                 return ResponseEntity
                         .status(HttpStatus.OK)
                         .body(narmesteLeder.get());
             } else {
-                metrikk.tellHendelse("get_nermesteledere_no_content");
+                metrikk.tellHendelse("get_narmesteledere_no_content");
                 return ResponseEntity
                         .status(HttpStatus.NO_CONTENT)
                         .build();
