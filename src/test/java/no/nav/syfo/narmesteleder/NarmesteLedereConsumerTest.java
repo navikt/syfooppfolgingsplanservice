@@ -59,13 +59,13 @@ public class NarmesteLedereConsumerTest {
 
     private final String SYKMELDT_AKTOR_ID = "1234567890987";
     private final String LEDER_AKTOR_ID = "7890987654321";
-    private final String FNR = "12345678901";
-    private final String FIRSTNAME = "Firstname";
-    private final String MIDDLENAME = "Middlename";
-    private final String SURNAME = "Surname";
+    private final String FODSELSNUMMER = "12345678901";
+    private final String NAVN = "Firstname";
+    private final String MELLOMNAVN = "Middlename";
+    private final String ETTERNAVN = "Surname";
 
     @Test
-    public void getNarmesteLeder() {
+    public void not_empty_optional_when_object_is_returned_from_syfonarmesteleder() {
         ReflectionTestUtils.setField(narmesteLedereConsumer, "url", "http://syfonarmesteleder.url");
 
         List<NarmesteLederRelasjon> narmesteLederRelasjoner = singletonList(
@@ -74,13 +74,14 @@ public class NarmesteLedereConsumerTest {
                         .narmesteLederAktorId(LEDER_AKTOR_ID)
         );
 
-        when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {})))
+        when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
+        })))
                 .thenReturn(new ResponseEntity<>(narmesteLederRelasjoner, OK));
         when(narmesteLederRelasjonConverter.convert(any(NarmesteLederRelasjon.class), anyString()))
                 .thenReturn(new Naermesteleder()
                                     .naermesteLederAktoerId(LEDER_AKTOR_ID)
                                     .navn(pdlName()));
-        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn(FNR);
+        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn(FODSELSNUMMER);
         when(pdlConsumer.personName(anyString())).thenReturn(pdlName());
 
         Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_AKTOR_ID);
@@ -100,7 +101,8 @@ public class NarmesteLedereConsumerTest {
         ReflectionTestUtils.setField(narmesteLedereConsumer, "url", "http://syfonarmesteleder.url");
 
 
-        when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {})))
+        when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
+        })))
                 .thenReturn(new ResponseEntity<>(null, OK));
 
         Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_AKTOR_ID);
@@ -112,6 +114,6 @@ public class NarmesteLedereConsumerTest {
     }
 
     private String pdlName() {
-        return FIRSTNAME + MIDDLENAME + SURNAME;
+        return NAVN + MELLOMNAVN + ETTERNAVN;
     }
 }
