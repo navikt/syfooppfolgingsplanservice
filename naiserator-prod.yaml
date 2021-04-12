@@ -34,6 +34,7 @@ spec:
     enabled: true
     path: /syfooppfolgingsplanservice/internal/prometheus
   ingresses:
+    - "https://syfooppfolgingsplanservice.intern.nav.no"
     - "https://syfooppfolgingsplanservice.nais.adeo.no"
     - "https://app.adeo.no/syfooppfolgingsplanservice"
   vault:
@@ -117,3 +118,7 @@ spec:
       value: https://syfobrukertilgang.nais.adeo.no
     - name: FELLESKODEVERK_URL
       value: https://kodeverk.nais.adeo.no/api/v1
+    - name: SYFOSMREGISTER_URL
+      value: https://syfosmregister.nais.adeo.no
+    - name: SYFOSMREGISTER_ID
+      value: 96a10e4e-4437-47a2-ae9c-2f1c1634340e
