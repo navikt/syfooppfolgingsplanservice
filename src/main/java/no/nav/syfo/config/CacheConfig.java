@@ -18,6 +18,7 @@ public class CacheConfig {
     public static final String CACHENAME_AKTOER_ID = "aktoerid";
     public static final String CACHENAME_AKTOER_FNR = "aktoerfnr";
     public static final String CACHENAME_ANSATTE = "lederansatte";
+    public static final String CACHENAME_SYKEMELDINGER = "sykemeldinger";
     public static final String CACHENAME_BEHANDLENDEENHET_FNR = "behandlendeenhetfnr";
     public static final String CACHENAME_DKIF_IDENT = "dkifident";
     public static final String CACHENAME_EREG_VIRKSOMHETSNAVN = "virksomhetsnavn";
