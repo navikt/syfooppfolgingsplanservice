@@ -57,8 +57,8 @@ public class SykmeldingerController {
 
 
     @ResponseBody
-    @GetMapping(path = "/}")
-    public ResponseEntity<List<Sykmelding>> getSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
+    @GetMapping
+    public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
         metrikk.tellHendelse("get_sykmeldinger");
 
         String oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase());
@@ -76,7 +76,7 @@ public class SykmeldingerController {
             }
             String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
 
-            Optional<List<Sykmelding>> sykmeldinger = sykmeldingerConsumer.getSykmeldinger(oppslattIdentAktorId);
+            Optional<List<Sykmelding>> sykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId);
 
             if (sykmeldinger.isPresent()) {
                 return ResponseEntity

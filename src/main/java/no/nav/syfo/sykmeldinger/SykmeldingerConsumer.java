@@ -70,13 +70,8 @@ public class SykmeldingerConsumer {
         return new OrganisasjonInformasjon(arbeidsgiverStatusDTO.orgnummer, arbeidsgiverStatusDTO.juridiskOrgnummer, arbeidsgiverStatusDTO.orgNavn);
     }
 
-    private static boolean isSendtSykmelding(SykmeldingDTO sykmeldingDTO) {
-        ArbeidsgiverStatusDTO arbeidsgiverStatus = sykmeldingDTO.sykmeldingStatus.arbeidsgiver;
-        return arbeidsgiverStatus != null && arbeidsgiverStatus.orgnummer != null;
-    }
-
     @Cacheable(value = CACHENAME_SYKEMELDINGER, key = "#aktorId", condition = "#aktorId != null")
-    public Optional<List<Sykmelding>> getSykmeldinger(String aktorId) {
+    public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId) {
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
 
         String token = azureAdTokenConsumer.getAccessToken(syfosmregisterId);
@@ -85,7 +80,7 @@ public class SykmeldingerConsumer {
         headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
 
         ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
-                UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger").toUriString(), //TODO: add url and query params
+                UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?includes=SENDT").toUriString(),
                 GET,
                 new HttpEntity<>(headers),
                 new ParameterizedTypeReference<List<SykmeldingDTO>>() {
@@ -111,8 +106,6 @@ public class SykmeldingerConsumer {
     private List<Sykmelding> mapTilSykmeldingliste(List<SykmeldingDTO> sykmeldingerDTO) {
         return sykmeldingerDTO.stream()
                 .filter(todo -> todo.behandlingsutfall.status != BehandlingsutfallDTO.RegelStatusDTO.INVALID)
-                // TODO: 1. Implement SykmeldingStatusRedisService to check latest status in redis(if needed)
-                .filter(SykmeldingerConsumer::isSendtSykmelding)
                 .map(dto -> new Sykmelding(dto.id,
                                            convertToSykmeldingsperiode(dto.sykmeldingsperioder),
                                            convertToOrganisasjonInformasjon(dto.sykmeldingStatus.arbeidsgiver)))
