@@ -69,6 +69,10 @@ public class SykmeldingerConsumerTest {
                 .status(RegelStatusDTO.OK)
                 .ruleHits(List.of(new RegelinfoDTO().ruleName("").messageForSender("").messageForUser("").ruleStatus(RegelStatusDTO.OK)));
 
+        BehandlingsutfallDTO behandlingsutfallInvalid = new BehandlingsutfallDTO()
+                .status(RegelStatusDTO.INVALID)
+                .ruleHits(List.of(new RegelinfoDTO().ruleName("").messageForSender("").messageForUser("").ruleStatus(RegelStatusDTO.INVALID)));
+
         List<SykmeldingsperiodeDTO> sykmeldingsperioder = List.of(new SykmeldingsperiodeDTO()
                                                                           .fom(LocalDate.now().minusDays(30))
                                                                           .tom(LocalDate.now()));
@@ -80,6 +84,11 @@ public class SykmeldingerConsumerTest {
                                                                 .id("1")
                                                                 .behandlingsutfall(behandlingsutfall)
                                                                 .sykmeldingsperioder(sykmeldingsperioder)
+                                                                .sykmeldingStatus(sykmeldingStatus),
+                                                        new SykmeldingDTO()
+                                                                .id("2")
+                                                                .behandlingsutfall(behandlingsutfallInvalid)
+                                                                .sykmeldingsperioder(sykmeldingsperioder)
                                                                 .sykmeldingStatus(sykmeldingStatus));
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<SykmeldingDTO>>() {
@@ -88,10 +97,13 @@ public class SykmeldingerConsumerTest {
 
         List<Sykmelding> sendteSykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTOR_ID).orElseGet(List::of);
 
-        assertThat(sendteSykmeldinger.size()).isEqualTo(sykmeldingDTOList.size());
+        assertThat(sendteSykmeldinger.size()).isNotEqualTo(sykmeldingDTOList.size());
+        assertThat(sendteSykmeldinger.size()).isEqualTo(1);
+
         assertThat(sendteSykmeldinger.get(0).organisasjonsInformasjon().orgnummer()).isEqualTo(sykmeldingDTOList.get(0).sykmeldingStatus().arbeidsgiver.orgnummer());
         assertThat(sendteSykmeldinger.get(0).sykmeldingsperioder().get(0).fom).isEqualTo(
                 sykmeldingDTOList.get(0).sykmeldingsperioder().get(0).fom);
+
         verify(metrikk).tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
         verify(metrikk).tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET);
     }
