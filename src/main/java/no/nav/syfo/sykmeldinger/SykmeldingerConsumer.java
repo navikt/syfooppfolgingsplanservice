@@ -79,6 +79,13 @@ public class SykmeldingerConsumer {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
 
+        LOG.error("SMREG token: {}", token); //TODO:
+        LOG.error("SMREG syfosmregisterId: {}", syfosmregisterId); //TODO:
+        LOG.error("SMREG bearerHeader(token): {}", bearerHeader(token)); //TODO:
+        LOG.error("SMREG headers: {}", headers); //TODO:
+        LOG.error("SMREG url: {}", UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?includes=SENDT").toUriString()); //TODO:
+
+
         ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
                 UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?includes=SENDT").toUriString(),
                 GET,
@@ -90,7 +97,7 @@ public class SykmeldingerConsumer {
         if (response.getStatusCode() != OK) {
             metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET);
             final String message = ERROR_MESSAGE_BASE + response.getStatusCode();
-            LOG.error("SMREG response !=OK: {}", response.toString()); //TODO:
+            LOG.info("SMREG response !=OK: {}", response.toString()); //TODO:
             LOG.error(message);
             throw new RuntimeException(message);
         }
