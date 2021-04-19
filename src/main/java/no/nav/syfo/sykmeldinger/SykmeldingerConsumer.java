@@ -90,16 +90,18 @@ public class SykmeldingerConsumer {
         if (response.getStatusCode() != OK) {
             metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET);
             final String message = ERROR_MESSAGE_BASE + response.getStatusCode();
+            LOG.error("SMREG response !=OK: {}", response.toString()); //TODO:
             LOG.error(message);
             throw new RuntimeException(message);
         }
 
         if (Objects.requireNonNull(response).getBody() == null) {
+            LOG.warn("SMREG response.getBody ver null, response: {}", response.toString()); //TODO:
             return Optional.empty();
         }
 
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET);
-
+        LOG.warn("SMREG response var ok: {}", response.toString()); //TODO:
         return Optional.of(mapTilSykmeldingsliste(Objects.requireNonNull(response.getBody())));
     }
 

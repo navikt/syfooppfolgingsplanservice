@@ -6,8 +6,10 @@ import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
+import no.nav.syfo.model.Sykmelding;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.service.BrukertilgangService;
+import no.nav.syfo.sykmeldinger.SykmeldingerConsumer;
 
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Optional;
 
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
@@ -36,6 +39,7 @@ public class NarmesteLederController {
     private final AktorregisterConsumer aktorregisterConsumer;
     private final BrukertilgangService brukertilgangService;
     private final NarmesteLederConsumer narmesteLederConsumer;
+    private final SykmeldingerConsumer sykmeldingerConsumer;
 
     @Inject
     public NarmesteLederController(
@@ -43,13 +47,15 @@ public class NarmesteLederController {
             Metrikk metrikk,
             AktorregisterConsumer aktorregisterConsumer,
             BrukertilgangService brukertilgangService,
-            NarmesteLederConsumer narmesteLederConsumer
+            NarmesteLederConsumer narmesteLederConsumer,
+            SykmeldingerConsumer sykmeldingerConsumer
     ) {
         this.oidcContextHolder = oidcContextHolder;
         this.metrikk = metrikk;
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukertilgangService = brukertilgangService;
         this.narmesteLederConsumer = narmesteLederConsumer;
+        this.sykmeldingerConsumer = sykmeldingerConsumer;
     }
 
     @ResponseBody
@@ -76,6 +82,14 @@ public class NarmesteLederController {
             String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
 
             Optional<Naermesteleder> narmesteLeder = narmesteLederConsumer.narmesteLeder(oppslattIdentAktorId, virksomhetsnummer);
+//TODO
+            try {
+                Optional<List<Sykmelding>> sm = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId);
+                LOG.warn("SMREG hentet SMer, ok, {}", sm);
+            } catch (Exception e){
+                LOG.error("SMREG exception, {}", e);
+            }
+
             if (narmesteLeder.isPresent()) {
                 return ResponseEntity
                         .status(HttpStatus.OK)
