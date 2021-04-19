@@ -9,5 +9,5 @@ public class RegelinfoDTO {
     public String messageForSender;
     public String messageForUser;
     public String ruleName;
-    public BehandlingsutfallDTO.RegelStatusDTO ruleStatus;
+    public RegelStatusDTO ruleStatus;
 }

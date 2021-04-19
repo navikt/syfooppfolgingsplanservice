@@ -10,10 +10,4 @@ import java.util.List;
 public class BehandlingsutfallDTO {
     public RegelStatusDTO status;
     public List<RegelinfoDTO> ruleHits;
-
-    public enum RegelStatusDTO {
-        OK, MANUAL_PROCESSING, INVALID
-    }
-
-
 }

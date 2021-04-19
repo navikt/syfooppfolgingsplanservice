@@ -1,6 +1,7 @@
 package no.nav.syfo.sykmeldinger;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,11 +25,11 @@ import static org.springframework.http.HttpStatus.OK;
 
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.model.OrganisasjonInformasjon;
+import no.nav.syfo.model.OrganisasjonsInformasjon;
 import no.nav.syfo.model.Sykmelding;
 import no.nav.syfo.model.Sykmeldingsperiode;
 import no.nav.syfo.sykmeldinger.dto.ArbeidsgiverStatusDTO;
-import no.nav.syfo.sykmeldinger.dto.BehandlingsutfallDTO;
+import no.nav.syfo.sykmeldinger.dto.RegelStatusDTO;
 import no.nav.syfo.sykmeldinger.dto.SykmeldingDTO;
 import no.nav.syfo.sykmeldinger.dto.SykmeldingsperiodeDTO;
 
@@ -47,7 +47,7 @@ public class SykmeldingerConsumer {
     private final String syfosmregisterURL;
     private final String syfosmregisterId;
 
-    @Inject
+    @Autowired
     public SykmeldingerConsumer(AzureAdTokenConsumer azureAdTokenConsumer,
                                 Metrikk metrikk,
                                 RestTemplate restTemplateMedProxy,
@@ -62,12 +62,12 @@ public class SykmeldingerConsumer {
 
     private static List<Sykmeldingsperiode> convertToSykmeldingsperiode(List<SykmeldingsperiodeDTO> sykmeldingsperiodeDTO) {
         return sykmeldingsperiodeDTO.stream()
-                .map(dto -> new Sykmeldingsperiode(dto.fom, dto.tom))
+                .map(dto -> new Sykmeldingsperiode().fom(dto.fom).tom(dto.tom))
                 .collect(Collectors.toList());
     }
 
-    private static OrganisasjonInformasjon convertToOrganisasjonInformasjon(ArbeidsgiverStatusDTO arbeidsgiverStatusDTO) {
-        return new OrganisasjonInformasjon(arbeidsgiverStatusDTO.orgnummer, arbeidsgiverStatusDTO.juridiskOrgnummer, arbeidsgiverStatusDTO.orgNavn);
+    private static OrganisasjonsInformasjon convertToOrganisasjonInformasjon(ArbeidsgiverStatusDTO arbeidsgiverStatusDTO) {
+        return new OrganisasjonsInformasjon().orgNavn(arbeidsgiverStatusDTO.orgNavn()).orgnummer(arbeidsgiverStatusDTO.orgnummer());
     }
 
     @Cacheable(value = CACHENAME_SYKEMELDINGER, key = "#aktorId", condition = "#aktorId != null")
@@ -83,7 +83,7 @@ public class SykmeldingerConsumer {
                 UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?includes=SENDT").toUriString(),
                 GET,
                 new HttpEntity<>(headers),
-                new ParameterizedTypeReference<List<SykmeldingDTO>>() {
+                new ParameterizedTypeReference<>() {
                 }
         );
 
@@ -100,15 +100,15 @@ public class SykmeldingerConsumer {
 
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET);
 
-        return Optional.of(mapTilSykmeldingliste(response.getBody()));
+        return Optional.of(mapTilSykmeldingsliste(Objects.requireNonNull(response.getBody())));
     }
 
-    private List<Sykmelding> mapTilSykmeldingliste(List<SykmeldingDTO> sykmeldingerDTO) {
+    private List<Sykmelding> mapTilSykmeldingsliste(List<SykmeldingDTO> sykmeldingerDTO) {
         return sykmeldingerDTO.stream()
-                .filter(todo -> todo.behandlingsutfall.status != BehandlingsutfallDTO.RegelStatusDTO.INVALID)
+                .filter(todo -> todo.behandlingsutfall.status != RegelStatusDTO.INVALID)
                 .map(dto -> new Sykmelding(dto.id,
                                            convertToSykmeldingsperiode(dto.sykmeldingsperioder),
                                            convertToOrganisasjonInformasjon(dto.sykmeldingStatus.arbeidsgiver)))
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
     }
 }

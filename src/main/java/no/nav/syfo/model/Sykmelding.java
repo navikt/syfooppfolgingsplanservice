@@ -10,11 +10,11 @@ import java.util.List;
 public class Sykmelding {
     String id;
     List<Sykmeldingsperiode> sykmeldingsperioder;
-    OrganisasjonInformasjon organisasjonInformasjon;
+    OrganisasjonsInformasjon organisasjonsInformasjon;
 
-    public Sykmelding(String id, List<Sykmeldingsperiode> sykmeldingsperioder, OrganisasjonInformasjon organisasjonInformasjon) {
+    public Sykmelding(String id, List<Sykmeldingsperiode> sykmeldingsperioder, OrganisasjonsInformasjon organisasjonsInformasjon) {
         this.id = id;
         this.sykmeldingsperioder = sykmeldingsperioder;
-        this.organisasjonInformasjon = organisasjonInformasjon;
+        this.organisasjonsInformasjon = organisasjonsInformasjon;
     }
 }

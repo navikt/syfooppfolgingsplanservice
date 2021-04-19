@@ -76,18 +76,13 @@ public class SykmeldingerController {
             }
             String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
 
-            Optional<List<Sykmelding>> sykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId);
+            Optional<List<Sykmelding>> sendteSykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId);
 
-            if (sykmeldinger.isPresent()) {
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(sykmeldinger.get());
-            } else {
-                metrikk.tellHendelse("get_sykmeldinger_no_content");
-                return ResponseEntity
-                        .status(HttpStatus.NO_CONTENT)
-                        .build();
-            }
+            return sendteSykmeldinger.map(sykmeldinger -> ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(sykmeldinger)).orElseGet(() -> ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(List.of()));
         }
     }
 }
