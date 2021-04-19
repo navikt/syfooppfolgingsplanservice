@@ -88,11 +88,8 @@ public class SykmeldingerConsumer {
         headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
         headers.add("fnr", fnr);
 
-        LOG.error("SMREG token: {}", token); //TODO:
         LOG.error("SMREG fnr: {}", fnr); //TODO:
         LOG.error("SMREG syfosmregisterId: {}", syfosmregisterId); //TODO:
-        LOG.error("SMREG bearerHeader(token): {}", bearerHeader(token)); //TODO:
-        LOG.error("SMREG headers: {}", headers); //TODO:
         LOG.error("SMREG url: {}", UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?includes=SENDT").toUriString()); //TODO:
 
 
