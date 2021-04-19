@@ -82,12 +82,14 @@ public class SykmeldingerConsumer {
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
 
         String token = azureAdTokenConsumer.getAccessToken(syfosmregisterId);
+        String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
-        headers.add("fnr", aktorregisterConsumer.hentFnrForAktor(aktorId));
+        headers.add("fnr", fnr);
 
         LOG.error("SMREG token: {}", token); //TODO:
+        LOG.error("SMREG fnr: {}", fnr); //TODO:
         LOG.error("SMREG syfosmregisterId: {}", syfosmregisterId); //TODO:
         LOG.error("SMREG bearerHeader(token): {}", bearerHeader(token)); //TODO:
         LOG.error("SMREG headers: {}", headers); //TODO:
