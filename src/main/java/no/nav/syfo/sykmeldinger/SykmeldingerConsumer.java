@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -86,9 +87,10 @@ public class SykmeldingerConsumer {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
-        headers.add("FNR", fnr);
+        headers.add("fnr", fnr);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        LOG.error("SMREG header fnr: {}", headers.getValuesAsList("FNR")); //TODO:
+        LOG.error("SMREG header fnr: {}", headers.getValuesAsList("fnr")); //TODO:
         LOG.error("SMREG header token: {}", headers.getValuesAsList(HttpHeaders.AUTHORIZATION)); //TODO:
         LOG.error("SMREG fnr: {}", fnr); //TODO:
         LOG.error("SMREG syfosmregisterId: {}", syfosmregisterId); //TODO:
