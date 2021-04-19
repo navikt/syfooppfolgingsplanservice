@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.OrganisasjonsInformasjon;
@@ -35,13 +36,17 @@ import no.nav.syfo.sykmeldinger.dto.SykmeldingsperiodeDTO;
 
 @Component
 public class SykmeldingerConsumer {
+    private static final Logger LOG = getLogger(SykmeldingerConsumer.class);
 
     public static final String ERROR_MESSAGE_BASE = "Kall mot syfosmregister feiler med HTTP-";
+
     public static final String HENT_SYKMELDINGER_SYFOSMREGISTER = "hent_sykmeldinger_syfosmregister";
     public static final String HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET = "hent_sykmeldinger_syfosmregister_feilet";
     public static final String HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET = "hent_sykmeldinger_syfosmregister_vellykket";
-    private static final Logger LOG = getLogger(SykmeldingerConsumer.class);
+
     private final AzureAdTokenConsumer azureAdTokenConsumer;
+    private final AktorregisterConsumer aktorregisterConsumer;
+
     private final Metrikk metrikk;
     private final RestTemplate restTemplate;
     private final String syfosmregisterURL;
@@ -49,11 +54,13 @@ public class SykmeldingerConsumer {
 
     @Autowired
     public SykmeldingerConsumer(AzureAdTokenConsumer azureAdTokenConsumer,
+                                AktorregisterConsumer aktorregisterConsumer,
                                 Metrikk metrikk,
                                 RestTemplate restTemplateMedProxy,
                                 @Value("${syfosmregister.url}") String syfosmregisterURL,
                                 @Value("${syfosmregister.id}") String syfosmregisterId) {
         this.azureAdTokenConsumer = azureAdTokenConsumer;
+        this.aktorregisterConsumer = aktorregisterConsumer;
         this.metrikk = metrikk;
         this.restTemplate = restTemplateMedProxy;
         this.syfosmregisterURL = syfosmregisterURL;
@@ -78,6 +85,7 @@ public class SykmeldingerConsumer {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
+        headers.add("fnr", aktorregisterConsumer.hentFnrForAktor(aktorId));
 
         LOG.error("SMREG token: {}", token); //TODO:
         LOG.error("SMREG syfosmregisterId: {}", syfosmregisterId); //TODO:
