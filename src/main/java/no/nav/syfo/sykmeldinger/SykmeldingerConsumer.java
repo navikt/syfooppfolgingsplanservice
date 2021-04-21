@@ -98,7 +98,7 @@ public class SykmeldingerConsumer {
 
 
         ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
-                UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?includes=SENDT").toUriString(),
+                UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT").toUriString(),
                 GET,
                 new HttpEntity<>(headers),
                 new ParameterizedTypeReference<>() {
