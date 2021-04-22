@@ -61,7 +61,7 @@ public class SykmeldingerController {
         LOG.error("SMREG controller headers: {}", headers);
         metrikk.tellHendelse("get_sykmeldinger");
 
-        final String idToken = headers.getFirst(HttpHeaders.AUTHORIZATION);
+        final String idToken = headers.getFirst("authorization");
         String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
         String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
 
