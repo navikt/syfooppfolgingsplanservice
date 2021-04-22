@@ -53,7 +53,7 @@ class SykmeldingerControllerTest : AbstractRessursTilgangTest() {
     fun get_sendte_sykmeldinger_ok() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID))
+        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, null))
             .thenReturn(Optional.of(sendteSykmeldinger))
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
         val body = res.body as List<*>
@@ -65,7 +65,7 @@ class SykmeldingerControllerTest : AbstractRessursTilgangTest() {
     fun get_sendte_sykmeldinger_noContent() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID)).thenReturn(Optional.empty())
+        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, null)).thenReturn(Optional.empty())
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
         Assert.assertEquals(200, res.statusCodeValue.toLong())
     }
