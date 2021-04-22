@@ -12,6 +12,7 @@ import no.nav.syfo.service.BrukertilgangService;
 import no.nav.syfo.sykmeldinger.SykmeldingerConsumer;
 
 import org.slf4j.Logger;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -82,6 +83,14 @@ public class NarmesteLederController {
             String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
 
             Optional<Naermesteleder> narmesteLeder = narmesteLederConsumer.narmesteLeder(oppslattIdentAktorId, virksomhetsnummer);
+//TODO
+            try {
+                Optional<List<Sykmelding>> sm = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, headers.getFirst(HttpHeaders.AUTHORIZATION);
+                LOG.error("SMREG hentet SMer, ok, {}", sm);
+            } catch (Exception e){
+                LOG.error("SMREG exception, {}", e);
+            }
+
             if (narmesteLeder.isPresent()) {
                 return ResponseEntity
                         .status(HttpStatus.OK)
