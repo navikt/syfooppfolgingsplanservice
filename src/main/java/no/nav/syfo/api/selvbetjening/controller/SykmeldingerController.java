@@ -59,6 +59,9 @@ public class SykmeldingerController {
     @GetMapping
     public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
         LOG.error("SMREG controller headers: {}", headers);
+        LOG.error("SMREG controller authorization: {}", headers.getFirst("authorization"));
+        LOG.error("SMREG controller accept: {}", headers.getFirst("accept"));
+        LOG.error("SMREG controller user-agent: {}", headers.getFirst("user-agent"));
         metrikk.tellHendelse("get_sykmeldinger");
 
         final String idToken = headers.getFirst("authorization");
