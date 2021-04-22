@@ -1,5 +1,6 @@
 package no.nav.syfo.api.selvbetjening.controller
 
+import com.google.common.net.HttpHeaders.AUTHORIZATION
 import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
@@ -10,8 +11,6 @@ import no.nav.syfo.sykmeldinger.SykmeldingerConsumer
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
-import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
-import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import org.joda.time.LocalDate
 import org.junit.Assert
 import org.junit.Before
@@ -36,9 +35,10 @@ class SykmeldingerControllerTest : AbstractRessursTilgangTest() {
 
     @Inject
     private lateinit var sykmeldingerController: SykmeldingerController
-    val sykmelding = Sykmelding("1",
-                                    listOf(Sykmeldingsperiode().fom(LocalDate()).tom(LocalDate())),
-                                    OrganisasjonsInformasjon().orgNavn("orgnavn").orgnummer("orgnummer")
+    val sykmelding = Sykmelding(
+        "1",
+        listOf(Sykmeldingsperiode().fom(LocalDate()).tom(LocalDate())),
+        OrganisasjonsInformasjon().orgNavn("orgnavn").orgnummer("orgnummer")
     )
     val sendteSykmeldinger = listOf(sykmelding)
 
@@ -52,11 +52,11 @@ class SykmeldingerControllerTest : AbstractRessursTilgangTest() {
     @Test
     fun get_sendte_sykmeldinger_ok() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
-        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, null))
-            .thenReturn(Optional.of(sendteSykmeldinger))
+        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, "token")).thenReturn(Optional.of(sendteSykmeldinger))
+
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
         val body = res.body as List<*>
+
         Assert.assertEquals(200, res.statusCodeValue.toLong())
         Assert.assertEquals(sendteSykmeldinger, body)
     }
@@ -65,8 +65,16 @@ class SykmeldingerControllerTest : AbstractRessursTilgangTest() {
     fun get_sendte_sykmeldinger_noContent() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, null)).thenReturn(Optional.empty())
+        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, "token")).thenReturn(Optional.empty())
+
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
+
         Assert.assertEquals(200, res.statusCodeValue.toLong())
+    }
+
+    private fun getHttpHeaders(): MultiValueMap<String, String> {
+        val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
+        headers.add(AUTHORIZATION, "token")
+        return headers
     }
 }
