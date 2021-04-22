@@ -7,7 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +19,6 @@ import java.util.Optional;
 
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.oidc.OIDCUtil.getSubjectEksternMedThrows;
-import static no.nav.syfo.util.RequestUtilKt.NAV_PERSONIDENT_HEADER;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
@@ -63,29 +61,16 @@ public class SykmeldingerController {
         LOG.error("SMREG controller headers: {}", headers);
         metrikk.tellHendelse("get_sykmeldinger");
 
-        String oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase());
-        final String idToken= headers.getFirst(HttpHeaders.AUTHORIZATION);
+        final String idToken = headers.getFirst(HttpHeaders.AUTHORIZATION);
+        String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
+        String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
 
-        if (StringUtils.isEmpty(oppslaattIdent)) {
-            LOG.error("Fant ikke oppslaatt ident ved henting av sykmeldinger for ident");
-            throw new IllegalArgumentException("Fant ikke Ident i Header ved henting av sykmeldinger for ident");
-        } else {
-            String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
-            if (!brukertilgangService.tilgangTilOppslattIdent(innloggetIdent, oppslaattIdent)) {
-                LOG.error("Ikke tilgang til sykmeldinger: Bruker spør om noen andre enn seg selv eller egne ansatte");
-                return ResponseEntity
-                        .status(HttpStatus.FORBIDDEN)
-                        .build();
-            }
-            String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
+        Optional<List<Sykmelding>> sendteSykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken);
 
-            Optional<List<Sykmelding>> sendteSykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken);
-
-            return sendteSykmeldinger.map(sykmeldinger -> ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(sykmeldinger)).orElseGet(() -> ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(List.of()));
-        }
+        return sendteSykmeldinger.map(sykmeldinger -> ResponseEntity
+                .status(HttpStatus.OK)
+                .body(sykmeldinger)).orElseGet(() -> ResponseEntity
+                .status(HttpStatus.OK)
+                .body(List.of()));
     }
 }

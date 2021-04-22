@@ -3,7 +3,6 @@ package no.nav.syfo.sykmeldinger;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +17,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static no.nav.syfo.config.CacheConfig.CACHENAME_SYKEMELDINGER;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
@@ -80,7 +78,7 @@ public class SykmeldingerConsumer {
         headers.add("fnr", fnr);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        LOG.error("SMREG header tkn: {}", headers.getValuesAsList(HttpHeaders.AUTHORIZATION)); //TODO:
+        LOG.error("SMREG consumer tkn: {}", headers); //TODO:
         ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
                 UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT").toUriString(),
                 GET,
