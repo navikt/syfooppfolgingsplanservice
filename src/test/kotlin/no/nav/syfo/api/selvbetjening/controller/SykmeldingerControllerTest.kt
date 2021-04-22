@@ -74,7 +74,7 @@ class SykmeldingerControllerTest : AbstractRessursTilgangTest() {
 
     private fun getHttpHeaders(): MultiValueMap<String, String> {
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
-        headers.add(AUTHORIZATION, "token")
+        headers.add("authorization", "token")
         return headers
     }
 }

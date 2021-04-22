@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teamsykefravr
 spec:
-  image: {{ image }}
+  image: docker.pkg.github.com/navikt/syfooppfolgingsplanservice/syfooppfolgingsplanservice:aca88b2e60aafe728594efaa7fb6ac7e415de8ab
   port: 8080
   team: teamsykefravr
   liveness:
