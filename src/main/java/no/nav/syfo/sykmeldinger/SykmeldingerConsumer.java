@@ -77,7 +77,7 @@ public class SykmeldingerConsumer {
         String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, idToken);
+//        headers.add(HttpHeaders.AUTHORIZATION, idToken);
         headers.add("fnr", fnr);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
