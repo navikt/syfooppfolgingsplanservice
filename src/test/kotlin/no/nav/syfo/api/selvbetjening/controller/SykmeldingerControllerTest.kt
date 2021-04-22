@@ -69,18 +69,4 @@ class SykmeldingerControllerTest : AbstractRessursTilgangTest() {
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
         Assert.assertEquals(200, res.statusCodeValue.toLong())
     }
-
-    @Test
-    fun get_sendte_sykmeldinger_forbidden() {
-        loggInnBruker(contextHolder, LEDER_FNR)
-        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
-        val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
-        Assert.assertEquals(403, res.statusCodeValue.toLong())
-    }
-
-    private fun getHttpHeaders(): MultiValueMap<String, String> {
-        val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
-        headers.add(NAV_PERSONIDENT_HEADER, ARBEIDSTAKER_FNR)
-        return headers
-    }
 }
