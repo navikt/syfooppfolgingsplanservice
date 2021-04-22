@@ -70,14 +70,13 @@ public class SykmeldingerConsumer {
         return new OrganisasjonsInformasjon().orgNavn(arbeidsgiverStatusDTO.orgNavn()).orgnummer(arbeidsgiverStatusDTO.orgnummer());
     }
 
-    @Cacheable(value = CACHENAME_SYKEMELDINGER, key = "#aktorId", condition = "#aktorId != null")
     public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken) {
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
 
         String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
 
         HttpHeaders headers = new HttpHeaders();
-//        headers.add(HttpHeaders.AUTHORIZATION, idToken);
+        headers.add(HttpHeaders.AUTHORIZATION, idToken);
         headers.add("fnr", fnr);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
