@@ -60,6 +60,7 @@ public class SykmeldingerController {
     @ResponseBody
     @GetMapping
     public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
+        LOG.error("SMREG controller headers: {}", headers);
         metrikk.tellHendelse("get_sykmeldinger");
 
         String oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase());
