@@ -19,13 +19,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static no.nav.syfo.config.CacheConfig.CACHENAME_SYKEMELDINGER;
-import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.OrganisasjonsInformasjon;
 import no.nav.syfo.model.Sykmelding;
@@ -45,27 +43,21 @@ public class SykmeldingerConsumer {
     public static final String HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET = "hent_sykmeldinger_syfosmregister_feilet";
     public static final String HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET = "hent_sykmeldinger_syfosmregister_vellykket";
 
-    private final AzureAdTokenConsumer azureAdTokenConsumer;
     private final AktorregisterConsumer aktorregisterConsumer;
 
     private final Metrikk metrikk;
     private final RestTemplate restTemplate;
     private final String syfosmregisterURL;
-    private final String syfosmregisterId;
 
     @Autowired
-    public SykmeldingerConsumer(AzureAdTokenConsumer azureAdTokenConsumer,
-                                AktorregisterConsumer aktorregisterConsumer,
+    public SykmeldingerConsumer(AktorregisterConsumer aktorregisterConsumer,
                                 Metrikk metrikk,
                                 RestTemplate restTemplateMedProxy,
-                                @Value("${syfosmregister.url}") String syfosmregisterURL,
-                                @Value("${syfosmregister.id}") String syfosmregisterId) {
-        this.azureAdTokenConsumer = azureAdTokenConsumer;
+                                @Value("${syfosmregister.url}") String syfosmregisterURL) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.metrikk = metrikk;
         this.restTemplate = restTemplateMedProxy;
         this.syfosmregisterURL = syfosmregisterURL;
-        this.syfosmregisterId = syfosmregisterId;
     }
 
     private static List<Sykmeldingsperiode> convertToSykmeldingsperiode(List<SykmeldingsperiodeDTO> sykmeldingsperiodeDTO) {
@@ -79,24 +71,17 @@ public class SykmeldingerConsumer {
     }
 
     @Cacheable(value = CACHENAME_SYKEMELDINGER, key = "#aktorId", condition = "#aktorId != null")
-    public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId) {
+    public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken) {
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
 
-        String token = azureAdTokenConsumer.getAccessToken(syfosmregisterId);
         String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
+        headers.add(HttpHeaders.AUTHORIZATION, idToken);
         headers.add("fnr", fnr);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        LOG.error("SMREG header fnr: {}", headers.getValuesAsList("fnr")); //TODO:
-        LOG.error("SMREG header token: {}", headers.getValuesAsList(HttpHeaders.AUTHORIZATION)); //TODO:
-        LOG.error("SMREG fnr: {}", fnr); //TODO:
-        LOG.error("SMREG syfosmregisterId: {}", syfosmregisterId); //TODO:
-        LOG.error("SMREG url: {}", UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?includes=SENDT").toUriString()); //TODO:
-
-
+        LOG.error("SMREG header tkn: {}", headers.getValuesAsList(HttpHeaders.AUTHORIZATION)); //TODO:
         ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
                 UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT").toUriString(),
                 GET,
@@ -114,12 +99,12 @@ public class SykmeldingerConsumer {
         }
 
         if (Objects.requireNonNull(response).getBody() == null) {
-            LOG.warn("SMREG response.getBody ver null, response: {}", response.toString()); //TODO:
+            LOG.warn("SMREG response.getBody er null, response: {}", response.toString()); //TODO:
             return Optional.empty();
         }
 
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET);
-        LOG.warn("SMREG response var ok: {}", response.toString()); //TODO:
+        LOG.warn("SMREG response er ok: {}", response.toString()); //TODO:
         return Optional.of(mapTilSykmeldingsliste(Objects.requireNonNull(response.getBody())));
     }
 

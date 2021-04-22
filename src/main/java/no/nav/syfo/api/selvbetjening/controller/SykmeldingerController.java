@@ -3,6 +3,7 @@ package no.nav.syfo.api.selvbetjening.controller;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import org.slf4j.Logger;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -62,6 +63,7 @@ public class SykmeldingerController {
         metrikk.tellHendelse("get_sykmeldinger");
 
         String oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase());
+        final String idToken= headers.getFirst(HttpHeaders.AUTHORIZATION);
 
         if (StringUtils.isEmpty(oppslaattIdent)) {
             LOG.error("Fant ikke oppslaatt ident ved henting av sykmeldinger for ident");
@@ -76,7 +78,7 @@ public class SykmeldingerController {
             }
             String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
 
-            Optional<List<Sykmelding>> sendteSykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId);
+            Optional<List<Sykmelding>> sendteSykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken);
 
             return sendteSykmeldinger.map(sykmeldinger -> ResponseEntity
                     .status(HttpStatus.OK)
