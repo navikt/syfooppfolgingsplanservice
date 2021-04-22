@@ -28,6 +28,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Sykmelding;
 import no.nav.syfo.sykmeldinger.dto.ArbeidsgiverStatusDTO;
@@ -41,6 +42,9 @@ import no.nav.syfo.sykmeldinger.dto.SykmeldingsperiodeDTO;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SykmeldingerConsumerTest {
+
+    @Mock
+    private AktorregisterConsumer aktorregisterConsumer;
 
     @Mock
     private Metrikk metrikk;
