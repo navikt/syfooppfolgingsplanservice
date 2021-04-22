@@ -30,7 +30,6 @@ import no.nav.syfo.service.BrukertilgangService;
 import no.nav.syfo.sykmeldinger.SykmeldingerConsumer;
 
 @RestController
-@ProtectedWithClaims(issuer = EKSTERN)
 @RequestMapping(value = "/api/sykmeldinger")
 public class SykmeldingerController {
     private static final Logger LOG = getLogger(SykmeldingerController.class);
