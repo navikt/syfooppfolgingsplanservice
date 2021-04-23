@@ -18,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.ResponseEntity
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
 
@@ -36,7 +36,7 @@ class SykmeldingerControllerTest : AbstractRessursTilgangTest() {
     private lateinit var sykmeldingerController: SykmeldingerController
     val sykmelding = Sykmelding(
         "1",
-        listOf(Sykmeldingsperiode().fom(LocalDateTime.now()).tom(LocalDateTime.now().plusDays(30))),
+        listOf(Sykmeldingsperiode().fom(LocalDate.now()).tom(LocalDate.now().plusDays(30))),
         OrganisasjonsInformasjon().orgNavn("orgnavn").orgnummer("orgnummer")
     )
     val sendteSykmeldinger = listOf(sykmelding)

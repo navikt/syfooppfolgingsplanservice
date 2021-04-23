@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,8 +61,12 @@ public class SykmeldingerConsumer {
 
     private static List<Sykmeldingsperiode> convertToSykmeldingsperiode(List<SykmeldingsperiodeDTO> sykmeldingsperiodeDTO) {
         return sykmeldingsperiodeDTO.stream()
-                .map(dto -> new Sykmeldingsperiode().fom(dto.fom).tom(dto.tom))
+                .map(dto -> new Sykmeldingsperiode().fom(toLocalDate(dto.fom)).tom(toLocalDate(dto.tom)))
                 .collect(Collectors.toList());
+    }
+
+    private static LocalDate toLocalDate(String date) {
+        return LocalDate.parse(date);
     }
 
     private static OrganisasjonsInformasjon convertToOrganisasjonInformasjon(ArbeidsgiverStatusDTO arbeidsgiverStatusDTO) {

@@ -70,8 +70,8 @@ public class SykmeldingerConsumerTest {
                 .ruleHits(List.of(new RegelinfoDTO().ruleName("").messageForSender("").messageForUser("").ruleStatus(RegelStatusDTO.INVALID)));
 
         List<SykmeldingsperiodeDTO> sykmeldingsperioder = List.of(new SykmeldingsperiodeDTO()
-                                                                          .fom(LocalDateTime.now().minusDays(30))
-                                                                          .tom(LocalDateTime.now()));
+                                                                          .fom("2021-04-15")
+                                                                          .tom("2021-04-30"));
 
         ArbeidsgiverStatusDTO arbeidsgiver = new ArbeidsgiverStatusDTO().orgnummer("orgnummer").juridiskOrgnummer(null).orgNavn("orgnavn");
         SykmeldingStatusDTO sykmeldingStatus = new SykmeldingStatusDTO().statusEvent("event").arbeidsgiver(arbeidsgiver);
