@@ -1,6 +1,5 @@
 package no.nav.syfo.sykmeldinger;
 
-import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static no.nav.syfo.sykmeldinger.SykmeldingerConsumer.HENT_SYKMELDINGER_SYFOSMREGISTER;
