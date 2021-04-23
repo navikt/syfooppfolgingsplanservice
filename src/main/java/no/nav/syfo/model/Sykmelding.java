@@ -9,9 +9,9 @@ import java.util.List;
 @Data
 @Accessors(fluent = true)
 public class Sykmelding implements Serializable {
-    String id;
-    List<Sykmeldingsperiode> sykmeldingsperioder;
-    OrganisasjonsInformasjon organisasjonsInformasjon;
+    public String id;
+    public List<Sykmeldingsperiode> sykmeldingsperioder;
+    public OrganisasjonsInformasjon organisasjonsInformasjon;
 
     public Sykmelding(String id, List<Sykmeldingsperiode> sykmeldingsperioder, OrganisasjonsInformasjon organisasjonsInformasjon) {
         this.id = id;
