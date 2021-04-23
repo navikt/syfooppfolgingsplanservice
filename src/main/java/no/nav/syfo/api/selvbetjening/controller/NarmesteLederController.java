@@ -83,13 +83,6 @@ public class NarmesteLederController {
             String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
 
             Optional<Naermesteleder> narmesteLeder = narmesteLederConsumer.narmesteLeder(oppslattIdentAktorId, virksomhetsnummer);
-//TODO
-            try {
-                Optional<List<Sykmelding>> sm = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, headers.getFirst(HttpHeaders.AUTHORIZATION));
-                LOG.error("SMREG hentet SMer, ok, {}", sm);
-            } catch (Exception e){
-                LOG.error("SMREG exception, {}", e);
-            }
 
             if (narmesteLeder.isPresent()) {
                 return ResponseEntity

@@ -9,7 +9,6 @@ import java.util.List;
 
 @Data
 @Accessors(fluent = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class SykmeldingDTO implements Serializable {
     public String id;
     public BehandlingsutfallDTO behandlingsutfall;
