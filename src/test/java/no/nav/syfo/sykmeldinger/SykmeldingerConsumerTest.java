@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static no.nav.syfo.sykmeldinger.SykmeldingerConsumer.HENT_SYKMELDINGER_SYFOSMREGISTER;
@@ -70,8 +70,8 @@ public class SykmeldingerConsumerTest {
                 .ruleHits(List.of(new RegelinfoDTO().ruleName("").messageForSender("").messageForUser("").ruleStatus(RegelStatusDTO.INVALID)));
 
         List<SykmeldingsperiodeDTO> sykmeldingsperioder = List.of(new SykmeldingsperiodeDTO()
-                                                                          .fom(LocalDate.now().minusDays(30))
-                                                                          .tom(LocalDate.now()));
+                                                                          .fom(LocalDateTime.now().minusDays(30))
+                                                                          .tom(LocalDateTime.now()));
 
         ArbeidsgiverStatusDTO arbeidsgiver = new ArbeidsgiverStatusDTO().orgnummer("orgnummer").juridiskOrgnummer(null).orgNavn("orgnavn");
         SykmeldingStatusDTO sykmeldingStatus = new SykmeldingStatusDTO().statusEvent("event").arbeidsgiver(arbeidsgiver);
