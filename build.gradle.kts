@@ -93,6 +93,7 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.kotlinJacksonVersion}")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${Versions.kotlinJacksonVersion}")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${Versions.kotlinJacksonVersion}")
 
     implementation("com.sun.xml.ws:jaxws-ri:${Versions.jaxwsVersion}")
 
