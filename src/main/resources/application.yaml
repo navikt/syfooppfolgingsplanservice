@@ -27,6 +27,8 @@ server:
     context-path: /syfooppfolgingsplanservice
 
 spring:
+  jackson:
+    serialization.write_dates_as_timestamps: false
   main.banner-mode: 'off'
   cache.type: redis
   redis:
