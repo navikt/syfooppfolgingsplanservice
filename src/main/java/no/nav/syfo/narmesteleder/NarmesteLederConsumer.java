@@ -97,6 +97,7 @@ public class NarmesteLederConsumer {
         return mapListe(response.getBody(), narmestelederRelasjon2Ansatt);
     }
 
+    @Cacheable(value = CACHENAME_LEDER, key = "#aktorId + #virksomhetsnummer", condition = "#aktorId != null && #virksomhetsnummer != null")
     public Optional<Naermesteleder> narmesteLeder(String aktorId, String virksomhetsnummer) {
         metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
