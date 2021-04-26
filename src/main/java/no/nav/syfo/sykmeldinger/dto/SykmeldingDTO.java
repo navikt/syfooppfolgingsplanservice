@@ -1,6 +1,5 @@
 package no.nav.syfo.sykmeldinger.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

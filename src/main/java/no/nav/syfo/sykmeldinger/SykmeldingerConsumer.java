@@ -83,7 +83,6 @@ public class SykmeldingerConsumer {
         headers.add("fnr", fnr);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        LOG.error("SMREG consumer tkn: {}", headers); //TODO:
         ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
                 UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT").toUriString(),
                 GET,
@@ -95,24 +94,21 @@ public class SykmeldingerConsumer {
         if (response.getStatusCode() != OK) {
             metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET);
             final String message = ERROR_MESSAGE_BASE + response.getStatusCode();
-            LOG.info("SMREG response !=OK: {}", response.toString()); //TODO:
             LOG.error(message);
             throw new RuntimeException(message);
         }
 
         if (Objects.requireNonNull(response).getBody() == null) {
-            LOG.warn("SMREG response.getBody er null, response: {}", response.toString()); //TODO:
             return Optional.empty();
         }
 
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET);
-        LOG.warn("SMREG response er ok: {}", response.toString()); //TODO:
         return Optional.of(mapTilSykmeldingsliste(Objects.requireNonNull(response.getBody())));
     }
 
     private List<Sykmelding> mapTilSykmeldingsliste(List<SykmeldingDTO> sykmeldingerDTO) {
         return sykmeldingerDTO.stream()
-                .filter(todo -> todo.behandlingsutfall.status != RegelStatusDTO.INVALID)
+                .filter(dto -> dto.behandlingsutfall.status != RegelStatusDTO.INVALID)
                 .map(dto -> new Sykmelding(dto.id,
                                            convertToSykmeldingsperiode(dto.sykmeldingsperioder),
                                            convertToOrganisasjonInformasjon(dto.sykmeldingStatus.arbeidsgiver)))

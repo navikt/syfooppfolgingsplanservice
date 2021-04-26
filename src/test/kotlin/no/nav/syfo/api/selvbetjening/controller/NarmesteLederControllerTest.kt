@@ -13,7 +13,9 @@ import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
-import org.junit.*
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 import org.mockito.Mockito
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.ResponseEntity
@@ -44,7 +46,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
         Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
     }
 
-    @Ignore @Test
+    @Test
     fun narmesteLeder_ansatt_ok() {
         loggInnBruker(contextHolder, LEDER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
@@ -56,7 +58,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
         Assert.assertEquals(naermesteleder, body)
     }
 
-    @Ignore @Test
+    @Test
     fun narmesteLeder_self_ok() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_AKTORID, VIRKSOMHETSNUMMER))
@@ -67,7 +69,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
         Assert.assertEquals(naermesteleder, body)
     }
 
-    @Ignore @Test
+    @Test
     fun narmesteLeder_noContent() {
         loggInnBruker(contextHolder, LEDER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
@@ -76,7 +78,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
         Assert.assertEquals(204, res.statusCodeValue.toLong())
     }
 
-    @Ignore @Test
+    @Test
     fun narmesteLeder_forbidden() {
         loggInnBruker(contextHolder, LEDER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
