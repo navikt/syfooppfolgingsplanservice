@@ -34,6 +34,7 @@ spec:
     enabled: true
     path: /syfooppfolgingsplanservice/internal/prometheus
   ingresses:
+    - "https://syfooppfolgingsplanservice.intern.nav.no"
     - "https://syfooppfolgingsplanservice.nais.adeo.no"
     - "https://app.adeo.no/syfooppfolgingsplanservice"
   vault:
