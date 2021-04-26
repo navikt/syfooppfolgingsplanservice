@@ -3,7 +3,6 @@ package no.nav.syfo.api.selvbetjening.controller;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import org.slf4j.Logger;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -53,7 +52,6 @@ public class SykmeldingerController {
         this.brukertilgangService = brukertilgangService;
         this.sykmeldingerConsumer = sykmeldingerConsumer;
     }
-
 
     @ResponseBody
     @GetMapping
