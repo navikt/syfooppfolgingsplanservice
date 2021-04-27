@@ -33,7 +33,7 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     lateinit var sykmeldingerConsumer: SykmeldingerConsumer
 
     @Inject
-    private lateinit var sykmeldingerController: SykmeldingerController
+    private lateinit var sykmeldingerController: ArbeidstakerSykmeldingerController
     val sykmelding = Sykmelding(
         "1",
         listOf(Sykmeldingsperiode().fom(LocalDate.now()).tom(LocalDate.now().plusDays(30))),
