@@ -28,7 +28,7 @@ import no.nav.syfo.sykmeldinger.SykmeldingerConsumer;
 
 @RestController
 @ProtectedWithClaims(issuer = EKSTERN)
-@RequestMapping(value = "/api/sykmeldinger")
+@RequestMapping(value = "/api/arbeidstaker/sykmeldinger")
 public class ArbeidstakerSykmeldingerController {
     private static final Logger LOG = getLogger(ArbeidstakerSykmeldingerController.class);
 
