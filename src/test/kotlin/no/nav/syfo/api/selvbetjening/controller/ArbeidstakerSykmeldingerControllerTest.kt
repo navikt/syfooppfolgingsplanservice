@@ -22,7 +22,7 @@ import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
 
-class SykmeldingerControllerTest : AbstractRessursTilgangTest() {
+class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var aktorregisterConsumer: AktorregisterConsumer
 

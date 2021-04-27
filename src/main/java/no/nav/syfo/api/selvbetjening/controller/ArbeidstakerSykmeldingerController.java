@@ -29,8 +29,8 @@ import no.nav.syfo.sykmeldinger.SykmeldingerConsumer;
 @RestController
 @ProtectedWithClaims(issuer = EKSTERN)
 @RequestMapping(value = "/api/sykmeldinger")
-public class SykmeldingerController {
-    private static final Logger LOG = getLogger(SykmeldingerController.class);
+public class ArbeidstakerSykmeldingerController {
+    private static final Logger LOG = getLogger(ArbeidstakerSykmeldingerController.class);
 
     private final TokenValidationContextHolder oidcContextHolder;
     private final Metrikk metrikk;
@@ -39,7 +39,7 @@ public class SykmeldingerController {
     private final SykmeldingerConsumer sykmeldingerConsumer;
 
     @Inject
-    public SykmeldingerController(
+    public ArbeidstakerSykmeldingerController(
             TokenValidationContextHolder oidcContextHolder,
             Metrikk metrikk,
             AktorregisterConsumer aktorregisterConsumer,
