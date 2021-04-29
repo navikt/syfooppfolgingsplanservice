@@ -3,7 +3,6 @@ package no.nav.syfo.sykmeldinger;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -75,7 +74,6 @@ public class SykmeldingerConsumer {
         return new OrganisasjonsInformasjon().orgNavn(arbeidsgiverStatusDTO.orgNavn()).orgnummer(arbeidsgiverStatusDTO.orgnummer());
     }
 
-    @Cacheable(value = CACHENAME_SYKEMELDINGER, key = "#aktorId", condition = "#aktorId != null")
     public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken) {
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
 
