@@ -6,7 +6,7 @@ import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.Organisasjonsinformasjon
 import no.nav.syfo.model.Sykmelding
 import no.nav.syfo.model.Sykmeldingsperiode
-import no.nav.syfo.sykmeldinger.SykmeldingerConsumer
+import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
@@ -30,14 +30,15 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     lateinit var brukertilgangConsumer: BrukertilgangConsumer
 
     @MockBean
-    lateinit var sykmeldingerConsumer: SykmeldingerConsumer
+    lateinit var arbeidstakerSykmeldingerConsumer: ArbeidstakerSykmeldingerConsumer
 
     @Inject
     private lateinit var sykmeldingerController: ArbeidstakerSykmeldingerController
     val sykmelding = Sykmelding(
-        "1",
-        listOf(Sykmeldingsperiode().fom(LocalDate.now()).tom(LocalDate.now().plusDays(30))),
-        Organisasjonsinformasjon().orgNavn("orgnavn").orgnummer("orgnummer")
+            "1",
+            ARBEIDSTAKER_FNR,
+            listOf(Sykmeldingsperiode().fom(LocalDate.now()).tom(LocalDate.now().plusDays(30))),
+            Organisasjonsinformasjon().orgNavn("orgnavn").orgnummer("orgnummer")
     )
     val sendteSykmeldinger = listOf(sykmelding)
 
@@ -51,7 +52,7 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     @Test
     fun get_sendte_sykmeldinger_ok() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
-        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, "token")).thenReturn(Optional.of(sendteSykmeldinger))
+        Mockito.`when`(arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, "token")).thenReturn(Optional.of(sendteSykmeldinger))
 
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
         val body = res.body as List<*>
@@ -64,7 +65,7 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     fun get_sendte_sykmeldinger_noContent() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        Mockito.`when`(sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, "token")).thenReturn(Optional.empty())
+        Mockito.`when`(arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, "token")).thenReturn(Optional.empty())
 
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
 

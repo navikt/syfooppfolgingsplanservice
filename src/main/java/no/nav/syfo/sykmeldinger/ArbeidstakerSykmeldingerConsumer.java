@@ -33,8 +33,8 @@ import no.nav.syfo.sykmeldinger.dto.SykmeldingDTO;
 import no.nav.syfo.sykmeldinger.dto.SykmeldingsperiodeDTO;
 
 @Component
-public class SykmeldingerConsumer {
-    private static final Logger LOG = getLogger(SykmeldingerConsumer.class);
+public class ArbeidstakerSykmeldingerConsumer {
+    private static final Logger LOG = getLogger(ArbeidstakerSykmeldingerConsumer.class);
 
     public static final String ERROR_MESSAGE_BASE = "Kall mot syfosmregister feiler med HTTP-";
 
@@ -49,10 +49,10 @@ public class SykmeldingerConsumer {
     private final String syfosmregisterURL;
 
     @Autowired
-    public SykmeldingerConsumer(AktorregisterConsumer aktorregisterConsumer,
-                                Metrikk metrikk,
-                                RestTemplate restTemplateMedProxy,
-                                @Value("${syfosmregister.url}") String syfosmregisterURL) {
+    public ArbeidstakerSykmeldingerConsumer(AktorregisterConsumer aktorregisterConsumer,
+                                            Metrikk metrikk,
+                                            RestTemplate restTemplateMedProxy,
+                                            @Value("${syfosmregister.url}") String syfosmregisterURL) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.metrikk = metrikk;
         this.restTemplate = restTemplateMedProxy;
@@ -103,13 +103,14 @@ public class SykmeldingerConsumer {
         }
 
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET);
-        return Optional.of(mapTilSykmeldingsliste(Objects.requireNonNull(response.getBody())));
+        return Optional.of(mapTilSykmeldingsliste(Objects.requireNonNull(response.getBody()), fnr));
     }
 
-    private List<Sykmelding> mapTilSykmeldingsliste(List<SykmeldingDTO> sykmeldingerDTO) {
+    private List<Sykmelding> mapTilSykmeldingsliste(List<SykmeldingDTO> sykmeldingerDTO, String fnr) {
         return sykmeldingerDTO.stream()
                 .filter(dto -> dto.behandlingsutfall.status != RegelStatusDTO.INVALID)
                 .map(dto -> new Sykmelding(dto.id,
+                                           fnr,
                                            convertToSykmeldingsperiode(dto.sykmeldingsperioder),
                                            convertToOrganisasjonInformasjon(dto.sykmeldingStatus.arbeidsgiver)))
                 .collect(Collectors.toUnmodifiableList());

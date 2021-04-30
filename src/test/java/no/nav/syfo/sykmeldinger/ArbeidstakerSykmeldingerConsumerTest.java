@@ -15,9 +15,9 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static no.nav.syfo.sykmeldinger.SykmeldingerConsumer.HENT_SYKMELDINGER_SYFOSMREGISTER;
-import static no.nav.syfo.sykmeldinger.SykmeldingerConsumer.HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET;
-import static no.nav.syfo.sykmeldinger.SykmeldingerConsumer.HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET;
+import static no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer.HENT_SYKMELDINGER_SYFOSMREGISTER;
+import static no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer.HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET;
+import static no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer.HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,7 +41,7 @@ import no.nav.syfo.sykmeldinger.dto.SykmeldingsperiodeDTO;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class SykmeldingerConsumerTest {
+public class ArbeidstakerSykmeldingerConsumerTest {
 
     @Mock
     private AktorregisterConsumer aktorregisterConsumer;
@@ -53,13 +53,13 @@ public class SykmeldingerConsumerTest {
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private SykmeldingerConsumer sykmeldingerConsumer;
+    private ArbeidstakerSykmeldingerConsumer arbeidstakerSykmeldingerConsumer;
 
     private final String ARBEIDSTAKER_AKTOR_ID = "0000000000000";
 
     @Test
     public void get_sendte_sykmeldinger() {
-        ReflectionTestUtils.setField(sykmeldingerConsumer, "syfosmregisterURL", "http://syfosmregister.url");
+        ReflectionTestUtils.setField(arbeidstakerSykmeldingerConsumer, "syfosmregisterURL", "http://syfosmregister.url");
 
         BehandlingsutfallDTO behandlingsutfall = new BehandlingsutfallDTO()
                 .status(RegelStatusDTO.OK)
@@ -91,7 +91,7 @@ public class SykmeldingerConsumerTest {
         })))
                 .thenReturn(new ResponseEntity<>(sykmeldingDTOList, OK));
 
-        List<Sykmelding> sendteSykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTOR_ID, "123").orElseGet(List::of);
+        List<Sykmelding> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTOR_ID, "123").orElseGet(List::of);
 
         assertThat(sendteSykmeldinger.size()).isNotEqualTo(sykmeldingDTOList.size());
         assertThat(sendteSykmeldinger.size()).isEqualTo(1);
@@ -106,13 +106,13 @@ public class SykmeldingerConsumerTest {
 
     @Test
     public void throws_runtimeException_when_syfosmregister_returns_not_OK() {
-        ReflectionTestUtils.setField(sykmeldingerConsumer, "syfosmregisterURL", "http://syfosmregister.url");
+        ReflectionTestUtils.setField(arbeidstakerSykmeldingerConsumer, "syfosmregisterURL", "http://syfosmregister.url");
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<SykmeldingDTO>>() {
         })))
                 .thenReturn(new ResponseEntity<>(null, INTERNAL_SERVER_ERROR));
 
-        Assertions.assertThrows(RuntimeException.class, () -> sykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTOR_ID, "456"));
+        Assertions.assertThrows(RuntimeException.class, () -> arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTOR_ID, "456"));
 
         verify(metrikk).tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
         verify(metrikk).tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET);
