@@ -24,7 +24,7 @@ import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Sykmelding;
 import no.nav.syfo.service.BrukertilgangService;
-import no.nav.syfo.sykmeldinger.SykmeldingerConsumer;
+import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer;
 
 @RestController
 @ProtectedWithClaims(issuer = EKSTERN)
@@ -36,7 +36,7 @@ public class ArbeidstakerSykmeldingerController {
     private final Metrikk metrikk;
     private final AktorregisterConsumer aktorregisterConsumer;
     private final BrukertilgangService brukertilgangService;
-    private final SykmeldingerConsumer sykmeldingerConsumer;
+    private final ArbeidstakerSykmeldingerConsumer arbeidstakerSykmeldingerConsumer;
 
     @Inject
     public ArbeidstakerSykmeldingerController(
@@ -44,26 +44,25 @@ public class ArbeidstakerSykmeldingerController {
             Metrikk metrikk,
             AktorregisterConsumer aktorregisterConsumer,
             BrukertilgangService brukertilgangService,
-            SykmeldingerConsumer sykmeldingerConsumer
+            ArbeidstakerSykmeldingerConsumer arbeidstakerSykmeldingerConsumer
     ) {
         this.oidcContextHolder = oidcContextHolder;
         this.metrikk = metrikk;
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukertilgangService = brukertilgangService;
-        this.sykmeldingerConsumer = sykmeldingerConsumer;
+        this.arbeidstakerSykmeldingerConsumer = arbeidstakerSykmeldingerConsumer;
     }
 
     @ResponseBody
     @GetMapping
     public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
-        LOG.error("SMREG controller headers: {}", headers);
         metrikk.tellHendelse("get_sykmeldinger");
 
         final String idToken = headers.getFirst("authorization");
         String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
         String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
 
-        Optional<List<Sykmelding>> sendteSykmeldinger = sykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken);
+        Optional<List<Sykmelding>> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken);
 
         return sendteSykmeldinger.map(sykmeldinger -> ResponseEntity
                 .status(HttpStatus.OK)
