@@ -3,7 +3,7 @@ package no.nav.syfo.api.selvbetjening.controller
 import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
-import no.nav.syfo.model.OrganisasjonsInformasjon
+import no.nav.syfo.model.Organisasjonsinformasjon
 import no.nav.syfo.model.Sykmelding
 import no.nav.syfo.model.Sykmeldingsperiode
 import no.nav.syfo.sykmeldinger.SykmeldingerConsumer
@@ -37,7 +37,7 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     val sykmelding = Sykmelding(
         "1",
         listOf(Sykmeldingsperiode().fom(LocalDate.now()).tom(LocalDate.now().plusDays(30))),
-        OrganisasjonsInformasjon().orgNavn("orgnavn").orgnummer("orgnummer")
+        Organisasjonsinformasjon().orgNavn("orgnavn").orgnummer("orgnummer")
     )
     val sendteSykmeldinger = listOf(sykmelding)
 

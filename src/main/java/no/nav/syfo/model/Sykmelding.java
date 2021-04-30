@@ -11,11 +11,11 @@ import java.util.List;
 public class Sykmelding implements Serializable {
     public String id;
     public List<Sykmeldingsperiode> sykmeldingsperioder;
-    public OrganisasjonsInformasjon organisasjonsInformasjon;
+    public Organisasjonsinformasjon organisasjonsinformasjon;
 
-    public Sykmelding(String id, List<Sykmeldingsperiode> sykmeldingsperioder, OrganisasjonsInformasjon organisasjonsInformasjon) {
+    public Sykmelding(String id, List<Sykmeldingsperiode> sykmeldingsperioder, Organisasjonsinformasjon organisasjonsinformasjon) {
         this.id = id;
         this.sykmeldingsperioder = sykmeldingsperioder;
-        this.organisasjonsInformasjon = organisasjonsInformasjon;
+        this.organisasjonsinformasjon = organisasjonsinformasjon;
     }
 }

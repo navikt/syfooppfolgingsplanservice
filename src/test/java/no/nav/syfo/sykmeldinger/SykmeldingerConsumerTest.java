@@ -96,7 +96,7 @@ public class SykmeldingerConsumerTest {
         assertThat(sendteSykmeldinger.size()).isNotEqualTo(sykmeldingDTOList.size());
         assertThat(sendteSykmeldinger.size()).isEqualTo(1);
 
-        assertThat(sendteSykmeldinger.get(0).organisasjonsInformasjon().orgnummer()).isEqualTo(sykmeldingDTOList.get(0).sykmeldingStatus().arbeidsgiver.orgnummer());
+        assertThat(sendteSykmeldinger.get(0).organisasjonsinformasjon().orgnummer()).isEqualTo(sykmeldingDTOList.get(0).sykmeldingStatus().arbeidsgiver.orgnummer());
         assertThat(sendteSykmeldinger.get(0).sykmeldingsperioder().get(0).fom).isEqualTo(
                 sykmeldingDTOList.get(0).sykmeldingsperioder().get(0).fom);
 

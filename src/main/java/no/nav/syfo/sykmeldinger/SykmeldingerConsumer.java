@@ -24,7 +24,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.model.OrganisasjonsInformasjon;
+import no.nav.syfo.model.Organisasjonsinformasjon;
 import no.nav.syfo.model.Sykmelding;
 import no.nav.syfo.model.Sykmeldingsperiode;
 import no.nav.syfo.sykmeldinger.dto.ArbeidsgiverStatusDTO;
@@ -69,8 +69,8 @@ public class SykmeldingerConsumer {
         return LocalDate.parse(date);
     }
 
-    private static OrganisasjonsInformasjon convertToOrganisasjonInformasjon(ArbeidsgiverStatusDTO arbeidsgiverStatusDTO) {
-        return new OrganisasjonsInformasjon().orgNavn(arbeidsgiverStatusDTO.orgNavn()).orgnummer(arbeidsgiverStatusDTO.orgnummer());
+    private static Organisasjonsinformasjon convertToOrganisasjonInformasjon(ArbeidsgiverStatusDTO arbeidsgiverStatusDTO) {
+        return new Organisasjonsinformasjon().orgNavn(arbeidsgiverStatusDTO.orgNavn()).orgnummer(arbeidsgiverStatusDTO.orgnummer());
     }
 
     public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken) {

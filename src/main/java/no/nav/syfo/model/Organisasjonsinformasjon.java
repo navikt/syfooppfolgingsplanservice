@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Data
 @Accessors(fluent = true)
-public class OrganisasjonsInformasjon implements Serializable {
+public class Organisasjonsinformasjon implements Serializable {
     public String orgnummer;
     public String orgNavn;
 }
