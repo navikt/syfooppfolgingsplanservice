@@ -118,3 +118,7 @@ spec:
       value: https://syfobrukertilgang.nais.preprod.local
     - name: FELLESKODEVERK_URL
       value: https://kodeverk.nais.preprod.local/api/v1
+    - name: SYFOSMREGISTER_URL
+      value: https://syfosmregister.nais.preprod.local
+    - name: SYFOSMREGISTER_ID
+      value: 543ceb1e-eb69-4089-9458-bdec61160afa

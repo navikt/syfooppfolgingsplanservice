@@ -30,7 +30,7 @@ plugins {
     id("java")
     id("org.springframework.boot") version "2.2.8.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    id ("com.github.ManifestClasspath") version "0.1.0-RELEASE"
+    id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 }
 
 buildscript {
