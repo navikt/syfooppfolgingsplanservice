@@ -51,6 +51,8 @@ aktorregister.rest.url: "http://aktorregister.url"
 ereg.baseurl: "http://ereg"
 dokarkiv.url: "http://dokarkiv.url"
 felleskodeverk.url: "http://kodeverk.url"
+syfosmregister.url: "http://syfosmregister.url"
+syfosmregister.id: "syfosmregisterID"
 
 syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
 aad.accesstoken.url: 'accesstoken.url'
