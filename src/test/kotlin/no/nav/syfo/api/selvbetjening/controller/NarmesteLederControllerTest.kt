@@ -13,7 +13,9 @@ import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
-import org.junit.*
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 import org.mockito.Mockito
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.ResponseEntity
