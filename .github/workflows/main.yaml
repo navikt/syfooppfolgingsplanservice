@@ -3,7 +3,7 @@ name: main
 on: push
 
 env:
-  IIMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
 jobs:
   build:
@@ -48,9 +48,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and publish Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
-          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
-          echo ghcr.io/${{ github.repository }}:${{ github.sha }}
+          docker build -t ${IMAGE} .
+          docker push ${IMAGE}
+          echo ${IMAGE}
 
   deploy-dev:
     if: github.ref == 'refs/heads/master'
