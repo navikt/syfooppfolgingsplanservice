@@ -48,9 +48,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and publish Docker image
         run: |
-          docker build -t ${IMAGE} .
-          docker push ${IMAGE}
-          echo ${IMAGE}
+          docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+          echo ghcr.io/${{ github.repository }}:${{ github.sha }}
 
   deploy-dev:
     if: github.ref == 'refs/heads/master'
