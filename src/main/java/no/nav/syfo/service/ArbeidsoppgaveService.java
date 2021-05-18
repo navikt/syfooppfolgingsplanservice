@@ -46,7 +46,7 @@ public class ArbeidsoppgaveService {
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
         if (!eksisterendeArbeidsoppgaveHoererTilDialog(arbeidsoppgave.id, arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(oppfoelgingsdialogId))
-                || !tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfolgingsplan)) {
+                || !tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 

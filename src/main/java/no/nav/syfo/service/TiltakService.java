@@ -49,7 +49,7 @@ public class TiltakService {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
-        if (!eksisterendeTiltakHoererTilDialog(tiltak.id, tiltakDAO.finnTiltakByOppfoelgingsdialogId(oppfoelgingsdialogId)) || !tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfolgingsplan)) {
+        if (!eksisterendeTiltakHoererTilDialog(tiltak.id, tiltakDAO.finnTiltakByOppfoelgingsdialogId(oppfoelgingsdialogId)) || !tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 

@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NarmesteLederRelasjon {
     public String aktorId;
+    public String fnr;
     public String orgnummer;
     public String narmesteLederAktorId;
     public String narmesteLederTelefonnummer;

@@ -14,7 +14,6 @@ import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
-import no.nav.syfo.testhelper.mockAktorId
 import org.junit.*
 import org.mockito.Mockito
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -62,7 +61,7 @@ class ArbeidsgiverOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
         val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
             .sykmeldtFnr(ARBEIDSTAKER_FNR)
             .virksomhetsnummer(VIRKSOMHETSNUMMER)
-        Mockito.`when`(narmesteLederConsumer.erAktorLederForAktor(mockAktorId(LEDER_FNR), mockAktorId(ARBEIDSTAKER_FNR))).thenReturn(true)
+        Mockito.`when`(narmesteLederConsumer.erNaermesteLederForAnsatt(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true)
         Mockito.`when`(oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog, LEDER_FNR)).thenReturn(ressursId)
         val res = arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog)
         Mockito.verify(metrikk).tellHendelse("opprett_oppfolgingsplan_ag")
@@ -74,7 +73,7 @@ class ArbeidsgiverOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
         val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
             .sykmeldtFnr(LEDER_FNR)
             .virksomhetsnummer(VIRKSOMHETSNUMMER)
-        Mockito.`when`(narmesteLederConsumer.erAktorLederForAktor(LEDER_AKTORID, ARBEIDSTAKER_AKTORID)).thenReturn(false)
+        Mockito.`when`(narmesteLederConsumer.erNaermesteLederForAnsatt(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(false)
         arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog)
     }
 

@@ -52,9 +52,9 @@ public class ArbeidstakerOppfolgingsplanController {
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public Long opprettOppfolgingsplanSomArbeidstaker(@RequestBody RSOpprettOppfoelgingsdialog rsOpprettOppfoelgingsdialog) {
-        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+        String innloggetFnr = getSubjectEksternMedThrows(contextHolder);
 
-        Long id = oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog.sykmeldtFnr(innloggetIdent), innloggetIdent);
+        Long id = oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog.sykmeldtFnr(innloggetFnr), innloggetFnr);
 
         metrikk.tellHendelse("opprett_oppfolgingsplan_at");
 

@@ -47,7 +47,7 @@ public class NarmesteLederConsumer {
     private static final Logger LOG = getLogger(NarmesteLederConsumer.class);
     private static final Function<NarmesteLederRelasjon, Ansatt> narmestelederRelasjon2Ansatt = narmesteLederRelasjon ->
             new Ansatt()
-                    .aktoerId(narmesteLederRelasjon.aktorId)
+                    .fnr(narmesteLederRelasjon.fnr)
                     .virksomhetsnummer(narmesteLederRelasjon.orgnummer);
     private final AktorregisterConsumer aktorregisterConsumer;
     private final AzureAdTokenConsumer azureAdTokenConsumer;
@@ -85,18 +85,17 @@ public class NarmesteLederConsumer {
         this.narmestelederScope = narmestelederScope;
     }
 
-    @Cacheable(value = CACHENAME_ANSATTE, key = "#aktorId", condition = "#aktorId != null")
-    public List<Ansatt> ansatte(String aktorId) {
+    @Cacheable(value = CACHENAME_ANSATTE, key = "#fnr", condition = "#fnr != null")
+    public List<Ansatt> ansatte(String fnr) {
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
-        String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
-        String newToken = azureAdTokenClient.getAccessToken(narmestelederScope);
-        LOG.info("New Azure AD token: " + newToken);
+        String token = azureAdTokenClient.getAccessToken(narmestelederScope);
+        LOG.info("New Azure AD token: " + token);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
-                getAnsatteUrl(aktorId),
+                getAnsatteUrl(),
                 GET,
-                entity(token),
-                new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
+                entityForNarmesteLeder(token, fnr),
+                new ParameterizedTypeReference<>() {
                 }
         );
 
@@ -149,19 +148,26 @@ public class NarmesteLederConsumer {
         return new HttpEntity<>(headers);
     }
 
-    private String getAnsatteUrl(String aktoerId) {
-        return url + "/syfonarmesteleder/narmesteLeder/" + aktoerId;
+    private HttpEntity entityForNarmesteLeder(String token, String lederFnr) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
+        headers.add("Narmeste-Leder-Fnr", lederFnr);
+        return new HttpEntity<>(headers);
+    }
+
+    private String getAnsatteUrl() {
+        return url + "/leder/narmesteleder/aktive";
     }
 
     private String getLederUrl(String aktoerId, String virksomhetsnummer) {
         return UriComponentsBuilder.fromHttpUrl(url + "/syfonarmesteleder/sykmeldt/" + aktoerId).queryParam("orgnummer", virksomhetsnummer).toUriString();
     }
 
-    public boolean erAktorLederForAktor(String naermesteLederAktorId, String ansattAktorId) {
-        List<String> ansatteAktorId = ansatte(naermesteLederAktorId).stream()
-                .map(Ansatt::aktoerId)
+    public boolean erNaermesteLederForAnsatt(String naermesteLederFnr, String ansattFnr) {
+        List<String> ansatteFnr = ansatte(naermesteLederFnr).stream()
+                .map(Ansatt::fnr)
                 .collect(toList());
 
-        return ansatteAktorId.contains(ansattAktorId);
+        return ansatteFnr.contains(ansattFnr);
     }
 }

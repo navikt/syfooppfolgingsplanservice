@@ -126,5 +126,7 @@ spec:
       value: https://syfosmregister.nais.adeo.no
     - name: SYFOSMREGISTER_ID
       value: 96a10e4e-4437-47a2-ae9c-2f1c1634340e
+    - name: NARMESTELEDER_URL
+      value: https://narmesteleder.intern.nav.no
     - name: NARMESTELEDER_SCOPE
       value: api://prod-gcp.teamsykmelding.narmesteleder/.default
