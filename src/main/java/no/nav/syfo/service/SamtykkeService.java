@@ -37,7 +37,7 @@ public class SamtykkeService {
         String aktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
 
-        if (!tilgangskontrollService.aktorTilhorerOppfolgingsplan(aktoerId, oppfolgingsplan)) {
+        if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 

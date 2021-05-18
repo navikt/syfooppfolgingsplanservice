@@ -70,7 +70,8 @@ public class NarmesteLederConsumerTest {
     private final String SYKMELDT_AKTOR_ID = "1234567890987";
     private final String LEDER_AKTOR_ID = "7890987654321";
     private final String VIRKSOMHETSNUMMER = "1234";
-    private final String FNR = "12345678901";
+    private final String SYKMELDT_FNR = "10987654321";
+    private final String LEDER_FNR = "12345678901";
     private final String FIRSTNAME = "Firstname";
     private final String MIDDLENAME = "Middlename";
     private final String SURNAME = "Surname";
@@ -79,17 +80,17 @@ public class NarmesteLederConsumerTest {
     public void getAnsatte() {
         List<NarmesteLederRelasjon> narmesteLederRelasjoner = singletonList(
                 new NarmesteLederRelasjon()
-                        .aktorId(SYKMELDT_AKTOR_ID)
+                        .fnr(SYKMELDT_FNR)
                         .orgnummer(VIRKSOMHETSNUMMER)
         );
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
         }))).thenReturn(new ResponseEntity<>(narmesteLederRelasjoner, OK));
 
-        List<Ansatt> ansatte = narmesteLederConsumer.ansatte(SYKMELDT_AKTOR_ID);
+        List<Ansatt> ansatte = narmesteLederConsumer.ansatte(LEDER_FNR);
 
         assertThat(ansatte.size()).isEqualTo(narmesteLederRelasjoner.size());
-        assertThat(ansatte.get(0).aktoerId).isEqualTo(narmesteLederRelasjoner.get(0).aktorId);
+        assertThat(ansatte.get(0).fnr).isEqualTo(narmesteLederRelasjoner.get(0).fnr);
         assertThat(ansatte.get(0).virksomhetsnummer).isEqualTo(narmesteLederRelasjoner.get(0).orgnummer);
         verify(metrikk).tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
         verify(metrikk).tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET);
@@ -101,7 +102,7 @@ public class NarmesteLederConsumerTest {
         }))).thenReturn(new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR));
 
         try {
-            List<Ansatt> ansatte = narmesteLederConsumer.ansatte(SYKMELDT_AKTOR_ID);
+            narmesteLederConsumer.ansatte(LEDER_FNR);
             fail("Skulle kastet RuntimeException!");
         } catch (RuntimeException expectedException) {
             assertThat(ERROR_MESSAGE_BASE + HttpStatus.INTERNAL_SERVER_ERROR).isEqualTo(expectedException.getMessage());
@@ -131,7 +132,7 @@ public class NarmesteLederConsumerTest {
                                     .naermesteLederAktoerId(LEDER_AKTOR_ID)
                                     .orgnummer(VIRKSOMHETSNUMMER)
                                     .navn(pdlName()));
-        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn(FNR);
+        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn(LEDER_FNR);
         when(pdlConsumer.personName(anyString())).thenReturn(pdlName());
 
         Optional<Naermesteleder> naermestelederOptional = narmesteLederConsumer.narmesteLeder(SYKMELDT_AKTOR_ID, VIRKSOMHETSNUMMER);
@@ -161,6 +162,21 @@ public class NarmesteLederConsumerTest {
 
         verify(aktorregisterConsumer, never()).hentAktorIdForFnr(anyString());
         verify(pdlConsumer, never()).person(anyString());
+    }
+
+    @Test
+    public void erNaermesteLederForAnsatt(){
+        ReflectionTestUtils.setField(narmesteLederConsumer, "url", "http://syfonarmesteleder.url");
+        List<NarmesteLederRelasjon> narmesteLederRelasjoner = singletonList(
+                new NarmesteLederRelasjon()
+                        .fnr(SYKMELDT_FNR)
+                        .orgnummer(VIRKSOMHETSNUMMER)
+        );
+
+        when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
+        }))).thenReturn(new ResponseEntity<>(narmesteLederRelasjoner, OK));
+        boolean erNaermesteLederForAnsatt = narmesteLederConsumer.erNaermesteLederForAnsatt(LEDER_FNR, SYKMELDT_FNR);
+        assertThat(erNaermesteLederForAnsatt).isTrue();
     }
 
     private PdlHentPerson mockPdlHentPerson() {

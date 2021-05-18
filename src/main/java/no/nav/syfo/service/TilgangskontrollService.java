@@ -18,19 +18,19 @@ public class TilgangskontrollService {
         this.narmesteLederConsumer = narmesteLederConsumer;
     }
 
-    public boolean aktorTilhorerOppfolgingsplan(String aktoerId, Oppfolgingsplan oppfolgingsplan) {
-        return oppfolgingsplan.arbeidstaker.aktoerId.equals(aktoerId)
-                || erAktoerNaermestelederForBruker(aktoerId, oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer);
+    public boolean brukerTilhorerOppfolgingsplan(String fnr, Oppfolgingsplan oppfolgingsplan) {
+        return oppfolgingsplan.arbeidstaker.fnr.equals(fnr)
+                || erNaermesteLederForSykmeldt(fnr, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
     }
 
-    public boolean kanOppretteOppfolgingsplan(String sykmeldtAktoerId, String aktoerId, String virksomhetsnummer) {
+    public boolean kanOppretteOppfolgingsplan(String sykmeldtAktoerId, String aktoerId, String sykmeldtFnr, String lederFnr, String virksomhetsnummer) {
         return (aktoerId.equals(sykmeldtAktoerId) && aktoerHarNaermesteLederHosVirksomhet(aktoerId, virksomhetsnummer))
-                || erAktoerNaermestelederForBruker(aktoerId, sykmeldtAktoerId, virksomhetsnummer);
+                || erNaermesteLederForSykmeldt(lederFnr, sykmeldtFnr, virksomhetsnummer);
     }
 
-    private boolean erAktoerNaermestelederForBruker(String aktoerId, String sykmeldtAktoerId, String virksomhetsnummer) {
-        return narmesteLederConsumer.ansatte(aktoerId).stream()
-                .anyMatch(ansatt -> virksomhetsnummer.equals(ansatt.virksomhetsnummer) && ansatt.aktoerId.equals(sykmeldtAktoerId));
+    private boolean erNaermesteLederForSykmeldt(String lederFnr, String sykmeldtFnr, String virksomhetsnummer) {
+        return narmesteLederConsumer.ansatte(lederFnr).stream()
+                .anyMatch(ansatt -> virksomhetsnummer.equals(ansatt.virksomhetsnummer) && ansatt.fnr.equals(sykmeldtFnr));
     }
 
     private boolean aktoerHarNaermesteLederHosVirksomhet(String aktoerId, String virksomhetsnummer) {
