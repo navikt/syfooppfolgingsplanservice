@@ -68,8 +68,6 @@ public class FastlegeService {
                 token,
                 false
         );
-
-        log.info("Sendt oppfølgingsplan til dialogfordeler");
     }
 
     public void sendOppfolgingsplanLPS(String sendesTilFnr, byte[] pdf) {
@@ -83,7 +81,6 @@ public class FastlegeService {
                 token,
                 true
         );
-        log.info("Sendt oppfølgingsplanLPS til dialogfordeler");
     }
 
     private void kallUriMedTemplate(URI uri, RSOppfoelgingsplan rsOppfoelgingsplan, String token, boolean lps) {
@@ -93,18 +90,17 @@ public class FastlegeService {
             tellPlanDeltMedFastlegeKall(lps, true);
         } catch (HttpClientErrorException e) {
             int responsekode = e.getRawStatusCode();
-            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode, e);
             tellPlanDeltMedFastlegeKall(lps, false);
             if(responsekode == 404) {
+                log.warn("Klarte ikke dele oppfølgingsplan med fastlege: Feil ved oppslag av av fastlege eller partnerinformasjon");
                 throw new OppslagFeiletException("Feil ved oppslag av av fastlege eller partnerinformasjon");
-            } else if (responsekode >= 300) {
-                throw new RuntimeException("RuntimeException: Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
             } else {
-                throw e;
+                log.error("Feil ved sending av oppfølgingsdialog til fastlege Fikk responskode " + responsekode, e);
             }
+            throw e;
         } catch (HttpServerErrorException e) {
             int responsekode = e.getRawStatusCode();
-            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode);
+            log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode " + responsekode, e);
             tellPlanDeltMedFastlegeKall(lps, false);
             throw new InnsendingFeiletException("Kunne ikke dele med fastlege");
         } catch (Exception e) {
