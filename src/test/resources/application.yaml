@@ -54,6 +54,7 @@ felleskodeverk.url: "http://kodeverk.url"
 syfosmregister.url: "http://syfosmregister.url"
 syfosmregister.id: "syfosmregisterID"
 dkif.url: "http://dkif.url"
+narmesteleder.url: "http://narmesteleder.url"
 
 syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
 aad.accesstoken.url: 'accesstoken.url'
