@@ -27,6 +27,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
+import no.nav.syfo.azuread.AzureAdTokenClient;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Ansatt;
@@ -50,38 +51,46 @@ public class NarmesteLederConsumer {
                     .virksomhetsnummer(narmesteLederRelasjon.orgnummer);
     private final AktorregisterConsumer aktorregisterConsumer;
     private final AzureAdTokenConsumer azureAdTokenConsumer;
+    private final AzureAdTokenClient azureAdTokenClient;
     private final NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
     private final Metrikk metrikk;
     private final PdlConsumer pdlConsumer;
     private final RestTemplate restTemplate;
     private final String url;
     private final String syfonarmestelederId;
+    private final String narmestelederScope;
 
     @Autowired
     public NarmesteLederConsumer(
             AktorregisterConsumer aktorregisterConsumer,
             AzureAdTokenConsumer azureAdTokenConsumer,
+            AzureAdTokenClient azureAdTokenClient,
             NarmesteLederRelasjonConverter narmesteLederRelasjonConverter,
             Metrikk metrikk,
             PdlConsumer pdlConsumer,
             RestTemplate restTemplateMedProxy,
             @Value("${syfonarmesteleder.url}") String url,
-            @Value("${syfonarmesteleder.id}") String syfonarmestelederId
+            @Value("${syfonarmesteleder.id}") String syfonarmestelederId,
+            @Value("${narmesteleder.scope}") String narmestelederScope
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.azureAdTokenConsumer = azureAdTokenConsumer;
+        this.azureAdTokenClient = azureAdTokenClient;
         this.narmesteLederRelasjonConverter = narmesteLederRelasjonConverter;
         this.metrikk = metrikk;
         this.pdlConsumer = pdlConsumer;
         this.restTemplate = restTemplateMedProxy;
         this.url = url;
         this.syfonarmestelederId = syfonarmestelederId;
+        this.narmestelederScope = narmestelederScope;
     }
 
     @Cacheable(value = CACHENAME_ANSATTE, key = "#aktorId", condition = "#aktorId != null")
     public List<Ansatt> ansatte(String aktorId) {
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
+        String newToken = azureAdTokenClient.getAccessToken(narmestelederScope);
+        LOG.info("New Azure AD token: " + newToken);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
                 getAnsatteUrl(aktorId),

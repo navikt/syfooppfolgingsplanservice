@@ -57,6 +57,11 @@ dkif.url: "http://dkif.url"
 
 syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
 aad.accesstoken.url: 'accesstoken.url'
+
+narmesteleder.scope: "narmesteleder.scope"
+azure.openid.config.token.endpoint: "http://azure"
+azure.app.client.id: 'client.id'
+azure.app.client.secret: 'client.secret'
 security.token.service.rest.url: "http://security-token-service.url"
 
 nais.cluster.name: 'local'

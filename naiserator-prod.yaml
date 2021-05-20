@@ -37,6 +37,10 @@ spec:
     - "https://syfooppfolgingsplanservice.intern.nav.no"
     - "https://syfooppfolgingsplanservice.nais.adeo.no"
     - "https://app.adeo.no/syfooppfolgingsplanservice"
+  azure:
+    application:
+      enabled: true
+      tenant: nav.no
   vault:
     enabled: true
     paths:
@@ -122,3 +126,5 @@ spec:
       value: https://syfosmregister.nais.adeo.no
     - name: SYFOSMREGISTER_ID
       value: 96a10e4e-4437-47a2-ae9c-2f1c1634340e
+    - name: NARMESTELEDER_SCOPE
+      value: api://prod-gcp.teamsykmelding.narmesteleder/.default
