@@ -124,3 +124,5 @@ spec:
       value: 543ceb1e-eb69-4089-9458-bdec61160afa
     - name: NARMESTELEDER_URL
       value: https://narmesteleder.dev.nav.no
+    - name: NARMESTELEDER_SCOPE
+      value: api://dev-gcp.teamsykmelding.narmesteleder/.default
