@@ -56,6 +56,7 @@ public class NarmesteLederConsumer {
     private final RestTemplate restTemplate;
     private final String url;
     private final String syfonarmestelederId;
+    private final String narmestelederUrl;
 
     @Autowired
     public NarmesteLederConsumer(
@@ -66,7 +67,8 @@ public class NarmesteLederConsumer {
             PdlConsumer pdlConsumer,
             RestTemplate restTemplateMedProxy,
             @Value("${syfonarmesteleder.url}") String url,
-            @Value("${syfonarmesteleder.id}") String syfonarmestelederId
+            @Value("${syfonarmesteleder.id}") String syfonarmestelederId,
+            @Value("${narmesteleder.url}") String narmestelederUrl
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.azureAdTokenConsumer = azureAdTokenConsumer;
@@ -76,6 +78,7 @@ public class NarmesteLederConsumer {
         this.restTemplate = restTemplateMedProxy;
         this.url = url;
         this.syfonarmestelederId = syfonarmestelederId;
+        this.narmestelederUrl = narmestelederUrl;
     }
 
     @Cacheable(value = CACHENAME_ANSATTE, key = "#fnr", condition = "#fnr != null")
@@ -148,7 +151,7 @@ public class NarmesteLederConsumer {
     }
 
     private String getAnsatteUrl() {
-        return url + "/leder/narmesteleder/aktive";
+        return narmestelederUrl + "/leder/narmesteleder/aktive";
     }
 
     private String getLederUrl(String aktoerId, String virksomhetsnummer) {
