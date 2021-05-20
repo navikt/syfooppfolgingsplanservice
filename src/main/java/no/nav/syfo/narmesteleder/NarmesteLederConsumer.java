@@ -93,6 +93,7 @@ public class NarmesteLederConsumer {
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
         String token = azureAdTokenClient.getAccessToken(narmestelederScope);
         LOG.info("ansatteUrl: " + getAnsatteUrl());
+        LOG.info("headere: " + entityForNarmesteLeder(token, fnr));
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
                 getAnsatteUrl(),
                 GET,
