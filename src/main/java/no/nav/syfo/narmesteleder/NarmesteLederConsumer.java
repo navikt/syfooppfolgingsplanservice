@@ -56,6 +56,7 @@ public class NarmesteLederConsumer {
     private final Metrikk metrikk;
     private final PdlConsumer pdlConsumer;
     private final RestTemplate restTemplate;
+    private final RestTemplate restTemplateUtenProxy;
     private final String url;
     private final String syfonarmestelederId;
     private final String narmestelederUrl;
@@ -70,6 +71,7 @@ public class NarmesteLederConsumer {
             Metrikk metrikk,
             PdlConsumer pdlConsumer,
             RestTemplate restTemplateMedProxy,
+            RestTemplate restTemplate,
             @Value("${syfonarmesteleder.url}") String url,
             @Value("${syfonarmesteleder.id}") String syfonarmestelederId,
             @Value("${narmesteleder.url}") String narmestelederUrl,
@@ -82,6 +84,7 @@ public class NarmesteLederConsumer {
         this.metrikk = metrikk;
         this.pdlConsumer = pdlConsumer;
         this.restTemplate = restTemplateMedProxy;
+        this.restTemplateUtenProxy = restTemplate;
         this.url = url;
         this.syfonarmestelederId = syfonarmestelederId;
         this.narmestelederUrl = narmestelederUrl;
@@ -94,7 +97,7 @@ public class NarmesteLederConsumer {
         String token = azureAdTokenClient.getAccessToken(narmestelederScope);
         LOG.info("ansatteUrl: " + getAnsatteUrl());
         LOG.info("headere: " + entityForNarmesteLeder(token, fnr));
-        ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
+        ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplateUtenProxy.exchange(
                 getAnsatteUrl(),
                 GET,
                 entityForNarmesteLeder(token, fnr),
