@@ -59,6 +59,7 @@ narmesteleder.scope: "narmesteleder.scope"
 
 syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
 aad.accesstoken.url: 'accesstoken.url'
+aad.accesstoken.url.new: 'accesstoken.url'
 security.token.service.rest.url: "http://security-token-service.url"
 
 nais.cluster.name: 'local'
