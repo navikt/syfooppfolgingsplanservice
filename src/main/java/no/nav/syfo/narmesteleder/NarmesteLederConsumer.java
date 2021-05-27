@@ -89,11 +89,6 @@ public class NarmesteLederConsumer {
         this.syfonarmestelederId = syfonarmestelederId;
         this.narmestelederUrl = narmestelederUrl;
         this.narmestelederScope = narmestelederScope;
-
-        String endpoint = System.getenv("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT");
-        String clientId = System.getenv("AZURE_APP_CLIENT_ID");
-        String clientSecret = System.getenv("AZURE_APP_CLIENT_SECRET");
-        LOG.info("Endpoint: [" + endpoint + "] ClientId: [" + clientId + "] ClientSecret: [" + clientSecret + "]");
     }
 
     @Cacheable(value = CACHENAME_ANSATTE, key = "#fnr", condition = "#fnr != null")
