@@ -36,7 +36,7 @@ public class AzureAdTokenClient {
     @Autowired
     public AzureAdTokenClient(
             @Qualifier("restTemplateMedProxy") RestTemplate restTemplateMedProxy,
-            @Value("${aad.accesstoken.url}") String url,
+            @Value("${aad.accesstoken.url.new}") String url,
             @Value("${client.id}") String clientId,
             @Value("${client.secret}") String clientSecret
     ) {

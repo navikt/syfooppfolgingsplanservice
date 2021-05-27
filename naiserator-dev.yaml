@@ -97,6 +97,8 @@ spec:
       value: https://dokarkiv-q1.nais.preprod.local
     - name: AAD_ACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
+    - name: AAD_ACCESSTOKEN_URL_NEW
+      value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0
     - name: SYFONARMESTELEDER_URL
       value: https://syfonarmesteleder.nais.preprod.local
     - name: SYFONARMESTELEDER_ID
