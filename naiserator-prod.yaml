@@ -73,13 +73,11 @@ spec:
     - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
       value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
     - name: MQGATEWAY03_HOSTNAME
-      value: a01apvl062.adeo.no
+      value: a01apvl270.adeo.no
     - name: MQGATEWAY03_PORT
       value: "1414"
     - name: MQGATEWAY03_NAME
-      value: MPLSC03
-    - name: SYFOOPPFOLGINGSPLANSERVICE_CHANNEL_QUEUEMANAGER
-      value: mq://a01apvl062.adeo.no:1414/MPLSC03
+      value: MPLS03
     - name: SYFOOPPFOLGINGSPLANSERVICE_CHANNEL_NAME
       value: P_SYFOOPPFOLGINGSPL
     - name: VARSELPRODUKSJON_VARSLINGER_QUEUENAME

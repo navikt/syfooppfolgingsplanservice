@@ -15,6 +15,7 @@ import javax.jms.*;
 import static com.ibm.mq.constants.CMQC.MQENC_NATIVE;
 import static com.ibm.msg.client.jms.JmsConstants.JMS_IBM_CHARACTER_SET;
 import static com.ibm.msg.client.jms.JmsConstants.JMS_IBM_ENCODING;
+import static com.ibm.msg.client.jms.JmsConstants.USER_AUTHENTICATION_MQCSP;
 import static com.ibm.msg.client.wmq.common.CommonConstants.WMQ_CM_CLIENT;
 import static java.lang.System.getenv;
 
@@ -33,10 +34,10 @@ public class MQConfig {
     private String gatewayName;
     @Value("${mqgateway03.port}")
     private int gatewayPort;
-    @Value("${srvappserver.username:srvappserver}")
-    private String srvAppserverUsername;
-    @Value("${srvappserver.password:}")
-    private String srvAppserverPassword;
+    @Value("${srv.username}")
+    private String serviceuserUsername;
+    @Value("${srv.password}")
+    private String serviceuserPassword;
 
     private static final String VARSELPRODUKSJON_VARSLINGER_QUEUENAME = "VARSELPRODUKSJON_VARSLINGER_QUEUENAME";
     private static final String VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME = "VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME";
@@ -92,10 +93,11 @@ public class MQConfig {
         connectionFactory.setCCSID(UTF_8_WITH_PUA);
         connectionFactory.setIntProperty(JMS_IBM_ENCODING, MQENC_NATIVE);
         connectionFactory.setIntProperty(JMS_IBM_CHARACTER_SET, UTF_8_WITH_PUA);
+        connectionFactory.setBooleanProperty(USER_AUTHENTICATION_MQCSP, true);
         UserCredentialsXaConnectionFactoryAdapter adapter = new UserCredentialsXaConnectionFactoryAdapter();
         adapter.setTargetConnectionFactory(connectionFactory);
-        adapter.setUsername(srvAppserverUsername);
-        adapter.setPassword(srvAppserverPassword);
+        adapter.setUsername(serviceuserUsername);
+        adapter.setPassword(serviceuserPassword);
         return xaConnectionFactoryWrapper.wrapConnectionFactory(adapter);
     }
 }
