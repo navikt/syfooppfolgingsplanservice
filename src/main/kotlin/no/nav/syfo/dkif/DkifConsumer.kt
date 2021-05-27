@@ -7,6 +7,7 @@ import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientResponseException
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class DkifConsumer(
+        @Value("\${dkif.url}") private val baseUrl: String,
         private val metric: Metrikk,
         private val stsConsumer: StsConsumer,
         private val template: RestTemplate
@@ -23,8 +25,9 @@ class DkifConsumer(
         val bearer = stsConsumer.token()
 
         try {
+            val requestUrl = "$baseUrl/api/v1/personer/kontaktinformasjon"
             val response = template.exchange<DigitalKontaktinfoBolk>(
-                    DKIF_URL,
+                    requestUrl,
                     HttpMethod.GET,
                     entity(ident, bearer),
                     object : ParameterizedTypeReference<DigitalKontaktinfoBolk>() {}
@@ -70,7 +73,6 @@ class DkifConsumer(
         private val LOG = LoggerFactory.getLogger(DkifConsumer::class.java)
 
         const val METRIC_CALL_DKIF = "call_dkif"
-        const val DKIF_URL = "http://dkif/api/v1/personer/kontaktinformasjon"
     }
 
     private fun entity(ident: String, token: String): HttpEntity<String> {

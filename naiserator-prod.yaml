@@ -2,13 +2,13 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: syfooppfolgingsplanservice
-  namespace: default
+  namespace: team-esyfo
   labels:
-    team: teamsykefravr
+    team: team-esyfo
 spec:
   image: {{ image }}
   port: 8080
-  team: teamsykefravr
+  team: team-esyfo
   liveness:
     path: /syfooppfolgingsplanservice/internal/isAlive
     initialDelay: 60
@@ -44,7 +44,7 @@ spec:
         mountPath: "/secrets/oppfolgingsplandb/credentials"
       - kvPath: "/oracle/data/prod/config/serviceoppfoelgingsdialog"
         mountPath: "/secrets/oppfolgingsplandb/config"
-      - kvPath: "/kv/prod/fss/syfooppfolgingsplanservice/default"
+      - kvPath: "/kv/prod/fss/syfooppfolgingsplanservice/team-esyfo"
         mountPath: "/var/run/secrets/nais.io/vault"
   leaderElection: true
   envFrom:
@@ -94,6 +94,8 @@ spec:
       value: https://syfobehandlendeenhet.nais.adeo.no
     - name: DOKARKIV_URL
       value: https://dokarkiv.nais.adeo.no
+    - name: DKIF_URL
+      value: https://dkif.nais.adeo.no
     - name: AAD_ACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
     - name: SYFONARMESTELEDER_URL
