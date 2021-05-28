@@ -146,7 +146,7 @@ class OppfolgingsplanLPSService @Inject constructor(
                 }
             }
         } catch (e: HttpServerErrorException) {
-            log.error("Fikk feil ved kall til ekstern tjeneste: ${e.message}")
+            log.error("Could not process LPS-plan due to server error: ${e.message}")
             storePlanForRetry(incomingMetadata, batch)
         }
     }
