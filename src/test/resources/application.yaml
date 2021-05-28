@@ -53,6 +53,7 @@ dokarkiv.url: "http://dokarkiv.url"
 felleskodeverk.url: "http://kodeverk.url"
 syfosmregister.url: "http://syfosmregister.url"
 syfosmregister.id: "syfosmregisterID"
+dkif.url: "http://dkif.url"
 
 syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
 aad.accesstoken.url: 'accesstoken.url'

@@ -2,7 +2,7 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   labels:
-    team: teamsykefravr
+    team: team-esyfo
   name: syfooppfolgingsplanservice-redis
 spec:
   image: redis:5-alpine
