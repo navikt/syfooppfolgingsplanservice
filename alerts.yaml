@@ -4,7 +4,7 @@ metadata:
   name: syfooppfolgingsplanservice-alerts
   namespace: team-esyfo
   labels:
-    team: teamsykefravr
+    team: team-esyfo
 spec:
   receivers:
     slack:
