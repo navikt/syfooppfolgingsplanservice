@@ -94,10 +94,6 @@ public class NarmesteLederConsumer {
     @Cacheable(value = CACHENAME_ANSATTE, key = "#fnr", condition = "#fnr != null")
     public List<Ansatt> ansatte(String fnr) {
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
-        String endpoint = System.getenv("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT");
-        String clientId = System.getenv("AZURE_APP_CLIENT_ID");
-        String clientSecret = System.getenv("AZURE_APP_CLIENT_SECRET");
-        LOG.info("Endpoint: [" + endpoint + "] ClientId: [" + clientId + "] ClientSecret: [" + clientSecret + "]");
         String token = azureAdTokenClient.getAccessToken(narmestelederScope);
         LOG.info("ansatteUrl: " + getAnsatteUrl());
         LOG.info("headere: " + entityForNarmesteLeder(token, fnr));
