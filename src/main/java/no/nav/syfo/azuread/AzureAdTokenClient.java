@@ -36,9 +36,9 @@ public class AzureAdTokenClient {
     @Autowired
     public AzureAdTokenClient(
             @Qualifier("restTemplateMedProxy") RestTemplate restTemplateMedProxy,
-            @Value("${aad.accesstoken.url.new}") String url,
-            @Value("${client.id}") String clientId,
-            @Value("${client.secret}") String clientSecret
+            @Value("${azure.openid.cnfig.token.endpoint}") String url,
+            @Value("${azure.app.client.id}") String clientId,
+            @Value("${azure.app.client.secret}") String clientSecret
     ) {
         this.restTemplateMedProxy = restTemplateMedProxy;
         this.url = url;
@@ -50,10 +50,7 @@ public class AzureAdTokenClient {
         final Instant omToMinutter = Instant.now().plusSeconds(120L);
         final AzureAdResponse azureAdResponse = azureAdTokenMap.get(scope);
 
-        String endpoint = System.getenv("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT");
-        String clientId = System.getenv("AZURE_APP_CLIENT_ID");
-        String clientSecret = System.getenv("AZURE_APP_CLIENT_SECRET");
-        LOG.info("Endpoint: [" + endpoint + "] ClientId: [" + clientId + "] ClientSecret: [" + clientSecret + "]");
+        LOG.info("Endpoint: [" + url + "] ClientId: [" + clientId + "] ClientSecret: [" + clientSecret + "]");
 
         if (azureAdResponse == null || azureAdResponse.expires_on().isBefore(omToMinutter)) {
             LOG.info("Henter nytt token fra Azure AD for scope {}", scope);
@@ -66,7 +63,7 @@ public class AzureAdTokenClient {
             body.add("grant_type", "client_credentials");
             body.add("client_secret", clientSecret);
 
-            final String uriString = UriComponentsBuilder.fromHttpUrl(endpoint).toUriString();
+            final String uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString();
 
             final ResponseEntity<AzureAdResponse> result = restTemplateMedProxy.exchange(
                     uriString,
