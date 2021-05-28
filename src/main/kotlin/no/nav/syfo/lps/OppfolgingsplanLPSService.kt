@@ -104,50 +104,52 @@ class OppfolgingsplanLPSService @Inject constructor(
             senderOrgId = skjemainnhold.arbeidsgiver.orgnr,
             userPersonNumber = skjemainnhold.sykmeldtArbeidstaker.fnr
         )
-        try {
-            val isUserDiskresjonsmerket = pdlConsumer.person(incomingMetadata.userPersonNumber)?.isKode6Or7()
-            if (isUserDiskresjonsmerket == null) {
-                storePlanForRetry(incomingMetadata, batch)
-            } else if (isUserDiskresjonsmerket) {
-                log.warn("Received Oppfolgingsplan from LPS for a person that is denied access to Oppfolgingsplan")
-                metrikk.tellHendelse("lps_plan_diskresjonsmerket")
-                if (isRetry) {
-                    oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
-                }
-                return
-            } else {
-                val idList: Pair<Long, UUID> = savePlan(
-                    batch,
-                    skjemainnhold,
-                    virksomhetsnummer
-                )
-                if (isRetry) {
-                    oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
-                }
 
-                val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
-                val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
-                oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
-                log.info("KAFKA-trace: pdf generated and stored")
-
-                if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
-                    val kOppfolgingsplanLPSNAV = KOppfolgingsplanLPSNAV(
-                        idList.second.toString(),
-                        incomingMetadata.userPersonNumber,
-                        virksomhetsnummer.value,
-                        lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
-                        LocalDate.now().toEpochDay().toInt()
-                    )
-                    metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand", lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
-                    oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
-                }
-                if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
-                    sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
-                }
-            }
-        } catch (e: HttpServerErrorException) {
+        val isUserDiskresjonsmerket = try {
+            pdlConsumer.person(incomingMetadata.userPersonNumber)?.isKode6Or7()
+        }  catch (e: HttpServerErrorException) {
             log.error("Could not process LPS-plan due to server error: ${e.message}")
+            null
+        }
+
+        if (isUserDiskresjonsmerket == null) {
             storePlanForRetry(incomingMetadata, batch)
+        } else if (isUserDiskresjonsmerket) {
+            log.warn("Received Oppfolgingsplan from LPS for a person that is denied access to Oppfolgingsplan")
+            metrikk.tellHendelse("lps_plan_diskresjonsmerket")
+            if (isRetry) {
+                oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
+            }
+            return
+        } else {
+            val idList: Pair<Long, UUID> = savePlan(
+                batch,
+                skjemainnhold,
+                virksomhetsnummer
+            )
+            if (isRetry) {
+                oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
+            }
+
+            val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
+            val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
+            oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
+            log.info("KAFKA-trace: pdf generated and stored")
+
+            if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
+                val kOppfolgingsplanLPSNAV = KOppfolgingsplanLPSNAV(
+                    idList.second.toString(),
+                    incomingMetadata.userPersonNumber,
+                    virksomhetsnummer.value,
+                    lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
+                    LocalDate.now().toEpochDay().toInt()
+                )
+                metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand", lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
+                oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
+            }
+            if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
+                sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
+            }
         }
     }
 
