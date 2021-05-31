@@ -58,6 +58,7 @@ public class NarmesteLederConsumer {
     private final RestTemplate restTemplate;
     private final String url;
     private final String syfonarmestelederId;
+    private final String narmestelederUrl;
     private final String narmestelederScope;
 
     @Autowired
@@ -71,6 +72,7 @@ public class NarmesteLederConsumer {
             RestTemplate restTemplateMedProxy,
             @Value("${syfonarmesteleder.url}") String url,
             @Value("${syfonarmesteleder.id}") String syfonarmestelederId,
+            @Value("${narmesteleder.url}") String narmestelederUrl,
             @Value("${narmesteleder.scope}") String narmestelederScope
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
@@ -82,6 +84,7 @@ public class NarmesteLederConsumer {
         this.restTemplate = restTemplateMedProxy;
         this.url = url;
         this.syfonarmestelederId = syfonarmestelederId;
+        this.narmestelederUrl = narmestelederUrl;
         this.narmestelederScope = narmestelederScope;
     }
 
@@ -156,7 +159,7 @@ public class NarmesteLederConsumer {
     }
 
     private String getAnsatteUrl() {
-        return url + "/leder/narmesteleder/aktive";
+        return narmestelederUrl + "/leder/narmesteleder/aktive";
     }
 
     private String getLederUrl(String aktoerId, String virksomhetsnummer) {
