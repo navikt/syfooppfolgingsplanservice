@@ -50,7 +50,7 @@ public class AzureAdTokenClient {
         final Instant omToMinutter = Instant.now().plusSeconds(120L);
         final AzureAdResponse azureAdResponse = azureAdTokenMap.get(scope);
 
-        if (azureAdResponse == null || azureAdResponse.expires_on().isBefore(omToMinutter)) {
+        if (azureAdResponse == null || azureAdResponse.issuedOn.plusSeconds(azureAdResponse.expires_in).isBefore(omToMinutter)) {
             LOG.info("Henter nytt token fra Azure AD for scope {}", scope);
             final HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -73,6 +73,7 @@ public class AzureAdTokenClient {
             if (result.getStatusCode() != OK) {
                 throw new RuntimeException("Henting av token fra Azure AD feiler med HTTP-" + result.getStatusCode());
             }
+            LOG.info("AzureAdResponse: " + azureAdResponse);
             azureAdTokenMap.put(scope, requireNonNull(result.getBody()));
         }
         return requireNonNull(azureAdTokenMap.get(scope)).access_token();

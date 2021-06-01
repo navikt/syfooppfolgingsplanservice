@@ -10,9 +10,10 @@ import java.time.Instant;
 class AzureAdResponse {
     public String access_token;
     public String token_type;
-    public String expires_in;
+    public Long expires_in;
     public String ext_expires_in;
     public Instant expires_on;
     public String not_before;
     public String resource;
+    public Instant issuedOn = Instant.now();
 }
