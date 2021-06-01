@@ -73,7 +73,6 @@ public class AzureAdTokenClient {
             if (result.getStatusCode() != OK) {
                 throw new RuntimeException("Henting av token fra Azure AD feiler med HTTP-" + result.getStatusCode());
             }
-            LOG.info("AzureAdResponse: " + azureAdResponse);
             azureAdTokenMap.put(scope, requireNonNull(result.getBody()));
         }
         return requireNonNull(azureAdTokenMap.get(scope)).access_token();
