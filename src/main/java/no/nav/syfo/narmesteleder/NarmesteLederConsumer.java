@@ -104,6 +104,7 @@ public class NarmesteLederConsumer {
         throwExceptionIfError(response.getStatusCode(), HENT_ANSATTE_SYFONARMESTELEDER_FEILET);
 
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET);
+        LOG.info("Response fra ny narmeste leder-app: " + response.getBody());
         return mapListe(response.getBody(), narmestelederRelasjon2Ansatt);
     }
 
