@@ -37,6 +37,10 @@ spec:
     - "https://syfooppfolgingsplanservice.dev.intern.nav.no"
     - "https://syfooppfolgingsplanservice.nais.preprod.local"
     - "https://app-q1.adeo.no/syfooppfolgingsplanservice"
+  azure:
+    application:
+      enabled: true
+      tenant: trygdeetaten.no
   vault:
     enabled: true
     paths:
