@@ -125,11 +125,15 @@ public class OppfolgingsplanService {
         List<Oppfolgingsplan> oppfoelgingsdialoger = new ArrayList<>();
         List<Ansatt> ansatte = narmesteLederConsumer.ansatte(fnr);
 
-        ansatte.forEach(ansatt -> oppfoelgingsdialoger.addAll(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(ansatt.fnr)).stream()
-                .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
-                .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
-                .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktorId))
-                .collect(toList())));
+        ansatte.forEach(ansatt -> {
+            String ansattAktorId = aktorregisterConsumer.hentAktorIdForFnr(ansatt.fnr);
+            List<Oppfolgingsplan> ansattesOppfolgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ansattAktorId).stream()
+                    .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
+                    .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
+                    .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktorId))
+                    .collect(toList());
+            oppfoelgingsdialoger.addAll(ansattesOppfolgingsplaner);
+        });
         return oppfoelgingsdialoger;
     }
 
