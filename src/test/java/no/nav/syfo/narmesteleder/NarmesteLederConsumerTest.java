@@ -123,8 +123,8 @@ public class NarmesteLederConsumerTest {
         ReflectionTestUtils.setField(narmesteLederConsumer, "url", "http://syfonarmesteleder.url");
 
         NarmestelederResponse narmestelederResponse = new NarmestelederResponse().narmesteLederRelasjon(new NarmesteLederRelasjon()
-                                                                                                                .aktorId(SYKMELDT_AKTOR_ID)
-                                                                                                                .narmesteLederAktorId(LEDER_AKTOR_ID)
+                                                                                                                .fnr(SYKMELDT_FNR)
+                                                                                                                .narmesteLederFnr(LEDER_FNR)
                                                                                                                 .orgnummer(VIRKSOMHETSNUMMER));
 
         PdlHentPerson pdlHentPerson = mockPdlHentPerson();
@@ -133,10 +133,9 @@ public class NarmesteLederConsumerTest {
                 .thenReturn(new ResponseEntity<>(narmestelederResponse, OK));
         when(narmesteLederRelasjonConverter.convert(any(NarmesteLederRelasjon.class), anyString()))
                 .thenReturn(new Naermesteleder()
-                                    .naermesteLederAktoerId(LEDER_AKTOR_ID)
+                                    .naermesteLederFnr(LEDER_FNR)
                                     .orgnummer(VIRKSOMHETSNUMMER)
                                     .navn(pdlName()));
-        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn(LEDER_FNR);
         when(pdlConsumer.personName(anyString())).thenReturn(pdlName());
 
         Optional<Naermesteleder> naermestelederOptional = narmesteLederConsumer.narmesteLeder(SYKMELDT_AKTOR_ID, VIRKSOMHETSNUMMER);
@@ -144,7 +143,7 @@ public class NarmesteLederConsumerTest {
 
         Naermesteleder naermesteleder = naermestelederOptional.get();
 
-        assertThat(naermesteleder.naermesteLederAktoerId).isEqualTo(LEDER_AKTOR_ID);
+        assertThat(naermesteleder.naermesteLederFnr).isEqualTo(LEDER_FNR);
         assertThat(naermesteleder.orgnummer).isEqualTo(VIRKSOMHETSNUMMER);
         assertThat(naermesteleder.navn).isEqualTo(pdlName());
 

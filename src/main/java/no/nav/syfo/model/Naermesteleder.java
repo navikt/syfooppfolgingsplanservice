@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class Naermesteleder implements Serializable {
     public long naermesteLederId;
     public String naermesteLederAktoerId;
+    public String naermesteLederFnr;
     public String orgnummer;
     public NaermesteLederStatus naermesteLederStatus;
     public String navn;

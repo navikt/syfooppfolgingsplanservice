@@ -127,8 +127,7 @@ public class NarmesteLederConsumer {
 
         NarmesteLederRelasjon relasjon = response.getBody().narmesteLederRelasjon;
 
-        String lederAktorId = relasjon.narmesteLederAktorId;
-        String lederFnr = aktorregisterConsumer.hentFnrForAktor(lederAktorId);
+        String lederFnr = relasjon.narmesteLederFnr;
         String lederNavn = Optional.ofNullable(pdlConsumer.personName(lederFnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of leader was null"));
 
         metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER_VELLYKKET);

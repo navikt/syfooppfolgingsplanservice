@@ -19,6 +19,7 @@ public class NarmesteLederRelasjonConverter {
                                 .aktivTom(narmesteLederRelasjon.aktivTom))
                 .orgnummer(narmesteLederRelasjon.orgnummer)
                 .navn(lederNavn)
-                .naermesteLederAktoerId(narmesteLederRelasjon.narmesteLederAktorId);
+                .naermesteLederAktoerId(narmesteLederRelasjon.narmesteLederAktorId)
+                .naermesteLederFnr(narmesteLederRelasjon.narmesteLederFnr);
     }
 }
