@@ -27,6 +27,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
+import no.nav.syfo.azuread.AzureAdTokenClient;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Ansatt;
@@ -46,48 +47,57 @@ public class NarmesteLederConsumer {
     private static final Logger LOG = getLogger(NarmesteLederConsumer.class);
     private static final Function<NarmesteLederRelasjon, Ansatt> narmestelederRelasjon2Ansatt = narmesteLederRelasjon ->
             new Ansatt()
-                    .aktoerId(narmesteLederRelasjon.aktorId)
+                    .fnr(narmesteLederRelasjon.fnr)
                     .virksomhetsnummer(narmesteLederRelasjon.orgnummer);
     private final AktorregisterConsumer aktorregisterConsumer;
     private final AzureAdTokenConsumer azureAdTokenConsumer;
+    private final AzureAdTokenClient azureAdTokenClient;
     private final NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
     private final Metrikk metrikk;
     private final PdlConsumer pdlConsumer;
     private final RestTemplate restTemplate;
     private final String url;
     private final String syfonarmestelederId;
+    private final String narmestelederUrl;
+    private final String narmestelederScope;
 
     @Autowired
     public NarmesteLederConsumer(
             AktorregisterConsumer aktorregisterConsumer,
             AzureAdTokenConsumer azureAdTokenConsumer,
+            AzureAdTokenClient azureAdTokenClient,
             NarmesteLederRelasjonConverter narmesteLederRelasjonConverter,
             Metrikk metrikk,
             PdlConsumer pdlConsumer,
             RestTemplate restTemplateMedProxy,
             @Value("${syfonarmesteleder.url}") String url,
-            @Value("${syfonarmesteleder.id}") String syfonarmestelederId
+            @Value("${syfonarmesteleder.id}") String syfonarmestelederId,
+            @Value("${narmesteleder.url}") String narmestelederUrl,
+            @Value("${narmesteleder.scope}") String narmestelederScope
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.azureAdTokenConsumer = azureAdTokenConsumer;
+        this.azureAdTokenClient = azureAdTokenClient;
         this.narmesteLederRelasjonConverter = narmesteLederRelasjonConverter;
         this.metrikk = metrikk;
         this.pdlConsumer = pdlConsumer;
         this.restTemplate = restTemplateMedProxy;
         this.url = url;
         this.syfonarmestelederId = syfonarmestelederId;
+        this.narmestelederUrl = narmestelederUrl;
+        this.narmestelederScope = narmestelederScope;
     }
 
-    @Cacheable(value = CACHENAME_ANSATTE, key = "#aktorId", condition = "#aktorId != null")
-    public List<Ansatt> ansatte(String aktorId) {
+    @Cacheable(value = CACHENAME_ANSATTE, key = "#fnr", condition = "#fnr != null")
+    public List<Ansatt> ansatte(String fnr) {
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
-        String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
+        String token = azureAdTokenClient.getAccessToken(narmestelederScope);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
-                getAnsatteUrl(aktorId),
+                getAnsatteUrl(),
                 GET,
-                entity(token),
-                new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
+                entityForNarmesteLeder(token, fnr),
+                new ParameterizedTypeReference<>() {
                 }
         );
 
@@ -140,19 +150,26 @@ public class NarmesteLederConsumer {
         return new HttpEntity<>(headers);
     }
 
-    private String getAnsatteUrl(String aktoerId) {
-        return url + "/syfonarmesteleder/narmesteLeder/" + aktoerId;
+    private HttpEntity entityForNarmesteLeder(String token, String lederFnr) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
+        headers.add("Narmeste-Leder-Fnr", lederFnr);
+        return new HttpEntity<>(headers);
+    }
+
+    private String getAnsatteUrl() {
+        return narmestelederUrl + "/leder/narmesteleder/aktive";
     }
 
     private String getLederUrl(String aktoerId, String virksomhetsnummer) {
         return UriComponentsBuilder.fromHttpUrl(url + "/syfonarmesteleder/sykmeldt/" + aktoerId).queryParam("orgnummer", virksomhetsnummer).toUriString();
     }
 
-    public boolean erAktorLederForAktor(String naermesteLederAktorId, String ansattAktorId) {
-        List<String> ansatteAktorId = ansatte(naermesteLederAktorId).stream()
-                .map(Ansatt::aktoerId)
+    public boolean erNaermesteLederForAnsatt(String naermesteLederFnr, String ansattFnr) {
+        List<String> ansatteFnr = ansatte(naermesteLederFnr).stream()
+                .map(Ansatt::fnr)
                 .collect(toList());
 
-        return ansatteAktorId.contains(ansattAktorId);
+        return ansatteFnr.contains(ansattFnr);
     }
 }

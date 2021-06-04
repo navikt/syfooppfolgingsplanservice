@@ -111,7 +111,7 @@ public class OppfolgingsplanService {
         String innloggetAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
         if (ARBEIDSGIVER == brukerkontekst) {
-            return arbeidsgiversOppfolgingsplaner(innloggetAktorId);
+            return arbeidsgiversOppfolgingsplaner(innloggetAktorId, innloggetFnr);
         }
 
         if (ARBEIDSTAKER == brukerkontekst) {
@@ -121,15 +121,19 @@ public class OppfolgingsplanService {
         return emptyList();
     }
 
-    private List<Oppfolgingsplan> arbeidsgiversOppfolgingsplaner(String aktorId) {
+    private List<Oppfolgingsplan> arbeidsgiversOppfolgingsplaner(String aktorId, String fnr) {
         List<Oppfolgingsplan> oppfoelgingsdialoger = new ArrayList<>();
-        List<Ansatt> ansatte = narmesteLederConsumer.ansatte(aktorId);
+        List<Ansatt> ansatte = narmesteLederConsumer.ansatte(fnr);
 
-        ansatte.forEach(ansatt -> oppfoelgingsdialoger.addAll(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ansatt.aktoerId).stream()
-                .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
-                .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
-                .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktorId))
-                .collect(toList())));
+        ansatte.forEach(ansatt -> {
+            String ansattAktorId = aktorregisterConsumer.hentAktorIdForFnr(ansatt.fnr);
+            List<Oppfolgingsplan> ansattesOppfolgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ansattAktorId).stream()
+                    .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
+                    .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
+                    .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktorId))
+                    .collect(toList());
+            oppfoelgingsdialoger.addAll(ansattesOppfolgingsplaner);
+        });
         return oppfoelgingsdialoger;
     }
 
@@ -153,15 +157,16 @@ public class OppfolgingsplanService {
     public Long opprettOppfolgingsplan(RSOpprettOppfoelgingsdialog rsOpprettOppfolgingsplan, String innloggetFnr) {
         String virksomhetsnummer = rsOpprettOppfolgingsplan.virksomhetsnummer;
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
-        String sykmeldtAktoerId = innloggetFnr.equals(rsOpprettOppfolgingsplan.sykmeldtFnr)
+        String sykmeldtFnr = rsOpprettOppfolgingsplan.sykmeldtFnr;
+        String sykmeldtAktoerId = innloggetFnr.equals(sykmeldtFnr)
                 ? innloggetAktoerId
-                : aktorregisterConsumer.hentAktorIdForFnr(rsOpprettOppfolgingsplan.sykmeldtFnr);
+                : aktorregisterConsumer.hentAktorIdForFnr(sykmeldtFnr);
 
         if (pdlConsumer.isKode6Or7(aktorregisterConsumer.hentFnrForAktor(sykmeldtAktoerId))) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
-        if (!tilgangskontrollService.kanOppretteOppfolgingsplan(sykmeldtAktoerId, innloggetAktoerId, virksomhetsnummer)) {
+        if (!tilgangskontrollService.kanOppretteOppfolgingsplan(sykmeldtAktoerId, innloggetAktoerId, sykmeldtFnr, innloggetFnr, virksomhetsnummer)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
@@ -178,7 +183,7 @@ public class OppfolgingsplanService {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
-        if (!tilgangskontrollService.aktorTilhorerOppfolgingsplan(innloggetAktoerId, oppfolgingsplan)) {
+        if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(innloggetFnr, oppfolgingsplan)) {
             throw new ForbiddenException();
         }
         String sykmeldtAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
@@ -266,7 +271,7 @@ public class OppfolgingsplanService {
                 .opprettetDato(deltMedNavTidspunkt)
                 .sistEndret(deltMedNavTidspunkt);
 
-        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfoelgingsplan);
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfoelgingsplan);
 
         godkjentplanDAO.delMedNav(oppfolgingsplanId, deltMedNavTidspunkt);
         veilederBehandlingDAO.opprett(veilederBehandling);
@@ -278,9 +283,8 @@ public class OppfolgingsplanService {
     @Transactional
     public void delMedFastlege(long oppfolgingsplanId, String innloggetFnr) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
-        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfolgingsplan);
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
 
         String sendesTilAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
         String sendesTilFnr = aktorregisterConsumer.hentFnrForAktor(sendesTilAktoerId);
@@ -300,7 +304,7 @@ public class OppfolgingsplanService {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
-        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfolgingsplan);
+        throwExceptionWithoutAccessToOppfolgingsplan(fnr, oppfolgingsplan);
 
         oppfolgingsplanDAO.sistEndretAv(oppfolgingsplanId, innloggetAktoerId);
         oppfolgingsplanDAO.nullstillSamtykke(oppfolgingsplanId);
@@ -311,7 +315,7 @@ public class OppfolgingsplanService {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
 
-        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfolgingsplan);
+        throwExceptionWithoutAccessToOppfolgingsplan(fnr, oppfolgingsplan);
 
         oppfolgingsplanDAO.oppdaterSistInnlogget(oppfolgingsplan, innloggetAktoerId);
     }
@@ -321,7 +325,7 @@ public class OppfolgingsplanService {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
-        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfolgingsplan);
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
 
         oppfolgingsplanDAO.avbryt(oppfolgingsplan.id, innloggetAktoerId);
         long nyOppfolgingsplanId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId);
@@ -338,15 +342,14 @@ public class OppfolgingsplanService {
 
     public boolean harBrukerTilgangTilDialog(long oppfolgingsplanId, String fnr) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
-        String aktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
-        return tilgangskontrollService.aktorTilhorerOppfolgingsplan(aktoerId, oppfolgingsplan);
+        return tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan);
     }
 
     public void foresporRevidering(long oppfolgingsplanId, String innloggetFnr) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
-        throwExceptionWithoutAccessToOppfolgingsplan(innloggetAktoerId, oppfolgingsplan);
+        throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
 
         if (erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
             Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
@@ -356,8 +359,8 @@ public class OppfolgingsplanService {
         }
     }
 
-    private void throwExceptionWithoutAccessToOppfolgingsplan(String loggedInAktorId, Oppfolgingsplan oppfolgingsplan) {
-        if (!tilgangskontrollService.aktorTilhorerOppfolgingsplan(loggedInAktorId, oppfolgingsplan)) {
+    private void throwExceptionWithoutAccessToOppfolgingsplan(String fnr, Oppfolgingsplan oppfolgingsplan) {
+        if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan)) {
             throw new ForbiddenException();
         }
     }

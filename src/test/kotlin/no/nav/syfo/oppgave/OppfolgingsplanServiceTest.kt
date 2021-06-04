@@ -8,6 +8,7 @@ import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.repository.dao.GodkjentplanDAO
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO
 import no.nav.syfo.service.*
+import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.util.OppfoelgingsdialogUtil
 import org.assertj.core.api.Assertions.assertThat
@@ -46,7 +47,8 @@ class OppfolgingsplanServiceTest {
         val dialog1 = Oppfolgingsplan().id(1L).arbeidstaker(Person().aktoerId("sykmeldt")).virksomhet(Virksomhet().virksomhetsnummer("1"))
         val dialog2 = Oppfolgingsplan().id(2L).arbeidstaker(Person().aktoerId("sykmeldt")).virksomhet(Virksomhet().virksomhetsnummer("2"))
         Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr("123")).thenReturn(LEDER_FNR)
-        Mockito.`when`(narmesteLederConsumer.ansatte(ArgumentMatchers.anyString())).thenReturn(Arrays.asList(Ansatt().aktoerId("sykmeldt").virksomhetsnummer("1")))
+        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ARBEIDSTAKER_FNR)).thenReturn("sykmeldt")
+        Mockito.`when`(narmesteLederConsumer.ansatte(ArgumentMatchers.anyString())).thenReturn(Arrays.asList(Ansatt().fnr(ARBEIDSTAKER_FNR).virksomhetsnummer("1")))
         Mockito.`when`(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ArgumentMatchers.anyString())).thenReturn(Arrays.asList(
             dialog1,
             dialog2

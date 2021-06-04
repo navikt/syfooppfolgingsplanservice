@@ -7,6 +7,6 @@ import java.io.Serializable;
 @Data
 @Accessors(fluent = true)
 public class Ansatt implements Serializable {
-    public String aktoerId;
+    public String fnr;
     public String virksomhetsnummer;
 }

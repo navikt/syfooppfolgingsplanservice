@@ -61,13 +61,11 @@ public class ArbeidsgiverOppfolgingsplanController {
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public Long opprettOppfolgingsplanSomArbeidsgiver(@RequestBody RSOpprettOppfoelgingsdialog rsOpprettOppfolgingsplan) {
-        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
+        String innloggetFnr = getSubjectEksternMedThrows(contextHolder);
+        String sykmeldtFnr = rsOpprettOppfolgingsplan.sykmeldtFnr;
 
-        String innloggetAktorId = aktorService.hentAktorIdForFnr(innloggetIdent);
-        String sykmeldtAktorId = aktorService.hentAktorIdForFnr(rsOpprettOppfolgingsplan.sykmeldtFnr);
-
-        if (narmesteLederConsumer.erAktorLederForAktor(innloggetAktorId, sykmeldtAktorId)) {
-            Long id = oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfolgingsplan, innloggetIdent);
+        if (narmesteLederConsumer.erNaermesteLederForAnsatt(innloggetFnr, sykmeldtFnr)) {
+            Long id = oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfolgingsplan, innloggetFnr);
 
             metrikk.tellHendelse("opprett_oppfolgingsplan_ag");
 
