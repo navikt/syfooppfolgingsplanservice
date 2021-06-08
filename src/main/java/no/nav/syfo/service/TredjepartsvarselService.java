@@ -1,6 +1,8 @@
 package no.nav.syfo.service;
 
 import no.nav.melding.virksomhet.servicemeldingmedkontaktinformasjon.v1.servicemeldingmedkontaktinformasjon.*;
+
+import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.model.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
@@ -23,9 +25,12 @@ public class TredjepartsvarselService {
 
     private JmsTemplate tredjepartsvarselqueue;
 
+    AktorregisterConsumer aktorregisterConsumer;
+
     @Autowired
-    public TredjepartsvarselService(@Qualifier("tredjepartsvarselqueue") JmsTemplate tredjepartsvarselqueue) {
+    public TredjepartsvarselService(@Qualifier("tredjepartsvarselqueue") JmsTemplate tredjepartsvarselqueue, AktorregisterConsumer aktorregisterConsumer) {
         this.tredjepartsvarselqueue = tredjepartsvarselqueue;
+        this.aktorregisterConsumer = aktorregisterConsumer;
     }
 
     public void sendVarselTilNaermesteLeder(Varseltype varseltype, Naermesteleder naermesteleder) {
@@ -33,7 +38,10 @@ public class TredjepartsvarselService {
                 createParameter("url", tjenesterUrl + "/sykefravaerarbeidsgiver/")
         );
         WSServicemeldingMedKontaktinformasjon melding = new WSServicemeldingMedKontaktinformasjon();
-        populerServiceMelding(melding, kontaktinformasjon(naermesteleder), naermesteleder, varseltype, parametere);
+
+        String narmesteLederAktorId = aktorregisterConsumer.hentAktorIdForFnr(naermesteleder.naermesteLederFnr);
+
+        populerServiceMelding(melding, kontaktinformasjon(naermesteleder), narmesteLederAktorId, naermesteleder.orgnummer, varseltype, parametere);
 
 
         String xml = marshallTredjepartsServiceMelding(new ObjectFactory().createServicemelding(melding));
@@ -49,11 +57,12 @@ public class TredjepartsvarselService {
 
     private void populerServiceMelding(WSServicemeldingMedKontaktinformasjon servicemeldingMedKontaktinformasjon,
                                        List<WSKontaktinformasjon> kontaktinformasjon,
-                                       Naermesteleder naermesteleder,
+                                       String narmesteLederAktorId,
+                                       String orgnummer,
                                        Varseltype varseltype,
                                        List<WSParameter> parametere) {
-        servicemeldingMedKontaktinformasjon.setMottaker(aktoer(naermesteleder.naermesteLederAktoerId));
-        servicemeldingMedKontaktinformasjon.setTilhoerendeOrganisasjon(organisasjon(naermesteleder.orgnummer));
+        servicemeldingMedKontaktinformasjon.setMottaker(aktoer(narmesteLederAktorId));
+        servicemeldingMedKontaktinformasjon.setTilhoerendeOrganisasjon(organisasjon(orgnummer));
         servicemeldingMedKontaktinformasjon.setVarseltypeId(varseltype.name());
         servicemeldingMedKontaktinformasjon.getParameterListe().addAll(parametere);
         servicemeldingMedKontaktinformasjon.getKontaktinformasjonListe().addAll(kontaktinformasjon);
