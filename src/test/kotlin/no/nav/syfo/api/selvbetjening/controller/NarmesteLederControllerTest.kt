@@ -5,11 +5,9 @@ import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
-import no.nav.syfo.testhelper.NarmesteLederGenerator
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
-import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
@@ -36,9 +34,9 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
 
     @Inject
     private lateinit var narmesteLederController: NarmesteLederController
-    private val narmesteLederGenerator = NarmesteLederGenerator()
-    private val naermesteleder = narmesteLederGenerator.generateNarmesteLeder()
-        .naermesteLederAktoerId(LEDER_AKTORID)
+
+    private val naermesteleder = Naermesteleder()
+            .naermesteLederFnr(LEDER_FNR)
     private val httpHeaders = getHttpHeaders()
 
     @Before
