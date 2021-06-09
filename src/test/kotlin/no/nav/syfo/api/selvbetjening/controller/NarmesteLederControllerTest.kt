@@ -1,18 +1,15 @@
 package no.nav.syfo.api.selvbetjening.controller
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
-import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -23,8 +20,6 @@ import java.util.*
 import javax.inject.Inject
 
 class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
-    @MockBean
-    lateinit var aktorregisterConsumer: AktorregisterConsumer
 
     @MockBean
     lateinit var brukertilgangConsumer: BrukertilgangConsumer
@@ -39,16 +34,11 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
             .naermesteLederFnr(LEDER_FNR)
     private val httpHeaders = getHttpHeaders()
 
-    @Before
-    fun setup() {
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
-    }
-
     @Test
     fun narmesteLeder_ansatt_ok() {
         loggInnBruker(contextHolder, LEDER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_AKTORID, VIRKSOMHETSNUMMER))
+        Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER))
             .thenReturn(Optional.of(naermesteleder))
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(httpHeaders, VIRKSOMHETSNUMMER)
         val body = res.body as Naermesteleder
@@ -59,7 +49,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
     @Test
     fun narmesteLeder_self_ok() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
-        Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_AKTORID, VIRKSOMHETSNUMMER))
+        Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER))
             .thenReturn(Optional.of(naermesteleder))
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(httpHeaders, VIRKSOMHETSNUMMER)
         val body = res.body as Naermesteleder
@@ -71,7 +61,7 @@ class NarmesteLederControllerTest : AbstractRessursTilgangTest() {
     fun narmesteLeder_noContent() {
         loggInnBruker(contextHolder, LEDER_FNR)
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_AKTORID, VIRKSOMHETSNUMMER)).thenReturn(Optional.empty())
+        Mockito.`when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)).thenReturn(Optional.empty())
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(httpHeaders, VIRKSOMHETSNUMMER)
         Assert.assertEquals(204, res.statusCodeValue.toLong())
     }

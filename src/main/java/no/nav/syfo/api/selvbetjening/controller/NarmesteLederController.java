@@ -22,7 +22,6 @@ import static no.nav.syfo.oidc.OIDCUtil.getSubjectEksternMedThrows;
 import static no.nav.syfo.util.RequestUtilKt.NAV_PERSONIDENT_HEADER;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
@@ -37,7 +36,6 @@ public class NarmesteLederController {
 
     private final TokenValidationContextHolder oidcContextHolder;
     private final Metrikk metrikk;
-    private final AktorregisterConsumer aktorregisterConsumer;
     private final BrukertilgangService brukertilgangService;
     private final NarmesteLederConsumer narmesteLederConsumer;
 
@@ -45,13 +43,11 @@ public class NarmesteLederController {
     public NarmesteLederController(
             TokenValidationContextHolder oidcContextHolder,
             Metrikk metrikk,
-            AktorregisterConsumer aktorregisterConsumer,
             BrukertilgangService brukertilgangService,
             NarmesteLederConsumer narmesteLederConsumer
     ) {
         this.oidcContextHolder = oidcContextHolder;
         this.metrikk = metrikk;
-        this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukertilgangService = brukertilgangService;
         this.narmesteLederConsumer = narmesteLederConsumer;
     }
@@ -77,9 +73,8 @@ public class NarmesteLederController {
                         .status(HttpStatus.FORBIDDEN)
                         .build();
             }
-            String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
 
-            Optional<Naermesteleder> narmesteLeder = narmesteLederConsumer.narmesteLeder(oppslattIdentAktorId, virksomhetsnummer);
+            Optional<Naermesteleder> narmesteLeder = narmesteLederConsumer.narmesteLeder(oppslaattIdent, virksomhetsnummer);
             if (narmesteLeder.isPresent()) {
                 return ResponseEntity
                         .status(HttpStatus.OK)
