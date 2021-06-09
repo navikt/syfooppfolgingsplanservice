@@ -16,7 +16,7 @@ class OppfolgingsplanLPSRetryScheduler @Inject constructor(
     private val oppfolgingsplanLPSService: OppfolgingsplanLPSService
 ) {
 
-    @Scheduled(fixedDelay = ONE_HOUR_MILLISECONDS)
+    @Scheduled(fixedDelay = FIFTEEN_MINUTES_MILLISECONDS)
     fun retryProcessOppfolgingsplanLPS() {
         if (leaderElectionService.isLeader) {
             val oppfolgingsplanLPSRetryList: List<POppfolgingsplanLPSRetry> = oppfolgingsplanLPSRetryDAO.get().shuffled()
@@ -35,6 +35,6 @@ class OppfolgingsplanLPSRetryScheduler @Inject constructor(
     companion object {
         private val LOG = LoggerFactory.getLogger(OppfolgingsplanLPSRetryScheduler::class.java)
 
-        private const val ONE_HOUR_MILLISECONDS: Long = 15 * 60 * 1000
+        private const val FIFTEEN_MINUTES_MILLISECONDS: Long = 15 * 60 * 1000
     }
 }
