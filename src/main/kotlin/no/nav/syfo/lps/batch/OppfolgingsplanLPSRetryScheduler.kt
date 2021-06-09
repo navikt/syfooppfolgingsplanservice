@@ -35,6 +35,6 @@ class OppfolgingsplanLPSRetryScheduler @Inject constructor(
     companion object {
         private val LOG = LoggerFactory.getLogger(OppfolgingsplanLPSRetryScheduler::class.java)
 
-        private const val ONE_HOUR_MILLISECONDS: Long = 15 * 60 * 1000
+        private const val ONE_HOUR_MILLISECONDS: Long = 60 * 60 * 1000
     }
 }
