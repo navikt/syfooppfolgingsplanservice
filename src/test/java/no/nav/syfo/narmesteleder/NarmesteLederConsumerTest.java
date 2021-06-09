@@ -34,7 +34,6 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
 import no.nav.syfo.azuread.AzureAdTokenClient;
-import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
@@ -42,9 +41,6 @@ import no.nav.syfo.pdl.PdlConsumer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NarmesteLederConsumerTest {
-
-    @Mock
-    private AzureAdTokenConsumer azureAdTokenConsumer;
 
     @Mock
     private AzureAdTokenClient azureAdTokenClient;
@@ -111,7 +107,7 @@ public class NarmesteLederConsumerTest {
 
     @Test
     public void getNarmesteLeder() {
-        ReflectionTestUtils.setField(narmesteLederConsumer, "url", "http://syfonarmesteleder.url");
+        ReflectionTestUtils.setField(narmesteLederConsumer, "narmestelederUrl", "http://narmesteleder.url");
 
         NarmestelederResponse narmestelederResponse = new NarmestelederResponse().narmesteLederRelasjon(new NarmesteLederRelasjon()
                                                                                                                 .fnr(SYKMELDT_FNR)
@@ -142,7 +138,7 @@ public class NarmesteLederConsumerTest {
 
     @Test
     public void empty_optional_when_no_object_from_syfonarmesteleder() {
-        ReflectionTestUtils.setField(narmesteLederConsumer, "url", "http://syfonarmesteleder.url");
+        ReflectionTestUtils.setField(narmesteLederConsumer, "narmestelederUrl", "http://narmesteleder.url");
 
         NarmestelederResponse narmestelederResponse = new NarmestelederResponse().narmesteLederRelasjon(null);
 
@@ -157,7 +153,7 @@ public class NarmesteLederConsumerTest {
 
     @Test
     public void erNaermesteLederForAnsatt(){
-        ReflectionTestUtils.setField(narmesteLederConsumer, "url", "http://syfonarmesteleder.url");
+        ReflectionTestUtils.setField(narmesteLederConsumer, "narmestelederUrl", "http://narmesteleder.url");
         List<NarmesteLederRelasjon> narmesteLederRelasjoner = singletonList(
                 new NarmesteLederRelasjon()
                         .fnr(SYKMELDT_FNR)
