@@ -33,22 +33,15 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.azuread.AzureAdTokenClient;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.PdlConsumer;
-import no.nav.syfo.pdl.PdlHentPerson;
-import no.nav.syfo.pdl.PdlPerson;
-import no.nav.syfo.pdl.PdlPersonNavn;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NarmesteLederConsumerTest {
-
-    @Mock
-    private AktorregisterConsumer aktorregisterConsumer;
 
     @Mock
     private AzureAdTokenConsumer azureAdTokenConsumer;
@@ -71,8 +64,6 @@ public class NarmesteLederConsumerTest {
     @InjectMocks
     private NarmesteLederConsumer narmesteLederConsumer;
 
-    private final String SYKMELDT_AKTOR_ID = "1234567890987";
-    private final String LEDER_AKTOR_ID = "7890987654321";
     private final String VIRKSOMHETSNUMMER = "1234";
     private final String SYKMELDT_FNR = "10987654321";
     private final String LEDER_FNR = "12345678901";
@@ -127,8 +118,6 @@ public class NarmesteLederConsumerTest {
                                                                                                                 .narmesteLederFnr(LEDER_FNR)
                                                                                                                 .orgnummer(VIRKSOMHETSNUMMER));
 
-        PdlHentPerson pdlHentPerson = mockPdlHentPerson();
-
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(NarmestelederResponse.class)))
                 .thenReturn(new ResponseEntity<>(narmestelederResponse, OK));
         when(narmesteLederRelasjonConverter.convert(any(NarmesteLederRelasjon.class), anyString()))
@@ -138,7 +127,7 @@ public class NarmesteLederConsumerTest {
                                     .navn(pdlName()));
         when(pdlConsumer.personName(anyString())).thenReturn(pdlName());
 
-        Optional<Naermesteleder> naermestelederOptional = narmesteLederConsumer.narmesteLeder(SYKMELDT_AKTOR_ID, VIRKSOMHETSNUMMER);
+        Optional<Naermesteleder> naermestelederOptional = narmesteLederConsumer.narmesteLeder(SYKMELDT_FNR, VIRKSOMHETSNUMMER);
         assertThat(naermestelederOptional.isPresent()).isTrue();
 
         Naermesteleder naermesteleder = naermestelederOptional.get();
@@ -160,10 +149,9 @@ public class NarmesteLederConsumerTest {
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(NarmestelederResponse.class))).thenReturn(
                 new ResponseEntity<>(narmestelederResponse, OK));
 
-        Optional<Naermesteleder> naermestelederOptional = narmesteLederConsumer.narmesteLeder(SYKMELDT_AKTOR_ID, VIRKSOMHETSNUMMER);
+        Optional<Naermesteleder> naermestelederOptional = narmesteLederConsumer.narmesteLeder(SYKMELDT_FNR, VIRKSOMHETSNUMMER);
         assertThat(naermestelederOptional.isPresent()).isFalse();
 
-        verify(aktorregisterConsumer, never()).hentAktorIdForFnr(anyString());
         verify(pdlConsumer, never()).person(anyString());
     }
 
@@ -180,20 +168,6 @@ public class NarmesteLederConsumerTest {
         }))).thenReturn(new ResponseEntity<>(narmesteLederRelasjoner, OK));
         boolean erNaermesteLederForAnsatt = narmesteLederConsumer.erNaermesteLederForAnsatt(LEDER_FNR, SYKMELDT_FNR);
         assertThat(erNaermesteLederForAnsatt).isTrue();
-    }
-
-    private PdlHentPerson mockPdlHentPerson() {
-        return new PdlHentPerson(
-                new PdlPerson(
-                        singletonList(
-                                new PdlPersonNavn(
-                                        FIRSTNAME,
-                                        MIDDLENAME,
-                                        SURNAME
-                                )),
-                        null
-                )
-        );
     }
 
     private String pdlName() {
