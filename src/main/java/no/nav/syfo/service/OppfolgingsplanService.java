@@ -166,7 +166,7 @@ public class OppfolgingsplanService {
             throw new ForbiddenException("Ikke tilgang");
         }
 
-        if (!tilgangskontrollService.kanOppretteOppfolgingsplan(sykmeldtAktoerId, innloggetAktoerId, sykmeldtFnr, innloggetFnr, virksomhetsnummer)) {
+        if (!tilgangskontrollService.kanOppretteOppfolgingsplan(sykmeldtFnr, innloggetFnr, virksomhetsnummer)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
