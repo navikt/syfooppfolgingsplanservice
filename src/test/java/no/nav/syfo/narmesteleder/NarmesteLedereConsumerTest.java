@@ -57,7 +57,6 @@ public class NarmesteLedereConsumerTest {
     @InjectMocks
     private NarmesteLedereConsumer narmesteLedereConsumer;
 
-    private final String SYKMELDT_AKTOR_ID = "1234567890987";
     private final String SYKMELDT_FNR = "10987654321";
     private final String LEDER_FNR = "12345678901";
     private final String NAVN = "Firstname";
@@ -83,7 +82,7 @@ public class NarmesteLedereConsumerTest {
                                     .navn(pdlName()));
         when(pdlConsumer.personName(anyString())).thenReturn(pdlName());
 
-        Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_AKTOR_ID);
+        Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_FNR);
         assertThat(naermestelederOptional.isPresent()).isTrue();
 
         Naermesteleder naermesteleder = naermestelederOptional.get().get(0);
@@ -104,7 +103,7 @@ public class NarmesteLedereConsumerTest {
         })))
                 .thenReturn(new ResponseEntity<>(null, OK));
 
-        Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_AKTOR_ID);
+        Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_FNR);
         assertThat(naermestelederOptional.isPresent()).isFalse();
 
 
