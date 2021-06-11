@@ -47,7 +47,8 @@ public class TredjepartsvarselService {
         String narmesteLederAktorId = aktorregisterConsumer.hentAktorIdForFnr(naermesteleder.naermesteLederFnr);
 
         populerServiceMelding(melding, kontaktinformasjon(naermesteleder), narmesteLederAktorId, naermesteleder.orgnummer, varseltype, parametere);
-        log.info("Melding: " + melding);
+        log.info("Melding - mottaker: " + ((WSAktoerId)melding.getMottaker()).getAktoerId());
+        log.info("Melding - mottaker: " + melding.getTilhoerendeOrganisasjon().getOrgnummer());
 
         String xml = marshallTredjepartsServiceMelding(new ObjectFactory().createServicemelding(melding));
         tredjepartsvarselqueue.send(messageCreator(xml, randomUUID().toString()));
