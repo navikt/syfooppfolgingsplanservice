@@ -91,7 +91,6 @@ public class NarmesteLederConsumer {
         throwExceptionIfError(response.getStatusCode(), HENT_ANSATTE_SYFONARMESTELEDER_FEILET);
 
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET);
-        LOG.info("Response ansatte: " + response.getBody());
         return mapListe(response.getBody(), narmestelederRelasjon2Ansatt);
     }
 
@@ -106,7 +105,6 @@ public class NarmesteLederConsumer {
                 entityForSykmeldt(token, fnr),
                 NarmestelederResponse.class
         );
-        LOG.info("Response narmesteLeder: " + response.getBody());
         throwExceptionIfError(response.getStatusCode(), HENT_LEDER_SYFONARMESTELEDER_FEILET);
 
         if (response.getBody().narmesteLederRelasjon == null) {
