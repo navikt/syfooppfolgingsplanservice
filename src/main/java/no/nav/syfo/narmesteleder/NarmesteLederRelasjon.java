@@ -14,7 +14,6 @@ public class NarmesteLederRelasjon {
     public String aktorId;
     public String fnr;
     public String orgnummer;
-    public String narmesteLederAktorId;
     public String narmesteLederFnr;
     public String narmesteLederTelefonnummer;
     public String narmesteLederEpost;

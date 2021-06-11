@@ -80,7 +80,8 @@ public class NarmesteLedereConsumer {
                 getLedereUrl(aktorId),
                 GET,
                 entity(token),
-                new ParameterizedTypeReference<List<NarmesteLederRelasjon>>(){}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
          throwExceptionIfError(response.getStatusCode(), HENT_LEDERE_SYFONARMESTELEDER_FEILET);
@@ -93,8 +94,7 @@ public class NarmesteLedereConsumer {
         List<Naermesteleder> narmesteLedere = new ArrayList<>();
 
         for (NarmesteLederRelasjon relasjon : relasjoner) {
-            String lederAktorId = relasjon.narmesteLederAktorId;
-            String lederFnr = aktorregisterConsumer.hentFnrForAktor(lederAktorId);
+            String lederFnr = relasjon.narmesteLederFnr;
             String lederNavn = Optional.ofNullable(pdlConsumer.personName(lederFnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of leader was null"));
             narmesteLedere.add(narmesteLederRelasjonConverter.convert(relasjon, lederNavn));
         }

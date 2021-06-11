@@ -58,8 +58,8 @@ public class NarmesteLedereConsumerTest {
     private NarmesteLedereConsumer narmesteLedereConsumer;
 
     private final String SYKMELDT_AKTOR_ID = "1234567890987";
-    private final String LEDER_AKTOR_ID = "7890987654321";
-    private final String FODSELSNUMMER = "12345678901";
+    private final String SYKMELDT_FNR = "10987654321";
+    private final String LEDER_FNR = "12345678901";
     private final String NAVN = "Firstname";
     private final String MELLOMNAVN = "Middlename";
     private final String ETTERNAVN = "Surname";
@@ -70,8 +70,8 @@ public class NarmesteLedereConsumerTest {
 
         List<NarmesteLederRelasjon> narmesteLederRelasjoner = singletonList(
                 new NarmesteLederRelasjon()
-                        .aktorId(SYKMELDT_AKTOR_ID)
-                        .narmesteLederAktorId(LEDER_AKTOR_ID)
+                        .fnr(SYKMELDT_FNR)
+                        .narmesteLederFnr(LEDER_FNR)
         );
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
@@ -79,9 +79,8 @@ public class NarmesteLedereConsumerTest {
                 .thenReturn(new ResponseEntity<>(narmesteLederRelasjoner, OK));
         when(narmesteLederRelasjonConverter.convert(any(NarmesteLederRelasjon.class), anyString()))
                 .thenReturn(new Naermesteleder()
-                                    .naermesteLederAktoerId(LEDER_AKTOR_ID)
+                                    .naermesteLederFnr(LEDER_FNR)
                                     .navn(pdlName()));
-        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn(FODSELSNUMMER);
         when(pdlConsumer.personName(anyString())).thenReturn(pdlName());
 
         Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_AKTOR_ID);
@@ -89,7 +88,7 @@ public class NarmesteLedereConsumerTest {
 
         Naermesteleder naermesteleder = naermestelederOptional.get().get(0);
 
-        assertThat(naermesteleder.naermesteLederAktoerId).isEqualTo(LEDER_AKTOR_ID);
+        assertThat(naermesteleder.naermesteLederFnr).isEqualTo(LEDER_FNR);
         assertThat(naermesteleder.navn).isEqualTo(pdlName());
 
         verify(metrikk).tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
