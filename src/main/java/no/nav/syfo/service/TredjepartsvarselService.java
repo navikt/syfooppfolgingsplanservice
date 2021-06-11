@@ -4,6 +4,8 @@ import no.nav.melding.virksomhet.servicemeldingmedkontaktinformasjon.v1.servicem
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.model.*;
+
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,13 @@ import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.util.JAXB.marshallTredjepartsServiceMelding;
 import static no.nav.syfo.util.JmsUtil.messageCreator;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 @Transactional
 public class TredjepartsvarselService {
+
+    private static final Logger log = getLogger(TredjepartsvarselService.class);
 
     @Value("${tjenester.url}")
     private String tjenesterUrl;
@@ -42,7 +47,7 @@ public class TredjepartsvarselService {
         String narmesteLederAktorId = aktorregisterConsumer.hentAktorIdForFnr(naermesteleder.naermesteLederFnr);
 
         populerServiceMelding(melding, kontaktinformasjon(naermesteleder), narmesteLederAktorId, naermesteleder.orgnummer, varseltype, parametere);
-
+        log.info("Melding: " + melding);
 
         String xml = marshallTredjepartsServiceMelding(new ObjectFactory().createServicemelding(melding));
         tredjepartsvarselqueue.send(messageCreator(xml, randomUUID().toString()));
