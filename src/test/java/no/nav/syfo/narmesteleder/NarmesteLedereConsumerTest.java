@@ -27,9 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.azuread.AzureAdTokenClient;
-import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.PdlConsumer;
