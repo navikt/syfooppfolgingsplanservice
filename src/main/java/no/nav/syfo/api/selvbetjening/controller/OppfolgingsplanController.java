@@ -179,15 +179,6 @@ public class OppfolgingsplanController {
         return tiltakService.lagreTiltak(id, tiltak, innloggetIdent);
     }
 
-    @PostMapping(path = "/foresporRevidering")
-    public void foresporRevidering(@PathVariable("id") Long id) {
-        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
-
-        oppfolgingsplanService.foresporRevidering(id, innloggetIdent);
-
-        metrikk.tellHendelse("forespor_revidering");
-    }
-
     @PostMapping(path = "/nullstillGodkjenning")
     public void nullstillGodkjenning(@PathVariable("id") Long id) {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
