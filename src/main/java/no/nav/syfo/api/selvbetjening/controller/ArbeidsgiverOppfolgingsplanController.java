@@ -2,7 +2,6 @@ package no.nav.syfo.api.selvbetjening.controller;
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.metric.Metrikk;
@@ -28,7 +27,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ArbeidsgiverOppfolgingsplanController {
 
     private final TokenValidationContextHolder contextHolder;
-    private final AktorregisterConsumer aktorService;
     private final NarmesteLederConsumer narmesteLederConsumer;
     private final OppfolgingsplanService oppfolgingsplanService;
     private final Metrikk metrikk;
@@ -36,13 +34,11 @@ public class ArbeidsgiverOppfolgingsplanController {
     @Inject
     public ArbeidsgiverOppfolgingsplanController(
             TokenValidationContextHolder contextHolder,
-            AktorregisterConsumer aktorService,
             NarmesteLederConsumer narmesteLederConsumer,
             OppfolgingsplanService oppfolgingsplanService,
             Metrikk metrikk
     ) {
         this.contextHolder = contextHolder;
-        this.aktorService = aktorService;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.oppfolgingsplanService = oppfolgingsplanService;
         this.metrikk = metrikk;
