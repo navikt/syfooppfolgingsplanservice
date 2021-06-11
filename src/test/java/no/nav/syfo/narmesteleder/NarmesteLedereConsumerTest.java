@@ -28,6 +28,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
+import no.nav.syfo.azuread.AzureAdTokenClient;
 import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
@@ -37,10 +38,7 @@ import no.nav.syfo.pdl.PdlConsumer;
 public class NarmesteLedereConsumerTest {
 
     @Mock
-    private AktorregisterConsumer aktorregisterConsumer;
-
-    @Mock
-    private AzureAdTokenConsumer azureAdTokenConsumer;
+    private AzureAdTokenClient azureAdTokenClient;
 
     @Mock
     private NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
@@ -65,7 +63,7 @@ public class NarmesteLedereConsumerTest {
 
     @Test
     public void not_empty_optional_when_object_is_returned_from_syfonarmesteleder() {
-        ReflectionTestUtils.setField(narmesteLedereConsumer, "url", "http://syfonarmesteleder.url");
+        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://syfonarmesteleder.url");
 
         List<NarmesteLederRelasjon> narmesteLederRelasjoner = singletonList(
                 new NarmesteLederRelasjon()
@@ -96,7 +94,7 @@ public class NarmesteLedereConsumerTest {
 
     @Test
     public void empty_optional_when_no_object_from_syfonarmesteleder() {
-        ReflectionTestUtils.setField(narmesteLedereConsumer, "url", "http://syfonarmesteleder.url");
+        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://syfonarmesteleder.url");
 
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
@@ -106,8 +104,6 @@ public class NarmesteLedereConsumerTest {
         Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_FNR);
         assertThat(naermestelederOptional.isPresent()).isFalse();
 
-
-        verify(aktorregisterConsumer, never()).hentAktorIdForFnr(anyString());
         verify(pdlConsumer, never()).person(anyString());
     }
 
