@@ -296,29 +296,10 @@ class OppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
     }
 
     @Test
-    fun forespor_revidering_eksisterende_som_bruker() {
-        oppfolgingsplanController.foresporRevidering(oppfolgingsplanId)
-        Mockito.verify(oppfolgingsplanService).foresporRevidering(oppfolgingsplanId, ARBEIDSTAKER_FNR)
-        Mockito.verify(metrikk).tellHendelse("forespor_revidering")
-    }
-
-    @Test(expected = RuntimeException::class)
-    fun forespor_revidering_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
-        oppfolgingsplanController.foresporRevidering(oppfolgingsplanId)
-    }
-
-    @Test
     fun nullstill_godkjenning_som_bruker() {
         oppfolgingsplanController.nullstillGodkjenning(oppfolgingsplanId)
         Mockito.verify(oppfolgingsplanService).nullstillGodkjenning(oppfolgingsplanId, ARBEIDSTAKER_FNR)
         Mockito.verify(metrikk).tellHendelse("nullstill_godkjenning")
-    }
-
-    @Test(expected = RuntimeException::class)
-    fun nullstill_godkjenning_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
-        oppfolgingsplanController.foresporRevidering(oppfolgingsplanId)
     }
 
     @Test

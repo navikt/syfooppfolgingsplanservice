@@ -346,21 +346,6 @@ public class OppfolgingsplanService {
         return tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan);
     }
 
-    public void foresporRevidering(long oppfolgingsplanId, String innloggetFnr) {
-        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
-
-        throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
-
-        if (erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
-            String arbeidstakersFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
-            Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
-            tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanRevideringNL, naermesteleder);
-        } else {
-            serviceVarselService.sendServiceVarsel(oppfolgingsplan.arbeidstaker.aktoerId, SyfoplanRevideringSyk, oppfolgingsplan.id);
-        }
-    }
-
     private void throwExceptionWithoutAccessToOppfolgingsplan(String fnr, Oppfolgingsplan oppfolgingsplan) {
         if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan)) {
             throw new ForbiddenException();
