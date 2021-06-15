@@ -60,8 +60,8 @@ public class NarmesteLedereConsumerTest {
     private final String ETTERNAVN = "Surname";
 
     @Test
-    public void not_empty_optional_when_object_is_returned_from_syfonarmesteleder() {
-        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://syfonarmesteleder.url");
+    public void not_empty_optional_when_object_is_returned_from_narmesteleder() {
+        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://narmesteleder.url");
 
         List<NarmesteLederRelasjon> narmesteLederRelasjoner = singletonList(
                 new NarmesteLederRelasjon()
@@ -91,8 +91,8 @@ public class NarmesteLedereConsumerTest {
     }
 
     @Test
-    public void empty_optional_when_no_object_from_syfonarmesteleder() {
-        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://syfonarmesteleder.url");
+    public void empty_optional_when_no_object_from_narmesteleder() {
+        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://narmesteleder.url");
 
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {

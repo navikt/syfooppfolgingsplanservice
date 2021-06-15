@@ -88,7 +88,7 @@ public class NarmesteLederConsumerTest {
     }
 
     @Test
-    public void runtimeException_hvis_ikke_OK_fra_syfoNarmesteLeder() {
+    public void runtimeException_hvis_ikke_OK_fra_narmesteleder() {
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
         }))).thenReturn(new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR));
 
@@ -137,7 +137,7 @@ public class NarmesteLederConsumerTest {
     }
 
     @Test
-    public void empty_optional_when_no_object_from_syfonarmesteleder() {
+    public void empty_optional_when_no_object_from_narmesteleder() {
         ReflectionTestUtils.setField(narmesteLederConsumer, "narmestelederUrl", "http://narmesteleder.url");
 
         NarmestelederResponse narmestelederResponse = new NarmestelederResponse().narmesteLederRelasjon(null);
