@@ -100,12 +100,6 @@ spec:
       value: https://dkif.nais.preprod.local
     - name: DOKARKIV_URL
       value: https://dokarkiv-q1.nais.preprod.local
-    - name: AAD_ACCESSTOKEN_URL
-      value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
-    - name: SYFONARMESTELEDER_URL
-      value: https://syfonarmesteleder.nais.preprod.local
-    - name: SYFONARMESTELEDER_ID
-      value: a7e7ad0e-4e17-4f19-8aa6-39d73e62fff8
     - name: CLIENT_ID
       value: 41561812-fdcc-4933-a147-f481a8b9fb18
     - name: PDL_URL
