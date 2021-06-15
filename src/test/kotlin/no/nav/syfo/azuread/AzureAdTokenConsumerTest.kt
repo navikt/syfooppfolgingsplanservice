@@ -22,10 +22,10 @@ import javax.inject.Inject
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [LocalApplication::class])
 @DirtiesContext
-class AzureAdTokenClientTest {
+class AzureAdTokenConsumerTest {
     @Inject
     private lateinit var restTemplateMedProxy: RestTemplate
-    private lateinit var azureAdTokenConsumer: AzureAdTokenClient
+    private lateinit var azureAdTokenConsumer: AzureAdTokenConsumer
     private lateinit var mockRestServiceServer: MockRestServiceServer
     private val TOKEN_URL = "https://url.nav.no"
     private val expires_in:Long = 3600
@@ -33,7 +33,7 @@ class AzureAdTokenClientTest {
     @Before
     fun setup() {
         mockRestServiceServer = MockRestServiceServer.bindTo(restTemplateMedProxy).build()
-        azureAdTokenConsumer = AzureAdTokenClient(restTemplateMedProxy, TOKEN_URL, "clientId", "clientSecret")
+        azureAdTokenConsumer = AzureAdTokenConsumer(restTemplateMedProxy, TOKEN_URL, "clientId", "clientSecret")
     }
 
     @After

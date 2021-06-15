@@ -26,8 +26,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.azuread.AzureAdTokenClient;
+import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
@@ -48,7 +47,7 @@ public class NarmesteLederConsumer {
             new Ansatt()
                     .fnr(narmesteLederRelasjon.fnr)
                     .virksomhetsnummer(narmesteLederRelasjon.orgnummer);
-    private final AzureAdTokenClient azureAdTokenClient;
+    private final AzureAdTokenConsumer azureAdTokenConsumer;
     private final NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
     private final Metrikk metrikk;
     private final PdlConsumer pdlConsumer;
@@ -58,7 +57,7 @@ public class NarmesteLederConsumer {
 
     @Autowired
     public NarmesteLederConsumer(
-            AzureAdTokenClient azureAdTokenClient,
+            AzureAdTokenConsumer azureAdTokenConsumer,
             NarmesteLederRelasjonConverter narmesteLederRelasjonConverter,
             Metrikk metrikk,
             PdlConsumer pdlConsumer,
@@ -66,7 +65,7 @@ public class NarmesteLederConsumer {
             @Value("${narmesteleder.url}") String narmestelederUrl,
             @Value("${narmesteleder.scope}") String narmestelederScope
     ) {
-        this.azureAdTokenClient = azureAdTokenClient;
+        this.azureAdTokenConsumer = azureAdTokenConsumer;
         this.narmesteLederRelasjonConverter = narmesteLederRelasjonConverter;
         this.metrikk = metrikk;
         this.pdlConsumer = pdlConsumer;
@@ -78,7 +77,7 @@ public class NarmesteLederConsumer {
     @Cacheable(value = CACHENAME_ANSATTE, key = "#fnr", condition = "#fnr != null")
     public List<Ansatt> ansatte(String fnr) {
         metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
-        String token = azureAdTokenClient.getAccessToken(narmestelederScope);
+        String token = azureAdTokenConsumer.getAccessToken(narmestelederScope);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
                 getAnsatteUrl(),
@@ -97,7 +96,7 @@ public class NarmesteLederConsumer {
     @Cacheable(value = CACHENAME_LEDER, key = "#fnr + #virksomhetsnummer", condition = "#fnr != null && #virksomhetsnummer != null")
     public Optional<Naermesteleder> narmesteLeder(String fnr, String virksomhetsnummer) {
         metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER);
-        String token = azureAdTokenClient.getAccessToken(narmestelederScope);
+        String token = azureAdTokenConsumer.getAccessToken(narmestelederScope);
 
         ResponseEntity<NarmestelederResponse> response = restTemplate.exchange(
                 getLederUrl(virksomhetsnummer),

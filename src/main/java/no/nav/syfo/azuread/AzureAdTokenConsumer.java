@@ -24,8 +24,8 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
 
 @Component
-public class AzureAdTokenClient {
-    private static final Logger LOG = getLogger(AzureAdTokenClient.class);
+public class AzureAdTokenConsumer {
+    private static final Logger LOG = getLogger(AzureAdTokenConsumer.class);
 
     private final RestTemplate restTemplate;
     private final String url;
@@ -34,7 +34,7 @@ public class AzureAdTokenClient {
     private volatile Map<String, AzureAdResponse> azureAdTokenMap = new HashMap<>();
 
     @Autowired
-    public AzureAdTokenClient(
+    public AzureAdTokenConsumer(
             @Qualifier("restTemplateMedProxy") RestTemplate restTemplateMedProxy,
             @Value("${azure.openid.config.token.endpoint}") String url,
             @Value("${azure.app.client.id}") String clientId,

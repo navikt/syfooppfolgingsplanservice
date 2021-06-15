@@ -24,7 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.azuread.AzureAdTokenClient;
+import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.PdlConsumer;
@@ -34,7 +34,7 @@ import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
 public class NarmesteLedereConsumer {
     private static final Logger LOG = getLogger(NarmesteLedereConsumer.class);
 
-    private final AzureAdTokenClient azureAdTokenClient;
+    private final AzureAdTokenConsumer azureAdTokenConsumer;
     private final NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
     private final Metrikk metrikk;
     private final PdlConsumer pdlConsumer;
@@ -50,7 +50,7 @@ public class NarmesteLedereConsumer {
 
     @Autowired
     public NarmesteLedereConsumer(
-            AzureAdTokenClient azureAdTokenClient,
+            AzureAdTokenConsumer azureAdTokenConsumer,
             NarmesteLederRelasjonConverter narmesteLederRelasjonConverter,
             Metrikk metrikk,
             PdlConsumer pdlConsumer,
@@ -58,7 +58,7 @@ public class NarmesteLedereConsumer {
             @Value("${narmesteleder.url}") String narmestelederUrl,
             @Value("${narmesteleder.scope}") String narmestelederScope
     ) {
-        this.azureAdTokenClient = azureAdTokenClient;
+        this.azureAdTokenConsumer = azureAdTokenConsumer;
         this.narmesteLederRelasjonConverter = narmesteLederRelasjonConverter;
         this.metrikk = metrikk;
         this.pdlConsumer = pdlConsumer;
@@ -70,7 +70,7 @@ public class NarmesteLedereConsumer {
     @Cacheable(value = CACHENAME_LEDER, key = "#fnr", condition = "#fnr != null")
     public Optional<List<Naermesteleder>> narmesteLedere(String fnr) {
         metrikk.tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
-        String token = azureAdTokenClient.getAccessToken(narmestelederScope);
+        String token = azureAdTokenConsumer.getAccessToken(narmestelederScope);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
                 getLedereUrl(),
