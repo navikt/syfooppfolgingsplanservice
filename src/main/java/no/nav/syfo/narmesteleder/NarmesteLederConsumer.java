@@ -35,13 +35,13 @@ import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
 
 @Component
 public class NarmesteLederConsumer {
-    public static final String HENT_ANSATTE_SYFONARMESTELEDER = "hent_ansatte_syfonarmesteleder";
-    public static final String HENT_ANSATTE_SYFONARMESTELEDER_FEILET = "hent_ansatte_syfonarmesteleder_feilet";
-    public static final String HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET = "hent_ansatte_syfonarmesteleder_vellykket";
-    public static final String HENT_LEDER_SYFONARMESTELEDER = "hent_leder_syfonarmesteleder";
-    public static final String HENT_LEDER_SYFONARMESTELEDER_FEILET = "hent_leder_syfonarmesteleder_feilet";
-    public static final String HENT_LEDER_SYFONARMESTELEDER_VELLYKKET = "hent_leder_syfonarmesteleder_vellykket";
-    public static final String ERROR_MESSAGE_BASE = "Kall mot syfonarmesteleder feiler med HTTP-";
+    public static final String HENT_ANSATTE_NARMESTELEDER = "hent_ansatte_narmesteleder";
+    public static final String HENT_ANSATTE_NARMESTELEDER_FEILET = "hent_ansatte_narmesteleder_feilet";
+    public static final String HENT_ANSATTE_NARMESTELEDER_VELLYKKET = "hent_ansatte_narmesteleder_vellykket";
+    public static final String HENT_LEDER_NARMESTELEDER = "hent_leder_narmesteleder";
+    public static final String HENT_LEDER_NARMESTELEDER_FEILET = "hent_leder_narmesteleder_feilet";
+    public static final String HENT_LEDER_NARMESTELEDER_VELLYKKET = "hent_leder_narmesteleder_vellykket";
+    public static final String ERROR_MESSAGE_BASE = "Kall mot narmesteleder feiler med HTTP-";
     private static final Logger LOG = getLogger(NarmesteLederConsumer.class);
     private static final Function<NarmesteLederRelasjon, Ansatt> narmestelederRelasjon2Ansatt = narmesteLederRelasjon ->
             new Ansatt()
@@ -76,7 +76,7 @@ public class NarmesteLederConsumer {
 
     @Cacheable(value = CACHENAME_ANSATTE, key = "#fnr", condition = "#fnr != null")
     public List<Ansatt> ansatte(String fnr) {
-        metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
+        metrikk.tellHendelse(HENT_ANSATTE_NARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(narmestelederScope);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
@@ -87,15 +87,15 @@ public class NarmesteLederConsumer {
                 }
         );
 
-        throwExceptionIfError(response.getStatusCode(), HENT_ANSATTE_SYFONARMESTELEDER_FEILET);
+        throwExceptionIfError(response.getStatusCode(), HENT_ANSATTE_NARMESTELEDER_FEILET);
 
-        metrikk.tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET);
+        metrikk.tellHendelse(HENT_ANSATTE_NARMESTELEDER_VELLYKKET);
         return mapListe(response.getBody(), narmestelederRelasjon2Ansatt);
     }
 
     @Cacheable(value = CACHENAME_LEDER, key = "#fnr + #virksomhetsnummer", condition = "#fnr != null && #virksomhetsnummer != null")
     public Optional<Naermesteleder> narmesteLeder(String fnr, String virksomhetsnummer) {
-        metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER);
+        metrikk.tellHendelse(HENT_LEDER_NARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(narmestelederScope);
 
         ResponseEntity<NarmestelederResponse> response = restTemplate.exchange(
@@ -104,7 +104,7 @@ public class NarmesteLederConsumer {
                 entityForSykmeldt(token, fnr),
                 NarmestelederResponse.class
         );
-        throwExceptionIfError(response.getStatusCode(), HENT_LEDER_SYFONARMESTELEDER_FEILET);
+        throwExceptionIfError(response.getStatusCode(), HENT_LEDER_NARMESTELEDER_FEILET);
 
         if (response.getBody().narmesteLederRelasjon == null) {
             return Optional.empty();
@@ -115,7 +115,7 @@ public class NarmesteLederConsumer {
         String lederFnr = relasjon.narmesteLederFnr;
         String lederNavn = Optional.ofNullable(pdlConsumer.personName(lederFnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of leader was null"));
 
-        metrikk.tellHendelse(HENT_LEDER_SYFONARMESTELEDER_VELLYKKET);
+        metrikk.tellHendelse(HENT_LEDER_NARMESTELEDER_VELLYKKET);
         return Optional.of(narmesteLederRelasjonConverter.convert(relasjon, lederNavn));
     }
 

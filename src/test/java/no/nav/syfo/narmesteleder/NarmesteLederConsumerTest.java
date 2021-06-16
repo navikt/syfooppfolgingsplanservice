@@ -17,11 +17,11 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.ERROR_MESSAGE_BASE;
-import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_ANSATTE_SYFONARMESTELEDER;
-import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_ANSATTE_SYFONARMESTELEDER_FEILET;
-import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET;
-import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_LEDER_SYFONARMESTELEDER;
-import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_LEDER_SYFONARMESTELEDER_VELLYKKET;
+import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_ANSATTE_NARMESTELEDER;
+import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_ANSATTE_NARMESTELEDER_FEILET;
+import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_ANSATTE_NARMESTELEDER_VELLYKKET;
+import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_LEDER_NARMESTELEDER;
+import static no.nav.syfo.narmesteleder.NarmesteLederConsumer.HENT_LEDER_NARMESTELEDER_VELLYKKET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.any;
@@ -83,8 +83,8 @@ public class NarmesteLederConsumerTest {
         assertThat(ansatte.size()).isEqualTo(narmesteLederRelasjoner.size());
         assertThat(ansatte.get(0).fnr).isEqualTo(narmesteLederRelasjoner.get(0).fnr);
         assertThat(ansatte.get(0).virksomhetsnummer).isEqualTo(narmesteLederRelasjoner.get(0).orgnummer);
-        verify(metrikk).tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
-        verify(metrikk).tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_VELLYKKET);
+        verify(metrikk).tellHendelse(HENT_ANSATTE_NARMESTELEDER);
+        verify(metrikk).tellHendelse(HENT_ANSATTE_NARMESTELEDER_VELLYKKET);
     }
 
     @Test
@@ -101,8 +101,8 @@ public class NarmesteLederConsumerTest {
             fail("Fikk en ukjent exception, det skulle vært RuntimeException!");
         }
 
-        verify(metrikk).tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER);
-        verify(metrikk).tellHendelse(HENT_ANSATTE_SYFONARMESTELEDER_FEILET);
+        verify(metrikk).tellHendelse(HENT_ANSATTE_NARMESTELEDER);
+        verify(metrikk).tellHendelse(HENT_ANSATTE_NARMESTELEDER_FEILET);
     }
 
     @Test
@@ -132,8 +132,8 @@ public class NarmesteLederConsumerTest {
         assertThat(naermesteleder.orgnummer).isEqualTo(VIRKSOMHETSNUMMER);
         assertThat(naermesteleder.navn).isEqualTo(pdlName());
 
-        verify(metrikk).tellHendelse(HENT_LEDER_SYFONARMESTELEDER);
-        verify(metrikk).tellHendelse(HENT_LEDER_SYFONARMESTELEDER_VELLYKKET);
+        verify(metrikk).tellHendelse(HENT_LEDER_NARMESTELEDER);
+        verify(metrikk).tellHendelse(HENT_LEDER_NARMESTELEDER_VELLYKKET);
     }
 
     @Test

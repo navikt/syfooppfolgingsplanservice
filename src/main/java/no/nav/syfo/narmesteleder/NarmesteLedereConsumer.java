@@ -42,11 +42,11 @@ public class NarmesteLedereConsumer {
     private final String narmestelederUrl;
     private final String narmestelederScope;
 
-    public static final String HENT_LEDERE_SYFONARMESTELEDER = "hent_ledere_syfonarmesteleder";
-    public static final String HENT_LEDERE_SYFONARMESTELEDER_FEILET = "hent_ledere_syfonarmesteleder_feilet";
-    public static final String HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET = "hent_ledere_syfonarmesteleder_vellykket";
+    public static final String HENT_LEDERE_NARMESTELEDER = "hent_ledere_narmesteleder";
+    public static final String HENT_LEDERE_NARMESTELEDER_FEILET = "hent_ledere_narmesteleder_feilet";
+    public static final String HENT_LEDERE_NARMESTELEDER_VELLYKKET = "hent_ledere_narmesteleder_vellykket";
 
-    public static final String ERROR_MESSAGE_BASE = "Kall mot syfonarmesteleder feiler med HTTP-";
+    public static final String ERROR_MESSAGE_BASE = "Kall mot narmesteleder feiler med HTTP-";
 
     @Autowired
     public NarmesteLedereConsumer(
@@ -69,7 +69,7 @@ public class NarmesteLedereConsumer {
 
     @Cacheable(value = CACHENAME_LEDER, key = "#fnr", condition = "#fnr != null")
     public Optional<List<Naermesteleder>> narmesteLedere(String fnr) {
-        metrikk.tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
+        metrikk.tellHendelse(HENT_LEDERE_NARMESTELEDER);
         String token = azureAdTokenConsumer.getAccessToken(narmestelederScope);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
@@ -80,7 +80,7 @@ public class NarmesteLedereConsumer {
                 }
         );
 
-         throwExceptionIfError(response.getStatusCode(), HENT_LEDERE_SYFONARMESTELEDER_FEILET);
+         throwExceptionIfError(response.getStatusCode(), HENT_LEDERE_NARMESTELEDER_FEILET);
 
         if (Objects.requireNonNull(response).getBody() == null) {
             return Optional.empty();
@@ -95,7 +95,7 @@ public class NarmesteLedereConsumer {
             narmesteLedere.add(narmesteLederRelasjonConverter.convert(relasjon, lederNavn));
         }
 
-        metrikk.tellHendelse(HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET);
+        metrikk.tellHendelse(HENT_LEDERE_NARMESTELEDER_VELLYKKET);
 
         return Optional.of(narmesteLedere);
     }

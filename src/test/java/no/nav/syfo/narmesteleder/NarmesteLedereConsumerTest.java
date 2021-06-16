@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.singletonList;
-import static no.nav.syfo.narmesteleder.NarmesteLedereConsumer.HENT_LEDERE_SYFONARMESTELEDER;
-import static no.nav.syfo.narmesteleder.NarmesteLedereConsumer.HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET;
+import static no.nav.syfo.narmesteleder.NarmesteLedereConsumer.HENT_LEDERE_NARMESTELEDER;
+import static no.nav.syfo.narmesteleder.NarmesteLedereConsumer.HENT_LEDERE_NARMESTELEDER_VELLYKKET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -86,8 +86,8 @@ public class NarmesteLedereConsumerTest {
         assertThat(naermesteleder.naermesteLederFnr).isEqualTo(LEDER_FNR);
         assertThat(naermesteleder.navn).isEqualTo(pdlName());
 
-        verify(metrikk).tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
-        verify(metrikk).tellHendelse(HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET);
+        verify(metrikk).tellHendelse(HENT_LEDERE_NARMESTELEDER);
+        verify(metrikk).tellHendelse(HENT_LEDERE_NARMESTELEDER_VELLYKKET);
     }
 
     @Test
