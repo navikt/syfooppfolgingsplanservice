@@ -27,8 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.azuread.AzureAdTokenConsumer;
+import no.nav.syfo.azuread.AzureAdTokenClient;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.PdlConsumer;
@@ -37,10 +36,7 @@ import no.nav.syfo.pdl.PdlConsumer;
 public class NarmesteLedereConsumerTest {
 
     @Mock
-    private AktorregisterConsumer aktorregisterConsumer;
-
-    @Mock
-    private AzureAdTokenConsumer azureAdTokenConsumer;
+    private AzureAdTokenClient azureAdTokenClient;
 
     @Mock
     private NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
@@ -57,21 +53,20 @@ public class NarmesteLedereConsumerTest {
     @InjectMocks
     private NarmesteLedereConsumer narmesteLedereConsumer;
 
-    private final String SYKMELDT_AKTOR_ID = "1234567890987";
-    private final String LEDER_AKTOR_ID = "7890987654321";
-    private final String FODSELSNUMMER = "12345678901";
+    private final String SYKMELDT_FNR = "10987654321";
+    private final String LEDER_FNR = "12345678901";
     private final String NAVN = "Firstname";
     private final String MELLOMNAVN = "Middlename";
     private final String ETTERNAVN = "Surname";
 
     @Test
     public void not_empty_optional_when_object_is_returned_from_syfonarmesteleder() {
-        ReflectionTestUtils.setField(narmesteLedereConsumer, "url", "http://syfonarmesteleder.url");
+        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://syfonarmesteleder.url");
 
         List<NarmesteLederRelasjon> narmesteLederRelasjoner = singletonList(
                 new NarmesteLederRelasjon()
-                        .aktorId(SYKMELDT_AKTOR_ID)
-                        .narmesteLederAktorId(LEDER_AKTOR_ID)
+                        .fnr(SYKMELDT_FNR)
+                        .narmesteLederFnr(LEDER_FNR)
         );
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
@@ -79,17 +74,16 @@ public class NarmesteLedereConsumerTest {
                 .thenReturn(new ResponseEntity<>(narmesteLederRelasjoner, OK));
         when(narmesteLederRelasjonConverter.convert(any(NarmesteLederRelasjon.class), anyString()))
                 .thenReturn(new Naermesteleder()
-                                    .naermesteLederAktoerId(LEDER_AKTOR_ID)
+                                    .naermesteLederFnr(LEDER_FNR)
                                     .navn(pdlName()));
-        when(aktorregisterConsumer.hentFnrForAktor(anyString())).thenReturn(FODSELSNUMMER);
         when(pdlConsumer.personName(anyString())).thenReturn(pdlName());
 
-        Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_AKTOR_ID);
+        Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_FNR);
         assertThat(naermestelederOptional.isPresent()).isTrue();
 
         Naermesteleder naermesteleder = naermestelederOptional.get().get(0);
 
-        assertThat(naermesteleder.naermesteLederAktoerId).isEqualTo(LEDER_AKTOR_ID);
+        assertThat(naermesteleder.naermesteLederFnr).isEqualTo(LEDER_FNR);
         assertThat(naermesteleder.navn).isEqualTo(pdlName());
 
         verify(metrikk).tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
@@ -98,18 +92,16 @@ public class NarmesteLedereConsumerTest {
 
     @Test
     public void empty_optional_when_no_object_from_syfonarmesteleder() {
-        ReflectionTestUtils.setField(narmesteLedereConsumer, "url", "http://syfonarmesteleder.url");
+        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://syfonarmesteleder.url");
 
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {
         })))
                 .thenReturn(new ResponseEntity<>(null, OK));
 
-        Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_AKTOR_ID);
+        Optional<List<Naermesteleder>> naermestelederOptional = narmesteLedereConsumer.narmesteLedere(SYKMELDT_FNR);
         assertThat(naermestelederOptional.isPresent()).isFalse();
 
-
-        verify(aktorregisterConsumer, never()).hentAktorIdForFnr(anyString());
         verify(pdlConsumer, never()).person(anyString());
     }
 

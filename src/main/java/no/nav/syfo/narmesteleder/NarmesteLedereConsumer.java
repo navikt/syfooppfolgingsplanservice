@@ -24,8 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.azuread.AzureAdTokenConsumer;
+import no.nav.syfo.azuread.AzureAdTokenClient;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.PdlConsumer;
@@ -35,14 +34,13 @@ import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
 public class NarmesteLedereConsumer {
     private static final Logger LOG = getLogger(NarmesteLedereConsumer.class);
 
-    private final AktorregisterConsumer aktorregisterConsumer;
-    private final AzureAdTokenConsumer azureAdTokenConsumer;
+    private final AzureAdTokenClient azureAdTokenClient;
     private final NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
     private final Metrikk metrikk;
     private final PdlConsumer pdlConsumer;
     private final RestTemplate restTemplate;
-    private final String url;
-    private final String syfonarmestelederId;
+    private final String narmestelederUrl;
+    private final String narmestelederScope;
 
     public static final String HENT_LEDERE_SYFONARMESTELEDER = "hent_ledere_syfonarmesteleder";
     public static final String HENT_LEDERE_SYFONARMESTELEDER_FEILET = "hent_ledere_syfonarmesteleder_feilet";
@@ -52,35 +50,34 @@ public class NarmesteLedereConsumer {
 
     @Autowired
     public NarmesteLedereConsumer(
-            AktorregisterConsumer aktorregisterConsumer,
-            AzureAdTokenConsumer azureAdTokenConsumer,
+            AzureAdTokenClient azureAdTokenClient,
             NarmesteLederRelasjonConverter narmesteLederRelasjonConverter,
             Metrikk metrikk,
             PdlConsumer pdlConsumer,
             RestTemplate restTemplateMedProxy,
-            @Value("${syfonarmesteleder.url}") String url,
-            @Value("${syfonarmesteleder.id}") String syfonarmestelederId
+            @Value("${narmesteleder.url}") String narmestelederUrl,
+            @Value("${narmesteleder.scope}") String narmestelederScope
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
-        this.azureAdTokenConsumer = azureAdTokenConsumer;
+        this.azureAdTokenClient = azureAdTokenClient;
         this.narmesteLederRelasjonConverter = narmesteLederRelasjonConverter;
         this.metrikk = metrikk;
         this.pdlConsumer = pdlConsumer;
         this.restTemplate = restTemplateMedProxy;
-        this.url = url;
-        this.syfonarmestelederId = syfonarmestelederId;
+        this.narmestelederUrl = narmestelederUrl;
+        this.narmestelederScope = narmestelederScope;
     }
 
-    @Cacheable(value = CACHENAME_LEDER, key = "#aktorId", condition = "#aktorId != null")
-    public Optional<List<Naermesteleder>> narmesteLedere(String aktorId) {
+    @Cacheable(value = CACHENAME_LEDER, key = "#fnr", condition = "#fnr != null")
+    public Optional<List<Naermesteleder>> narmesteLedere(String fnr) {
         metrikk.tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
-        String token = azureAdTokenConsumer.getAccessToken(syfonarmestelederId);
+        String token = azureAdTokenClient.getAccessToken(narmestelederScope);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
-                getLedereUrl(aktorId),
+                getLedereUrl(),
                 GET,
-                entity(token),
-                new ParameterizedTypeReference<List<NarmesteLederRelasjon>>(){}
+                entity(token, fnr),
+                new ParameterizedTypeReference<>() {
+                }
         );
 
          throwExceptionIfError(response.getStatusCode(), HENT_LEDERE_SYFONARMESTELEDER_FEILET);
@@ -93,8 +90,7 @@ public class NarmesteLedereConsumer {
         List<Naermesteleder> narmesteLedere = new ArrayList<>();
 
         for (NarmesteLederRelasjon relasjon : relasjoner) {
-            String lederAktorId = relasjon.narmesteLederAktorId;
-            String lederFnr = aktorregisterConsumer.hentFnrForAktor(lederAktorId);
+            String lederFnr = relasjon.narmesteLederFnr;
             String lederNavn = Optional.ofNullable(pdlConsumer.personName(lederFnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of leader was null"));
             narmesteLedere.add(narmesteLederRelasjonConverter.convert(relasjon, lederNavn));
         }
@@ -113,13 +109,14 @@ public class NarmesteLedereConsumer {
         }
     }
 
-    private HttpEntity entity(String token) {
+    private HttpEntity entity(String token, String sykmeldtFnr) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
+        headers.add("Sykmeldt-Fnr", sykmeldtFnr);
         return new HttpEntity<>(headers);
     }
 
-    private String getLedereUrl(String aktoerId) {
-        return UriComponentsBuilder.fromHttpUrl(url + "/syfonarmesteleder/sykmeldt/" + aktoerId + "/narmesteledere").toUriString();
+    private String getLedereUrl() {
+        return UriComponentsBuilder.fromHttpUrl(narmestelederUrl + "/sykmeldt/narmesteledere").toUriString();
     }
 }

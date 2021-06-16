@@ -76,9 +76,8 @@ public class NarmesteLedereController {
                         .status(HttpStatus.FORBIDDEN)
                         .build();
             }
-            String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(oppslaattIdent);
 
-            Optional<List<Naermesteleder>> narmesteLeder = narmesteLedereConsumer.narmesteLedere(oppslattIdentAktorId);
+            Optional<List<Naermesteleder>> narmesteLeder = narmesteLedereConsumer.narmesteLedere(oppslaattIdent);
             if (narmesteLeder.isPresent()) {
                 return ResponseEntity
                         .status(HttpStatus.OK)
