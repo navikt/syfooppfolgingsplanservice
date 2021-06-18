@@ -43,8 +43,6 @@ syfobrukertilgang.url: "http://syfobrukertilgang"
 ekstern.altinn.behandlealtinnmelding.v1.endpointurl: "behandlealtinnmelding.url"
 brukeroppgave.v1.endpointurl: "brukeroppgavev1.url"
 lagrejuridisklogg.rest.url: "juridisklogg-lagre.url"
-syfonarmesteleder.url: "http://syfonarmesteleder.url"
-syfonarmesteleder.id: "syfonarmestelederID"
 pdl.url: "https://pdl.url"
 aareg.services.url: "http://aareg-services.url"
 aktorregister.rest.url: "http://aktorregister.url"
@@ -56,7 +54,6 @@ syfosmregister.id: "syfosmregisterID"
 dkif.url: "http://dkif.url"
 
 syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
-aad.accesstoken.url: 'accesstoken.url'
 
 narmesteleder.url: "http://narmesteleder.url"
 narmesteleder.scope: "narmesteleder.scope"

@@ -28,6 +28,7 @@ class AzureAdTokenConsumerTest {
     private lateinit var azureAdTokenConsumer: AzureAdTokenConsumer
     private lateinit var mockRestServiceServer: MockRestServiceServer
     private val TOKEN_URL = "https://url.nav.no"
+    private val expires_in:Long = 3600
 
     @Before
     fun setup() {
@@ -42,9 +43,9 @@ class AzureAdTokenConsumerTest {
 
     @Test
     fun henterTokenFraAzureHvisTokenMangler() {
-        val expiresOn = Instant.now().plusSeconds(300L)
+        val issuedOn = Instant.now().minusSeconds(3300L)
         val tokenGyldig = "token"
-        val responseBody = azureAdResponseAsJsonString(expiresOn, "ressursID", tokenGyldig)
+        val responseBody = azureAdResponseAsJsonString(issuedOn, tokenGyldig)
         mockRestServiceServer.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TOKEN_URL)).andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON))
         val token = azureAdTokenConsumer.getAccessToken("test")
         Assertions.assertThat(token).isEqualTo(tokenGyldig)
@@ -52,12 +53,12 @@ class AzureAdTokenConsumerTest {
 
     @Test
     fun henterTokenFraAzureHvisTokenErUtlopt() {
-        val expiresOnUtlopt = Instant.now().minusSeconds(30L)
+        val issuedOnUtlopt = Instant.now().minusSeconds(3900L)
         val tokenUtlopt = "token_utlopt"
-        val responseBodyUtlopt = azureAdResponseAsJsonString(expiresOnUtlopt, "ressursID", tokenUtlopt)
-        val expiresOnGyldig = Instant.now().plusSeconds(300L)
+        val responseBodyUtlopt = azureAdResponseAsJsonString(issuedOnUtlopt, tokenUtlopt)
+        val issuedOnGyldig = Instant.now().minusSeconds(3500L)
         val tokenGyldig = "token_gyldig"
-        val responseBodyGyldig = azureAdResponseAsJsonString(expiresOnGyldig, "ressursID", tokenGyldig)
+        val responseBodyGyldig = azureAdResponseAsJsonString(issuedOnGyldig, tokenGyldig)
         mockRestServiceServer.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TOKEN_URL)).andRespond(MockRestResponseCreators.withSuccess(responseBodyUtlopt, MediaType.APPLICATION_JSON))
         mockRestServiceServer.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TOKEN_URL)).andRespond(MockRestResponseCreators.withSuccess(responseBodyGyldig, MediaType.APPLICATION_JSON))
         azureAdTokenConsumer.getAccessToken("test")
@@ -67,9 +68,9 @@ class AzureAdTokenConsumerTest {
 
     @Test
     fun brukerEksisterendeTokenHvisGyldig() {
-        val expiresOnGyldig = Instant.now().plusSeconds(300L)
+        val issuedOnGyldig = Instant.now().minusSeconds(300L)
         val tokenGyldig = "token_gyldig"
-        val responseBodyGyldig = azureAdResponseAsJsonString(expiresOnGyldig, "ressursID", tokenGyldig)
+        val responseBodyGyldig = azureAdResponseAsJsonString(issuedOnGyldig, tokenGyldig)
         mockRestServiceServer.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TOKEN_URL)).andRespond(MockRestResponseCreators.withSuccess(responseBodyGyldig, MediaType.APPLICATION_JSON))
         azureAdTokenConsumer.getAccessToken("test")
         val token = azureAdTokenConsumer.getAccessToken("test")
@@ -78,36 +79,33 @@ class AzureAdTokenConsumerTest {
 
     @Test
     fun henterTokenFraAzureHvisTokenForResourceMangler() {
-        val expiresOn1 = Instant.now().minusSeconds(300L)
+        val issuedOn1 = Instant.now().minusSeconds(600L)
         val tokenForResource1 = "token_1"
         val resource1 = "resource_1"
-        val responseBody1 = azureAdResponseAsJsonString(expiresOn1, resource1, tokenForResource1)
-        val expiresOn2 = Instant.now().plusSeconds(300L)
+        val responseBody1 = azureAdResponseAsJsonString(issuedOn1, tokenForResource1)
+        val issuedOn2 = Instant.now().minusSeconds(300L)
         val tokenForResource2 = "token_2"
         val resource2 = "resource_2"
-        val responseBody2 = azureAdResponseAsJsonString(expiresOn2, resource2, tokenForResource2)
+        val responseBody2 = azureAdResponseAsJsonString(issuedOn2, tokenForResource2)
         mockRestServiceServer.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TOKEN_URL)).andRespond(MockRestResponseCreators.withSuccess(responseBody1, MediaType.APPLICATION_JSON))
         mockRestServiceServer.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TOKEN_URL)).andRespond(MockRestResponseCreators.withSuccess(responseBody2, MediaType.APPLICATION_JSON))
         val token1 = azureAdTokenConsumer.getAccessToken(resource1)
         val token2 = azureAdTokenConsumer.getAccessToken(resource2)
         val token3 = azureAdTokenConsumer.getAccessToken(resource2)
-        Assertions.assertThat(token1).isEqualTo(token1)
-        Assertions.assertThat(token2).isEqualTo(token2)
-        Assertions.assertThat(token3).isEqualTo(token2)
+        Assertions.assertThat(token1).isEqualTo(tokenForResource1)
+        Assertions.assertThat(token2).isEqualTo(tokenForResource2)
+        Assertions.assertThat(token3).isEqualTo(tokenForResource2)
     }
 
-    private fun azureAdResponseAsJsonString(expiresOn: Instant, resource: String, token: String): String {
+    private fun azureAdResponseAsJsonString(issuedOn: Instant, token: String): String {
         val objectMapper = ObjectMapper()
         val module = JavaTimeModule()
         objectMapper.registerModule(module)
         val azureAdResponse = AzureAdResponse()
-            .access_token(token)
-            .token_type("Bearer")
-            .expires_in(3600)
-            .ext_expires_in("3600")
-            .expires_on(expiresOn)
-            .not_before(java.lang.Long.toString(expiresOn.epochSecond))
-            .resource(resource)
+                .access_token(token)
+                .token_type("Bearer")
+                .expires_in(expires_in)
+                .issuedOn(issuedOn)
         return try {
             objectMapper.writeValueAsString(azureAdResponse)
         } catch (e: JsonProcessingException) {

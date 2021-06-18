@@ -24,7 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.azuread.AzureAdTokenClient;
+import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.PdlConsumer;
@@ -34,7 +34,7 @@ import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
 public class NarmesteLedereConsumer {
     private static final Logger LOG = getLogger(NarmesteLedereConsumer.class);
 
-    private final AzureAdTokenClient azureAdTokenClient;
+    private final AzureAdTokenConsumer azureAdTokenConsumer;
     private final NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
     private final Metrikk metrikk;
     private final PdlConsumer pdlConsumer;
@@ -42,15 +42,15 @@ public class NarmesteLedereConsumer {
     private final String narmestelederUrl;
     private final String narmestelederScope;
 
-    public static final String HENT_LEDERE_SYFONARMESTELEDER = "hent_ledere_syfonarmesteleder";
-    public static final String HENT_LEDERE_SYFONARMESTELEDER_FEILET = "hent_ledere_syfonarmesteleder_feilet";
-    public static final String HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET = "hent_ledere_syfonarmesteleder_vellykket";
+    public static final String HENT_LEDERE_NARMESTELEDER = "hent_ledere_narmesteleder";
+    public static final String HENT_LEDERE_NARMESTELEDER_FEILET = "hent_ledere_narmesteleder_feilet";
+    public static final String HENT_LEDERE_NARMESTELEDER_VELLYKKET = "hent_ledere_narmesteleder_vellykket";
 
-    public static final String ERROR_MESSAGE_BASE = "Kall mot syfonarmesteleder feiler med HTTP-";
+    public static final String ERROR_MESSAGE_BASE = "Kall mot narmesteleder feiler med HTTP-";
 
     @Autowired
     public NarmesteLedereConsumer(
-            AzureAdTokenClient azureAdTokenClient,
+            AzureAdTokenConsumer azureAdTokenConsumer,
             NarmesteLederRelasjonConverter narmesteLederRelasjonConverter,
             Metrikk metrikk,
             PdlConsumer pdlConsumer,
@@ -58,7 +58,7 @@ public class NarmesteLedereConsumer {
             @Value("${narmesteleder.url}") String narmestelederUrl,
             @Value("${narmesteleder.scope}") String narmestelederScope
     ) {
-        this.azureAdTokenClient = azureAdTokenClient;
+        this.azureAdTokenConsumer = azureAdTokenConsumer;
         this.narmesteLederRelasjonConverter = narmesteLederRelasjonConverter;
         this.metrikk = metrikk;
         this.pdlConsumer = pdlConsumer;
@@ -69,8 +69,8 @@ public class NarmesteLedereConsumer {
 
     @Cacheable(value = CACHENAME_LEDER, key = "#fnr", condition = "#fnr != null")
     public Optional<List<Naermesteleder>> narmesteLedere(String fnr) {
-        metrikk.tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
-        String token = azureAdTokenClient.getAccessToken(narmestelederScope);
+        metrikk.tellHendelse(HENT_LEDERE_NARMESTELEDER);
+        String token = azureAdTokenConsumer.getAccessToken(narmestelederScope);
 
         ResponseEntity<List<NarmesteLederRelasjon>> response = restTemplate.exchange(
                 getLedereUrl(),
@@ -80,7 +80,7 @@ public class NarmesteLedereConsumer {
                 }
         );
 
-         throwExceptionIfError(response.getStatusCode(), HENT_LEDERE_SYFONARMESTELEDER_FEILET);
+         throwExceptionIfError(response.getStatusCode(), HENT_LEDERE_NARMESTELEDER_FEILET);
 
         if (Objects.requireNonNull(response).getBody() == null) {
             return Optional.empty();
@@ -95,7 +95,7 @@ public class NarmesteLedereConsumer {
             narmesteLedere.add(narmesteLederRelasjonConverter.convert(relasjon, lederNavn));
         }
 
-        metrikk.tellHendelse(HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET);
+        metrikk.tellHendelse(HENT_LEDERE_NARMESTELEDER_VELLYKKET);
 
         return Optional.of(narmesteLedere);
     }

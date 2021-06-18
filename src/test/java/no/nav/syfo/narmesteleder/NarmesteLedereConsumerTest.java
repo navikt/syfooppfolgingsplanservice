@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.singletonList;
-import static no.nav.syfo.narmesteleder.NarmesteLedereConsumer.HENT_LEDERE_SYFONARMESTELEDER;
-import static no.nav.syfo.narmesteleder.NarmesteLedereConsumer.HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET;
+import static no.nav.syfo.narmesteleder.NarmesteLedereConsumer.HENT_LEDERE_NARMESTELEDER;
+import static no.nav.syfo.narmesteleder.NarmesteLedereConsumer.HENT_LEDERE_NARMESTELEDER_VELLYKKET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.azuread.AzureAdTokenClient;
+import no.nav.syfo.azuread.AzureAdTokenConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.pdl.PdlConsumer;
@@ -36,7 +36,7 @@ import no.nav.syfo.pdl.PdlConsumer;
 public class NarmesteLedereConsumerTest {
 
     @Mock
-    private AzureAdTokenClient azureAdTokenClient;
+    private AzureAdTokenConsumer azureAdTokenConsumer;
 
     @Mock
     private NarmesteLederRelasjonConverter narmesteLederRelasjonConverter;
@@ -60,8 +60,8 @@ public class NarmesteLedereConsumerTest {
     private final String ETTERNAVN = "Surname";
 
     @Test
-    public void not_empty_optional_when_object_is_returned_from_syfonarmesteleder() {
-        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://syfonarmesteleder.url");
+    public void not_empty_optional_when_object_is_returned_from_narmesteleder() {
+        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://narmesteleder.url");
 
         List<NarmesteLederRelasjon> narmesteLederRelasjoner = singletonList(
                 new NarmesteLederRelasjon()
@@ -86,13 +86,13 @@ public class NarmesteLedereConsumerTest {
         assertThat(naermesteleder.naermesteLederFnr).isEqualTo(LEDER_FNR);
         assertThat(naermesteleder.navn).isEqualTo(pdlName());
 
-        verify(metrikk).tellHendelse(HENT_LEDERE_SYFONARMESTELEDER);
-        verify(metrikk).tellHendelse(HENT_LEDERE_SYFONARMESTELEDER_VELLYKKET);
+        verify(metrikk).tellHendelse(HENT_LEDERE_NARMESTELEDER);
+        verify(metrikk).tellHendelse(HENT_LEDERE_NARMESTELEDER_VELLYKKET);
     }
 
     @Test
-    public void empty_optional_when_no_object_from_syfonarmesteleder() {
-        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://syfonarmesteleder.url");
+    public void empty_optional_when_no_object_from_narmesteleder() {
+        ReflectionTestUtils.setField(narmesteLedereConsumer, "narmestelederUrl", "http://narmesteleder.url");
 
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<NarmesteLederRelasjon>>() {

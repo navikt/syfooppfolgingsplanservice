@@ -1,8 +1,13 @@
 package no.nav.syfo.azuread;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -22,7 +27,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class AzureAdTokenConsumer {
     private static final Logger LOG = getLogger(AzureAdTokenConsumer.class);
 
-    private final RestTemplate restTemplateMedProxy;
+    private final RestTemplate restTemplate;
     private final String url;
     private final String clientId;
     private final String clientSecret;
@@ -31,34 +36,34 @@ public class AzureAdTokenConsumer {
     @Autowired
     public AzureAdTokenConsumer(
             @Qualifier("restTemplateMedProxy") RestTemplate restTemplateMedProxy,
-            @Value("${aad.accesstoken.url}") String url,
-            @Value("${client.id}") String clientId,
-            @Value("${client.secret}") String clientSecret
+            @Value("${azure.openid.config.token.endpoint}") String url,
+            @Value("${azure.app.client.id}") String clientId,
+            @Value("${azure.app.client.secret}") String clientSecret
     ) {
-        this.restTemplateMedProxy = restTemplateMedProxy;
+        this.restTemplate = restTemplateMedProxy;
         this.url = url;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
 
-    public String getAccessToken(String resource) {
+    public String getAccessToken(String scope) {
         final Instant omToMinutter = Instant.now().plusSeconds(120L);
-        final AzureAdResponse azureAdResponse = azureAdTokenMap.get(resource);
+        final AzureAdResponse azureAdResponse = azureAdTokenMap.get(scope);
 
-        if (azureAdResponse == null || azureAdResponse.expires_on().isBefore(omToMinutter)) {
-            LOG.info("Henter nytt token fra Azure AD for ressurs {}", resource);
+        if (azureAdResponse == null || azureAdResponse.issuedOn.plusSeconds(azureAdResponse.expires_in).isBefore(omToMinutter)) {
+            LOG.info("Henter nytt token fra Azure AD for scope {}", scope);
             final HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
             final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("client_id", clientId);
-            body.add("resource", resource);
+            body.add("scope", scope);
             body.add("grant_type", "client_credentials");
             body.add("client_secret", clientSecret);
 
             final String uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString();
 
-            final ResponseEntity<AzureAdResponse> result = restTemplateMedProxy.exchange(
+            final ResponseEntity<AzureAdResponse> result = restTemplate.exchange(
                     uriString,
                     POST,
                     new HttpEntity<>(body, headers),
@@ -68,8 +73,8 @@ public class AzureAdTokenConsumer {
             if (result.getStatusCode() != OK) {
                 throw new RuntimeException("Henting av token fra Azure AD feiler med HTTP-" + result.getStatusCode());
             }
-            azureAdTokenMap.put(resource, requireNonNull(result.getBody()));
+            azureAdTokenMap.put(scope, requireNonNull(result.getBody()));
         }
-        return requireNonNull(azureAdTokenMap.get(resource)).access_token();
+        return requireNonNull(azureAdTokenMap.get(scope)).access_token();
     }
 }
