@@ -8,6 +8,7 @@ import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.*
@@ -30,8 +31,12 @@ import javax.inject.Inject
 @SpringBootTest(classes = [LocalApplication::class])
 @DirtiesContext
 abstract class AbstractRessursTilgangTest {
+
+    @Value("\${azure.openid.config.token.endpoint}")
+    lateinit var azureTokenEndpoint: String
+
     @Value("\${tilgangskontrollapi.url}")
-    private lateinit var tilgangskontrollUrl: String
+    lateinit var tilgangskontrollUrl: String
 
     @Value("\${dev}")
     private lateinit var dev: String
@@ -41,16 +46,23 @@ abstract class AbstractRessursTilgangTest {
 
     @Inject
     private lateinit var restTemplate: RestTemplate
-    private lateinit var mockRestServiceServer: MockRestServiceServer
+    lateinit var mockRestServiceServer: MockRestServiceServer
+
+    @Inject
+    @Qualifier("restTemplateMedProxy")
+    private lateinit var restTemplateWithProxy: RestTemplate
+    lateinit var mockRestServiceWithProxyServer: MockRestServiceServer
 
     @Before
     fun setUp() {
         mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build()
+        mockRestServiceWithProxyServer = MockRestServiceServer.bindTo(restTemplateWithProxy).build()
     }
 
     @After
     open fun tearDown() {
         mockRestServiceServer.verify()
+        mockRestServiceWithProxyServer.verify()
         loggUtAlle(contextHolder)
     }
 
