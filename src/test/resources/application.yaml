@@ -23,6 +23,15 @@ server:
   servlet:
     context-path: /syfooppfolgingsplanservice
 
+azure:
+  app:
+    client:
+      id: "1345678"
+      secret: "secret"
+  openid:
+    config:
+      token:
+        endpoint: "https://login.microsoftonline.com/id/oauth2/v2.0/token"
 
 securitytokenservice.url: "sts.url"
 srvsyfooppfolgingsplanservice:
@@ -81,6 +90,7 @@ dev: true
 
 fastlege.dialogmelding.api.v1.url: "https://app-q.adeo.no/fastlgerest//api/dialogmelding/v1/sendOppfolgingsplan"
 
+syfotilgangskontroll.client.id: "syfotilgangskontrollId"
 tilgangskontrollapi.url: "https://www.ikke.no"
 
 altinn.password: password
