@@ -85,16 +85,12 @@ public class FastlegeService {
         URI tilgangTilBrukerUriMedFnr = delLPSMedFastlegeUriTemplate.build().toUri();
         String token = stsConsumer.token();
 
-        try {
-            kallUriMedTemplate(
-                    tilgangTilBrukerUriMedFnr,
-                    rsOppfoelgingsplan,
-                    token,
-                    true
-            );
-        } catch (OppslagFeiletException oppslagFeiletException) {
-            log.warn("Fanget OppslagFeiletException: {}", oppslagFeiletException.getMessage());
-        }
+        kallUriMedTemplate(
+                tilgangTilBrukerUriMedFnr,
+                rsOppfoelgingsplan,
+                token,
+                true
+        );
     }
 
     private void kallUriMedTemplate(URI uri, RSOppfoelgingsplan rsOppfoelgingsplan, String token, boolean lps) {
