@@ -1,17 +1,12 @@
 package no.nav.syfo.service;
 
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
-import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
-import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.oidc.OIDCIssuer;
-import no.nav.syfo.oidc.OIDCUtil;
-import no.nav.syfo.sts.StsConsumer;
-import no.nav.syfo.util.InnsendingFeiletException;
-import no.nav.syfo.util.OppslagFeiletException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -21,9 +16,20 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 
 import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
-import static no.nav.syfo.util.RequestUtilKt.*;
+import static no.nav.syfo.util.RequestUtilKt.APP_CONSUMER_ID;
+import static no.nav.syfo.util.RequestUtilKt.NAV_CALL_ID_HEADER;
+import static no.nav.syfo.util.RequestUtilKt.NAV_CONSUMER_ID_HEADER;
+import static no.nav.syfo.util.RequestUtilKt.createCallId;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
+
+import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
+import no.nav.syfo.metric.Metrikk;
+import no.nav.syfo.oidc.OIDCIssuer;
+import no.nav.syfo.oidc.OIDCUtil;
+import no.nav.syfo.sts.StsConsumer;
+import no.nav.syfo.util.InnsendingFeiletException;
+import no.nav.syfo.util.OppslagFeiletException;
 
 @Service
 public class FastlegeService {
@@ -62,12 +68,16 @@ public class FastlegeService {
 
         String token = OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.EKSTERN);
 
-        kallUriMedTemplate(
-                tilgangTilBrukerUriMedFnr,
-                rsOppfoelgingsplan,
-                token,
-                false
-        );
+        try {
+            kallUriMedTemplate(
+                    tilgangTilBrukerUriMedFnr,
+                    rsOppfoelgingsplan,
+                    token,
+                    false
+            );
+        } catch (OppslagFeiletException e) {
+            log.warn("Fanget OppslagFeiletException: {}", e.getMessage());
+        }
     }
 
     public void sendOppfolgingsplanLPS(String sendesTilFnr, byte[] pdf) {
@@ -91,9 +101,9 @@ public class FastlegeService {
         } catch (HttpClientErrorException e) {
             int responsekode = e.getRawStatusCode();
             tellPlanDeltMedFastlegeKall(lps, false);
-            if(responsekode == 404) {
-                log.warn("Klarte ikke dele oppfølgingsplan med fastlege: Feil ved oppslag av av fastlege eller partnerinformasjon");
-                throw new OppslagFeiletException("Feil ved oppslag av av fastlege eller partnerinformasjon");
+            if (responsekode == 404) {
+                log.warn("Klarte ikke dele oppfølgingsplan med fastlege: Feil ved oppslag av fastlege eller partnerinformasjon");
+                throw new OppslagFeiletException("Feil ved oppslag av fastlege eller partnerinformasjon");
             } else {
                 log.error("Feil ved sending av oppfølgingsdialog til fastlege Fikk responskode " + responsekode, e);
             }
@@ -119,12 +129,12 @@ public class FastlegeService {
         return new HttpEntity<>(rsOppfoelgingsplan, headers);
     }
 
-    private void tellPlanForsoktDeltMedFastlegeKallLPS()  {
+    private void tellPlanForsoktDeltMedFastlegeKallLPS() {
         metrikk.tellHendelse("tell_antall_lps_forsokt_delt_fastlege");
     }
 
     private void tellPlanDeltMedFastlegeKall(boolean lps, boolean delt) {
-        if(lps) metrikk.tellHendelseMedTag("lps_plan_delt_med_fastlege", "delt", delt);
+        if (lps) metrikk.tellHendelseMedTag("lps_plan_delt_med_fastlege", "delt", delt);
         metrikk.tellHendelseMedTag("plan_delt_med_fastlege", "delt", delt);
     }
 }
