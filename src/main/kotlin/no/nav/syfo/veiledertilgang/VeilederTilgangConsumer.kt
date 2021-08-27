@@ -13,8 +13,6 @@ import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.util.UriComponentsBuilder
-import java.util.*
 import javax.ws.rs.ForbiddenException
 
 @Service
@@ -26,9 +24,6 @@ class VeilederTilgangConsumer(
     private val contextHolder: TokenValidationContextHolder,
     private val template: RestTemplate
 ) {
-    private val accessToPersonUriTemplate: UriComponentsBuilder
-    private val accessToSYFOUriTemplate: UriComponentsBuilder
-
     fun throwExceptionIfVeilederWithoutAccessWithOBO(fnr: Fodselsnummer) {
         val harTilgang = hasVeilederAccessToPersonWithOBO(fnr)
         if (!harTilgang) {
@@ -64,36 +59,6 @@ class VeilederTilgangConsumer(
         return checkAccess(
             token = oboToken,
             url = url
-        )
-    }
-
-    fun throwExceptionIfVeilederWithoutAccess(fnr: Fodselsnummer) {
-        val harTilgang = hasVeilederAccessToPerson(fnr)
-        if (!harTilgang) {
-            throw ForbiddenException()
-        }
-    }
-
-    fun hasVeilederAccessToPerson(fnr: Fodselsnummer): Boolean {
-        val tilgangTilBrukerViaAzureUriMedFnr = accessToPersonUriTemplate.build(Collections.singletonMap(FNR, fnr.value))
-        return checkAccess(
-            token = OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.AZURE),
-            url = tilgangTilBrukerViaAzureUriMedFnr.toURL().toString()
-        )
-    }
-
-    fun throwExceptionIfVeilederWithoutAccessToSYFO() {
-        val harTilgang = hasVeilederAccessToSYFO()
-        if (!harTilgang) {
-            throw ForbiddenException()
-        }
-    }
-
-    fun hasVeilederAccessToSYFO(): Boolean {
-        val tilgangTilTjenesteUri = accessToSYFOUriTemplate.build().toUri()
-        return checkAccess(
-            token = OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.AZURE),
-            url = tilgangTilTjenesteUri.toURL().toString()
         )
     }
 
@@ -136,20 +101,7 @@ class VeilederTilgangConsumer(
         private const val METRIC_CALL_VEILEDERTILGANG_BASE = "call_syfotilgangskontroll"
         private const val METRIC_CALL_VEILEDERTILGANG_USER_FAIL = "${METRIC_CALL_VEILEDERTILGANG_BASE}_user_fail"
 
-        const val FNR = "fnr"
-        const val TILGANG_TIL_BRUKER_VIA_AZURE_PATH = "/bruker"
-        const val TILGANG_TIL_TJENESTEN_VIA_AZURE_PATH = "/syfo"
-        private const val FNR_PLACEHOLDER = "{$FNR}"
-
         const val TILGANG_TIL_BRUKER_VIA_AZURE_V2_PATH = "/navident/bruker"
         const val TILGANG_TIL_SYFO_VIA_AZURE_V2_PATH = "/navident/syfo"
-    }
-
-    init {
-        accessToPersonUriTemplate = UriComponentsBuilder.fromHttpUrl(tilgangskontrollUrl)
-            .path(TILGANG_TIL_BRUKER_VIA_AZURE_PATH)
-            .queryParam(FNR, FNR_PLACEHOLDER)
-        accessToSYFOUriTemplate = UriComponentsBuilder.fromHttpUrl(tilgangskontrollUrl)
-            .path(TILGANG_TIL_TJENESTEN_VIA_AZURE_PATH)
     }
 }
