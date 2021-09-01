@@ -24,6 +24,14 @@ class VeilederTilgangConsumer(
     private val contextHolder: TokenValidationContextHolder,
     private val template: RestTemplate
 ) {
+    private val tilgangskontrollPersonUrl: String
+    private val tilgangskontrollPersonSYFOUrl: String
+
+    init {
+        tilgangskontrollPersonUrl = "$tilgangskontrollUrl$TILGANGSKONTROLL_PERSON_PATH"
+        tilgangskontrollPersonSYFOUrl = "$tilgangskontrollUrl$TILGANGSKONTROLL_SYFO_PATH"
+    }
+
     fun throwExceptionIfVeilederWithoutAccessWithOBO(fnr: Fodselsnummer) {
         val harTilgang = hasVeilederAccessToPersonWithOBO(fnr)
         if (!harTilgang) {
@@ -36,10 +44,13 @@ class VeilederTilgangConsumer(
             scopeClientId = syfotilgangskontrollClientId,
             token = OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.INTERN_AZUREAD_V2)
         )
-        val url = "$tilgangskontrollUrl$TILGANG_TIL_BRUKER_VIA_AZURE_V2_PATH/${fnr.value}"
+        val httpEntity = entityPerson(
+            personIdentNumber = fnr,
+            token = oboToken
+        )
         return checkAccess(
-            token = oboToken,
-            url = url
+            httpEntity = httpEntity,
+            url = tilgangskontrollPersonUrl
         )
     }
 
@@ -55,18 +66,39 @@ class VeilederTilgangConsumer(
             scopeClientId = syfotilgangskontrollClientId,
             token = OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.INTERN_AZUREAD_V2)
         )
-        val url = "$tilgangskontrollUrl$TILGANG_TIL_SYFO_VIA_AZURE_V2_PATH"
+        val httpEntity = entitySYFO(token = oboToken)
         return checkAccess(
-            token = oboToken,
-            url = url
+            httpEntity = httpEntity,
+            url = tilgangskontrollPersonSYFOUrl
         )
     }
 
+    private fun entityPerson(
+        personIdentNumber: Fodselsnummer,
+        token: String
+    ): HttpEntity<String> {
+        val headers = HttpHeaders()
+        headers.accept = listOf(MediaType.APPLICATION_JSON)
+        headers.setBearerAuth(token)
+        headers[NAV_PERSONIDENT_HEADER] = personIdentNumber.value
+        headers[NAV_CALL_ID_HEADER] = createCallId()
+        headers[NAV_CONSUMER_ID_HEADER] = APP_CONSUMER_ID
+        return HttpEntity(headers)
+    }
+
+    private fun entitySYFO(token: String): HttpEntity<String> {
+        val headers = HttpHeaders()
+        headers.accept = listOf(MediaType.APPLICATION_JSON)
+        headers.setBearerAuth(token)
+        headers[NAV_CALL_ID_HEADER] = createCallId()
+        headers[NAV_CONSUMER_ID_HEADER] = APP_CONSUMER_ID
+        return HttpEntity(headers)
+    }
+
     private fun checkAccess(
-        token: String,
+        httpEntity: HttpEntity<String>,
         url: String
     ): Boolean {
-        val httpEntity = entity(token = token)
         return try {
             template.exchange(
                 url,
@@ -86,22 +118,13 @@ class VeilederTilgangConsumer(
         }
     }
 
-    private fun entity(token: String): HttpEntity<String> {
-        val headers = HttpHeaders()
-        headers.accept = listOf(MediaType.APPLICATION_JSON)
-        headers.setBearerAuth(token)
-        headers[NAV_CALL_ID_HEADER] = createCallId()
-        headers[NAV_CONSUMER_ID_HEADER] = APP_CONSUMER_ID
-        return HttpEntity(headers)
-    }
-
     companion object {
         private val LOG = LoggerFactory.getLogger(VeilederTilgangConsumer::class.java)
 
         private const val METRIC_CALL_VEILEDERTILGANG_BASE = "call_syfotilgangskontroll"
         private const val METRIC_CALL_VEILEDERTILGANG_USER_FAIL = "${METRIC_CALL_VEILEDERTILGANG_BASE}_user_fail"
 
-        const val TILGANG_TIL_BRUKER_VIA_AZURE_V2_PATH = "/navident/bruker"
-        const val TILGANG_TIL_SYFO_VIA_AZURE_V2_PATH = "/navident/syfo"
+        const val TILGANGSKONTROLL_PERSON_PATH = "/navident/person"
+        const val TILGANGSKONTROLL_SYFO_PATH = "/navident/syfo"
     }
 }
