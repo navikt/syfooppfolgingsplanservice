@@ -65,3 +65,4 @@ Evt. kan variablene kan også konfigureres som miljøvariabler eller brukes i ko
 ```
 ./gradlew -PgithubUser=x-access-token -PgithubPassword=[token]
 ```
+
