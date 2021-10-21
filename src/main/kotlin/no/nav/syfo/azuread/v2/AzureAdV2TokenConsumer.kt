@@ -20,18 +20,34 @@ class AzureAdV2TokenConsumer @Autowired constructor(
         scopeClientId: String,
         token: String
     ): String {
+        return getToken(
+            requestEntity = requestEntity(scopeClientId, token)
+        ).accessToken
+    }
+
+    fun getSystemToken(
+        scopeClientId: String
+    ): String {
+        return getToken(
+            requestEntity = systemTokenRequestEntity(scopeClientId)
+        ).accessToken
+    }
+
+    private fun getToken(
+        requestEntity: HttpEntity<MultiValueMap<String, String>>
+    ): AzureAdV2Token {
         try {
             val response = restTemplateWithProxy.exchange(
                 azureTokenEndpoint,
                 HttpMethod.POST,
-                requestEntity(scopeClientId, token),
+                requestEntity,
                 AzureAdV2TokenResponse::class.java
             )
             val tokenResponse = response.body!!
-
-            return tokenResponse.toAzureAdV2Token().accessToken
+            return tokenResponse.toAzureAdV2Token()
         } catch (e: RestClientResponseException) {
-            log.error("Call to get AzureADV2Token from AzureAD for scope: $scopeClientId with status: ${e.rawStatusCode} and message: ${e.responseBodyAsString}", e)
+            val scope = requestEntity.headers["scope"]
+            log.error("Call to get AzureADV2Token from AzureAD for scope: $scope with status: ${e.rawStatusCode} and message: ${e.responseBodyAsString}", e)
             throw e
         }
     }
@@ -52,6 +68,21 @@ class AzureAdV2TokenConsumer @Autowired constructor(
         body.add("requested_token_use", "on_behalf_of")
         return HttpEntity(body, headers)
     }
+
+    private fun systemTokenRequestEntity(
+        scopeClientId: String
+    ): HttpEntity<MultiValueMap<String, String>> {
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.MULTIPART_FORM_DATA
+        val body: MultiValueMap<String, String> = LinkedMultiValueMap()
+        body.add("client_id", azureAppClientId)
+        body.add("scope", "api://$scopeClientId/.default")
+        body.add("grant_type", "client_credentials")
+        body.add("client_secret", azureAppClientSecret)
+
+        return HttpEntity(body, headers)
+    }
+
 
     companion object {
         private val log = LoggerFactory.getLogger(AzureAdV2TokenConsumer::class.java)

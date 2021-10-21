@@ -73,7 +73,7 @@ class OppfolgingsplanServiceTest {
     @MockBean
     private lateinit var godkjenningerDAO: GodkjenningerDAO
 
-    @Value("\${fastlege.dialogmelding.api.v1.url}")
+    @Value("\${fastlege.dialogmelding.api}")
     private lateinit var fastlegerestUrl: String
 
     @Inject

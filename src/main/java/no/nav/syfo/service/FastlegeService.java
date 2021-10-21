@@ -1,6 +1,7 @@
 package no.nav.syfo.service;
 
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
+import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,6 @@ import no.nav.syfo.domain.rs.RSOppfoelgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oidc.OIDCIssuer;
 import no.nav.syfo.oidc.OIDCUtil;
-import no.nav.syfo.sts.StsConsumer;
 import no.nav.syfo.util.InnsendingFeiletException;
 import no.nav.syfo.util.OppslagFeiletException;
 
@@ -36,29 +36,32 @@ public class FastlegeService {
 
     private static final Logger log = getLogger(FastlegeService.class);
 
-    public static final String SEND_OPPFOLGINGSPLAN_PATH = "/sendOppfolgingsplanFraSelvbetjening";
-    public static final String SEND_OPPFOLGINGSPLAN_LPS_PATH = "/oppfolgingsplan/lps";
+    public static final String SEND_OPPFOLGINGSPLAN_PATH = "/dialogmelding/v1/sendOppfolgingsplanFraSelvbetjening";
+    public static final String SEND_OPPFOLGINGSPLAN_LPS_PATH = "/dialogmelding/v2/oppfolgingsplan/lps";
     private final TokenValidationContextHolder contextHolder;
     private final RestTemplate template;
     private final UriComponentsBuilder delMedFastlegeUriTemplate;
     private final UriComponentsBuilder delLPSMedFastlegeUriTemplate;
+    private final String delMedFastlegeClientId;
     private final Metrikk metrikk;
-    private final StsConsumer stsConsumer;
+    private final AzureAdV2TokenConsumer azureAdV2TokenConsumer;
 
     public FastlegeService(
-            @Value("${fastlege.dialogmelding.api.v1.url}") String dialogfordelerUrl,
+            @Value("${fastlege.dialogmelding.api}") String dialogfordelerUrl,
+            @Value("${fastlege.dialogmelding.client.id}") String delMedFastlegeClientId,
             Metrikk metrikk,
             TokenValidationContextHolder contextHolder,
-            StsConsumer stsConsumer,
+            AzureAdV2TokenConsumer azureAdV2TokenConsumer,
             @Qualifier("scheduler") RestTemplate template
     ) {
         delMedFastlegeUriTemplate = fromHttpUrl(dialogfordelerUrl)
                 .path(SEND_OPPFOLGINGSPLAN_PATH);
         delLPSMedFastlegeUriTemplate = fromHttpUrl(dialogfordelerUrl)
                 .path(SEND_OPPFOLGINGSPLAN_LPS_PATH);
+        this.delMedFastlegeClientId = delMedFastlegeClientId;
         this.metrikk = metrikk;
         this.contextHolder = contextHolder;
-        this.stsConsumer = stsConsumer;
+        this.azureAdV2TokenConsumer = azureAdV2TokenConsumer;
         this.template = template;
     }
 
@@ -83,7 +86,7 @@ public class FastlegeService {
     public void sendOppfolgingsplanLPS(String sendesTilFnr, byte[] pdf) {
         RSOppfoelgingsplan rsOppfoelgingsplan = new RSOppfoelgingsplan(sendesTilFnr, pdf);
         URI tilgangTilBrukerUriMedFnr = delLPSMedFastlegeUriTemplate.build().toUri();
-        String token = stsConsumer.token();
+        String token = azureAdV2TokenConsumer.getSystemToken(delMedFastlegeClientId);
 
         kallUriMedTemplate(
                 tilgangTilBrukerUriMedFnr,
