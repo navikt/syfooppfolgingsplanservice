@@ -115,7 +115,7 @@ public class ArbeidstakerSykmeldingerConsumer {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public Optional<List<Sykmelding>> getSendteSykmeldingerForPerioden(String oppslattIdentAktorId, String idToken) {
+    public Optional<List<Sykmelding>> getSendteSykmeldingerForPerioden(String aktorId, String idToken) {
         String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
 
         HttpHeaders headers = new HttpHeaders();
