@@ -103,8 +103,6 @@ spec:
       value: "prod-fss.teamsykefravr.syfo-tilgangskontroll"
     - name: TILGANGSKONTROLLAPI_URL
       value: https://syfo-tilgangskontroll.nais.adeo.no/syfo-tilgangskontroll/api/tilgang
-    - name: SYFOBEHANDLENDEENHET_URL
-      value: https://syfobehandlendeenhet.nais.adeo.no
     - name: DOKARKIV_URL
       value: https://dokarkiv.nais.adeo.no
     - name: DKIF_URL
