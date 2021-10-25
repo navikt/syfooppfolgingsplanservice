@@ -70,4 +70,21 @@ public class ArbeidstakerSykmeldingerController {
                 .status(HttpStatus.OK)
                 .body(List.of()));
     }
+
+    @ResponseBody
+    @GetMapping("/dato")
+    public ResponseEntity<List<Sykmelding>> getSendteSykmeldingerForPerioden(@RequestHeader MultiValueMap<String, String> headers) {
+        LOG.warn("getSendteSykmeldingerForPerioden");
+        final String idToken = headers.getFirst("authorization");
+        String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
+        String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
+
+        Optional<List<Sykmelding>> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldingerForPerioden(oppslattIdentAktorId, idToken);
+
+        return sendteSykmeldinger.map(sykmeldinger -> ResponseEntity
+                .status(HttpStatus.OK)
+                .body(sykmeldinger)).orElseGet(() -> ResponseEntity
+                .status(HttpStatus.OK)
+                .body(List.of()));
+    }
 }

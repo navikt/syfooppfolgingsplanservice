@@ -90,7 +90,6 @@ public class ArbeidstakerSykmeldingerConsumer {
                 new ParameterizedTypeReference<>() {
                 }
         );
-
         if (response.getStatusCode() != OK) {
             metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET);
             final String message = ERROR_MESSAGE_BASE + response.getStatusCode();
@@ -114,5 +113,38 @@ public class ArbeidstakerSykmeldingerConsumer {
                                            convertToSykmeldingsperiode(dto.sykmeldingsperioder),
                                            convertToOrganisasjonInformasjon(dto.sykmeldingStatus.arbeidsgiver)))
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    public Optional<List<Sykmelding>> getSendteSykmeldingerForPerioden(String oppslattIdentAktorId, String idToken) {
+        String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, idToken);
+        headers.add("fnr", fnr);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        LocalDate idag = LocalDate.now();
+        String dato = idag.toString();
+        LOG.warn("getSendteSykmeldingerForPerioden dato", dato);
+
+        ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
+                UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT" + "&fom=" + dato + "&tom=" + dato).toUriString(),
+                GET,
+                new HttpEntity<>(headers),
+                new ParameterizedTypeReference<>() {
+                }
+        );
+        LOG.warn("getSendteSykmeldingerForPerioden response", response);
+        if (response.getStatusCode() != OK) {
+            final String message = ERROR_MESSAGE_BASE + response.getStatusCode();
+            LOG.error(message);
+            throw new RuntimeException(message);
+        }
+
+        if (Objects.requireNonNull(response).getBody() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(mapTilSykmeldingsliste(Objects.requireNonNull(response.getBody()), fnr));
     }
 }
