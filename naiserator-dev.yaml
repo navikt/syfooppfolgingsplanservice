@@ -103,8 +103,6 @@ spec:
       value: "dev-fss.teamsykefravr.syfo-tilgangskontroll"
     - name: TILGANGSKONTROLLAPI_URL
       value: https://syfo-tilgangskontroll.nais.preprod.local/syfo-tilgangskontroll/api/tilgang
-    - name: SYFOBEHANDLENDEENHET_URL
-      value: https://syfobehandlendeenhet.nais.preprod.local
     - name: DKIF_URL
       value: https://dkif.nais.preprod.local
     - name: DOKARKIV_URL

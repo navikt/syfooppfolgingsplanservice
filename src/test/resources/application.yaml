@@ -54,8 +54,6 @@ syfosmregister.url: "http://syfosmregister.url"
 syfosmregister.id: "syfosmregisterID"
 dkif.url: "http://dkif.url"
 
-syfobehandlendeenhet.url: "http://syfobehandlendeenhet"
-
 narmesteleder.url: "http://narmesteleder.url"
 narmesteleder.scope: "narmesteleder.scope"
 azure.openid.config.token.endpoint: "http://azure"

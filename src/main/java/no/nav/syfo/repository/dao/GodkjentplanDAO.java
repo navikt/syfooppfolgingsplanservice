@@ -88,8 +88,8 @@ public class GodkjentplanDAO {
         jdbcTemplate.update("UPDATE godkjentplan SET delt_med_nav = 1, delt_med_nav_tidspunkt = ? WHERE oppfoelgingsdialog_id = ?", convert(deltMedNavTidspunkt), oppfolgingsplanId);
     }
 
-    public void delMedNavTildelEnhet(long oppfolgingsplanId, String tildeltEnhet) {
-        jdbcTemplate.update("UPDATE godkjentplan SET tildelt_enhet = ? WHERE oppfoelgingsdialog_id = ?", tildeltEnhet, oppfolgingsplanId);
+    public void delMedNavTildelEnhet(long oppfolgingsplanId) {
+        jdbcTemplate.update("UPDATE godkjentplan SET tildelt_enhet = ? WHERE oppfoelgingsdialog_id = ?", "", oppfolgingsplanId);
     }
 
     public void delMedFastlege(long oppfolgingsplanId) {
