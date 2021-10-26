@@ -94,9 +94,9 @@ spec:
     - name: VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME
       value: QA.Q1_VARSELPRODUKSJON.BEST_SRVMLD_M_KONTAKT
     - name: FASTLEGE_DIALOGMELDING_CLIENT_ID
-      value: "dev-fss.teamsykefravr.fastlegerest"
+      value: "dev-gcp.teamsykefravr.fastlegerest"
     - name: FASTLEGE_DIALOGMELDING_API
-      value: https://fastlegerest.nais.preprod.local/fastlegerest/api
+      value: https://fastlegerest.dev.intern.nav.no/fastlegerest/api
     - name: LAGREJURIDISKLOGG_REST_URL
       value: https://app-q1.adeo.no/juridisklogg/api/rest/logg
     - name: SYFOTILGANGSKONTROLL_CLIENT_ID
