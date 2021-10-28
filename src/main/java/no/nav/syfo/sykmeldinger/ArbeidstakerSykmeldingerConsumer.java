@@ -73,7 +73,16 @@ public class ArbeidstakerSykmeldingerConsumer {
         return new Organisasjonsinformasjon().orgNavn(arbeidsgiverStatusDTO.orgNavn()).orgnummer(arbeidsgiverStatusDTO.orgnummer());
     }
 
-    public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken) {
+    private String getSykmeldingerUrl(boolean isIdag) {
+        if (isIdag) {
+            LocalDate idag = LocalDate.now();
+            String dato = idag.toString();
+            UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT" + "&fom=" + dato + "&tom=" + dato).toUriString();
+        }
+        return UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT").toUriString();
+    }
+
+    public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken, boolean isIdag) {
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
 
         String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
@@ -84,7 +93,7 @@ public class ArbeidstakerSykmeldingerConsumer {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
-                UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT").toUriString(),
+                getSykmeldingerUrl(isIdag),
                 GET,
                 new HttpEntity<>(headers),
                 new ParameterizedTypeReference<>() {
@@ -113,38 +122,5 @@ public class ArbeidstakerSykmeldingerConsumer {
                                            convertToSykmeldingsperiode(dto.sykmeldingsperioder),
                                            convertToOrganisasjonInformasjon(dto.sykmeldingStatus.arbeidsgiver)))
                 .collect(Collectors.toUnmodifiableList());
-    }
-
-    public Optional<List<Sykmelding>> getSendteSykmeldingerForPerioden(String aktorId, String idToken) {
-        String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, idToken);
-        headers.add("fnr", fnr);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        LocalDate idag = LocalDate.now();
-        String dato = idag.toString();
-        LOG.warn("getSendteSykmeldingerForPerioden dato", dato);
-
-        ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
-                UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT" + "&fom=" + dato + "&tom=" + dato).toUriString(),
-                GET,
-                new HttpEntity<>(headers),
-                new ParameterizedTypeReference<>() {
-                }
-        );
-        LOG.warn("getSendteSykmeldingerForPerioden response", response);
-        if (response.getStatusCode() != OK) {
-            final String message = ERROR_MESSAGE_BASE + response.getStatusCode();
-            LOG.error(message);
-            throw new RuntimeException(message);
-        }
-
-        if (Objects.requireNonNull(response).getBody() == null) {
-            return Optional.empty();
-        }
-
-        return Optional.of(mapTilSykmeldingsliste(Objects.requireNonNull(response.getBody()), fnr));
     }
 }

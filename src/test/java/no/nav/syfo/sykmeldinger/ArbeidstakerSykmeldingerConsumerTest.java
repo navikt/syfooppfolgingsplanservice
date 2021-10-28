@@ -91,7 +91,7 @@ public class ArbeidstakerSykmeldingerConsumerTest {
         })))
                 .thenReturn(new ResponseEntity<>(sykmeldingDTOList, OK));
 
-        List<Sykmelding> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTOR_ID, "123").orElseGet(List::of);
+        List<Sykmelding> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTOR_ID, "123", false).orElseGet(List::of);
 
         assertThat(sendteSykmeldinger.size()).isNotEqualTo(sykmeldingDTOList.size());
         assertThat(sendteSykmeldinger.size()).isEqualTo(1);
@@ -112,7 +112,7 @@ public class ArbeidstakerSykmeldingerConsumerTest {
         })))
                 .thenReturn(new ResponseEntity<>(null, INTERNAL_SERVER_ERROR));
 
-        Assertions.assertThrows(RuntimeException.class, () -> arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTOR_ID, "456"));
+        Assertions.assertThrows(RuntimeException.class, () -> arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTOR_ID, "456", false));
 
         verify(metrikk).tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
         verify(metrikk).tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET);
