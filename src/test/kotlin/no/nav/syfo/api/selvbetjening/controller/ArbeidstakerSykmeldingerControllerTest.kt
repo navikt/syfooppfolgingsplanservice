@@ -54,7 +54,7 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
         Mockito.`when`(arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, "token", false)).thenReturn(Optional.of(sendteSykmeldinger))
 
-        val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders, "false")
+        val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
         val body = res.body as List<*>
 
         Assert.assertEquals(200, res.statusCodeValue.toLong())
@@ -67,7 +67,7 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
         Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         Mockito.`when`(arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, "token", false)).thenReturn(Optional.empty())
 
-        val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders, "false")
+        val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger(httpHeaders)
 
         Assert.assertEquals(200, res.statusCodeValue.toLong())
     }
