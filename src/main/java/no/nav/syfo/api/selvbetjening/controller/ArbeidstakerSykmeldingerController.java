@@ -56,6 +56,7 @@ public class ArbeidstakerSykmeldingerController {
 
     @ResponseBody
     @GetMapping
+    @RequestMapping(value =  "/")
     public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
         metrikk.tellHendelse("get_sykmeldinger");
 
