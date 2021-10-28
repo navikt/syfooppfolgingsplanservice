@@ -57,7 +57,7 @@ public class ArbeidstakerSykmeldingerController {
 
     @ResponseBody
     @GetMapping("/")
-    public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers, @RequestParam(required= false, name="_ts") String name) {
+    public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
         metrikk.tellHendelse("get_sykmeldinger");
 
         final String idToken = headers.getFirst("authorization");
