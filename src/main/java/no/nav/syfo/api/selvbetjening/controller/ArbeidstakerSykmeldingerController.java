@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,7 +57,7 @@ public class ArbeidstakerSykmeldingerController {
 
     @ResponseBody
     @GetMapping("/")
-    public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
+    public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers, @RequestParam(required= false, name="_ts") String name) {
         metrikk.tellHendelse("get_sykmeldinger");
 
         final String idToken = headers.getFirst("authorization");
@@ -74,7 +75,7 @@ public class ArbeidstakerSykmeldingerController {
 
     @ResponseBody
     @GetMapping("/today")
-    public ResponseEntity<List<Sykmelding>> getSendteSykmeldingerForPerioden(@RequestHeader MultiValueMap<String, String> headers) {
+    public ResponseEntity<List<Sykmelding>> getSendteSykmeldingerForPerioden(@RequestHeader MultiValueMap<String, String> headers, @RequestParam(required= false, name="_ts") String name) {
         LOG.warn("getSendteSykmeldingerForPerioden");
         final String idToken = headers.getFirst("authorization");
         String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
