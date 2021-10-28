@@ -73,7 +73,8 @@ public class ArbeidstakerSykmeldingerController {
     }
 
     @ResponseBody
-    @GetMapping(path = "/today")
+    @GetMapping
+    @RequestMapping(value =  "/today")
     public ResponseEntity<List<Sykmelding>> getSendteSykmeldingerForPerioden(@RequestHeader MultiValueMap<String, String> headers) {
         LOG.warn("getSendteSykmeldingerForPerioden");
         final String idToken = headers.getFirst("authorization");
