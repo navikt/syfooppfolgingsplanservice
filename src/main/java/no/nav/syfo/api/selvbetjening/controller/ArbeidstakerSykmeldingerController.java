@@ -6,10 +6,9 @@ import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,8 +54,7 @@ public class ArbeidstakerSykmeldingerController {
     }
 
     @ResponseBody
-    @GetMapping
-    @RequestMapping(value =  "/")
+    @RequestMapping(value =  "/", method = RequestMethod.GET)
     public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
         metrikk.tellHendelse("get_sykmeldinger");
 
@@ -74,8 +72,7 @@ public class ArbeidstakerSykmeldingerController {
     }
 
     @ResponseBody
-    @GetMapping
-    @RequestMapping(value =  "/today")
+    @RequestMapping(value =  "/today", method = RequestMethod.GET)
     public ResponseEntity<List<Sykmelding>> getSendteSykmeldingerForPerioden(@RequestHeader MultiValueMap<String, String> headers) {
         LOG.warn("getSendteSykmeldingerForPerioden");
         final String idToken = headers.getFirst("authorization");
