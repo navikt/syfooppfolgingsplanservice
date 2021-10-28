@@ -73,8 +73,8 @@ public class ArbeidstakerSykmeldingerConsumer {
         return new Organisasjonsinformasjon().orgNavn(arbeidsgiverStatusDTO.orgNavn()).orgnummer(arbeidsgiverStatusDTO.orgnummer());
     }
 
-    private String getSykmeldingerUrl(boolean isIdag) {
-        if (isIdag) {
+    private String getSykmeldingerUrl(boolean isToday) {
+        if (isToday) {
             LocalDate idag = LocalDate.now();
             String dato = idag.toString();
             UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT" + "&fom=" + dato + "&tom=" + dato).toUriString();
@@ -82,7 +82,7 @@ public class ArbeidstakerSykmeldingerConsumer {
         return UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger/?include=SENDT").toUriString();
     }
 
-    public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken, boolean isIdag) {
+    public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken, boolean isToday) {
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
 
         String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
@@ -93,7 +93,7 @@ public class ArbeidstakerSykmeldingerConsumer {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
-                getSykmeldingerUrl(isIdag),
+                getSykmeldingerUrl(isToday),
                 GET,
                 new HttpEntity<>(headers),
                 new ParameterizedTypeReference<>() {
