@@ -56,16 +56,31 @@ public class ArbeidstakerSykmeldingerController {
 
     @ResponseBody
     @GetMapping
-    public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers, @RequestParam(required = false) String idag) {
+    public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers) {
         metrikk.tellHendelse("get_sykmeldinger");
 
         final String idToken = headers.getFirst("authorization");
         String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
         String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
 
-        final boolean isIdag = Boolean.valueOf(idag);
+        Optional<List<Sykmelding>> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken, false);
 
-        Optional<List<Sykmelding>> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken, isIdag);
+        return sendteSykmeldinger.map(sykmeldinger -> ResponseEntity
+                .status(HttpStatus.OK)
+                .body(sykmeldinger)).orElseGet(() -> ResponseEntity
+                .status(HttpStatus.OK)
+                .body(List.of()));
+    }
+
+    @ResponseBody
+    @GetMapping(path = "/today")
+    public ResponseEntity<List<Sykmelding>> getSendteSykmeldingerForPerioden(@RequestHeader MultiValueMap<String, String> headers) {
+        LOG.warn("getSendteSykmeldingerForPerioden");
+        final String idToken = headers.getFirst("authorization");
+        String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
+        String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
+
+        Optional<List<Sykmelding>> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken, true);
 
         return sendteSykmeldinger.map(sykmeldinger -> ResponseEntity
                 .status(HttpStatus.OK)
