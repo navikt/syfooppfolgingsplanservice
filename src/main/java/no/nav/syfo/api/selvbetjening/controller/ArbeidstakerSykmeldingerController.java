@@ -58,12 +58,12 @@ public class ArbeidstakerSykmeldingerController {
     @GetMapping()
     public ResponseEntity<List<Sykmelding>> getSendteSykmeldinger(@RequestHeader MultiValueMap<String, String> headers, @RequestParam(required = false) String today) {
         metrikk.tellHendelse("get_sykmeldinger");
-
         final String idToken = headers.getFirst("authorization");
         String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
         String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
 
         final boolean isTodayPresent = Boolean.parseBoolean(today);
+        LOG.warn("Processing sykmeldinger fetch for " + innloggetIdent + ",isTodayPresent: " + isTodayPresent);
 
         Optional<List<Sykmelding>> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken, isTodayPresent);
 
