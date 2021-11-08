@@ -18,7 +18,6 @@ public class CacheConfig {
     public static final String CACHENAME_AKTOER_ID = "aktoerid";
     public static final String CACHENAME_AKTOER_FNR = "aktoerfnr";
     public static final String CACHENAME_ANSATTE = "lederansatte";
-    public static final String CACHENAME_BEHANDLENDEENHET_FNR = "behandlendeenhetfnr";
     public static final String CACHENAME_DKIF_IDENT = "dkifident";
     public static final String CACHENAME_EREG_VIRKSOMHETSNAVN = "virksomhetsnavn";
     public static final String CACHENAME_LEDER = "narmesteleder";
@@ -37,7 +36,6 @@ public class CacheConfig {
         cacheConfigurations.put(CACHENAME_AKTOER_ID, defaultConfig);
         cacheConfigurations.put(CACHENAME_AKTOER_FNR, defaultConfig);
         cacheConfigurations.put(CACHENAME_ANSATTE, defaultConfig);
-        cacheConfigurations.put(CACHENAME_BEHANDLENDEENHET_FNR, defaultConfig);
         cacheConfigurations.put(CACHENAME_DKIF_IDENT, defaultConfig);
         cacheConfigurations.put(CACHENAME_EREG_VIRKSOMHETSNAVN, defaultConfig);
         cacheConfigurations.put(CACHENAME_LEDER, defaultConfig);
