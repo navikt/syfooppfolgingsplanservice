@@ -4,6 +4,9 @@ metadata:
   labels:
     team: team-esyfo
   name: syfooppfolgingsplanservice-redis
+  annotations:
+    nais.io/read-only-file-system: "false"
+    nais.io/run-as-user: "999"
 spec:
   image: redis:5-alpine
   port: 6379
