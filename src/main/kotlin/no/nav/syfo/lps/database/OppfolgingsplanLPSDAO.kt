@@ -63,6 +63,21 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         ).first()
     }
 
+    fun getBatch(id: String): String {
+        val query = """
+            SELECT *
+            FROM OPPFOLGINGSPLANLPS
+            WHERE id = :id
+            """.trimIndent()
+        val mapSql = MapSqlParameterSource()
+            .addValue("id", id)
+        return namedParameterJdbcTemplate.query(
+            query,
+            mapSql,
+            oppfolgingsplanLPSRowMapper
+        ).first().xml
+    }
+
     fun getPlanListToJournalpost(): List<POppfolgingsplanLPS> {
         val query = """
             SELECT *

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import generated.DataBatch
 import no.nav.helse.op2016.Oppfoelgingsplan4UtfyllendeInfoM
 import no.nav.helse.op2016.Skjemainnhold
