@@ -67,7 +67,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         val query = """
             SELECT *
             FROM OPPFOLGINGSPLANLPS
-            WHERE id = :id
+            WHERE OPPFOLGINGSPLANLPS_ID = :id
             """.trimIndent()
         val mapSql = MapSqlParameterSource()
             .addValue("id", id)
