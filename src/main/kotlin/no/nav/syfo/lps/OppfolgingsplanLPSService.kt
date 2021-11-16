@@ -15,6 +15,8 @@ import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.pdl.isKode6Or7
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.syfo.service.*
 import no.nav.syfo.util.InnsendingFeiletException
 import no.nav.syfo.util.OppslagFeiletException
