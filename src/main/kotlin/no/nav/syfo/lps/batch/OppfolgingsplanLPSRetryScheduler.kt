@@ -47,7 +47,7 @@ class OppfolgingsplanLPSRetryScheduler @Inject constructor(
         private val LOG = LoggerFactory.getLogger(OppfolgingsplanLPSRetryScheduler::class.java)
         var rekjorPlanFerdig = false
         val ARref = "AR432091821"
-        val id = "141"
+        val id = "23589"
         private const val FIFTEEN_MINUTES_MILLISECONDS: Long = 15 * 60 * 1000
     }
 }
