@@ -6,8 +6,8 @@ import no.nav.security.token.support.core.context.TokenValidationContext
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.test.JwtTokenGenerator
-import no.nav.syfo.oidc.OIDCIssuer.AZURE
 import no.nav.syfo.oidc.OIDCIssuer.EKSTERN
+import no.nav.syfo.oidc.OIDCIssuer.INTERN_AZUREAD_V2
 
 object OidcTestHelper {
     @JvmStatic
@@ -23,10 +23,10 @@ object OidcTestHelper {
     }
 }
 
-fun loggInnVeilederAzure(contextHolder: TokenValidationContextHolder, veilederIdent: String) {
+fun loggInnVeilederAzureADV2(contextHolder: TokenValidationContextHolder, veilederIdent: String) {
     val claimsSet = JWTClaimsSet.parse("{\"NAVident\":\"$veilederIdent\"}")
     val jwt = JwtTokenGenerator.createSignedJWT(claimsSet)
-    settOIDCValidationContext(contextHolder, jwt, AZURE)
+    settOIDCValidationContext(contextHolder, jwt, INTERN_AZUREAD_V2)
 }
 
 fun settOIDCValidationContext(contextHolder: TokenValidationContextHolder, jwt: SignedJWT, issuer: String) {

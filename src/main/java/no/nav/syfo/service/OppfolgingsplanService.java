@@ -2,8 +2,6 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.*;
-import no.nav.syfo.behandlendeenhet.BehandlendeEnhet;
-import no.nav.syfo.behandlendeenhet.BehandlendeEnhetConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
@@ -52,8 +50,6 @@ public class OppfolgingsplanService {
 
     private AktorregisterConsumer aktorregisterConsumer;
 
-    private final BehandlendeEnhetConsumer behandlendeEnhetConsumer;
-
     private FastlegeService fastlegeService;
 
     private ServiceVarselService serviceVarselService;
@@ -81,7 +77,6 @@ public class OppfolgingsplanService {
             TiltakDAO tiltakDAO,
             VeilederBehandlingDAO veilederBehandlingDAO,
             AktorregisterConsumer aktorregisterConsumer,
-            BehandlendeEnhetConsumer behandlendeEnhetConsumer,
             FastlegeService fastlegeService,
             NarmesteLederConsumer narmesteLederConsumer,
             PdlConsumer pdlConsumer,
@@ -98,7 +93,6 @@ public class OppfolgingsplanService {
         this.tiltakDAO = tiltakDAO;
         this.veilederBehandlingDAO = veilederBehandlingDAO;
         this.aktorregisterConsumer = aktorregisterConsumer;
-        this.behandlendeEnhetConsumer = behandlendeEnhetConsumer;
         this.fastlegeService = fastlegeService;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.pdlConsumer = pdlConsumer;
@@ -254,29 +248,16 @@ public class OppfolgingsplanService {
         return !maybeGodkjentplan.isPresent();
     }
 
-    private BehandlendeEnhet finnBehandlendeEnhetForGeografiskTilknytting(Oppfolgingsplan oppfolgingsplan) {
-        String arbeidstakerFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
-        return behandlendeEnhetConsumer.getBehandlendeEnhet(arbeidstakerFnr);
-    }
-
     @Transactional
     public void delMedNav(long oppfolgingsplanId, String innloggetFnr) {
         Oppfolgingsplan oppfoelgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
         LocalDateTime deltMedNavTidspunkt = now();
-        BehandlendeEnhet sykmeldtBehandlendeEnhet = finnBehandlendeEnhetForGeografiskTilknytting(oppfoelgingsplan);
-
-        VeilederBehandling veilederBehandling = new VeilederBehandling()
-                .godkjentplanId(godkjentplanDAO.godkjentPlanIdByOppfolgingsplanId(oppfolgingsplanId))
-                .tildeltEnhet(sykmeldtBehandlendeEnhet.getEnhetId())
-                .opprettetDato(deltMedNavTidspunkt)
-                .sistEndret(deltMedNavTidspunkt);
 
         throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfoelgingsplan);
 
         godkjentplanDAO.delMedNav(oppfolgingsplanId, deltMedNavTidspunkt);
-        veilederBehandlingDAO.opprett(veilederBehandling);
-        godkjentplanDAO.delMedNavTildelEnhet(oppfoelgingsplan.id, sykmeldtBehandlendeEnhet.getEnhetId());
+        godkjentplanDAO.delMedNavTildelEnhet(oppfoelgingsplan.id);
         oppfolgingsplanDAO.sistEndretAv(oppfolgingsplanId, innloggetAktoerId);
 
     }

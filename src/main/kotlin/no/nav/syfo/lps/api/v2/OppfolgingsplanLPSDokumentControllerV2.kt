@@ -1,4 +1,4 @@
-package no.nav.syfo.lps.api
+package no.nav.syfo.lps.api.v2
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.syfo.domain.Fodselsnummer
@@ -13,9 +13,9 @@ import javax.inject.Inject
 import javax.ws.rs.ForbiddenException
 
 @RestController
-@ProtectedWithClaims(issuer = OIDCIssuer.AZURE)
-@RequestMapping(value = ["/api/internad/dokument/lps/{uuid}"])
-class OppfolgingsplanLPSDokumentController @Inject constructor(
+@ProtectedWithClaims(issuer = OIDCIssuer.INTERN_AZUREAD_V2)
+@RequestMapping(value = ["/api/internad/v2/dokument/lps/{uuid}"])
+class OppfolgingsplanLPSDokumentControllerV2 @Inject constructor(
     private val oppfolgingsplanLPSService: OppfolgingsplanLPSService,
     private val veilederTilgangConsumer: VeilederTilgangConsumer
 ) {
@@ -25,7 +25,7 @@ class OppfolgingsplanLPSDokumentController @Inject constructor(
     ): ResponseEntity<*> {
         val planLPS = oppfolgingsplanLPSService.get(oppfolgingsplanLPSUUID)
 
-        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccess(Fodselsnummer(planLPS.fnr))
+        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessWithOBO(Fodselsnummer(planLPS.fnr))
 
         if (!planLPS.deltMedNav) {
             throw ForbiddenException()

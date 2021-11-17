@@ -3,7 +3,11 @@ kind: "Application"
 metadata:
   labels:
     team: team-esyfo
+  annotations:
+    nais.io/read-only-file-system: "false"
+    nais.io/run-as-user: "999"
   name: syfooppfolgingsplanservice-redis
+  namespace: team-esyfo
 spec:
   image: redis:5-alpine
   port: 6379

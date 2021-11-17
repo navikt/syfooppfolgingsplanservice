@@ -55,8 +55,6 @@ val githubUser: String by project
 val githubPassword: String by project
 repositories {
     mavenCentral()
-    jcenter()
-    maven(url="https://dl.bintray.com/kotlin/kotlinx/")
     maven(url="http://packages.confluent.io/maven/")
     maven {
         url = uri("https://maven.pkg.github.com/navikt/syfo-xml-codegen")

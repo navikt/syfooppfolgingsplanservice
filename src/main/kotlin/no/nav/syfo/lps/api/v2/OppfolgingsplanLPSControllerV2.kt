@@ -1,4 +1,4 @@
-package no.nav.syfo.lps.api
+package no.nav.syfo.lps.api.v2
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.syfo.domain.Fodselsnummer
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
 
 @RestController
-@ProtectedWithClaims(issuer = OIDCIssuer.AZURE)
-@RequestMapping(value = ["/api/internad/oppfolgingsplan/lps"])
-class OppfolgingsplanLPSController @Inject constructor(
+@ProtectedWithClaims(issuer = OIDCIssuer.INTERN_AZUREAD_V2)
+@RequestMapping(value = ["/api/internad/v2/oppfolgingsplan/lps"])
+class OppfolgingsplanLPSControllerV2 @Inject constructor(
     private val oppfolgingsplanLPSService: OppfolgingsplanLPSService,
     private val veilederTilgangConsumer: VeilederTilgangConsumer
 ) {
@@ -27,7 +27,7 @@ class OppfolgingsplanLPSController @Inject constructor(
         val personIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase())?: throw IllegalArgumentException("No PersonIdent supplied")
         val personFnr = Fodselsnummer(personIdent)
 
-        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccess(personFnr)
+        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessWithOBO(personFnr)
 
         return oppfolgingsplanLPSService.getSharedWithNAV(personFnr)
             .map {

@@ -1,12 +1,14 @@
-package no.nav.syfo.api.intern.controller;
+package no.nav.syfo.api.intern.controller.v2;
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
-import no.nav.syfo.api.intern.domain.*;
-import no.nav.syfo.domain.*;
+import no.nav.syfo.api.intern.domain.RSHistorikk;
+import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
+import no.nav.syfo.domain.Fodselsnummer;
+import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.ereg.EregConsumer;
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
-import no.nav.syfo.service.*;
+import no.nav.syfo.service.BrukerprofilService;
 import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,28 +17,28 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static no.nav.syfo.api.intern.mappers.OppfoelgingsdialogRestMapper.oppfoelgingsdialog2rs;
-import static no.nav.syfo.oidc.OIDCIssuer.AZURE;
+import static no.nav.syfo.oidc.OIDCIssuer.INTERN_AZUREAD_V2;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@ProtectedWithClaims(issuer = AZURE)
-@RequestMapping(value = "/api/internad/v1/oppfolgingsplan/{fnr}")
-public class OppfolgingsplanInternController {
+@ProtectedWithClaims(issuer = INTERN_AZUREAD_V2)
+@RequestMapping(value = "/api/internad/v2/oppfolgingsplan/{fnr}")
+public class OppfolgingsplanInternControllerV2 {
 
-    private AktorregisterConsumer aktorregisterConsumer;
-    private BrukerprofilService brukerprofilService;
-    private EregConsumer eregConsumer;
-    private OppfolgingsplanDAO oppfolgingsplanDAO;
-    private VeilederTilgangConsumer veilederTilgangConsumer;
+    private final AktorregisterConsumer aktorregisterConsumer;
+    private final BrukerprofilService brukerprofilService;
+    private final EregConsumer eregConsumer;
+    private final OppfolgingsplanDAO oppfolgingsplanDAO;
+    private final VeilederTilgangConsumer veilederTilgangConsumer;
 
     @Inject
-    public OppfolgingsplanInternController(
-            final AktorregisterConsumer aktorregisterConsumer,
-            final BrukerprofilService brukerprofilService,
-            final EregConsumer eregConsumer,
-            final OppfolgingsplanDAO oppfolgingsplanDAO,
-            final VeilederTilgangConsumer veilederTilgangConsumer
+    public OppfolgingsplanInternControllerV2(
+            AktorregisterConsumer aktorregisterConsumer,
+            BrukerprofilService brukerprofilService,
+            EregConsumer eregConsumer,
+            OppfolgingsplanDAO oppfolgingsplanDAO,
+            VeilederTilgangConsumer veilederTilgangConsumer
     ) {
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.brukerprofilService = brukerprofilService;
@@ -57,7 +59,7 @@ public class OppfolgingsplanInternController {
     public List<RSHistorikk> getHistorikk(@PathVariable("fnr") String fnr) {
         Fodselsnummer personFnr = new Fodselsnummer(fnr);
 
-        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccess(personFnr);
+        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessWithOBO(personFnr);
 
         List<Oppfolgingsplan> oppfoelgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getValue()))
                 .stream()
@@ -79,7 +81,7 @@ public class OppfolgingsplanInternController {
     public List<RSOppfoelgingsdialog> getOppfolgingsplaner(@PathVariable("fnr") String fnr) {
         Fodselsnummer personFnr = new Fodselsnummer(fnr);
 
-        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccess(personFnr);
+        veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessWithOBO(personFnr);
 
         return mapListe(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getValue()))
                         .stream()
