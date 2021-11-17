@@ -63,7 +63,6 @@ public class ArbeidstakerSykmeldingerController {
         String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
 
         final boolean isTodayPresent = Boolean.parseBoolean(today);
-        LOG.warn("Processing sykmeldinger fetch for " + innloggetIdent + ",isTodayPresent: " + isTodayPresent);
 
         Optional<List<Sykmelding>> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken, isTodayPresent);
 
