@@ -63,6 +63,18 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         ).first()
     }
 
+    fun getPlansWithoutPDF(): List<POppfolgingsplanLPS> {
+        val query = """
+            SELECT *
+            FROM OPPFOLGINGSPLANLPS
+            WHERE pdf IS NULL
+            """.trimIndent()
+        return namedParameterJdbcTemplate.query(
+            query,
+            oppfolgingsplanLPSRowMapper
+        )
+    }
+
     fun getPlanListToJournalpost(): List<POppfolgingsplanLPS> {
         val query = """
             SELECT *
