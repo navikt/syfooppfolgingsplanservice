@@ -70,6 +70,30 @@ class OppfolgingsplanLPSService @Inject constructor(
         return oppfolgingsplanLPSDAO.get(oppfolgingsplanLPSUUID).mapToOppfolgingsplanLPS()
     }
 
+    fun retryGeneratePDF(id: Long, recordBatch: String) {
+        log.info("Try to generate PDF for plan with Id: $id")
+
+        val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(recordBatch)) as DataBatch
+        val dataUnit = dataBatch.dataUnits.dataUnit.first()
+        val payload = dataUnit.formTask.form.first().formData
+        val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
+        val skjemainnhold = oppfolgingsplan.skjemainnhold
+
+        val archiveReference = dataUnit.archiveReference
+
+        val incomingMetadata = IncomingMetadata(
+            archiveReference = archiveReference,
+            senderOrgName = skjemainnhold.arbeidsgiver.orgnavn,
+            senderOrgId = skjemainnhold.arbeidsgiver.orgnr,
+            userPersonNumber = skjemainnhold.sykmeldtArbeidstaker.fnr
+        )
+
+        val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
+        val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
+        oppfolgingsplanLPSDAO.updatePdf(id, pdf)
+        log.info("PDF generation retry successful for plan with id: $id")
+    }
+
     fun receivePlan(
         archiveReference: String,
         recordBatch: String,
