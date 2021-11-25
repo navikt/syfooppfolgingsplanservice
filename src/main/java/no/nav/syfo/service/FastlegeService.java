@@ -80,6 +80,7 @@ public class FastlegeService {
             );
         } catch (OppslagFeiletException e) {
             log.warn("Fanget OppslagFeiletException: {}", e.getMessage());
+            throw e;
         }
     }
 
@@ -105,7 +106,6 @@ public class FastlegeService {
             int responsekode = e.getRawStatusCode();
             tellPlanDeltMedFastlegeKall(lps, false);
             if (responsekode == 404) {
-                log.warn("Klarte ikke dele oppfølgingsplan med fastlege: Feil ved oppslag av fastlege eller partnerinformasjon");
                 throw new OppslagFeiletException("Feil ved oppslag av fastlege eller partnerinformasjon");
             } else {
                 log.error("Feil ved sending av oppfølgingsdialog til fastlege Fikk responskode " + responsekode, e);
