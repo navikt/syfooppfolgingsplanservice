@@ -157,6 +157,8 @@ dependencies {
 }
 
 tasks {
+    extra["log4j2.version"] = "2.15.0"
+
     shadowJar {
         isZip64 = true
     }
