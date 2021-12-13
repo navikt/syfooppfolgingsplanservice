@@ -134,7 +134,9 @@ dependencies {
     implementation("no.nav.tjenestespesifikasjoner:varsel-inn:${Versions.tjenesteSpesifikasjonerVersion}")
 
     implementation("org.apache.avro:avro:${Versions.avroVersion}")
-    implementation("io.confluent:kafka-avro-serializer:${Versions.confluentVersion}")
+    implementation("io.confluent:kafka-avro-serializer:${Versions.confluentVersion}"){
+        exclude(group = "log4j", module = "log4j")
+    }
 
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
@@ -153,7 +155,9 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.5")
     implementation("org.slf4j:slf4j-api:1.7.25")
     implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
-    implementation("org.apache.kafka:kafka_2.12:${Versions.kafkaVersion}")
+    implementation("org.apache.kafka:kafka_2.12:${Versions.kafkaVersion}"){
+        exclude(group = "log4j", module = "log4j")
+    }
 }
 
 tasks {
