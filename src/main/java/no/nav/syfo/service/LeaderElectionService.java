@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.syfo.domain.LeaderPod;
 import no.nav.syfo.metric.Metrikk;
@@ -41,7 +42,7 @@ public class LeaderElectionService {
         if (isLocal())
             return false;
         metrikk.tellHendelse("isLeader_kalt");
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String url = "http://" + electorpath;
 
         String response = restTemplateScheduler.getForObject(url, String.class);
