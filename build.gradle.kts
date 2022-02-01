@@ -21,6 +21,7 @@ object Versions {
     const val kafkaVersion = "2.0.0"
     const val altinnKanalSchemasVersion = "1.0.1"
     const val jaxwsVersion = "2.3.2"
+    const val h2Version ="2.1.210"
 }
 
 plugins {
@@ -140,7 +141,7 @@ dependencies {
 
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
-    testImplementation("com.h2database:h2")
+    testImplementation("com.h2database:h2:${Versions.h2Version}")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.0.6")
     implementation("net.logstash.logback:logstash-logback-encoder:4.10")
