@@ -9,7 +9,7 @@ version = "1.0.0"
 object Versions {
     const val avroVersion = "1.8.2"
     const val confluentVersion = "4.0.0"
-    const val cxfVersion = "3.3.7"
+    const val cxfVersion = "3.3.8"
     const val flywayVersion = "5.1.4"
     const val kotlinJacksonVersion = "2.9.8"
     const val tokenSupportVersion = "1.3.0"
