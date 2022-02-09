@@ -29,7 +29,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.allopen") version "1.3.50"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("java")
-    id("org.springframework.boot") version "2.2.8.RELEASE"
+    id("org.springframework.boot") version "2.3.12.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 }
@@ -143,7 +143,7 @@ dependencies {
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
 
-    implementation("io.micrometer:micrometer-registry-prometheus:1.0.6")
+    implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("net.logstash.logback:logstash-logback-encoder:4.10")
     implementation("commons-io:commons-io:2.5")
     implementation("com.lowagie:itext:2.1.7")
