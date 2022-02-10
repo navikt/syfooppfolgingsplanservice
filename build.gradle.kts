@@ -12,7 +12,7 @@ object Versions {
     const val cxfVersion = "3.3.8"
     const val flywayVersion = "5.1.4"
     const val kotlinJacksonVersion = "2.9.8"
-    const val tokenSupportVersion = "1.3.0"
+    const val tokenSupportVersion = "1.3.10"
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.5d21db9"
     const val syfoOppfolgingsplanSchemaVersion = "1.0.2"
