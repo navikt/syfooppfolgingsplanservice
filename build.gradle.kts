@@ -30,7 +30,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("java")
-    id("org.springframework.boot") version "2.6.3"
+    id("org.springframework.boot") version "2.5.9"
     id ("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 }
@@ -165,6 +165,7 @@ dependencies {
 }
 
 tasks {
+
     extra["log4j2.version"] = "2.16.0"
 
     shadowJar {
@@ -200,4 +201,5 @@ tasks {
     named<KotlinCompile>("compileTestKotlin") {
         kotlinOptions.jvmTarget = "11"
     }
+
 }
