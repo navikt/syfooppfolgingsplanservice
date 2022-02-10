@@ -7,8 +7,8 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 object Versions {
-    const val avroVersion = "1.8.2"
-    const val confluentVersion = "4.0.0"
+    const val avroVersion = "1.11.0"
+    const val confluentVersion = "7.0.1"
     const val cxfVersion = "3.3.8"
     const val flywayVersion = "5.1.4"
     const val kotlinJacksonVersion = "2.9.8"
