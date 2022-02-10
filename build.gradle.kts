@@ -30,7 +30,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("java")
-    id("org.springframework.boot") version "2.5.9"
+    id("org.springframework.boot") version "2.4.13"
     id ("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 }
@@ -200,6 +200,16 @@ tasks {
 
     named<KotlinCompile>("compileTestKotlin") {
         kotlinOptions.jvmTarget = "11"
+    }
+
+    named<JavaCompile>("compileJava") {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
+
+    named<JavaCompile>("compileTestJava") {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
     }
 
 }
