@@ -9,10 +9,10 @@ version = "1.0.0"
 object Versions {
     const val avroVersion = "1.8.2"
     const val confluentVersion = "4.0.0"
-    const val cxfVersion = "3.3.7"
+    const val cxfVersion = "3.3.8"
     const val flywayVersion = "5.1.4"
     const val kotlinJacksonVersion = "2.9.8"
-    const val tokenSupportVersion = "1.3.0"
+    const val tokenSupportVersion = "1.3.10"
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.5d21db9"
     const val syfoOppfolgingsplanSchemaVersion = "1.0.2"
@@ -151,8 +151,8 @@ dependencies {
     implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20171016.1")
     implementation("javax.ws.rs:javax.ws.rs-api:2.0.1")
     implementation("javax.inject:javax.inject:1")
-    implementation("org.apache.pdfbox:pdfbox:2.0.18")
-    implementation("org.apache.pdfbox:pdfbox-tools:2.0.18")
+    implementation("org.apache.pdfbox:pdfbox:2.0.25")
+    implementation("org.apache.pdfbox:pdfbox-tools:2.0.25")
     implementation("org.xhtmlrenderer:flying-saucer-pdf:9.1.20")
     implementation("org.apache.commons:commons-lang3:3.5")
     implementation("org.slf4j:slf4j-api:1.7.25")
