@@ -21,22 +21,23 @@ object Versions {
     const val kafkaVersion = "2.0.0"
     const val altinnKanalSchemasVersion = "1.0.1"
     const val jaxwsVersion = "2.3.2"
-    const val h2Version ="2.1.210"
+    const val h2Version = "2.1.210"
+    const val junitVersion = "4.13"
 }
 
 plugins {
-    kotlin("jvm") version "1.3.72"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.3.50"
+    kotlin("jvm") version "1.6.10"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("java")
-    id("org.springframework.boot") version "2.2.8.RELEASE"
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
+    id("org.springframework.boot") version "2.4.13"
+    id ("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 }
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
         classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
         classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
         classpath("com.sun.activation:javax.activation:1.2.0")
@@ -143,7 +144,7 @@ dependencies {
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
 
-    implementation("io.micrometer:micrometer-registry-prometheus:1.0.6")
+    implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("net.logstash.logback:logstash-logback-encoder:4.10")
     implementation("commons-io:commons-io:2.5")
     implementation("com.lowagie:itext:2.1.7")
@@ -159,9 +160,12 @@ dependencies {
     implementation("org.apache.kafka:kafka_2.12:${Versions.kafkaVersion}"){
         exclude(group = "log4j", module = "log4j")
     }
+
+    testImplementation("junit:junit:${Versions.junitVersion}")
 }
 
 tasks {
+
     extra["log4j2.version"] = "2.16.0"
 
     shadowJar {
@@ -197,4 +201,15 @@ tasks {
     named<KotlinCompile>("compileTestKotlin") {
         kotlinOptions.jvmTarget = "11"
     }
+
+    named<JavaCompile>("compileJava") {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
+
+    named<JavaCompile>("compileTestJava") {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
+
 }
