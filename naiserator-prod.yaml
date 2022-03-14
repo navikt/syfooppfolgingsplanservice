@@ -37,6 +37,7 @@ spec:
     - "https://syfooppfolgingsplanservice.intern.nav.no"
     - "https://syfooppfolgingsplanservice.nais.adeo.no"
     - "https://app.adeo.no/syfooppfolgingsplanservice"
+    - "https://syfooppfolgingsplanservice.prod-fss-pub.nais.io"
   accessPolicy:
     inbound:
       rules:
