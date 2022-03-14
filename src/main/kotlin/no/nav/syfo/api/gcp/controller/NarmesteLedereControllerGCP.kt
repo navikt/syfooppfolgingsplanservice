@@ -36,26 +36,28 @@ class NarmesteLedereControllerGCP @Inject constructor(
         metrikk.tellHendelse("get_narmesteledere")
 
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Fant ikke oppslaatt Ident ved henting av narmeste ledere for Ident")
-            throw IllegalArgumentException("Fant ikke Ident i Header ved henting av naermeste ledere for ident")
+            LOG.error("Feil i format på fodselsnummer i request til .../narmesteledere/...")
+            ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build()
         } else {
             val innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder)
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetIdent, fnr)) {
                 LOG.error("Ikke tilgang til naermeste ledere: Bruker spør om noen andre enn seg selv eller egne ansatte")
-                return ResponseEntity
+                ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()
-            }
-            val narmesteLedere = narmesteLedereConsumer.narmesteLedere(fnr)
-            if (narmesteLedere.isPresent) {
-                ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(narmesteLedere.get().map { it.mapToNarmesteLederGCP() })
             } else {
-                metrikk.tellHendelse("get_narmesteledere_no_content")
-                ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .build()
+                val narmesteLedere = narmesteLedereConsumer.narmesteLedere(fnr)
+                if (narmesteLedere.isPresent) {
+                    ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(narmesteLedere.get().map { it.mapToNarmesteLederGCP() })
+                } else {
+                    ResponseEntity
+                        .status(HttpStatus.NO_CONTENT)
+                        .build()
+                }
             }
         }
     }

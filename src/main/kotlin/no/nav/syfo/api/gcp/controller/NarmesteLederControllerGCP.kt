@@ -6,6 +6,7 @@ import no.nav.syfo.api.gcp.domain.NarmesteLederGCP
 import no.nav.syfo.api.gcp.domain.mapToNarmesteLederGCP
 import no.nav.syfo.api.gcp.util.fodselsnummerInvalid
 import no.nav.syfo.api.selvbetjening.controller.NarmesteLederController
+import no.nav.syfo.api.selvbetjening.controller.NarmesteLedereControllerGCP
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.oidc.OIDCIssuer.EKSTERN
@@ -36,26 +37,28 @@ class NarmesteLederControllerGCP @Inject constructor(
     ): ResponseEntity<NarmesteLederGCP> {
         metrikk.tellHendelse("get_narmesteleder")
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Fant ikke oppslaatt Ident ved henting av narmeste leder for Ident")
-            throw IllegalArgumentException("Fant ikke Ident i Header ved henting av naermeste leder for ident")
+            LOG.error("Feil i format på fodselsnummer i request til .../narmesteleder/...")
+            ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .build()
         } else {
             val innloggetIdent: String = getSubjectEksternMedThrows(oidcContextHolder)
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetIdent, fnr)) {
                 LOG.error("Ikke tilgang til naermeste leder: Bruker spør om noen andre enn seg selv eller egne ansatte")
-                return ResponseEntity
+                ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()
-            }
-            val narmesteLeder = narmesteLederConsumer.narmesteLeder(fnr, virksomhetsnummer)
-            if (narmesteLeder.isPresent) {
-                ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(narmesteLeder.get().mapToNarmesteLederGCP())
             } else {
-                metrikk.tellHendelse("get_narmesteleder_no_content")
-                ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .build()
+                val narmesteLeder = narmesteLederConsumer.narmesteLeder(fnr, virksomhetsnummer)
+                if (narmesteLeder.isPresent) {
+                    ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(narmesteLeder.get().mapToNarmesteLederGCP())
+                } else {
+                    ResponseEntity
+                        .status(HttpStatus.NO_CONTENT)
+                        .build()
+                }
             }
         }
     }
