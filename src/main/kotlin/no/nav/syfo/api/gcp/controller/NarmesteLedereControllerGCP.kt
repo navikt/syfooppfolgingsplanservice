@@ -13,13 +13,14 @@ import no.nav.syfo.oidc.OIDCUtil.getSubjectEksternMedThrows
 import no.nav.syfo.service.BrukertilgangService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
 
 @RestController
 @ProtectedWithClaims(issuer = EKSTERN)
-@RequestMapping(value = ["/api/gcp/narmesteledere"])
+@RequestMapping(value = ["/api/gcp/narmesteledere/{fnr}"])
 class NarmesteLedereControllerGCP @Inject constructor(
     private val oidcContextHolder: TokenValidationContextHolder,
     private val metrikk: Metrikk,
@@ -28,7 +29,7 @@ class NarmesteLedereControllerGCP @Inject constructor(
     private val narmesteLedereConsumer: NarmesteLedereConsumer
 ) {
     @ResponseBody
-    @GetMapping
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getNarmesteLedere(
         @PathVariable("fnr") fnr: String
     ): ResponseEntity<List<NarmesteLederGCP>> {

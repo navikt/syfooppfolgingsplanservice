@@ -14,24 +14,25 @@ import no.nav.syfo.service.BrukertilgangService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
 
 @RestController
 @ProtectedWithClaims(issuer = EKSTERN)
-@RequestMapping(value = ["/api/gcp/narmesteleder"])
+@RequestMapping(value = ["/api/gcp/narmesteleder/{fnr}"])
 class NarmesteLederControllerGCP @Inject constructor(
     private val oidcContextHolder: TokenValidationContextHolder,
     private val metrikk: Metrikk,
     private val brukertilgangService: BrukertilgangService,
     private val narmesteLederConsumer: NarmesteLederConsumer
 ) {
-    @ResponseBody
-    @GetMapping(path = ["/{virksomhetsnummer}"])
+
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getNarmesteLeder(
         @PathVariable("fnr") fnr: String,
-        @PathVariable("virksomhetsnummer") virksomhetsnummer: String?
+        @RequestParam("virksomhetsnummer") virksomhetsnummer: String
     ): ResponseEntity<NarmesteLederGCP> {
         metrikk.tellHendelse("get_narmesteleder")
         return if (fodselsnummerInvalid(fnr)) {
