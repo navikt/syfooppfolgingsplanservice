@@ -6,7 +6,6 @@ import no.nav.syfo.api.gcp.domain.NarmesteLederGCP
 import no.nav.syfo.api.gcp.domain.mapToNarmesteLederGCP
 import no.nav.syfo.api.gcp.util.fodselsnummerInvalid
 import no.nav.syfo.api.selvbetjening.controller.NarmesteLederController
-import no.nav.syfo.api.selvbetjening.controller.NarmesteLedereControllerGCP
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.oidc.OIDCIssuer.EKSTERN
@@ -37,14 +36,14 @@ class NarmesteLederControllerGCP @Inject constructor(
     ): ResponseEntity<NarmesteLederGCP> {
         metrikk.tellHendelse("get_narmesteleder")
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Feil i format på fodselsnummer i request til .../narmesteleder/...")
+            LOG.error("Feil i format på fodselsnummer i request til ...gcp/narmesteleder/...")
             ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .build()
         } else {
             val innloggetIdent: String = getSubjectEksternMedThrows(oidcContextHolder)
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetIdent, fnr)) {
-                LOG.error("Ikke tilgang til naermeste leder: Bruker spør om noen andre enn seg selv eller egne ansatte")
+                LOG.error("Ikke tilgang til ...gcp/narmesteleder/...: Bruker spør om noen andre enn seg selv eller egne ansatte")
                 ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()

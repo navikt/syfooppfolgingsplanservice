@@ -36,14 +36,14 @@ class NarmesteLedereControllerGCP @Inject constructor(
         metrikk.tellHendelse("get_narmesteledere")
 
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Feil i format på fodselsnummer i request til .../narmesteledere/...")
+            LOG.error("Feil i format på fodselsnummer i request til ...gcp/narmesteledere/...")
             ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .build()
         } else {
             val innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder)
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetIdent, fnr)) {
-                LOG.error("Ikke tilgang til naermeste ledere: Bruker spør om noen andre enn seg selv eller egne ansatte")
+                LOG.error("Ikke tilgang til ...gcp/narmesteledere/... : Bruker spør om noen andre enn seg selv eller egne ansatte")
                 ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()

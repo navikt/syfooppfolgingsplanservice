@@ -42,5 +42,3 @@ class AltinnKanalKafkaConfig (
         return factory
     }
 }
-
-

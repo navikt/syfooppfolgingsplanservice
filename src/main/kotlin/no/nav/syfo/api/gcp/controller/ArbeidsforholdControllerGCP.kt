@@ -40,7 +40,7 @@ class ArbeidsforholdControllerGCP @Inject constructor(
     ): ResponseEntity<List<ArbeidsforholdGCP>> {
         val innloggetIdent: String = OIDCUtil.getSubjectEksternMedThrows(oidcContextHolder)
         if (!brukertilgangService.tilgangTilOppslattIdent(innloggetIdent, fnr)) {
-            LOG.error("Ikke tilgang til naermeste leder: Bruker spør om noen andre enn seg selv eller egne ansatte")
+            LOG.error("Ikke tilgang til .../gcp/arbeidsforhold/...: Bruker spør om noen andre enn seg selv eller egne ansatte")
             return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .build()

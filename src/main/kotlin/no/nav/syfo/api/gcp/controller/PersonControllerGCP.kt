@@ -32,13 +32,13 @@ class PersonControllerGCP @Inject constructor(
     ): ResponseEntity<PersonGCP> {
         val innloggetFnr = getSubjectEksternMedThrows(oidcContextHolder)
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Fant ikke oppslaatt Ident ved henting av narmeste leder for Ident")
+            LOG.error("Fant ikke oppslaatt Ident ved henting person fra ...gcp/person/...")
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .build()
         } else {
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetFnr, fnr)) {
-                LOG.error("Ikke tilgang til person: Bruker spør om noen andre enn seg selv eller egne ansatte")
+                LOG.error("Ikke tilgang til ...gcp/person/... : Bruker spør om noen andre enn seg selv eller egne ansatte")
                 ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()
