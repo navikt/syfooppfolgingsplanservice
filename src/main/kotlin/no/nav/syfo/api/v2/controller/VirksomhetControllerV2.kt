@@ -17,7 +17,7 @@ import javax.inject.Inject
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
 @RequestMapping(value = ["/api/v2/virksomhet/{virksomhetsnummer}"])
-class VirksomhetController @Inject constructor(
+class VirksomhetControllerV2 @Inject constructor(
     private val eregConsumer: EregConsumer,
 ) {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])

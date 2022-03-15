@@ -20,7 +20,7 @@ import javax.inject.Inject
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
 @RequestMapping(value = ["/api/v2/person/{fnr}"])                  // TODO: MARK
-class PersonController @Inject constructor(
+class PersonControllerV2 @Inject constructor(
     private val oidcContextHolder: TokenValidationContextHolder,
     private val pdlConsumer: PdlConsumer,
     private val brukertilgangService: BrukertilgangService)
@@ -60,6 +60,6 @@ class PersonController @Inject constructor(
     }
 
     companion object {
-        private val LOG: Logger = LoggerFactory.getLogger(PersonController::class.java)
+        private val LOG: Logger = LoggerFactory.getLogger(PersonControllerV2::class.java)
     }
 }

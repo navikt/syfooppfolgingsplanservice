@@ -25,7 +25,7 @@ import javax.inject.Inject
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
 @RequestMapping(value = ["/api/v2/arbeidsforhold"])
-class ArbeidsforholdController @Inject constructor(
+class ArbeidsforholdControllerV2 @Inject constructor(
     private val oidcContextHolder: TokenValidationContextHolder,
     private val aaregConsumer: AaregConsumer,
     private val brukertilgangService: BrukertilgangService
@@ -50,6 +50,6 @@ class ArbeidsforholdController @Inject constructor(
     }
 
     companion object {
-        private val LOG: Logger = LoggerFactory.getLogger(ArbeidsforholdController::class.java)
+        private val LOG: Logger = LoggerFactory.getLogger(ArbeidsforholdControllerV2::class.java)
     }
 }

@@ -20,7 +20,7 @@ import javax.inject.Inject
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
 @RequestMapping(value = ["/api/v2/kontaktinfo/{fnr}"])
-class KontaktinfoController @Inject constructor(
+class KontaktinfoControllerV2 @Inject constructor(
     private val oidcContextHolder: TokenValidationContextHolder,
     private val brukertilgangService: BrukertilgangService,
     private val dkifConsumer: DkifConsumer
@@ -61,6 +61,6 @@ class KontaktinfoController @Inject constructor(
         (digitalKontaktinfo.reservert == false) && digitalKontaktinfo.kanVarsles
 
     companion object {
-        private val LOG = LoggerFactory.getLogger(KontaktinfoController::class.java)
+        private val LOG = LoggerFactory.getLogger(KontaktinfoControllerV2::class.java)
     }
 }
