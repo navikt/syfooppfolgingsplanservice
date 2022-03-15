@@ -1,10 +1,10 @@
-package no.nav.syfo.api.gcp.domain
+package no.nav.syfo.api.v2.domain
 
 import no.nav.syfo.model.Naermesteleder
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class NarmesteLederGCP (
+data class NarmesteLeder (
     val virksomhetsnummer: String,
     val erAktiv: Boolean,
     val aktivFom: LocalDate,
@@ -17,8 +17,8 @@ data class NarmesteLederGCP (
     val samtykke: Boolean?
 )
 
-fun Naermesteleder.mapToNarmesteLederGCP(): NarmesteLederGCP {
-    return NarmesteLederGCP(
+fun Naermesteleder.mapToNarmesteLeder(): NarmesteLeder {
+    return NarmesteLeder(
         virksomhetsnummer = this.orgnummer,
         navn = this.navn,
         epost = this.epost,

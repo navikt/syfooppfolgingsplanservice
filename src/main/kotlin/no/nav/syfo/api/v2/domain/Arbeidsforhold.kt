@@ -1,15 +1,15 @@
-package no.nav.syfo.api.gcp.domain
+package no.nav.syfo.api.v2.domain
 
 import no.nav.syfo.model.Stilling
 import java.math.BigDecimal
 
-data class ArbeidsforholdGCP (
+data class Arbeidsforhold (
     val yrke: String,
     val prosent: BigDecimal
 )
 
-fun Stilling.mapToArbeidsforhold(): ArbeidsforholdGCP {
-    return ArbeidsforholdGCP(
+fun Stilling.mapToArbeidsforhold(): Arbeidsforhold {
+    return Arbeidsforhold(
         yrke = this.yrke,
         prosent = this.prosent
     )

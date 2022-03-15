@@ -1,4 +1,4 @@
-package no.nav.syfo.api.gcp.util
+package no.nav.syfo.api.v2.util
 
 import java.util.regex.Pattern
 

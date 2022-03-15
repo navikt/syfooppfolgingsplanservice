@@ -1,9 +1,9 @@
-package no.nav.syfo.api.gcp.controller
+package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.gcp.domain.PersonGCP
-import no.nav.syfo.api.gcp.util.fodselsnummerInvalid
+import no.nav.syfo.api.v2.domain.Person
+import no.nav.syfo.api.v2.util.fodselsnummerInvalid
 import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.oidc.OIDCUtil.getSubjectEksternMedThrows
 import no.nav.syfo.pdl.PdlConsumer
@@ -19,8 +19,8 @@ import javax.inject.Inject
 
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
-@RequestMapping(value = ["/api/gcp/person/{fnr}"])
-class PersonControllerGCP @Inject constructor(
+@RequestMapping(value = ["/api/v2/person/{fnr}"])                  // TODO: MARK
+class PersonController @Inject constructor(
     private val oidcContextHolder: TokenValidationContextHolder,
     private val pdlConsumer: PdlConsumer,
     private val brukertilgangService: BrukertilgangService)
@@ -29,16 +29,16 @@ class PersonControllerGCP @Inject constructor(
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getPerson(
         @PathVariable("fnr") fnr: String
-    ): ResponseEntity<PersonGCP> {
+    ): ResponseEntity<Person> {
         val innloggetFnr = getSubjectEksternMedThrows(oidcContextHolder)
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Fant ikke oppslaatt Ident ved henting person fra ...gcp/person/...")
+            LOG.error("Fant ikke oppslaatt Ident ved henting person fra .../v2/person/...")
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .build()
         } else {
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetFnr, fnr)) {
-                LOG.error("Ikke tilgang til ...gcp/person/... : Bruker spør om noen andre enn seg selv eller egne ansatte")
+                LOG.error("Ikke tilgang til .../v2/person/... : Bruker spør om noen andre enn seg selv eller egne ansatte")
                 ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()
@@ -47,7 +47,7 @@ class PersonControllerGCP @Inject constructor(
                 personNavn?.let {
                     ResponseEntity
                         .status(HttpStatus.OK)
-                        .body(PersonGCP(
+                        .body(Person(
                             fnr = fnr,
                             navn = it
                         ))
@@ -60,6 +60,6 @@ class PersonControllerGCP @Inject constructor(
     }
 
     companion object {
-        private val LOG: Logger = LoggerFactory.getLogger(PersonControllerGCP::class.java)
+        private val LOG: Logger = LoggerFactory.getLogger(PersonController::class.java)
     }
 }

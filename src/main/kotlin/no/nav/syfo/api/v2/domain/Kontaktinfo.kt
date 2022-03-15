@@ -1,6 +1,6 @@
-package no.nav.syfo.api.gcp.domain
+package no.nav.syfo.api.v2.domain
 
-data class KontaktinfoGCP(
+data class Kontaktinfo(
     val fnr: String,
     val epost: String? = null,
     val tlf: String? = null,

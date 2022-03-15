@@ -1,6 +1,6 @@
-package no.nav.syfo.api.gcp.domain
+package no.nav.syfo.api.v2.domain
 
-data class VirksomhetGCP(
+data class Virksomhet(
     val virksomhetsnummer: String,
     val navn: String = ""
 )

@@ -1,9 +1,9 @@
-package no.nav.syfo.api.gcp.controller
+package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.gcp.domain.KontaktinfoGCP
-import no.nav.syfo.api.gcp.util.fodselsnummerInvalid
+import no.nav.syfo.api.v2.domain.Kontaktinfo
+import no.nav.syfo.api.v2.util.fodselsnummerInvalid
 import no.nav.syfo.dkif.DigitalKontaktinfo
 import no.nav.syfo.dkif.DkifConsumer
 import no.nav.syfo.oidc.OIDCIssuer
@@ -19,8 +19,8 @@ import javax.inject.Inject
 
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
-@RequestMapping(value = ["/api/gcp/kontaktinfo/{fnr}"])
-class KontaktinfoControllerGCP @Inject constructor(
+@RequestMapping(value = ["/api/v2/kontaktinfo/{fnr}"])
+class KontaktinfoController @Inject constructor(
     private val oidcContextHolder: TokenValidationContextHolder,
     private val brukertilgangService: BrukertilgangService,
     private val dkifConsumer: DkifConsumer
@@ -29,16 +29,16 @@ class KontaktinfoControllerGCP @Inject constructor(
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getNarmesteLedere(
         @PathVariable("fnr") fnr: String
-    ): ResponseEntity<KontaktinfoGCP> {
+    ): ResponseEntity<Kontaktinfo> {
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Feil i format på fodselsnummer i request til .../gcp/kontaktinfo/...")
+            LOG.error("Feil i format på fodselsnummer i request til .../v2/kontaktinfo/...")
             ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .build()
         } else {
             val innloggetFnr = getSubjectEksternMedThrows(oidcContextHolder)
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetFnr, fnr)) {
-                LOG.error("Ikke tilgang til .../gcp/kontaktinfo/... : Bruker spør om noen andre enn seg selv eller egne ansatte")
+                LOG.error("Ikke tilgang til .../v2/kontaktinfo/... : Bruker spør om noen andre enn seg selv eller egne ansatte")
                 ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()
@@ -46,7 +46,7 @@ class KontaktinfoControllerGCP @Inject constructor(
                 val kontaktinfo = dkifConsumer.kontaktinformasjon(fnr)
                 ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(KontaktinfoGCP(
+                    .body(Kontaktinfo(
                         fnr = fnr,
                         epost = kontaktinfo.epostadresse,
                         tlf = kontaktinfo.mobiltelefonnummer,
@@ -61,6 +61,6 @@ class KontaktinfoControllerGCP @Inject constructor(
         (digitalKontaktinfo.reservert == false) && digitalKontaktinfo.kanVarsles
 
     companion object {
-        private val LOG = LoggerFactory.getLogger(KontaktinfoControllerGCP::class.java)
+        private val LOG = LoggerFactory.getLogger(KontaktinfoController::class.java)
     }
 }

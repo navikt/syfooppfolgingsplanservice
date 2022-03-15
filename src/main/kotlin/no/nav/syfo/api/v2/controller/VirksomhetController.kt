@@ -1,7 +1,7 @@
-package no.nav.syfo.api.gcp.controller
+package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import no.nav.syfo.api.gcp.domain.VirksomhetGCP
+import no.nav.syfo.api.v2.domain.Virksomhet
 import no.nav.syfo.ereg.EregConsumer
 import no.nav.syfo.oidc.OIDCIssuer
 import org.springframework.http.HttpStatus
@@ -16,17 +16,17 @@ import javax.inject.Inject
 
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
-@RequestMapping(value = ["/api/gcp/virksomhet/{virksomhetsnummer}"])
-class VirksomhetControllerGCP @Inject constructor(
+@RequestMapping(value = ["/api/v2/virksomhet/{virksomhetsnummer}"])
+class VirksomhetController @Inject constructor(
     private val eregConsumer: EregConsumer,
 ) {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getVirksomhet(
         @PathVariable("virksomhetsnummer") virksomhetsnummer: String
-    ): ResponseEntity<VirksomhetGCP> {
+    ): ResponseEntity<Virksomhet> {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(VirksomhetGCP(
+            .body(Virksomhet(
                 virksomhetsnummer = virksomhetsnummer,
                 navn = eregConsumer.virksomhetsnavn(virksomhetsnummer)
             ))
