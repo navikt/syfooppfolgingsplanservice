@@ -33,7 +33,7 @@ import no.nav.syfo.service.BrukertilgangService;
 @RequestMapping(value = "/api/narmesteledere")
 public class NarmesteLedereController {
 
-    private static final Logger LOG = getLogger(NarmesteLedereController.class);
+    private static final Logger LOG = getLogger(NarmesteLedereControllerV2.class);
 
     private final TokenValidationContextHolder oidcContextHolder;
     private final Metrikk metrikk;

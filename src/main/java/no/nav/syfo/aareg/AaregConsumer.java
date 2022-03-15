@@ -86,6 +86,11 @@ public class AaregConsumer {
         return arbeidsforholdList2StillingForOrgnummer(arbeidsforholdList, fom, orgnummer);
     }
 
+    public List<Stilling> arbeidstakersFnrStillingerForOrgnummer(String fnr, LocalDate fom, String orgnummer) {
+        List<Arbeidsforhold> arbeidsforholdList = arbeidsforholdArbeidstaker(fnr);
+        return arbeidsforholdList2StillingForOrgnummer(arbeidsforholdList, fom, orgnummer);
+    }
+
     private List<Stilling> arbeidsforholdList2StillingForOrgnummer(List<Arbeidsforhold> arbeidsforholdList, LocalDate fom, String orgnummer) {
         return arbeidsforholdList.stream()
                 .filter(arbeidsforhold -> arbeidsforhold.arbeidsgiver.type.equals(Organisasjon))
