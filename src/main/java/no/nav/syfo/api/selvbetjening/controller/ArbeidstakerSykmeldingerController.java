@@ -61,6 +61,8 @@ public class ArbeidstakerSykmeldingerController {
         String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
         String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
 
+        LOG.info("ID_TOKEN: " + idToken);
+
         final boolean isTodayPresent = Boolean.parseBoolean(today);
 
         Optional<List<Sykmelding>> sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, idToken, isTodayPresent);
