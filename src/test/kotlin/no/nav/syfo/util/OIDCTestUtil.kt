@@ -9,7 +9,7 @@ fun encodedJWTToken(fnr: String): String {
             "\"typ\":\"JWT\"" +
             "}".trim()
     val jwtPayload = "{" +
-            "  \"sub\": \"${fnr}\"," +
+            "  \"pid\": \"${fnr}\"," +
             "  \"name\": \"Ola Nordmann\"," +
             "  \"iat\": 1516239022" +
             "}".trim()
