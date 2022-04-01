@@ -28,9 +28,9 @@ object Versions {
 plugins {
     kotlin("jvm") version "1.6.10"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
     id("java")
-    id("org.springframework.boot") version "2.4.13"
+    id("org.springframework.boot") version "2.6.6"
     id ("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 }
@@ -47,6 +47,12 @@ buildscript {
     }
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 allOpen {
     annotation("org.springframework.context.annotation.Configuration")
     annotation("org.springframework.stereotype.Service")
@@ -57,7 +63,7 @@ val githubUser: String by project
 val githubPassword: String by project
 repositories {
     mavenCentral()
-    maven(url="http://packages.confluent.io/maven/")
+    maven(url = "https://packages.confluent.io/maven/")
     maven {
         url = uri("https://maven.pkg.github.com/navikt/syfo-xml-codegen")
         credentials {
@@ -195,21 +201,11 @@ tasks {
     }
 
     named<KotlinCompile>("compileKotlin") {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
     }
 
     named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "11"
-    }
-
-    named<JavaCompile>("compileJava") {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
-    }
-
-    named<JavaCompile>("compileTestJava") {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        kotlinOptions.jvmTarget = "17"
     }
 
 }
