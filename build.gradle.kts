@@ -11,8 +11,7 @@ object Versions {
     const val confluentVersion = "4.0.0"
     const val cxfVersion = "3.5.0"
     const val flywayVersion = "5.1.4"
-    const val tokenSupportVersion = "2.0.14"
-    const val tokenTestSupportVersion = "2.0.5"
+    const val tokenSupportVersion = "1.3.10"
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.5d21db9"
     const val syfoOppfolgingsplanSchemaVersion = "1.0.2"
@@ -118,7 +117,7 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient")
 
     implementation("no.nav.security:token-validation-spring:${Versions.tokenSupportVersion}")
-    testImplementation("no.nav.security:token-validation-test-support:${Versions.tokenTestSupportVersion}")
+    testImplementation("no.nav.security:token-validation-test-support:${Versions.tokenSupportVersion}")
 
     implementation("org.apache.cxf:cxf-rt-features-logging:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-ws-security:${Versions.cxfVersion}")
