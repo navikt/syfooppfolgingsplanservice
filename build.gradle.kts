@@ -9,10 +9,11 @@ version = "1.0.0"
 object Versions {
     const val avroVersion = "1.8.2"
     const val confluentVersion = "4.0.0"
-    const val cxfVersion = "3.3.8"
+    const val cxfVersion = "3.5.0"
     const val flywayVersion = "5.1.4"
-    const val kotlinJacksonVersion = "2.9.8"
-    const val tokenSupportVersion = "1.3.10"
+    const val kotlinJacksonVersion = "2.13.2"
+    const val tokenSupportVersion = "2.0.14"
+    const val tokenTestSupportVersion = "2.0.5"
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.5d21db9"
     const val syfoOppfolgingsplanSchemaVersion = "1.0.2"
@@ -22,7 +23,7 @@ object Versions {
     const val altinnKanalSchemasVersion = "1.0.1"
     const val jaxwsVersion = "2.3.2"
     const val h2Version = "2.1.210"
-    const val junitVersion = "4.13"
+    const val junitVersion = "4.13.2"
 }
 
 plugins {
@@ -31,7 +32,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("java")
     id("org.springframework.boot") version "2.6.6"
-    id ("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 }
 
@@ -117,10 +118,10 @@ dependencies {
 
     implementation("org.springframework:spring-jms")
 
-    implementation("org.apache.httpcomponents:httpclient:4.5.6")
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
 
     implementation("no.nav.security:token-validation-spring:${Versions.tokenSupportVersion}")
-    testImplementation("no.nav.security:token-validation-test-support:${Versions.tokenSupportVersion}")
+    testImplementation("no.nav.security:token-validation-test-support:${Versions.tokenTestSupportVersion}")
 
     implementation("org.apache.cxf:cxf-rt-features-logging:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-ws-security:${Versions.cxfVersion}")
@@ -128,7 +129,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-transports-http:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:${Versions.cxfVersion}")
 
-    implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.5.0")
+    implementation("com.ibm.mq:com.ibm.mq.allclient:9.2.5.0")
 
     implementation("no.nav.helse.xml:oppfolgingsplan:${Versions.helseXmlVersion}")
 
@@ -159,9 +160,9 @@ dependencies {
     implementation("javax.inject:javax.inject:1")
     implementation("org.apache.pdfbox:pdfbox:2.0.25")
     implementation("org.apache.pdfbox:pdfbox-tools:2.0.25")
-    implementation("org.xhtmlrenderer:flying-saucer-pdf:9.1.20")
-    implementation("org.apache.commons:commons-lang3:3.5")
-    implementation("org.slf4j:slf4j-api:1.7.25")
+    implementation("org.xhtmlrenderer:flying-saucer-pdf:9.1.22")
+    implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
     implementation("org.apache.kafka:kafka_2.12:${Versions.kafkaVersion}"){
         exclude(group = "log4j", module = "log4j")
