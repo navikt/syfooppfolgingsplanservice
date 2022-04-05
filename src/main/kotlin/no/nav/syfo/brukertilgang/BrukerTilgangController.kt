@@ -10,7 +10,7 @@ import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import org.slf4j.LoggerFactory
 import org.springframework.util.MultiValueMap
-import org.springframework.util.StringUtils
+import org.springframework.util.ObjectUtils
 import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
 import javax.ws.rs.ForbiddenException
@@ -29,7 +29,7 @@ class BrukerTilgangController @Inject constructor(
     @GetMapping
     fun harTilgang(@RequestParam(value = "fnr", required = false) oppslaattFnr: String?): RSTilgang {
         val innloggetIdent = OIDCUtil.getSubjectEksternMedThrows(contextHolder)
-        val oppslaattIdent = if (StringUtils.isEmpty(oppslaattFnr)) innloggetIdent else oppslaattFnr
+        val oppslaattIdent = if (ObjectUtils.isEmpty(oppslaattFnr)) innloggetIdent else oppslaattFnr
         if (!brukertilgangService.tilgangTilOppslattIdent(innloggetIdent, oppslaattIdent)) {
             LOG.error("Ikke tilgang: Bruker spør om noen andre enn seg selv eller egne ansatte")
             throw ForbiddenException()
@@ -49,12 +49,12 @@ class BrukerTilgangController @Inject constructor(
     @GetMapping(path = ["/ansatt"])
     @ResponseBody
     fun accessToAnsatt(@RequestHeader headers: MultiValueMap<String, String>): BrukerTilgang {
-        val oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase())
-        return if (StringUtils.isEmpty(oppslaattIdent)) {
+        val oppslaattIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.lowercase())
+        return if (ObjectUtils.isEmpty(oppslaattIdent)) {
             throw IllegalArgumentException("Fant ikke Ident i Header ved sjekk av tilgang til Ident")
         } else {
             metrikk.tellHendelse("accessToIdent")
-            BrukerTilgang(brukertilgangConsumer.hasAccessToAnsatt(oppslaattIdent))
+            BrukerTilgang(brukertilgangConsumer.hasAccessToAnsatt(oppslaattIdent!!))
         }
     }
 
