@@ -94,5 +94,6 @@ varselproduksjon.best.srvmled.m.kontakt.queuename: mqbestbarsel
 varselproduksjon.varslinger.queuename: mqvarslinger
 
 tjenester.url: https://tjenester-q.nav.no
+dine.sykmeldte.url : https://localhost/arbeidsgiver/sykmeldte
 
 kafka.bootstrap.servers.url: localhost://9092

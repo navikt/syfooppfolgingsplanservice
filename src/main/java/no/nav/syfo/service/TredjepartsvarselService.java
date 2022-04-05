@@ -21,8 +21,8 @@ import static no.nav.syfo.util.JmsUtil.messageCreator;
 @Transactional
 public class TredjepartsvarselService {
 
-    @Value("${tjenester.url}")
-    private String tjenesterUrl;
+    @Value("${dine.sykmeldte.url}")
+    private String dineSykmeldteUrl;
 
     private JmsTemplate tredjepartsvarselqueue;
 
@@ -36,7 +36,7 @@ public class TredjepartsvarselService {
 
     public void sendVarselTilNaermesteLeder(Varseltype varseltype, Naermesteleder naermesteleder) {
         List<WSParameter> parametere = Collections.singletonList(
-                createParameter("url", tjenesterUrl + "/sykefravaerarbeidsgiver/")
+                createParameter("url", dineSykmeldteUrl)
         );
         WSServicemeldingMedKontaktinformasjon melding = new WSServicemeldingMedKontaktinformasjon();
 
