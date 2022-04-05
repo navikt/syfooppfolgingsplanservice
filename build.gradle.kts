@@ -11,7 +11,6 @@ object Versions {
     const val confluentVersion = "4.0.0"
     const val cxfVersion = "3.5.0"
     const val flywayVersion = "5.1.4"
-    const val kotlinJacksonVersion = "2.13.2"
     const val tokenSupportVersion = "2.0.14"
     const val tokenTestSupportVersion = "2.0.5"
     const val ojdbc8Version = "19.3.0.0"
@@ -19,11 +18,9 @@ object Versions {
     const val syfoOppfolgingsplanSchemaVersion = "1.0.2"
     const val syfotjenesterVersion = "1.2020.07.02-07.44-62078cd74f7e"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
-    const val kafkaVersion = "2.0.0"
     const val altinnKanalSchemasVersion = "1.0.1"
     const val jaxwsVersion = "2.3.2"
     const val h2Version = "2.1.210"
-    const val junitVersion = "4.13.2"
 }
 
 plugins {
@@ -98,8 +95,8 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.kotlinJacksonVersion}")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${Versions.kotlinJacksonVersion}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 
     implementation("com.sun.xml.ws:jaxws-ri:${Versions.jaxwsVersion}")
 
@@ -118,7 +115,7 @@ dependencies {
 
     implementation("org.springframework:spring-jms")
 
-    implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    implementation("org.apache.httpcomponents:httpclient")
 
     implementation("no.nav.security:token-validation-spring:${Versions.tokenSupportVersion}")
     testImplementation("no.nav.security:token-validation-test-support:${Versions.tokenTestSupportVersion}")
@@ -161,14 +158,14 @@ dependencies {
     implementation("org.apache.pdfbox:pdfbox:2.0.25")
     implementation("org.apache.pdfbox:pdfbox-tools:2.0.25")
     implementation("org.xhtmlrenderer:flying-saucer-pdf:9.1.22")
-    implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("org.slf4j:slf4j-api:1.7.36")
+    implementation("org.apache.commons:commons-lang3")
+    implementation("org.slf4j:slf4j-api")
     implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
-    implementation("org.apache.kafka:kafka_2.12:${Versions.kafkaVersion}"){
+    implementation("org.apache.kafka:kafka_2.12"){
         exclude(group = "log4j", module = "log4j")
     }
 
-    testImplementation("junit:junit:${Versions.junitVersion}")
+    testImplementation("junit:junit")
 }
 
 tasks {
