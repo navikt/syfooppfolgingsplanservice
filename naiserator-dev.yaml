@@ -80,6 +80,8 @@ spec:
       value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
     - name: TJENESTER_URL
       value: https://tjenester-q1.nav.no
+    - name: DINE_SYKMELDTE_URL
+      value: https://www-gcp.dev.nav.no/arbeidsgiver/sykmeldte
     - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
       value: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/BehandleAltinnMelding/v1
     - name: MQGATEWAY03_HOSTNAME
