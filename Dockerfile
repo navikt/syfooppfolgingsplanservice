@@ -1,4 +1,4 @@
-FROM navikt/java:11-appdynamics
+FROM navikt/java:17-appdynamics
 ENV APPD_ENABLED=true
 LABEL org.opencontainers.image.source=https://github.com/navikt/syfooppfolgingsplanservice
 

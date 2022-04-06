@@ -32,7 +32,7 @@ class BrukertilgangConsumer @Autowired constructor(
                     Boolean::class.java
             )
             metrikk.countOutgoingReponses(METRIC_CALL_BRUKERTILGANG, response.statusCodeValue)
-            response.body
+            response.body!!
         } catch (e: RestClientResponseException) {
             metrikk.countOutgoingReponses(METRIC_CALL_BRUKERTILGANG, e.rawStatusCode)
             if (e.rawStatusCode == 401) {

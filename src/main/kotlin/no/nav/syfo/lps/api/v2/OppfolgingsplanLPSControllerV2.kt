@@ -24,7 +24,7 @@ class OppfolgingsplanLPSControllerV2 @Inject constructor(
     fun oppfolgingsplanlpsList(
         @RequestHeader headers: MultiValueMap<String, String>
     ): List<RSOppfolgingsplanLPS> {
-        val personIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.toLowerCase())?: throw IllegalArgumentException("No PersonIdent supplied")
+        val personIdent = headers.getFirst(NAV_PERSONIDENT_HEADER.lowercase())?: throw IllegalArgumentException("No PersonIdent supplied")
         val personFnr = Fodselsnummer(personIdent)
 
         veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessWithOBO(personFnr)

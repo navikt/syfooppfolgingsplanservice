@@ -9,29 +9,26 @@ version = "1.0.0"
 object Versions {
     const val avroVersion = "1.8.2"
     const val confluentVersion = "4.0.0"
-    const val cxfVersion = "3.3.8"
+    const val cxfVersion = "3.5.0"
     const val flywayVersion = "5.1.4"
-    const val kotlinJacksonVersion = "2.9.8"
     const val tokenSupportVersion = "1.3.10"
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.5d21db9"
     const val syfoOppfolgingsplanSchemaVersion = "1.0.2"
     const val syfotjenesterVersion = "1.2020.07.02-07.44-62078cd74f7e"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
-    const val kafkaVersion = "2.0.0"
     const val altinnKanalSchemasVersion = "1.0.1"
     const val jaxwsVersion = "2.3.2"
     const val h2Version = "2.1.210"
-    const val junitVersion = "4.13"
 }
 
 plugins {
     kotlin("jvm") version "1.6.10"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
     id("java")
-    id("org.springframework.boot") version "2.4.13"
-    id ("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.springframework.boot") version "2.6.6"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 }
 
@@ -47,6 +44,12 @@ buildscript {
     }
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 allOpen {
     annotation("org.springframework.context.annotation.Configuration")
     annotation("org.springframework.stereotype.Service")
@@ -57,7 +60,7 @@ val githubUser: String by project
 val githubPassword: String by project
 repositories {
     mavenCentral()
-    maven(url="http://packages.confluent.io/maven/")
+    maven(url = "https://packages.confluent.io/maven/")
     maven {
         url = uri("https://maven.pkg.github.com/navikt/syfo-xml-codegen")
         credentials {
@@ -91,8 +94,8 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.kotlinJacksonVersion}")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${Versions.kotlinJacksonVersion}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 
     implementation("com.sun.xml.ws:jaxws-ri:${Versions.jaxwsVersion}")
 
@@ -111,7 +114,7 @@ dependencies {
 
     implementation("org.springframework:spring-jms")
 
-    implementation("org.apache.httpcomponents:httpclient:4.5.6")
+    implementation("org.apache.httpcomponents:httpclient")
 
     implementation("no.nav.security:token-validation-spring:${Versions.tokenSupportVersion}")
     testImplementation("no.nav.security:token-validation-test-support:${Versions.tokenSupportVersion}")
@@ -122,7 +125,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-transports-http:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:${Versions.cxfVersion}")
 
-    implementation("com.ibm.mq:com.ibm.mq.allclient:9.0.5.0")
+    implementation("com.ibm.mq:com.ibm.mq.allclient:9.2.5.0")
 
     implementation("no.nav.helse.xml:oppfolgingsplan:${Versions.helseXmlVersion}")
 
@@ -153,15 +156,15 @@ dependencies {
     implementation("javax.inject:javax.inject:1")
     implementation("org.apache.pdfbox:pdfbox:2.0.25")
     implementation("org.apache.pdfbox:pdfbox-tools:2.0.25")
-    implementation("org.xhtmlrenderer:flying-saucer-pdf:9.1.20")
-    implementation("org.apache.commons:commons-lang3:3.5")
-    implementation("org.slf4j:slf4j-api:1.7.25")
+    implementation("org.xhtmlrenderer:flying-saucer-pdf:9.1.22")
+    implementation("org.apache.commons:commons-lang3")
+    implementation("org.slf4j:slf4j-api")
     implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
-    implementation("org.apache.kafka:kafka_2.12:${Versions.kafkaVersion}"){
+    implementation("org.apache.kafka:kafka_2.12"){
         exclude(group = "log4j", module = "log4j")
     }
 
-    testImplementation("junit:junit:${Versions.junitVersion}")
+    testImplementation("junit:junit")
 }
 
 tasks {
@@ -195,21 +198,11 @@ tasks {
     }
 
     named<KotlinCompile>("compileKotlin") {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
     }
 
     named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "11"
-    }
-
-    named<JavaCompile>("compileJava") {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
-    }
-
-    named<JavaCompile>("compileTestJava") {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        kotlinOptions.jvmTarget = "17"
     }
 
 }
