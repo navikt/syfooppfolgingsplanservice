@@ -17,6 +17,7 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 
 import org.slf4j.LoggerFactory.getLogger;
+import org.springframework.web.HttpMediaTypeNotAcceptableException
 
 @ControllerAdvice
 class ControllerExceptionHandler @Inject constructor(private val metrikk: Metrikk) {
@@ -31,6 +32,7 @@ class ControllerExceptionHandler @Inject constructor(private val metrikk: Metrik
     private val INTERNAL_MSG = "Det skjedde en uventet feil"
     private val UNAUTHORIZED_MSG = "Autorisasjonsfeil"
     private val NOT_FOUND_MSG = "Fant ikke ressurs"
+    private val NOT_ACCEPTABLE_MSG = "Uakseptabelt"
 
     @ExceptionHandler(
             Exception::class,
@@ -39,7 +41,8 @@ class ControllerExceptionHandler @Inject constructor(private val metrikk: Metrik
             ForbiddenException::class,
             IllegalArgumentException::class,
             JwtTokenUnauthorizedException::class,
-            NotFoundException::class
+            NotFoundException::class,
+            HttpMediaTypeNotAcceptableException::class
     )
     fun handleException(ex: Exception, request: WebRequest) : ResponseEntity<ApiError> {
         return when (ex) {
@@ -50,6 +53,7 @@ class ControllerExceptionHandler @Inject constructor(private val metrikk: Metrik
             is JwtTokenUnauthorizedException -> { handleJwtTokenUnauthorizedException(ex, request) }
             is NotFoundException ->             { handleNotFoundException(ex, request) }
             is ConflictException ->             { handleConflictException(ex, request) }
+            is HttpMediaTypeNotAcceptableException -> { handleHttpMediaTypeNotAcceptableException(ex, request)}
             else ->                             { handleExceptionInternal(ex, ApiError(INTERNAL_SERVER_ERROR.value(), INTERNAL_MSG), INTERNAL_SERVER_ERROR, request) }
         }
     }
@@ -80,6 +84,10 @@ class ControllerExceptionHandler @Inject constructor(private val metrikk: Metrik
 
     private fun handleConflictException(ex: ConflictException, request: WebRequest) : ResponseEntity<ApiError> {
         return handleExceptionInternal(ex, ApiError(HttpStatus.CONFLICT.value(), CONFLICT_MSG), HttpStatus.CONFLICT, request)
+    }
+
+    private fun handleHttpMediaTypeNotAcceptableException(ex: HttpMediaTypeNotAcceptableException, request: WebRequest) : ResponseEntity<ApiError> {
+        return handleExceptionInternal(ex, ApiError(HttpStatus.NOT_ACCEPTABLE.value(), NOT_ACCEPTABLE_MSG), HttpStatus.NOT_ACCEPTABLE, request)
     }
 
     private fun handleExceptionInternal(ex: Exception, body: ApiError, status: HttpStatus, request: WebRequest) : ResponseEntity<ApiError> {
