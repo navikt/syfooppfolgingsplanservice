@@ -8,6 +8,7 @@ import java.io.Serializable;
 @Accessors(fluent = true)
 public class Naermesteleder implements Serializable {
     public long naermesteLederId;
+    public String ansattFnr;
     public String naermesteLederFnr;
     public String orgnummer;
     public NaermesteLederStatus naermesteLederStatus;

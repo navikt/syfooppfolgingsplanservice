@@ -65,6 +65,8 @@ spec:
   leaderElection: true
   envFrom:
     - configmap: loginservice-idporten
+  kafka:
+    pool: nav-prod
   env:
     - name: APP_NAME
       value: "syfooppfolgingsplanservice"
