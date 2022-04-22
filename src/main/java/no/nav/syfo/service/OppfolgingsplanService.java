@@ -28,7 +28,6 @@ import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEID
 import static no.nav.syfo.api.selvbetjening.mapper.RSBrukerOppfolgingsplanMapper.oppfolgingsplan2rs;
 import static no.nav.syfo.model.Varseltype.*;
 import static no.nav.syfo.util.MapUtil.mapListe;
-import static no.nav.syfo.util.OppfoelgingsdialogUtil.erArbeidstakeren;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -54,7 +53,7 @@ public class OppfolgingsplanService {
 
     private ServiceVarselService serviceVarselService;
 
-    private TredjepartsvarselService tredjepartsvarselService;
+    private NarmesteLederVarselService narmesteLederVarselService;
 
     private final PdlConsumer pdlConsumer;
 
@@ -63,8 +62,6 @@ public class OppfolgingsplanService {
     private KommentarDAO kommentarDAO;
 
     private DokumentDAO dokumentDAO;
-
-    private VeilederBehandlingDAO veilederBehandlingDAO;
 
     @Inject
     public OppfolgingsplanService(
@@ -75,13 +72,12 @@ public class OppfolgingsplanService {
             GodkjentplanDAO godkjentplanDAO,
             OppfolgingsplanDAO oppfolgingsplanDAO,
             TiltakDAO tiltakDAO,
-            VeilederBehandlingDAO veilederBehandlingDAO,
             AktorregisterConsumer aktorregisterConsumer,
             FastlegeService fastlegeService,
             NarmesteLederConsumer narmesteLederConsumer,
             PdlConsumer pdlConsumer,
             ServiceVarselService serviceVarselService,
-            TredjepartsvarselService tredjepartsvarselService,
+            NarmesteLederVarselService narmesteLederVarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
         this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
@@ -91,13 +87,12 @@ public class OppfolgingsplanService {
         this.godkjentplanDAO = godkjentplanDAO;
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.tiltakDAO = tiltakDAO;
-        this.veilederBehandlingDAO = veilederBehandlingDAO;
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.fastlegeService = fastlegeService;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.pdlConsumer = pdlConsumer;
         this.serviceVarselService = serviceVarselService;
-        this.tredjepartsvarselService = tredjepartsvarselService;
+        this.narmesteLederVarselService = narmesteLederVarselService;
         this.tilgangskontrollService = tilgangskontrollService;
     }
 
@@ -228,7 +223,7 @@ public class OppfolgingsplanService {
         if (innloggetAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
             String arbeidstakersFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
             Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
-            tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplanOpprettetNL, naermesteleder);
+            narmesteLederVarselService.sendVarselTilNaermesteLeder(SyfoplanOpprettetNL, naermesteleder);
         } else {
             serviceVarselService.sendServiceVarsel(oppfolgingsplan.arbeidstaker.aktoerId, SyfoplanOpprettetSyk, oppfolgingsplan.id);
         }
