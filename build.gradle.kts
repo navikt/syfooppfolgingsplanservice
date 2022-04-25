@@ -8,7 +8,7 @@ version = "1.0.0"
 
 object Versions {
     const val avroVersion = "1.8.2"
-    const val confluentVersion = "4.0.0"
+    const val confluentVersion = "7.1.0"
     const val cxfVersion = "3.5.0"
     const val flywayVersion = "5.1.4"
     const val tokenSupportVersion = "1.3.10"
@@ -160,7 +160,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3")
     implementation("org.slf4j:slf4j-api")
     implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
-    implementation("org.apache.kafka:kafka_2.12"){
+    implementation("org.apache.kafka:kafka_2.13"){
         exclude(group = "log4j", module = "log4j")
     }
 
