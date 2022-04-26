@@ -1,7 +1,6 @@
 package no.nav.syfo.varsling
 
 
-import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import no.nav.syfo.varsling.domain.EsyfovarselHendelse
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
@@ -49,8 +48,6 @@ class EsyfovarselKafkaConfig(
             put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, credstorePassword)
             put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, aivenBrokers)
 
-            put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer")
-            put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer")
             put(BASIC_AUTH_CREDENTIALS_SOURCE, USER_INFO)
 
             remove(SaslConfigs.SASL_MECHANISM)
