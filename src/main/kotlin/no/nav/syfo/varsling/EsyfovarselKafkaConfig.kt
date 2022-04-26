@@ -22,9 +22,6 @@ import org.springframework.kafka.core.ProducerFactory
 @Configuration
 class EsyfovarselKafkaConfig(
     @Value("\${kafka.brokers}") private val aivenBrokers: String,
-    @Value("\${kafka.schema.registry}") private val schemaRegistry: String,
-    @Value("\${kafka.schema.registry.user}") private val registryUsername: String,
-    @Value("\${kafka.schema.registry.password}") private val registryPassword: String,
     @Value("\${kafka.truststore.path}") private val truststorePath: String,
     @Value("\${kafka.keystore.path}") private val keystorePath: String,
     @Value("\${kafka.credstore.password}") private val credstorePassword: String,
@@ -35,11 +32,9 @@ class EsyfovarselKafkaConfig(
     private val SSL = "SSL"
     private val USER_INFO = "USER_INFO"
     private val BASIC_AUTH_CREDENTIALS_SOURCE = "basic.auth.credentials.source"
-    private val USER_INFO_CONFIG = "basic.auth.user.info"
 
     @Bean("EsyfovarselProducerFactory")
     fun producerFactory(): ProducerFactory<String, EsyfovarselHendelse> {
-        val userinfoConfig = "$registryUsername:$registryPassword"
 
         val producerProperties = HashMap<String, Any>().apply {
             put(ProducerConfig.ACKS_CONFIG, "all")
@@ -56,9 +51,7 @@ class EsyfovarselKafkaConfig(
 
             put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer")
             put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer")
-            put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistry)
             put(BASIC_AUTH_CREDENTIALS_SOURCE, USER_INFO)
-            put(USER_INFO_CONFIG, userinfoConfig)
 
             remove(SaslConfigs.SASL_MECHANISM)
             remove(SaslConfigs.SASL_JAAS_CONFIG)
