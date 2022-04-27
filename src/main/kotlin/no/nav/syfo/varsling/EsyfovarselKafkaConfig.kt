@@ -7,6 +7,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
+import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -48,6 +49,8 @@ class EsyfovarselKafkaConfig(
             put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, credstorePassword)
             put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, aivenBrokers)
 
+            put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
+            put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonKafkaSerializer::class.java)
             put(BASIC_AUTH_CREDENTIALS_SOURCE, USER_INFO)
 
             remove(SaslConfigs.SASL_MECHANISM)
