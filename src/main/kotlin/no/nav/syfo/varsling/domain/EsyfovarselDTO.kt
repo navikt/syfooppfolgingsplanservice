@@ -13,7 +13,7 @@ enum class HendelseType {
     NL_OPPFOLGINGSPLAN_OPPRETTET
 }
 
-interface EsyfovarselHendelseData
+interface EsyfovarselHendelseData : Serializable
 
 data class NarmesteLederVarselData(
     val ansattFnr: String,
