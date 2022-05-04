@@ -67,7 +67,7 @@ public class GodkjenningService {
 
     private ServiceVarselService serviceVarselService;
 
-    private TredjepartsvarselService tredjepartsvarselService;
+    private NarmesteLederVarselService narmesteLederVarselService;
 
     private GodkjenningerDAO godkjenningerDAO;
 
@@ -88,7 +88,7 @@ public class GodkjenningService {
             EregConsumer eregConsumer,
             NarmesteLederConsumer narmesteLederConsumer,
             ServiceVarselService serviceVarselService,
-            TredjepartsvarselService tredjepartsvarselService,
+            NarmesteLederVarselService narmesteLederVarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
         this.aaregConsumer = aaregConsumer;
@@ -104,7 +104,7 @@ public class GodkjenningService {
         this.eregConsumer = eregConsumer;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.serviceVarselService = serviceVarselService;
-        this.tredjepartsvarselService = tredjepartsvarselService;
+        this.narmesteLederVarselService = narmesteLederVarselService;
         this.tilgangskontrollService = tilgangskontrollService;
     }
 
@@ -171,7 +171,7 @@ public class GodkjenningService {
             } else {
                 String arbeidstakersFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
                 Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
-                tredjepartsvarselService.sendVarselTilNaermesteLeder(SyfoplangodkjenningNl, naermesteleder);
+                narmesteLederVarselService.sendVarselTilNaermesteLeder(SyfoplangodkjenningNl, naermesteleder);
             }
         }
         oppfolgingsplanDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);

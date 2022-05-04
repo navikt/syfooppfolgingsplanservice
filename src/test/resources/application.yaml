@@ -97,3 +97,7 @@ tjenester.url: https://tjenester-q.nav.no
 dine.sykmeldte.url : https://localhost/arbeidsgiver/sykmeldte
 
 kafka.bootstrap.servers.url: localhost://9092
+kafka.brokers: localhost://9092
+kafka.truststore.path: /truststore
+kafka.keystore.path: /keystore
+kafka.credstore.password: /credstore/password
