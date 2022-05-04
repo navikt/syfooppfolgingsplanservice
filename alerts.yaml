@@ -32,5 +32,5 @@ spec:
     - alert ALTINN KAFKA OPPFOLGINGSPLAN CONSUMER LAG
       expr: kafka_consumergroup_group_topic_sum_lag{topic="aapen-altinn-oppfolgingsplan-Mottatt", group="kafka2jms-oppfolgingsplan"} > 0
       for: 15m
-      description: "App {{ $labels.app }} har ukonsumerte Kafkameldinger i Altinn-topic i namespace {{ $labels.kubernetes_namespace }}"
+      description: "App {{ $labels.app }} har ukonsumerte Kafkameldinger på Altinn-topic i namespace {{ $labels.kubernetes_namespace }}"
       severity: danger
