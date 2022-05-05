@@ -14,24 +14,24 @@ spec:
     - alert: SYFOOPPFOLGINGSPLAN IS DOWN!
       expr: up{app="syfooppfolgingsplanservice", job="kubernetes-pods"} == 0
       for: 5m
-      description: "syfooppfolgingsplanservice {{ $labels.app }} er nede i namespace {{ $labels.kubernetes_namespace }}"
-      action: "Undersøk hvofor {{ $labels.app }} er nede i prod-fss"
+      description: "\{{ $labels.app }} er nede i namespace \{{ $labels.kubernetes_namespace }}"
+      action: "Undersøk hvofor \{{ $labels.app }} er nede i prod-fss"
       severity: danger
     - alert: HIGH RATIO OF HTTP 5XX RESPONSE
       expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^5\\d\\d", backend=~"syfooppfolgingsplanservice.nais.adeo..+"}[5m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"syfooppfolgingsplanservice.nais.adeo..+"}[5m])))) > 2
       for: 5m
-      description: "syfooppfolgingsplanservice {{ $labels.app }} har en høy andel 500 feil {{ $labels.kubernetes_namespace }}"
-      action: "Sjekk i Grafana eller logger at {{ $labels.backend }} returnerer mange 500-feil"
+      description: "\{{ $labels.app }} har en høy andel 500 feil \{{ $labels.kubernetes_namespace }}"
+      action: "Sjekk i Grafana eller logger at \{{ $labels.backend }} returnerer mange 500-feil"
       severity: danger
     - alert: HIGH RATIO OF HTTP 4XX RESPONSE
       expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^4\\d\\d", backend=~"syfooppfolgingsplanservice.nais.adeo..+"}[5m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"syfooppfolgingsplanservice.nais.adeo..+"}[5m])))) > 10
       for: 5m
-      description: "syfooppfolgingsplanservice {{ $labels.app }} har en høy 400 feil {{ $labels.kubernetes_namespace }}"
-      action: "Sjekk i Grafana eller logger at {{ $labels.backend }} returnerer mange 400-feil"
+      description: "\{{ $labels.app }} har en høy 400 feil \{{ $labels.kubernetes_namespace }}"
+      action: "Sjekk i Grafana eller logger at \{{ $labels.backend }} returnerer mange 400-feil"
       severity: warning
     - alert: ALTINN KAFKA OPPFOLGINGSPLAN CONSUMER LAG
       expr: kafka_consumergroup_group_topic_sum_lag{topic="aapen-altinn-oppfolgingsplan-Mottatt", group="kafka2jms-oppfolgingsplan"} > 0
       for: 15m
-      description: "syfooppfolgingsplanservice {{ $labels.app }} har ukonsumerte Kafkameldinger på Altinn-topic i namespace {{ $labels.kubernetes_namespace }}"
-      action: "Finn ut hvorfor syfooppfolgingsplanservice har stoppet å konsumere fra topic"
+      description: "\{{ $labels.app }} har ukonsumerte Kafkameldinger på Altinn-topic i namespace \{{ $labels.kubernetes_namespace }}"
+      action: "Finn ut hvorfor \{{ $labels.app }} har stoppet å konsumere fra topic"
       severity: danger
