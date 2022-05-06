@@ -14,7 +14,7 @@ spec:
     - alert: SYFOOPPFOLGINGSPLAN IS DOWN!
       expr: up{app="syfooppfolgingsplanservice", job="kubernetes-pods"} == 0
       for: 5m
-      description: "\{{ $labels.app }} er nede i namespace \{{ $labels.kubernetes_namespace }}"
+      description: "App \{{ $labels.app }} er nede i namespace \{{ $labels.kubernetes_namespace }}"
       action: "Undersøk hvofor \{{ $labels.app }} er nede i prod-fss"
       severity: danger
     - alert: HIGH RATIO OF HTTP 5XX RESPONSE
