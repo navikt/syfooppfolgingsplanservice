@@ -1,4 +1,3 @@
-
 # Syfooppfolgingsplanservice
 Tidligere serviceoppfoelgingsdialog, håndterer digitale oppfølgigngsplaner
 
