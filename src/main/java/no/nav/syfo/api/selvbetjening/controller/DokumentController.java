@@ -78,31 +78,4 @@ public class DokumentController {
         }
     }
 
-    @GetMapping(path = "/pdfurler")
-    public List<String> hentPdfurler(@PathVariable("oppfolgingsplanId") Long oppfolgingsplanId) {
-        String innloggetIdent = getSubjectEksternMedThrows(contextHolder);
-
-        byte[] pdf = pdfService.hentPdf(oppfolgingsplanId, innloggetIdent);
-
-        int antallSiderIDokument = pdfService.hentAntallSiderIDokument(pdf);
-
-
-        String sideBaseUrl = hentSyfoapiUrl(envName) + "/syfooppfolgingsplanservice/api/dokument/" + oppfolgingsplanId + "/side/";
-
-        List<String> pdfurler = new ArrayList<>();
-        for (int i = 1; i < antallSiderIDokument + 1; i++) {
-            pdfurler.add(sideBaseUrl + i);
-        }
-
-        metrikk.tellHendelse("hent_pdfurler");
-
-        return pdfurler;
-    }
-
-    String hentSyfoapiUrl(String env) {
-        boolean erDev = env.contains("dev-fss");
-
-        String envTekst = erDev ? "-q" : "";
-        return "https://syfoapi" + envTekst + ".nav.no";
-    }
 }
