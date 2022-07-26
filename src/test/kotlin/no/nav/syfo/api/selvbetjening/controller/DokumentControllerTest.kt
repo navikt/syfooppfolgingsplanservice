@@ -72,48 +72,6 @@ class DokumentControllerTest : AbstractRessursTilgangTest() {
         }
     }
 
-    @Test
-    fun hentPdfurler_som_bruker() {
-        val pdf = ByteArray(10)
-        val sideantall = 3
-        Mockito.`when`(pdfService.hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(pdf)
-        Mockito.`when`(pdfService.hentAntallSiderIDokument(pdf)).thenReturn(sideantall)
-        val returnertListe = dokumentController.hentPdfurler(oppfolgingsplanId)
-        val forventetUrl = "https://syfoapi.nav.no/syfooppfolgingsplanservice/api/dokument/$oppfolgingsplanId/side/"
-        Mockito.verify(metrikk).tellHendelse("hent_pdfurler")
-        Assert.assertEquals(sideantall.toLong(), returnertListe.size.toLong())
-        for (i in 0 until sideantall) {
-            Assert.assertEquals(forventetUrl + (i + 1), returnertListe[i])
-        }
-    }
-
-    @Test(expected = RuntimeException::class)
-    fun finner_ikke_innlogget_bruker_hentPdfurler() {
-        loggUtAlle(contextHolder)
-        dokumentController.hentPdfurler(oppfolgingsplanId)
-    }
-
-    @Test
-    fun hentSyfoapiUrl_default() {
-        val returnertVerdi = dokumentController.hentSyfoapiUrl("")
-        val forventetVerdi = "https://syfoapi.nav.no"
-        Assert.assertEquals(forventetVerdi, returnertVerdi)
-    }
-
-    @Test
-    fun hentSyfoapiUrl_prod() {
-        val returnertVerdi = dokumentController.hentSyfoapiUrl("prod-fss")
-        val forventetVerdi = "https://syfoapi.nav.no"
-        Assert.assertEquals(forventetVerdi, returnertVerdi)
-    }
-
-    @Test
-    fun hentSyfoapiUrl_preprod() {
-        val returnertVerdi = dokumentController.hentSyfoapiUrl("dev-fss")
-        val forventetVerdi = "https://syfoapi-q.nav.no"
-        Assert.assertEquals(forventetVerdi, returnertVerdi)
-    }
-
     companion object {
         private const val oppfolgingsplanId = 1L
         private const val sideId = 1L
