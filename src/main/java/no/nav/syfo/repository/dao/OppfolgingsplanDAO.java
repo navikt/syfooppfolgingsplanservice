@@ -166,6 +166,24 @@ public class OppfolgingsplanDAO {
         jdbcTemplate.update("update oppfoelgingsdialog set samtykke_arbeidsgiver = ? where oppfoelgingsdialog_id = ?", null, oppfolgingsplanId);
     }
 
+    public void deleteOppfolgingsplan(long oppfolgingsdialogId) {
+        jdbcTemplate.update("DELETE ARBEIDSOPPGAVE WHERE OPPFOELGINGSDIALOG_ID = ?", oppfolgingsdialogId);
+        jdbcTemplate.query("SELECT * FROM TILTAK WHERE OPPFOELGINGSDIALOG_ID = ?", (rs, rowNum) -> rs.getString("TILTAK_ID"), oppfolgingsdialogId)
+                .forEach(tiltakId -> jdbcTemplate.update("DELETE KOMMENTAR WHERE TILTAK_ID = ?", tiltakId));
+        jdbcTemplate.update("DELETE TILTAK WHERE OPPFOELGINGSDIALOG_ID = ?", oppfolgingsdialogId);
+        jdbcTemplate.update("DELETE GODKJENNING WHERE OPPFOELGINGSDIALOG_ID = ?", oppfolgingsdialogId);
+        jdbcTemplate.query("SELECT * from GODKJENTPLAN WHERE OPPFOELGINGSDIALOG_ID = ?", (rs, rowNum) -> rs.getString("DOKUMENT_UUID"), oppfolgingsdialogId)
+                .forEach(uuid -> jdbcTemplate.update("DELETE DOKUMENT WHERE DOKUMENT_UUID = ?", uuid));
+        jdbcTemplate.query("SELECT * from GODKJENTPLAN WHERE OPPFOELGINGSDIALOG_ID = ?", (rs, rowNum) -> rs.getLong("GODKJENTPLAN_ID"), oppfolgingsdialogId)
+                .forEach(id -> jdbcTemplate.update("DELETE VEILEDER_BEHANDLING WHERE GODKJENTPLAN_ID = ?", id));
+        jdbcTemplate.update("DELETE GODKJENTPLAN WHERE OPPFOELGINGSDIALOG_ID = ?", oppfolgingsdialogId);
+        jdbcTemplate.update("DELETE OPPFOELGINGSDIALOG WHERE OPPFOELGINGSDIALOG_ID = ?", oppfolgingsdialogId);
+    }
+
+    public List<Long> hentDialogIDerByAktoerId(String aktoerId) {
+        return jdbcTemplate.query("SELECT * FROM OPPFOELGINGSDIALOG WHERE AKTOER_ID = ?", (rs, rowNum) -> rs.getLong("OPPFOELGINGSDIALOG_ID"), aktoerId);
+    }
+
     private class OppfoelgingsdialogRowMapper implements RowMapper<POppfoelgingsdialog> {
         public POppfoelgingsdialog mapRow(ResultSet rs, int rowNum) throws SQLException {
             Boolean samtykke_sykmeldt = rs.getBoolean("samtykke_sykmeldt");
