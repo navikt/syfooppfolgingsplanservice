@@ -92,7 +92,6 @@ public class ArbeidstakerSykmeldingerConsumer {
         headers.add("fnr", fnr);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        LOG.info("Url for sykmeldinger: " + getSykmeldingerUrl(isToday));
         ResponseEntity<List<SykmeldingDTO>> response = restTemplate.exchange(
                 getSykmeldingerUrl(isToday),
                 GET,
