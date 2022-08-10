@@ -62,6 +62,8 @@ spec:
         mountPath: "/secrets/oppfolgingsplandb/config"
       - kvPath: "/kv/prod/fss/syfooppfolgingsplanservice/team-esyfo"
         mountPath: "/var/run/secrets/nais.io/vault"
+  tokenx:
+    enabled: true
   leaderElection: true
   envFrom:
     - configmap: loginservice-idporten
@@ -129,9 +131,9 @@ spec:
     - name: FELLESKODEVERK_URL
       value: https://kodeverk.nais.adeo.no/api/v1
     - name: SYFOSMREGISTER_URL
-      value: https://syfosmregister.nais.adeo.no
+      value: https://smregister.intern.nav.no
     - name: SYFOSMREGISTER_ID
-      value: 96a10e4e-4437-47a2-ae9c-2f1c1634340e
+      value: prod-gcp:teamsykmelding:syfosmregister
     - name: NARMESTELEDER_URL
       value: https://narmesteleder.intern.nav.no
     - name: NARMESTELEDER_SCOPE

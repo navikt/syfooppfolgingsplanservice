@@ -24,6 +24,8 @@ import org.springframework.http.ResponseEntity
 import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
+import no.nav.syfo.oidc.tokenx.tokendings.TokenDingsConsumer
+import no.nav.syfo.util.encodedJWTTokenX
 
 class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     @MockBean
@@ -38,6 +40,9 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var tokenValidationContextHolder: TokenValidationContextHolder
 
+    @MockBean
+    lateinit var tokenDingsConsumer: TokenDingsConsumer
+
     @Inject
     private lateinit var sykmeldingerController: ArbeidstakerSykmeldingerController
 
@@ -49,7 +54,8 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     )
     private val sendteSykmeldinger = listOf(sykmelding)
     private val encodedToken = encodedJWTToken(ARBEIDSTAKER_FNR)
-    private val bearerToken = "Bearer $encodedToken"
+    private val encodedTokenX = encodedJWTTokenX(ARBEIDSTAKER_FNR)
+    private val bearerToken = "Bearer $encodedTokenX"
 
     @Before
     fun setup() {
@@ -62,6 +68,7 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
 
         Mockito.`when`(tokenValidationContextHolder.tokenValidationContext).thenReturn(tokenValidationContext)
         Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
+        Mockito.`when`(tokenDingsConsumer.exchangeToken(encodedToken, "localhost:teamsykmelding:syfosmregister")).thenReturn(encodedTokenX)
     }
 
     @Test
