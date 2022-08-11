@@ -11,7 +11,7 @@ object Versions {
     const val confluentVersion = "7.1.0"
     const val cxfVersion = "3.5.0"
     const val flywayVersion = "5.1.4"
-    const val tokenSupportVersion = "1.3.10"
+    const val tokenSupportVersion = "2.1.3"
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.5d21db9"
     const val syfoOppfolgingsplanSchemaVersion = "1.0.2"
