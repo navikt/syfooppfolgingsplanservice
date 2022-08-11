@@ -21,7 +21,7 @@ class AltinnKanalKafkaConfig (
     fun consumerFactory() : ConsumerFactory<String, String> {
         val consumerProperties = HashMap<String,Any>()
         consumerProperties["group.id"] = "kafka2jms-oppfolgingsplan"
-        consumerProperties["schema.registry.url"] = "http://kafka-schema-registry.tpa:8081"
+        consumerProperties["schema.registry.url"] = "http://kafka-schema-registry.tpa.svc.nais.local:8081"
         consumerProperties["key.deserializer"] = "io.confluent.kafka.serializers.KafkaAvroDeserializer"
         consumerProperties["value.deserializer"] = "io.confluent.kafka.serializers.KafkaAvroDeserializer"
         consumerProperties["specific.avro.reader"] = true
