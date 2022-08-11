@@ -19,7 +19,7 @@ class OppfolgingsplanLPSNAVConfig(
     @Bean
     fun producerFactory(): ProducerFactory<String, KOppfolgingsplanLPSNAV> {
         val producerProperties = HashMap<String, Any>()
-        producerProperties["schema.registry.url"] = "http://kafka-schema-registry.tpa:8081"
+        producerProperties["schema.registry.url"] = "http://kafka-schema-registry.tpa.svc.nais.local:8081"
         producerProperties["security.protocol"] = "SASL_SSL"
         producerProperties["sasl.mechanism"] = "PLAIN"
         producerProperties[SaslConfigs.SASL_JAAS_CONFIG] = "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$kafkaUsername\" password=\"$kafkaPassword\";"
