@@ -11,6 +11,7 @@ no.nav.security.jwt:
     tokenx:
       discoveryurl: ${TOKEN_X_WELL_KNOWN_URL}
       accepted_audience: ${TOKEN_X_CLIENT_ID}
+      proxyurl: ${?NO_PROXY}
 
 logging.config: classpath:logback-spring.xml
 

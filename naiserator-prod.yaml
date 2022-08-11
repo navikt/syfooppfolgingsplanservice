@@ -64,6 +64,7 @@ spec:
         mountPath: "/var/run/secrets/nais.io/vault"
   tokenx:
     enabled: true
+  webproxy: true
   leaderElection: true
   envFrom:
     - configmap: loginservice-idporten
