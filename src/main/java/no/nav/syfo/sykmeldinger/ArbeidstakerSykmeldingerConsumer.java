@@ -77,9 +77,9 @@ public class ArbeidstakerSykmeldingerConsumer {
         if (isToday) {
             LocalDate idag = LocalDate.now();
             String dato = idag.toString();
-            return UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger?include=SENDT" + "&fom=" + dato + "&tom=" + dato).toUriString();
+            return UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v3/sykmeldinger?include=SENDT" + "&fom=" + dato + "&tom=" + dato).toUriString();
         }
-        return UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v2/sykmeldinger?include=SENDT").toUriString();
+        return UriComponentsBuilder.fromHttpUrl(syfosmregisterURL + "/api/v3/sykmeldinger?include=SENDT").toUriString();
     }
 
     public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken, boolean isToday) {

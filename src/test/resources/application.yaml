@@ -48,7 +48,7 @@ ereg.baseurl: "http://ereg"
 dokarkiv.url: "http://dokarkiv.url"
 felleskodeverk.url: "http://kodeverk.url"
 syfosmregister.url: "http://syfosmregister.url"
-syfosmregister.id: "syfosmregisterID"
+syfosmregister.id: "localhost:teamsykmelding:syfosmregister"
 dkif.url: "http://dkif.url"
 
 narmesteleder.url: "http://narmesteleder.url"
@@ -101,3 +101,7 @@ kafka.brokers: localhost://9092
 kafka.truststore.path: /truststore
 kafka.keystore.path: /keystore
 kafka.credstore.password: /credstore/password
+
+token.x.well.known.url: "https://token-x-well-known-url"
+token.x.client.id: "tokenx-client-id"
+token.x.private.jwk: "tokenx-jwk"
