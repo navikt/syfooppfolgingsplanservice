@@ -155,7 +155,7 @@ public class OppfolgingsplanService {
             throw new ForbiddenException("Ikke tilgang");
         }
 
-        log.info("Tilgangskontroll: " + Base64.getEncoder().encodeToString(sykmeldtFnr.getBytes()) + " " + Base64.getEncoder().encodeToString(innloggetFnr.getBytes()) + " " + Base64.getEncoder().encodeToString(virksomhetsnummer.getBytes()));
+        log.info("Tilgangskontroll: " + sykmeldtFnr.hashCode() + " " + innloggetFnr.hashCode() + " " + virksomhetsnummer.hashCode());
         if (!tilgangskontrollService.kanOppretteOppfolgingsplan(sykmeldtFnr, innloggetFnr, virksomhetsnummer)) {
             throw new ForbiddenException("Ikke tilgang");
         }
