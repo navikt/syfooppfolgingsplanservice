@@ -35,6 +35,9 @@ import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
 
 @Component
 public class NarmesteLederConsumer {
+
+    private static final Logger log = getLogger(NarmesteLederConsumer.class);
+
     public static final String HENT_ANSATTE_NARMESTELEDER = "hent_ansatte_narmesteleder";
     public static final String HENT_ANSATTE_NARMESTELEDER_FEILET = "hent_ansatte_narmesteleder_feilet";
     public static final String HENT_ANSATTE_NARMESTELEDER_VELLYKKET = "hent_ansatte_narmesteleder_vellykket";
@@ -107,6 +110,7 @@ public class NarmesteLederConsumer {
         throwExceptionIfError(response.getStatusCode(), HENT_LEDER_NARMESTELEDER_FEILET);
 
         if (response.getBody().narmesteLederRelasjon == null) {
+            log.info("Finner ikke narmestelederrelasjon");
             return Optional.empty();
         }
 
