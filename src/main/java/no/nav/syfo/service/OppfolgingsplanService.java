@@ -155,6 +155,7 @@ public class OppfolgingsplanService {
             throw new ForbiddenException("Ikke tilgang");
         }
 
+        log.info("Tilgangskontroll: " + sykmeldtFnr.hashCode() + " " + innloggetFnr.hashCode() + " " + virksomhetsnummer.hashCode());
         if (!tilgangskontrollService.kanOppretteOppfolgingsplan(sykmeldtFnr, innloggetFnr, virksomhetsnummer)) {
             throw new ForbiddenException("Ikke tilgang");
         }
