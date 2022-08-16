@@ -3,18 +3,12 @@ package no.nav.syfo.service;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
-
-import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 @Service
 public class TilgangskontrollService {
-
-    private static final Logger log = getLogger(TilgangskontrollService.class);
 
     private NarmesteLederConsumer narmesteLederConsumer;
     private AktorregisterConsumer aktorregisterConsumer;
@@ -35,12 +29,8 @@ public class TilgangskontrollService {
     }
 
     public boolean kanOppretteOppfolgingsplan(String sykmeldtFnr, String innloggetFnr, String virksomhetsnummer) {
-        boolean innloggetBrukerErSykmeldt = innloggetFnr.equals(sykmeldtFnr);
-        boolean aktoerHarNaermesteLederHosVirksomhet = aktoerHarNaermesteLederHosVirksomhet(innloggetFnr, virksomhetsnummer);
-        boolean erNaermesteLederForSykmeldt = erNaermesteLederForSykmeldt(innloggetFnr, sykmeldtFnr, virksomhetsnummer);
-        log.info("kanOppretteOppfolgingsplan: " + innloggetBrukerErSykmeldt + " " + aktoerHarNaermesteLederHosVirksomhet + " " + erNaermesteLederForSykmeldt);
-        return (innloggetBrukerErSykmeldt && aktoerHarNaermesteLederHosVirksomhet)
-                || erNaermesteLederForSykmeldt;
+        return (innloggetFnr.equals(sykmeldtFnr) && aktoerHarNaermesteLederHosVirksomhet(innloggetFnr, virksomhetsnummer))
+                || erNaermesteLederForSykmeldt(innloggetFnr, sykmeldtFnr, virksomhetsnummer);
     }
 
     private boolean erNaermesteLederForSykmeldt(String lederFnr, String sykmeldtFnr, String virksomhetsnummer) {
