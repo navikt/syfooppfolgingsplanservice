@@ -8,8 +8,6 @@ import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
 import no.nav.syfo.oidc.tokenx.TokenXResponse
-import no.nav.syfo.oidc.tokenx.TokenXToken
-import no.nav.syfo.oidc.tokenx.isExpired
 import no.nav.syfo.oidc.tokenx.toTokenXToken
 import no.nav.syfo.oidc.tokenx.tokendings.metadata.TokenDingsMetadataConsumer
 import org.slf4j.LoggerFactory
@@ -25,7 +23,6 @@ import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestTemplate
 import java.time.Instant
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 @Component
@@ -42,30 +39,24 @@ class TokenDingsConsumer @Inject constructor(
         val tokendingsEndpoint = tokenDingsMetadataConsumer.getTokenDingsMetadata().tokenEndpoint
         val requestEntity = requestEntity(subjectToken, tokendingsEndpoint, targetApp)
 
-        val cachedToken = tokenXCache[targetApp]
+        try {
+            val response = restTemplate.exchange(
+                tokendingsEndpoint,
+                HttpMethod.POST,
+                requestEntity,
+                TokenXResponse::class.java
+            )
+            val tokenX = response.body!!.toTokenXToken()
 
-        return if (cachedToken?.isExpired() == false) {
-            cachedToken.accessToken
-        } else {
-            try {
-                val response = restTemplate.exchange(
-                    tokendingsEndpoint,
-                    HttpMethod.POST,
-                    requestEntity,
-                    TokenXResponse::class.java
-                )
-                val tokenX = response.body!!.toTokenXToken()
-                tokenXCache[targetApp] = tokenX
-
-                return tokenX.accessToken
-            } catch (e: RestClientResponseException) {
-                log.error(
-                    "Call to get TokenX failed with status: ${e.rawStatusCode} and message: ${e.responseBodyAsString}",
-                    e
-                )
-                throw e
-            }
+            return tokenX.accessToken
+        } catch (e: RestClientResponseException) {
+            log.error(
+                "Call to get TokenX failed with status: ${e.rawStatusCode} and message: ${e.responseBodyAsString}",
+                e
+            )
+            throw e
         }
+
     }
 
     private fun requestEntity(
@@ -102,7 +93,6 @@ class TokenDingsConsumer @Inject constructor(
     }
 
     companion object {
-        private val tokenXCache = ConcurrentHashMap<String, TokenXToken>()
         private val log = LoggerFactory.getLogger(TokenDingsConsumer::class.java)
     }
 }
