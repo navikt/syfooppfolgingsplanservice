@@ -8,6 +8,7 @@ import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
 import org.springframework.stereotype.Repository
 import org.springframework.web.client.RestClientResponseException
@@ -16,13 +17,15 @@ import javax.inject.Inject
 
 @Repository
 class OPPdfGenConsumer @Inject constructor(
+    @Value("\${syfooppdfgen.url}") private val baseURL: String,
     @Qualifier("scheduler") private val restTemplate: RestTemplate,
     private val metric: Metrikk
 ) {
     fun pdfgenResponse(fagmelding: Fagmelding): ByteArray {
+        val url = "$baseURL$pathURL"
         try {
             val response = restTemplate.exchange(
-                opPdfGenUrl,
+                url,
                 HttpMethod.POST,
                 entity(fagmelding),
                 ByteArray::class.java
@@ -50,7 +53,7 @@ class OPPdfGenConsumer @Inject constructor(
     companion object {
         private val LOG = LoggerFactory.getLogger(OPPdfGenConsumer::class.java)
 
-        private const val opPdfGenUrl = "http://syfooppdfgen/api/v1/genpdf/opservice/oppfolgingsplanlps"
+        private val pathURL = "/api/v1/genpdf/opservice/oppfolgingsplanlps"
 
         private const val METRIC_CALL_OPPDFGEN_SUCCESS = "call_oppdfgen_success"
         private const val METRIC_CALL_OPPDFGEN_FAIL = "call_oppdfgen_fail"

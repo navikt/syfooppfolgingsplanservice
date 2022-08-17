@@ -37,6 +37,7 @@ srvsyfooppfolgingsplanservice:
 
 elector.path: "www.kanskje.no"
 
+syfooppdfgen.url: "https://syfooppdfgen"
 syfobrukertilgang.url: "http://syfobrukertilgang"
 ekstern.altinn.behandlealtinnmelding.v1.endpointurl: "behandlealtinnmelding.url"
 brukeroppgave.v1.endpointurl: "brukeroppgavev1.url"
