@@ -114,7 +114,7 @@ spec:
     - name: DOKARKIV_URL
       value: https://dokarkiv.nais.adeo.no
     - name: DKIF_URL
-      value: https://dkif.nais.adeo.no
+      value: https://dkif.intern.nav.no
     - name: CLIENT_ID
       value: 970b2069-0b53-492f-bd7a-acadfa211e9f
     - name: PDL_URL
