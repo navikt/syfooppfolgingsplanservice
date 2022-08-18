@@ -114,7 +114,7 @@ spec:
     - name: TILGANGSKONTROLLAPI_URL
       value: https://syfo-tilgangskontroll.nais.preprod.local/syfo-tilgangskontroll/api/tilgang
     - name: DKIF_URL
-      value: https://dkif.nais.preprod.local
+      value: https://dkif.dev.intern.nav.no
     - name: DOKARKIV_URL
       value: https://dokarkiv-q1.nais.preprod.local
     - name: CLIENT_ID
