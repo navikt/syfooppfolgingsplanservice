@@ -47,6 +47,9 @@ spec:
         - application: syfomodiaperson
           namespace: teamsykefravr
           cluster: dev-fss
+        - application: isyfomock
+          namespace: teamsykefravr
+          cluster: dev-gcp
   azure:
     application:
       enabled: true

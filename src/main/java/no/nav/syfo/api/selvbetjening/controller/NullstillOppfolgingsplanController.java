@@ -18,15 +18,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @RestController
 @Unprotected
-@RequestMapping(value = "/internal")
-public class MockDataController {
+@RequestMapping(value = "/internal/oppfolgingsplan")
+public class NullstillOppfolgingsplanController {
 
-    private static final Logger logger = getLogger(MockDataController.class);
+    private static final Logger logger = getLogger(NullstillOppfolgingsplanController.class);
     private final OppfolgingsplanDAO oppfolgingsplanDAO;
     private final AktorregisterConsumer aktorregisterConsumer;
 
     @Inject
-    public MockDataController(
+    public NullstillOppfolgingsplanController(
             OppfolgingsplanDAO oppfolgingsplanDAO,
             AktorregisterConsumer aktorregisterConsumer
     ) {
@@ -34,13 +34,13 @@ public class MockDataController {
         this.aktorregisterConsumer = aktorregisterConsumer;
     }
 
-    @DeleteMapping(path = "/oppfolgingsplan/slett/{id}")
-    public ResponseEntity<?> slettOppfolgingsplanById(
+    @DeleteMapping(path = "/slett/{id}")
+    public ResponseEntity<?> deleteOppfolgingsplanById(
             @PathVariable("id") Long id,
             @Value("${nais.cluster.name}") String env
     ) {
         if (isDev(env)) {
-            logger.info("Sletter oppfolgingsplan for id {}", id);
+            logger.info("Sletter oppfolgingsplan for id");
             oppfolgingsplanDAO.deleteOppfolgingsplan(id);
 
             return ResponseEntity.ok().build();
@@ -49,8 +49,8 @@ public class MockDataController {
         }
     }
 
-    @DeleteMapping(path = "/oppfolgingsplan/slett/{fnr}")
-    public ResponseEntity<?> slettOppfolgingsplanByFnr(
+    @DeleteMapping(path = "/slett/person/{fnr}")
+    public ResponseEntity<?> deleteOppfolgingsplanByFnr(
             @PathVariable("fnr") String fnr,
             @Value("${nais.cluster.name}") String env
     ) {
@@ -58,7 +58,7 @@ public class MockDataController {
             String aktorId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
             List<Long> dialogIder = oppfolgingsplanDAO.hentDialogIDerByAktoerId(aktorId);
 
-            logger.info("Sletter oppfolgingsplaner for aktorId {}", aktorId);
+            logger.info("Sletter oppfolgingsplaner for aktorId");
 
             dialogIder.forEach(oppfolgingsplanDAO::deleteOppfolgingsplan);
 
@@ -74,6 +74,6 @@ public class MockDataController {
     }
 
     private boolean isDev(String env) {
-        return env.equals("q1") || env.equals("local");
+        return env.equals("dev-fss") || env.equals("local");
     }
 }
