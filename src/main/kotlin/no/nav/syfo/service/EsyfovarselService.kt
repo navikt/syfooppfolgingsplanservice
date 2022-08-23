@@ -5,22 +5,25 @@ import no.nav.syfo.model.Varseltype
 import no.nav.syfo.model.Varseltype.SyfoplanOpprettetNL
 import no.nav.syfo.model.Varseltype.SyfoplangodkjenningNl
 import no.nav.syfo.varsling.EsyfovarselProducer
-import no.nav.syfo.varsling.domain.EsyfovarselHendelse
-import no.nav.syfo.varsling.domain.NarmesteLederVarselData
+import no.nav.syfo.varsling.domain.HendelseType
 import no.nav.syfo.varsling.domain.HendelseType.NL_OPPFOLGINGSPLAN_OPPRETTET
 import no.nav.syfo.varsling.domain.HendelseType.NL_OPPFOLGINGSPLAN_SENDT_TIL_GODKJENNING
-import no.nav.syfo.varsling.domain.HendelseType
+import no.nav.syfo.varsling.domain.NarmesteLederHendelse
+import no.nav.syfo.varsling.domain.NarmesteLederVarselData
 import org.springframework.stereotype.Service
 
 @Service
-class EsyfovarselService (private val producer: EsyfovarselProducer) {
+class EsyfovarselService(private val producer: EsyfovarselProducer) {
 
     fun sendVarselTilNarmesteLeder(varseltype: Varseltype, narmesteleder: Naermesteleder) {
 
-        val esyfovarselHendelse = EsyfovarselHendelse(
-            narmesteleder.naermesteLederFnr,
+        val esyfovarselHendelse = NarmesteLederHendelse(
+            narmesteleder.naermesteLederFnr, // To be removed
             getEsyfovarselHendelseType(varseltype),
-            NarmesteLederVarselData(narmesteleder.ansattFnr, narmesteleder.orgnummer)
+            NarmesteLederVarselData(narmesteleder.ansattFnr, narmesteleder.orgnummer), // To be removed
+            narmesteleder.naermesteLederFnr,
+            narmesteleder.ansattFnr,
+            narmesteleder.orgnummer
         )
 
         producer.sendVarselTilEsyfovarsel(esyfovarselHendelse)
