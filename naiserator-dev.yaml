@@ -50,6 +50,11 @@ spec:
         - application: isyfomock
           namespace: teamsykefravr
           cluster: dev-gcp
+    outbound:
+      rules:
+        - application: syfooppdfgen
+          namespace: team-esyfo
+          cluster: dev-gcp
   azure:
     application:
       enabled: true
