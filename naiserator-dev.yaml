@@ -134,6 +134,8 @@ spec:
       value: https://modapp-q1.adeo.no
     - name: SYFOBRUKERTILGANG_URL
       value: https://syfobrukertilgang.nais.preprod.local
+    - name: SYFOBRUKERTILGANG_ID
+      value: dev-fss:team-esyfo:syfobrukertilgang
     - name: FELLESKODEVERK_URL
       value: https://kodeverk.nais.preprod.local/api/v1
     - name: SYFOSMREGISTER_URL
