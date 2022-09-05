@@ -134,6 +134,8 @@ spec:
       value: https://modapp.adeo.no
     - name: SYFOBRUKERTILGANG_URL
       value: https://syfobrukertilgang.nais.adeo.no
+    - name: SYFOBRUKERTILGANG_ID
+      value: prod-fss:team-esyfo:syfobrukertilgang
     - name: SYFOOPPDFGEN_URL
       value: https://syfooppdfgen.intern.nav.no
     - name: FELLESKODEVERK_URL

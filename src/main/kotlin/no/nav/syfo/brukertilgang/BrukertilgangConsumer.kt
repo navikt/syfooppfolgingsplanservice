@@ -3,7 +3,8 @@ package no.nav.syfo.brukertilgang
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oidc.OIDCIssuer
-import no.nav.syfo.oidc.OIDCUtil
+import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
+import no.nav.syfo.oidc.tokenx.tokendings.TokenDingsConsumer
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,10 +21,14 @@ class BrukertilgangConsumer @Autowired constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val restTemplate: RestTemplate,
     private val metrikk: Metrikk,
-    @Value("\${syfobrukertilgang.url}") private val baseUrl: String
+    private val tokenDingsConsumer: TokenDingsConsumer,
+    @Value("\${syfobrukertilgang.url}") private val baseUrl: String,
+    @Value("\${syfobrukertilgang.id}") private var targetApp: String,
 ) {
     fun hasAccessToAnsatt(ansattFnr: String): Boolean {
-        val httpEntity = entity()
+        val issuerToken = getIssuerToken(contextHolder, OIDCIssuer.EKSTERN)
+        val exchangedToken: String = tokenDingsConsumer.exchangeToken(issuerToken, targetApp)
+        val httpEntity = entity(exchangedToken)
         return try {
             val response = restTemplate.exchange(
                     arbeidstakerUrl(ansattFnr),
@@ -44,16 +49,16 @@ class BrukertilgangConsumer @Autowired constructor(
         }
     }
 
-    private fun entity(): HttpEntity<*> {
+    private fun entity(exchangedToken: String): HttpEntity<*> {
         val headers = HttpHeaders()
-        headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.EKSTERN)))
+        headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(exchangedToken))
         headers.add(NAV_CALL_ID_HEADER, createCallId())
         headers.add(NAV_CONSUMER_ID_HEADER, APP_CONSUMER_ID)
         return HttpEntity<Any>(headers)
     }
 
     private fun arbeidstakerUrl(ansattFnr: String): String {
-        return "$baseUrl/api/v1/tilgang/ansatt/$ansattFnr"
+        return "$baseUrl/api/v2/tilgang/ansatt/$ansattFnr"
     }
 
     companion object {
