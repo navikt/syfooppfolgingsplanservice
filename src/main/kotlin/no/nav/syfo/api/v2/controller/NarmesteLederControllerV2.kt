@@ -5,7 +5,6 @@ import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.api.v2.domain.NarmesteLeder
 import no.nav.syfo.api.v2.domain.mapToNarmesteLeder
 import no.nav.syfo.api.v2.util.fodselsnummerInvalid
-import no.nav.syfo.api.selvbetjening.controller.NarmesteLederController
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.oidc.OIDCIssuer.EKSTERN
@@ -63,6 +62,6 @@ class NarmesteLederControllerV2 @Inject constructor(
     }
 
     companion object {
-        private val LOG: Logger = LoggerFactory.getLogger(NarmesteLederController::class.java)
+        private val LOG: Logger = LoggerFactory.getLogger(NarmesteLederControllerV2::class.java)
     }
 }
