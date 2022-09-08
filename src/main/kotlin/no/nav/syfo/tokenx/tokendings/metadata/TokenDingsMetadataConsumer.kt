@@ -1,4 +1,4 @@
-package no.nav.syfo.oidc.tokenx.tokendings.metadata
+package no.nav.syfo.tokenx.tokendings.metadata
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty

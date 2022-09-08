@@ -1,4 +1,4 @@
-package no.nav.syfo.oidc.tokenx
+package no.nav.syfo.tokenx
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.io.Serializable

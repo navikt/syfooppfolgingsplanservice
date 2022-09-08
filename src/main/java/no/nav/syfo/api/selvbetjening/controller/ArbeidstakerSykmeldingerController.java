@@ -5,7 +5,7 @@ import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Sykmelding;
-import no.nav.syfo.oidc.tokenx.tokendings.TokenDingsConsumer;
+import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer;
 import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package no.nav.syfo.oidc.tokenx.tokendings
+package no.nav.syfo.tokenx.tokendings
 
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
@@ -7,9 +7,9 @@ import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import no.nav.syfo.oidc.tokenx.TokenXResponse
-import no.nav.syfo.oidc.tokenx.toTokenXToken
-import no.nav.syfo.oidc.tokenx.tokendings.metadata.TokenDingsMetadataConsumer
+import no.nav.syfo.tokenx.TokenXResponse
+import no.nav.syfo.tokenx.toTokenXToken
+import no.nav.syfo.tokenx.tokendings.metadata.TokenDingsMetadataConsumer
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
