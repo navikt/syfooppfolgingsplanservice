@@ -150,3 +150,5 @@ spec:
       value: api://prod-gcp.teamsykmelding.narmesteleder/.default
     - name: TOKENX_IDP
       value: https://oidc.difi.no/idporten-oidc-provider/
+    - name: OPPFOLGINGSPLAN_FRONTEND_CLIENT_ID
+      value: prod-gcp:team-esyfo:oppfolgingsplan-frontend
