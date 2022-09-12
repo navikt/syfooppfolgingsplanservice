@@ -24,7 +24,7 @@ import org.springframework.http.ResponseEntity
 import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
-import no.nav.syfo.oidc.tokenx.tokendings.TokenDingsConsumer
+import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
 import no.nav.syfo.util.encodedJWTTokenX
 
 class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {

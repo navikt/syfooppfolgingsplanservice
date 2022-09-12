@@ -4,7 +4,7 @@ import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
-import no.nav.syfo.oidc.tokenx.tokendings.TokenDingsConsumer
+import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

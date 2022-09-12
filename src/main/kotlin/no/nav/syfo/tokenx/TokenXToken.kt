@@ -1,4 +1,4 @@
-package no.nav.syfo.oidc.tokenx
+package no.nav.syfo.tokenx
 
 import java.io.Serializable
 import java.time.LocalDateTime
