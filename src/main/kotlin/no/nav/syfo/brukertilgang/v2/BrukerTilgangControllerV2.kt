@@ -37,7 +37,7 @@ class BrukerTilgangControllerV2 @Inject constructor(
 ) {
     @GetMapping
     fun harTilgang(@RequestParam(value = "fnr", required = false) oppslaattFnr: String?): RSTilgang {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
             .fnrFromIdportenTokenX()
             .value
         val oppslaattIdent = if (ObjectUtils.isEmpty(oppslaattFnr)) innloggetIdent else oppslaattFnr
