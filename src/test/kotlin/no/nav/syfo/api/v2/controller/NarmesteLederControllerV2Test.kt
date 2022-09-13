@@ -6,6 +6,8 @@ import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.NaermesteLederStatus
 import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
+import no.nav.syfo.oidc.OIDCIssuer.EKSTERN
+import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
 import no.nav.syfo.testhelper.OidcTestHelper
 import no.nav.syfo.testhelper.UserConstants
 import org.junit.Assert
@@ -37,7 +39,10 @@ class NarmesteLederControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun narmesteLeder_ansatt_ok() {
         OidcTestHelper.loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
-        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
+        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(
+            UserConstants.ARBEIDSTAKER_FNR,
+            getIssuerToken(contextHolder, EKSTERN)
+        )).thenReturn(true)
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(UserConstants.ARBEIDSTAKER_FNR, UserConstants.VIRKSOMHETSNUMMER))
             .thenReturn(Optional.of(naermesteleder))
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(UserConstants.ARBEIDSTAKER_FNR, UserConstants.VIRKSOMHETSNUMMER)
@@ -68,7 +73,10 @@ class NarmesteLederControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun narmesteLeder_noContent() {
         OidcTestHelper.loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
-        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
+        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(
+            UserConstants.ARBEIDSTAKER_FNR,
+            getIssuerToken(contextHolder, EKSTERN)
+        )).thenReturn(true)
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(UserConstants.ARBEIDSTAKER_FNR, UserConstants.VIRKSOMHETSNUMMER)).thenReturn(Optional.empty())
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(UserConstants.ARBEIDSTAKER_FNR, UserConstants.VIRKSOMHETSNUMMER)
         Assert.assertEquals(204, res.statusCodeValue.toLong())
@@ -77,7 +85,10 @@ class NarmesteLederControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun narmesteLeder_forbidden() {
         OidcTestHelper.loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
-        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
+        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(
+            UserConstants.ARBEIDSTAKER_FNR,
+            getIssuerToken(contextHolder, EKSTERN)
+        )).thenReturn(false)
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(UserConstants.ARBEIDSTAKER_FNR, UserConstants.VIRKSOMHETSNUMMER)
         Assert.assertEquals(403, res.statusCodeValue.toLong())
     }

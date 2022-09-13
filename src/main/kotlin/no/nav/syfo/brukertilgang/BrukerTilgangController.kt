@@ -3,8 +3,9 @@ package no.nav.syfo.brukertilgang
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.oidc.OIDCIssuer
+import no.nav.syfo.oidc.OIDCIssuer.EKSTERN
 import no.nav.syfo.oidc.OIDCUtil
+import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
@@ -17,7 +18,7 @@ import javax.ws.rs.ForbiddenException
 
 
 @RestController
-@ProtectedWithClaims(issuer = OIDCIssuer.EKSTERN)
+@ProtectedWithClaims(issuer = EKSTERN)
 @RequestMapping(value = ["/api/tilgang"])
 class BrukerTilgangController @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
@@ -54,7 +55,7 @@ class BrukerTilgangController @Inject constructor(
             throw IllegalArgumentException("Fant ikke Ident i Header ved sjekk av tilgang til Ident")
         } else {
             metrikk.tellHendelse("accessToIdent")
-            BrukerTilgang(brukertilgangConsumer.hasAccessToAnsatt(oppslaattIdent!!))
+            BrukerTilgang(brukertilgangConsumer.hasAccessToAnsatt(oppslaattIdent!!, getIssuerToken(contextHolder, EKSTERN)))
         }
     }
 

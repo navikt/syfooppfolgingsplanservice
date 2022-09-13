@@ -1,6 +1,8 @@
 package no.nav.syfo.brukertilgang
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
+import no.nav.syfo.oidc.OIDCIssuer.EKSTERN
+import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.testhelper.OidcTestHelper
@@ -104,22 +106,22 @@ class BrukerTilgangControllerTest : AbstractRessursTilgangTest() {
     }
 
     @Test
-    fun accessToIdent_granted() {
+    fun accessToIdent_denied() {
         loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
         headers.add(NAV_PERSONIDENT_HEADER, UserConstants.ARBEIDSTAKER_FNR)
-        `when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(false)
+        `when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR, getIssuerToken(contextHolder, EKSTERN))).thenReturn(false)
 
         val (tilgang) = brukerTilgangController.accessToAnsatt(headers)
         assertFalse(tilgang)
     }
 
     @Test
-    fun accessToIdent_denied() {
+    fun accessToIdent_granted() {
         loggInnBruker(contextHolder, UserConstants.LEDER_FNR)
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
         headers.add(NAV_PERSONIDENT_HEADER, UserConstants.ARBEIDSTAKER_FNR)
-        `when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR)).thenReturn(true)
+        `when`(brukertilgangConsumer.hasAccessToAnsatt(UserConstants.ARBEIDSTAKER_FNR, getIssuerToken(contextHolder, EKSTERN))).thenReturn(true)
 
         val (tilgang) = brukerTilgangController.accessToAnsatt(headers)
         assertTrue(tilgang)

@@ -14,7 +14,9 @@ import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
+import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
 import no.nav.syfo.util.encodedJWTToken
+import no.nav.syfo.util.encodedJWTTokenX
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -24,8 +26,6 @@ import org.springframework.http.ResponseEntity
 import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
-import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
-import no.nav.syfo.util.encodedJWTTokenX
 
 class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     @MockBean
@@ -87,7 +87,7 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     @Test
     fun get_sendte_sykmeldinger_noContent() {
         loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
-        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
+        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR, encodedToken)).thenReturn(true)
         Mockito.`when`(arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(ARBEIDSTAKER_AKTORID, bearerToken, false))
             .thenReturn(Optional.empty())
 

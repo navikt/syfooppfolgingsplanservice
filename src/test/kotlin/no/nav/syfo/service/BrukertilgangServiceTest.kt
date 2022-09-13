@@ -1,41 +1,53 @@
 package no.nav.syfo.service
 
+import no.nav.security.token.support.core.context.TokenValidationContextHolder
+import no.nav.syfo.LocalApplication
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
+import no.nav.syfo.oidc.OIDCIssuer.EKSTERN
+import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
+import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import org.assertj.core.api.Assertions
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.*
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.junit4.SpringRunner
+import javax.inject.Inject
 
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(SpringRunner::class)
+@SpringBootTest(classes = [LocalApplication::class])
+@DirtiesContext
 class BrukertilgangServiceTest {
-    @Mock
+    @MockBean
     private lateinit var brukertilgangConsumer: BrukertilgangConsumer
 
-    @InjectMocks
-    private lateinit var brukertilgangService: BrukertilgangService
+    @Inject
+    lateinit var contextHolder: TokenValidationContextHolder
 
-    @Before
-    fun setup() {
-    }
+    @Inject
+    private lateinit var brukertilgangService: BrukertilgangService
 
     @Test
     fun sporOmNoenAndreEnnSegSelvGirFalseNaarManSporOmSegSelv() {
+        loggInnBruker(contextHolder, INNLOGGET_FNR)
         val tilgang = brukertilgangService.tilgangTilOppslattIdent(INNLOGGET_FNR, INNLOGGET_FNR)
         Assertions.assertThat(tilgang).isTrue()
     }
 
     @Test
     fun sporOmNoenAndreEnnSegSelvGirFalseNaarManSporOmEnAnsatt() {
-        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(SPOR_OM_FNR)).thenReturn(true)
+        loggInnBruker(contextHolder, INNLOGGET_FNR)
+        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(SPOR_OM_FNR, getIssuerToken(contextHolder, EKSTERN))).thenReturn(true)
         val tilgang = brukertilgangService.tilgangTilOppslattIdent(INNLOGGET_FNR, SPOR_OM_FNR)
         Assertions.assertThat(tilgang).isTrue()
     }
 
     @Test
     fun sporOmNoenAndreEnnSegSelvGirTrueNaarManSporOmEnSomIkkeErSegSelvOgIkkeAnsatt() {
-        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(SPOR_OM_FNR)).thenReturn(false)
+        loggInnBruker(contextHolder, INNLOGGET_FNR)
+        Mockito.`when`(brukertilgangConsumer.hasAccessToAnsatt(SPOR_OM_FNR, getIssuerToken(contextHolder, EKSTERN))).thenReturn(false)
         val tilgang = brukertilgangService.tilgangTilOppslattIdent(INNLOGGET_FNR, SPOR_OM_FNR)
         Assertions.assertThat(tilgang).isFalse()
     }

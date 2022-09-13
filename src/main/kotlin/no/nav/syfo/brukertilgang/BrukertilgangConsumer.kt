@@ -1,9 +1,6 @@
 package no.nav.syfo.brukertilgang
 
-import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.oidc.OIDCIssuer
-import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
@@ -18,16 +15,14 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class BrukertilgangConsumer @Autowired constructor(
-    private val contextHolder: TokenValidationContextHolder,
     private val restTemplate: RestTemplate,
     private val metrikk: Metrikk,
     private val tokenDingsConsumer: TokenDingsConsumer,
     @Value("\${syfobrukertilgang.url}") private val baseUrl: String,
     @Value("\${syfobrukertilgang.id}") private var targetApp: String,
 ) {
-    fun hasAccessToAnsatt(ansattFnr: String): Boolean {
-        val issuerToken = getIssuerToken(contextHolder, OIDCIssuer.EKSTERN)
-        val exchangedToken: String = tokenDingsConsumer.exchangeToken(issuerToken, targetApp)
+    fun hasAccessToAnsatt(ansattFnr: String, token: String): Boolean {
+        val exchangedToken: String = tokenDingsConsumer.exchangeToken(token, targetApp)
         val httpEntity = entity(exchangedToken)
         return try {
             val response = restTemplate.exchange(
