@@ -8,6 +8,7 @@ import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.test.JwtTokenGenerator.*
 import no.nav.syfo.oidc.OIDCIssuer.EKSTERN
 import no.nav.syfo.oidc.OIDCIssuer.INTERN_AZUREAD_V2
+import no.nav.syfo.tokenx.TokenXUtil
 import java.util.*
 import java.util.Date
 
@@ -41,6 +42,17 @@ object OidcTestHelper {
     fun loggUtAlle(contextHolder: TokenValidationContextHolder) {
         contextHolder.tokenValidationContext = null
     }
+}
+
+fun loggInnBrukerTokenX(contextHolder: TokenValidationContextHolder, brukerFnr: String, clientId: String, idp: String) {
+    val claimsSet = JWTClaimsSet.Builder()
+        .claim("pid", brukerFnr)
+        .claim("client_id", clientId)
+        .claim("idp", idp)
+        .build()
+
+    val jwt = createSignedJWT(claimsSet)
+    settOIDCValidationContext(contextHolder, jwt, TokenXUtil.TokenXIssuer.TOKENX)
 }
 
 fun loggInnVeilederAzureADV2(contextHolder: TokenValidationContextHolder, veilederIdent: String) {
