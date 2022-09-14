@@ -122,7 +122,7 @@ class BrukerTilgangControllerV2Test : AbstractRessursTilgangTest() {
     }
 
     @Test
-    fun accessToIdent_granted() {
+    fun accessToIdent_denied() {
         loggInnBruker(LEDER_FNR)
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
         headers.add(NAV_PERSONIDENT_HEADER, ARBEIDSTAKER_FNR)
@@ -133,7 +133,7 @@ class BrukerTilgangControllerV2Test : AbstractRessursTilgangTest() {
     }
 
     @Test
-    fun accessToIdent_denied() {
+    fun accessToIdent_granted() {
         loggInnBruker(LEDER_FNR)
         val headers: MultiValueMap<String, String> = LinkedMultiValueMap()
         headers.add(NAV_PERSONIDENT_HEADER, ARBEIDSTAKER_FNR)
