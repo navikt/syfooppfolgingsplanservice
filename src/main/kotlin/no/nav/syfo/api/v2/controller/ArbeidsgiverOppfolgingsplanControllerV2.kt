@@ -29,9 +29,9 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
     private val oppfolgingsplanService: OppfolgingsplanService,
     private val metrikk: Metrikk,
     @Value("\${tokenx.idp}")
-    val tokenxIdp: String,
+    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
-    val oppfolgingsplanClientId: String,
+    private val oppfolgingsplanClientId: String,
 ) {
     @GetMapping(produces = [APPLICATION_JSON_VALUE])
     fun hentArbeidsgiversOppfolgingsplaner(): List<RSBrukerOppfolgingsplan> {
