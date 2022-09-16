@@ -27,9 +27,9 @@ class ArbeidstakerSykmeldingerControllerV2 @Inject constructor(
     private val arbeidstakerSykmeldingerConsumer: ArbeidstakerSykmeldingerConsumer,
     private val tokenDingsConsumer: TokenDingsConsumer,
     @Value("\${tokenx.idp}")
-    val tokenxIdp: String,
+    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
-    val oppfolgingsplanClientId: String,
+    private val oppfolgingsplanClientId: String,
     @Value("\${syfosmregister.id}")
     private val targetApp: String? = null
 ) {
