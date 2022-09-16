@@ -26,7 +26,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 @ProtectedWithClaims(issuer = EKSTERN)
 @RequestMapping(value = "/api/arbeidstaker/sykmeldinger")
 public class ArbeidstakerSykmeldingerController {
-    private static final Logger LOG = getLogger(ArbeidstakerSykmeldingerController.class);
 
     private final TokenValidationContextHolder oidcContextHolder;
     private final Metrikk metrikk;
