@@ -37,7 +37,7 @@ class ArbeidstakerSykmeldingerControllerV2 @Inject constructor(
     @GetMapping
     fun getSendteSykmeldinger(@RequestParam(required = false) today: String?): ResponseEntity<List<Sykmelding>> {
         metrikk.tellHendelse("get_sykmeldinger")
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val issuerToken = getIssuerToken(contextHolder, TOKENX)
