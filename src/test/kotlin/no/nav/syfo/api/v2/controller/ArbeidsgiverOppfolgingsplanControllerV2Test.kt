@@ -24,7 +24,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import javax.inject.Inject
 import javax.ws.rs.ForbiddenException
 
-class ArbeidsgiverOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
+class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var aktorregisterConsumer: AktorregisterConsumer
 
