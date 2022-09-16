@@ -30,9 +30,9 @@ class ArbeidstakerSykmeldingerControllerV2 @Inject constructor(
     val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     val oppfolgingsplanClientId: String,
-) {
     @Value("\${syfosmregister.id}")
     private val targetApp: String? = null
+) {
     @ResponseBody
     @GetMapping
     fun getSendteSykmeldinger(@RequestParam(required = false) today: String?): ResponseEntity<List<Sykmelding>> {
