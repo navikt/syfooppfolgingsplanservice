@@ -46,7 +46,8 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
         val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        val id = oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog.sykmeldtFnr(innloggetFnr), innloggetFnr)
+        rsOpprettOppfoelgingsdialog.sykmeldtFnr = innloggetFnr
+        val id = oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog, innloggetFnr)
         metrikk.tellHendelse("opprett_oppfolgingsplan_at")
         return id
     }
