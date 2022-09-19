@@ -31,7 +31,7 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
 ) {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentArbeidstakersOppfolgingsplaner(): List<RSBrukerOppfolgingsplan> {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val liste = MapUtil.mapListe(
