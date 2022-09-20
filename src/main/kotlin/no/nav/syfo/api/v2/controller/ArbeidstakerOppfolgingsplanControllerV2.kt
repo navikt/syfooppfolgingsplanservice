@@ -28,10 +28,12 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
     private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
+    @Value("\${ditt.sykefravaer.frontend.client.id}")
+    private val dittSykefravaerClientId: String,
 ) {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentArbeidstakersOppfolgingsplaner(): List<RSBrukerOppfolgingsplan> {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, dittSykefravaerClientId)
             .fnrFromIdportenTokenX()
             .value
         val liste = MapUtil.mapListe(
