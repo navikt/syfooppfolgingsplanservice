@@ -41,7 +41,7 @@ class NarmesteLederControllerV3 @Inject constructor(
     ): ResponseEntity<NarmesteLeder> {
         metrikk.tellHendelse("get_narmesteleder")
 
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
 
