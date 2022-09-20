@@ -1,4 +1,4 @@
-package no.nav.syfo.api.selvbetjening.controller
+package no.nav.syfo.api.v3.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
