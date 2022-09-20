@@ -44,6 +44,9 @@ spec:
         - application: syfomodiaperson
           namespace: teamsykefravr
           cluster: prod-fss
+        - application: ditt-sykefravaer
+          namespace: flex
+          cluster: prod-gcp
     outbound:
       rules:
         - application: syfooppdfgen
@@ -152,3 +155,5 @@ spec:
       value: https://oidc.difi.no/idporten-oidc-provider/
     - name: OPPFOLGINGSPLAN_FRONTEND_CLIENT_ID
       value: prod-gcp:team-esyfo:oppfolgingsplan-frontend
+    - name: DITT_SYKEFRAVAER_FRONTEND_CLIENT_ID
+      value: prod-gcp:flex:ditt-sykefravaer

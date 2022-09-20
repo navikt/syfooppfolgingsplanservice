@@ -110,3 +110,4 @@ token.x.private.jwk: "tokenx-jwk"
 tokenx.idp: "https://localhost/idporten-oidc-provider/"
 
 oppfolgingsplan.frontend.client.id: "localhost:team-esyfo:oppfolgingsplan-frontend"
+ditt.sykefravaer.frontend.client.id: "localhost:flex:ditt-sykefravaer"
