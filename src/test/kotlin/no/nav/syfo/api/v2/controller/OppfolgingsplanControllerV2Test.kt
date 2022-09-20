@@ -255,7 +255,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
         val arbeidsoppgave = map(rsArbeidsoppgave, rs2arbeidsoppgave)
         `when`(arbeidsoppgaveService.lagreArbeidsoppgave(oppfolgingsplanId, arbeidsoppgave, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
         val res = oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, rsArbeidsoppgave)
-        verify(arbeidsoppgaveService).lagreArbeidsoppgave(eq<Long>(oppfolgingsplanId), any(Arbeidsoppgave::class.java), eq(ARBEIDSTAKER_FNR))
+        verify(arbeidsoppgaveService).lagreArbeidsoppgave(eq(oppfolgingsplanId), any(Arbeidsoppgave::class.java), eq(ARBEIDSTAKER_FNR))
         assertEquals(res, ressursId)
     }
 
@@ -273,7 +273,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
         val arbeidsoppgave = map(rsArbeidsoppgave, rs2arbeidsoppgave)
         `when`(arbeidsoppgaveService.lagreArbeidsoppgave(oppfolgingsplanId, arbeidsoppgave, ARBEIDSTAKER_FNR)).thenReturn(arbeidsoppgaveId)
         val res = oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, rsArbeidsoppgave)
-        verify(arbeidsoppgaveService).lagreArbeidsoppgave(eq<Long>(oppfolgingsplanId), any(Arbeidsoppgave::class.java), eq<String>(ARBEIDSTAKER_FNR))
+        verify(arbeidsoppgaveService).lagreArbeidsoppgave(eq(oppfolgingsplanId), any(Arbeidsoppgave::class.java), eq(ARBEIDSTAKER_FNR))
         assertEquals(res, arbeidsoppgaveId)
     }
 
@@ -291,7 +291,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
         val tiltak = map(rsTiltak, RSTiltakMapper.rs2tiltak)
         `when`(tiltakService.lagreTiltak(oppfolgingsplanId, tiltak, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
         val res = oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak)
-        verify(tiltakService).lagreTiltak(eq<Long>(oppfolgingsplanId), any(Tiltak::class.java), eq<String>(ARBEIDSTAKER_FNR))
+        verify(tiltakService).lagreTiltak(eq(oppfolgingsplanId), any(Tiltak::class.java), eq(ARBEIDSTAKER_FNR))
         assertEquals(res, ressursId)
     }
 
@@ -302,7 +302,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
         val tiltak = map(rsTiltak, RSTiltakMapper.rs2tiltak)
         `when`(tiltakService.lagreTiltak(oppfolgingsplanId, tiltak, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
         val res = oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak)
-        verify(tiltakService).lagreTiltak(eq<Long>(oppfolgingsplanId), any(Tiltak::class.java), eq<String>(ARBEIDSTAKER_FNR))
+        verify(tiltakService).lagreTiltak(eq(oppfolgingsplanId), any(Tiltak::class.java), eq(ARBEIDSTAKER_FNR))
         assertEquals(res, ressursId)
     }
 
