@@ -36,7 +36,7 @@ class PersonControllerV3 @Inject constructor(
     fun getPerson(
         @PathVariable("fnr") fnr: String
     ): ResponseEntity<Person> {
-        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
             .fnrFromIdportenTokenX()
             .value
         return if (fodselsnummerInvalid(fnr)) {
