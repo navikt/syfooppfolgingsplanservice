@@ -32,7 +32,7 @@ class VirksomhetControllerV3 @Inject constructor(
     fun getVirksomhet(
         @PathVariable("virksomhetsnummer") virksomhetsnummer: String
     ): ResponseEntity<Virksomhet> {
-        TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(
