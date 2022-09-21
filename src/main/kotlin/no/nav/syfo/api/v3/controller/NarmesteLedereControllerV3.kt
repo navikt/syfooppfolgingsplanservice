@@ -44,13 +44,13 @@ class NarmesteLedereControllerV3 @Inject constructor(
             .value
 
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Feil i format på fodselsnummer i request til .../v2/narmesteledere/...")
+            LOG.error("Feil i format på fodselsnummer i request ved henting av nærmeste ledere")
             ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .build()
         } else {
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetIdent, fnr)) {
-                LOG.error("Ikke tilgang til .../v2/narmesteledere/... : Bruker spør om noen andre enn seg selv eller egne ansatte")
+                LOG.error("Ikke tilgang til nærmeste ledere: Bruker spør om noen andre enn seg selv eller egne ansatte")
                 ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()
