@@ -40,7 +40,7 @@ class PersonControllerV3 @Inject constructor(
             .fnrFromIdportenTokenX()
             .value
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Ugyldig Ident ved henting av person")
+            LOG.error("Ugyldig fnr ved henting av person")
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .build()
