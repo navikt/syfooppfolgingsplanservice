@@ -36,7 +36,7 @@ class KontaktinfoControllerV3 @Inject constructor(
     fun getKontaktinfo(
         @PathVariable("fnr") fnr: String
     ): ResponseEntity<Kontaktinfo> {
-        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
             .fnrFromIdportenTokenX()
             .value
 
