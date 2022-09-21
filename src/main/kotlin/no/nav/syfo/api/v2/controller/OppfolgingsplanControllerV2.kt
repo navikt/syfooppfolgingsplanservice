@@ -40,7 +40,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/avbryt"])
     fun avbryt(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.avbrytPlan(id, innloggetIdent)
@@ -49,7 +49,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/avvis"])
     fun avvis(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         godkjenningService.avvisGodkjenning(id, innloggetIdent)
@@ -58,7 +58,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/delmedfastlege"])
     fun delMedFastlege(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.delMedFastlege(id, innloggetIdent)
@@ -67,7 +67,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/delmednav"])
     fun delMedNav(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.delMedNav(id, innloggetIdent)
@@ -82,7 +82,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         @RequestParam("aktoer") aktor: String,
         @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
     ): RSGyldighetstidspunkt {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val isPlanSharedWithNAV = Optional.ofNullable(delMedNav).orElse(false)
@@ -101,7 +101,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         @RequestParam("aktoer") aktor: String,
         @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
     ): RSGyldighetstidspunkt {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val isPlanSharedWithNAV = Optional.ofNullable(delMedNav).orElse(false)
@@ -123,7 +123,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/kopier"], produces = [APPLICATION_JSON_VALUE])
     fun kopier(@PathVariable("id") id: Long): Long {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val nyPlanId = oppfolgingsplanService.kopierOppfoelgingsdialog(id, innloggetIdent)
@@ -136,7 +136,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         @PathVariable("id") id: Long,
         @RequestBody rsArbeidsoppgave: RSArbeidsoppgave
     ): Long {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val arbeidsoppgave = map(rsArbeidsoppgave, rs2arbeidsoppgave)
@@ -148,7 +148,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         @PathVariable("id") id: Long,
         @RequestBody rsTiltak: RSTiltak
     ): Long {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val tiltak = map(rsTiltak, rs2tiltak)
@@ -157,7 +157,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/nullstillGodkjenning"])
     fun nullstillGodkjenning(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.nullstillGodkjenning(id, innloggetIdent)
@@ -169,7 +169,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         @PathVariable("id") id: Long,
         @RequestParam("samtykke") samtykke: Boolean
     ) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         samtykkeService.giSamtykke(id, innloggetIdent, samtykke)
@@ -178,7 +178,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/sett"])
     fun sett(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.oppdaterSistInnlogget(id, innloggetIdent)
