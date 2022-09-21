@@ -2,7 +2,6 @@ package no.nav.syfo.api.v2.controller
 
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.api.selvbetjening.controller.TiltakController
 import no.nav.syfo.api.selvbetjening.domain.RSKommentar
 import no.nav.syfo.domain.Kommentar
 import no.nav.syfo.metric.Metrikk
@@ -11,8 +10,7 @@ import no.nav.syfo.service.TiltakService
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
-import no.nav.syfo.util.MapUtil
-import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
@@ -36,8 +34,6 @@ class TiltakControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var metrikk: Metrikk
 
-    private val tiltakId = 1L
-
     @Value("\${tokenx.idp}")
     private lateinit var tokenxIdp: String
 
@@ -51,6 +47,7 @@ class TiltakControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test
     fun sletter_tiltak_som_bruker() {
+        val tiltakId = 1L
         tiltakController.slettTiltak(tiltakId)
         verify(tiltakService).slettTiltak(tiltakId, ARBEIDSTAKER_FNR)
     }
@@ -58,26 +55,28 @@ class TiltakControllerV2Test : AbstractRessursTilgangTest() {
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_slett_tiltak() {
         loggUtAlle(contextHolder)
-        tiltakController.slettTiltak(tiltakId)
+        tiltakController.slettTiltak(1)
     }
 
     @Test
     fun lagrer_kommentar_som_bruker() {
-        val rsKommentar = RSKommentar()
-            .tekst("Kommentar")
-        val kommentar = MapUtil.map(rsKommentar, TiltakController.rsKommentar2kommentar)
+        val tiltakId = 1L
+        val kommentarTekst = "Kommentar"
+        val rsKommentar = RSKommentar().tekst(kommentarTekst)
+        val kommentar = Kommentar().tekst(kommentarTekst)
         val kommentarId = 1L
         `when`(kommentarService.lagreKommentar(tiltakId, kommentar, ARBEIDSTAKER_FNR)).thenReturn(kommentarId)
         val res = tiltakController.lagreKommentar(tiltakId, rsKommentar)
-        verify(kommentarService).lagreKommentar(eq<Long>(tiltakId), any(Kommentar::class.java), eq(ARBEIDSTAKER_FNR))
+        verify(kommentarService).lagreKommentar(eq(tiltakId), any(Kommentar::class.java), eq(ARBEIDSTAKER_FNR))
         verify(metrikk).tellHendelse("lagre_kommentar")
-        Assert.assertEquals(res, kommentarId)
+        assertEquals(res, kommentarId)
     }
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_lagre_kommentar() {
-        loggUtAlle(contextHolder)
+        val tiltakId = 1L
         val kommentar = RSKommentar()
+        loggUtAlle(contextHolder)
         tiltakController.lagreKommentar(tiltakId, kommentar)
     }
 }

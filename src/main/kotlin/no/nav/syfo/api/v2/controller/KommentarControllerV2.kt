@@ -27,7 +27,7 @@ class KommentarControllerV2 @Inject constructor(
     private val oppfolgingsplanClientId: String,
 ) {
     @PostMapping(path = ["/slett"])
-    fun slettKommentar(@PathVariable("id") id: Long?) {
+    fun slettKommentar(@PathVariable("id") id: Long) {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value

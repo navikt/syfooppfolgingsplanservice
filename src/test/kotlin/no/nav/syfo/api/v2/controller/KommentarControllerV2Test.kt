@@ -3,10 +3,8 @@ package no.nav.syfo.api.v2.controller
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.KommentarService
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
-import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Value
@@ -29,15 +27,10 @@ class KommentarControllerV2Test : AbstractRessursTilgangTest() {
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
-    private val kommentarId = 1L
-
-    @Before
-    fun setup() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
-    }
-
     @Test
     fun sletter_tiltak_som_bruker() {
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        val kommentarId = 1L
         kommentarController.slettKommentar(kommentarId)
         verify(kommentarService).slettKommentar(kommentarId, ARBEIDSTAKER_FNR)
         verify(metrikk).tellHendelse("slett_kommentar")
@@ -45,7 +38,6 @@ class KommentarControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_slett_tiltak() {
-        loggUtAlle(contextHolder)
-        kommentarController.slettKommentar(kommentarId)
+        kommentarController.slettKommentar(1)
     }
 }
