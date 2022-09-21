@@ -5,7 +5,6 @@ import no.nav.syfo.api.v2.domain.Kontaktinfo
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.dkif.DigitalKontaktinfo
 import no.nav.syfo.dkif.DkifConsumer
-import no.nav.syfo.sts.StsConsumer
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.PERSON_EMAIL
@@ -13,7 +12,6 @@ import no.nav.syfo.testhelper.UserConstants.PERSON_TLF
 import no.nav.syfo.testhelper.generateDigitalKontaktinfo
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.*
-import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
@@ -30,9 +28,6 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var dkifConsumer: DkifConsumer
 
-    @MockBean
-    private lateinit var stsConsumer: StsConsumer
-
     @Inject
     private lateinit var kontaktinfoController: KontaktinfoControllerV3
 
@@ -41,12 +36,6 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
-
-    @Before
-    fun setup() {
-        `when`(stsConsumer.token()).thenReturn("token")
-
-    }
 
     @Test
     fun narmesteLeder_ansatt_ok() {
