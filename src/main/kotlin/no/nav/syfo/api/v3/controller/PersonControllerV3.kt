@@ -40,13 +40,13 @@ class PersonControllerV3 @Inject constructor(
             .fnrFromIdportenTokenX()
             .value
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Fant ikke oppslaatt Ident ved henting person fra .../v2/person/...")
+            LOG.error("Ugyldig Ident ved henting person")
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .build()
         } else {
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetFnr, fnr)) {
-                LOG.error("Ikke tilgang til .../v2/person/... : Bruker spør om noen andre enn seg selv eller egne ansatte")
+                LOG.error("Ikke tilgang: Bruker spør om noen andre enn seg selv eller egne ansatte")
                 ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()
