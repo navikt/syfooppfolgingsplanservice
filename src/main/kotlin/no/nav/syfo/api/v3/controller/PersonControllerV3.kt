@@ -46,7 +46,7 @@ class PersonControllerV3 @Inject constructor(
                 .build()
         } else {
             if (!brukertilgangService.tilgangTilOppslattIdent(innloggetFnr, fnr)) {
-                LOG.error("Ikke tilgang: Bruker spør om noen andre enn seg selv eller egne ansatte")
+                LOG.error("Ikke tilgang til person: Bruker spør om noen andre enn seg selv eller egne ansatte")
                 ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build()
