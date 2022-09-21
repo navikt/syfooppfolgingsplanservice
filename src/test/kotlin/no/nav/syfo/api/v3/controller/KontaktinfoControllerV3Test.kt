@@ -6,15 +6,16 @@ import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.dkif.DigitalKontaktinfo
 import no.nav.syfo.dkif.DkifConsumer
 import no.nav.syfo.sts.StsConsumer
-import no.nav.syfo.testhelper.UserConstants
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
+import no.nav.syfo.testhelper.UserConstants.PERSON_EMAIL
+import no.nav.syfo.testhelper.UserConstants.PERSON_TLF
 import no.nav.syfo.testhelper.generateDigitalKontaktinfo
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -53,13 +54,13 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(
-            epostadresse = UserConstants.PERSON_EMAIL,
+            epostadresse = PERSON_EMAIL,
             kanVarsles = false,
             reservert = false,
-            mobiltelefonnummer = UserConstants.PERSON_TLF,
+            mobiltelefonnummer = PERSON_TLF,
             personident = ARBEIDSTAKER_FNR
         )
-        `when`(dkifConsumer.kontaktinformasjon(ArgumentMatchers.anyString())).thenReturn(digitalKontaktinfo)
+        `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
         val res: ResponseEntity<*> = kontaktinfoController.getKontaktinfo(ARBEIDSTAKER_FNR)
         val body = res.body as Kontaktinfo
@@ -74,7 +75,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
     fun narmesteLeder_self_ok() {
         loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
         val digitalKontaktinfo = generateDigitalKontaktinfo()
-        `when`(dkifConsumer.kontaktinformasjon(ArgumentMatchers.anyString())).thenReturn(digitalKontaktinfo)
+        `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
         val res: ResponseEntity<*> = kontaktinfoController.getKontaktinfo(ARBEIDSTAKER_FNR)
         val body = res.body as Kontaktinfo
@@ -100,13 +101,13 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(
-            epostadresse = UserConstants.PERSON_EMAIL,
+            epostadresse = PERSON_EMAIL,
             kanVarsles = true,
             reservert = false,
-            mobiltelefonnummer = UserConstants.PERSON_TLF,
+            mobiltelefonnummer = PERSON_TLF,
             personident = ARBEIDSTAKER_FNR
         )
-        `when`(dkifConsumer.kontaktinformasjon(ArgumentMatchers.anyString())).thenReturn(digitalKontaktinfo)
+        `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
         val res: ResponseEntity<*> = kontaktinfoController.getKontaktinfo(ARBEIDSTAKER_FNR)
         val body = res.body as Kontaktinfo
@@ -120,13 +121,13 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(
-            epostadresse = UserConstants.PERSON_EMAIL,
+            epostadresse = PERSON_EMAIL,
             kanVarsles = false,
             reservert = false,
-            mobiltelefonnummer = UserConstants.PERSON_TLF,
+            mobiltelefonnummer = PERSON_TLF,
             personident = ARBEIDSTAKER_FNR
         )
-        `when`(dkifConsumer.kontaktinformasjon(ArgumentMatchers.anyString())).thenReturn(digitalKontaktinfo)
+        `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
         val res: ResponseEntity<*> = kontaktinfoController.getKontaktinfo(ARBEIDSTAKER_FNR)
         val body = res.body as Kontaktinfo
@@ -140,13 +141,13 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(
-            epostadresse = UserConstants.PERSON_EMAIL,
+            epostadresse = PERSON_EMAIL,
             kanVarsles = false,
             reservert = true,
-            mobiltelefonnummer = UserConstants.PERSON_TLF,
+            mobiltelefonnummer = PERSON_TLF,
             personident = ARBEIDSTAKER_FNR
         )
-        `when`(dkifConsumer.kontaktinformasjon(ArgumentMatchers.anyString())).thenReturn(digitalKontaktinfo)
+        `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
         val res: ResponseEntity<*> = kontaktinfoController.getKontaktinfo(ARBEIDSTAKER_FNR)
         val body = res.body as Kontaktinfo
@@ -160,13 +161,13 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(
-            epostadresse = UserConstants.PERSON_EMAIL,
+            epostadresse = PERSON_EMAIL,
             kanVarsles = true,
             reservert = true,
-            mobiltelefonnummer = UserConstants.PERSON_TLF,
+            mobiltelefonnummer = PERSON_TLF,
             personident = ARBEIDSTAKER_FNR
         )
-        `when`(dkifConsumer.kontaktinformasjon(ArgumentMatchers.anyString())).thenReturn(digitalKontaktinfo)
+        `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
         val res: ResponseEntity<*> = kontaktinfoController.getKontaktinfo(ARBEIDSTAKER_FNR)
         val body = res.body as Kontaktinfo
