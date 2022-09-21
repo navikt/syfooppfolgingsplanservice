@@ -4,11 +4,9 @@ package no.nav.syfo.api.v2.controller
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.PdfService
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
@@ -32,13 +30,9 @@ class DokumentControllerV2Test : AbstractRessursTilgangTest() {
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
-    @Before
-    fun setup() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
-    }
-
     @Test
     fun hent_pdf_som_bruker() {
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
         val oppfolgingsplanId = 1L
         val pdf = ByteArray(10)
         `when`(pdfService.hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(pdf)
@@ -50,7 +44,6 @@ class DokumentControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_hent_pdf() {
-        loggUtAlle(contextHolder)
         dokumentController.hentPdf(1)
     }
 }
