@@ -44,7 +44,7 @@ class NarmesteLedereControllerV3 @Inject constructor(
             .value
 
         return if (fodselsnummerInvalid(fnr)) {
-            LOG.error("Ugyldig Ident ved henting av nærmeste ledere")
+            LOG.error("Ugyldig fnr ved henting av nærmeste ledere")
             ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .build()
