@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @RestController
 @ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4"])
-@RequestMapping(value = ["/api/2/kommentar/actions/{id}"])
+@RequestMapping(value = ["/api/v2/kommentar/actions/{id}"])
 class KommentarControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val kommentarService: KommentarService,
