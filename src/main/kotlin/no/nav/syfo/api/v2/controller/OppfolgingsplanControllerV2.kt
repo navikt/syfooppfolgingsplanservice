@@ -89,7 +89,8 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         if (isPlanSharedWithNAV) {
             countShareWithNAVAtApproval()
         }
-        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, "tvungenGodkjenning" == status, isPlanSharedWithNAV)
+        val tvungenGodkjenning = status == "tvungenGodkjenning"
+        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, tvungenGodkjenning, isPlanSharedWithNAV)
         metrikk.tellHendelse("godkjenn_plan")
         return rsGyldighetstidspunkt
     }
@@ -97,7 +98,6 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     @PostMapping(path = ["/godkjennsist"], produces = [APPLICATION_JSON_VALUE])
     fun godkjenn(
         @PathVariable("id") id: Long,
-        @RequestParam("status") status: String,
         @RequestParam("aktoer") aktor: String,
         @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
     ): RSGyldighetstidspunkt {
@@ -108,7 +108,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         if (isPlanSharedWithNAV) {
             countShareWithNAVAtApproval()
         }
-        godkjenningService.godkjennOppfolgingsplan(id, null, innloggetIdent, "tvungengodkjenning" == status, isPlanSharedWithNAV)
+        godkjenningService.godkjennOppfolgingsplan(id, null, innloggetIdent, false, isPlanSharedWithNAV)
         metrikk.tellHendelse("godkjenn_plan_svar")
         return hentGyldighetstidspunktForPlan(id, aktor, innloggetIdent)
     }
