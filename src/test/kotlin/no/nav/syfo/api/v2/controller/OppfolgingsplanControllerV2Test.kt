@@ -171,7 +171,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     fun godkjennsist_plan_som_bruker() {
         val gyldighetstidspunkt = RSGyldighetstidspunkt()
         `when`(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, ARBEIDSTAKER, ARBEIDSTAKER_FNR)).thenReturn(gyldighetstidspunkt)
-        val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidstaker", null)
+        val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidstaker", null)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, ARBEIDSTAKER_FNR, false, false)
         verify(oppfolgingsplanService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, ARBEIDSTAKER, ARBEIDSTAKER_FNR)
         verify(metrikk).tellHendelse("godkjenn_plan_svar")
@@ -183,7 +183,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     fun godkjennsist_plan_som_bruker_del_med_nav() {
         val gyldighetstidspunkt = RSGyldighetstidspunkt()
         `when`(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, ARBEIDSTAKER, ARBEIDSTAKER_FNR)).thenReturn(gyldighetstidspunkt)
-        val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidstaker", true)
+        val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidstaker", true)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, ARBEIDSTAKER_FNR, false, true)
         verify(oppfolgingsplanService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, ARBEIDSTAKER, ARBEIDSTAKER_FNR)
         verify(metrikk).tellHendelse("godkjenn_plan_svar")
@@ -197,7 +197,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
         val gyldighetstidspunkt = RSGyldighetstidspunkt()
         `when`(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, ARBEIDSGIVER, LEDER_FNR)).thenReturn(gyldighetstidspunkt)
-        val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver", null)
+        val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidsgiver", null)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, false)
         verify(oppfolgingsplanService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, ARBEIDSGIVER, LEDER_FNR)
         verify(metrikk).tellHendelse("godkjenn_plan_svar")
@@ -211,7 +211,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
         val gyldighetstidspunkt = RSGyldighetstidspunkt()
         `when`(oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, ARBEIDSGIVER, LEDER_FNR)).thenReturn(gyldighetstidspunkt)
-        val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver", true)
+        val rsGyldighetstidspunkt = oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidsgiver", true)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, true)
         verify(oppfolgingsplanService).hentGyldighetstidspunktForGodkjentPlan(oppfolgingsplanId, ARBEIDSGIVER, LEDER_FNR)
         verify(metrikk).tellHendelse("godkjenn_plan_svar")
@@ -222,7 +222,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test(expected = RuntimeException::class)
     fun godkjennsist_plan_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
-        oppfolgingsplanController.godkjenn(oppfolgingsplanId, "true", "arbeidsgiver", null)
+        oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidsgiver", null)
     }
 
     @Test
