@@ -30,7 +30,6 @@ class DialogmeldingService(
     private val tokenDingsConsumer: TokenDingsConsumer,
 ) {
 
-    private val SEND_OPPFOLGINGSPLAN_PATH = "/api/person/v1/oppfolgingsplan"
     private val delMedFastlegeUriTemplate: UriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(dialogmeldingUrl)
         .path(SEND_OPPFOLGINGSPLAN_PATH)
     private val log = LoggerFactory.getLogger(DialogmeldingService::class.java)
@@ -94,5 +93,9 @@ class DialogmeldingService(
     private fun tellPlanDeltMedFastlegeKall(lps: Boolean, delt: Boolean) {
         if (lps) metrikk.tellHendelseMedTag("lps_plan_delt_med_fastlege", "delt", delt)
         metrikk.tellHendelseMedTag("plan_delt_med_fastlege", "delt", delt)
+    }
+
+    companion object {
+        const val SEND_OPPFOLGINGSPLAN_PATH = "/api/person/v1/oppfolgingsplan"
     }
 }
