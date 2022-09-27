@@ -58,7 +58,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/delmedfastlege"])
     fun delMedFastlege(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, "dev-gcp:plattformsikkerhet:debug-dings")
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.delMedFastlege(id, innloggetIdent)

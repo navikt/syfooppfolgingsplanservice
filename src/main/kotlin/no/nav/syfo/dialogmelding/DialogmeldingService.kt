@@ -39,6 +39,7 @@ class DialogmeldingService(
         val tilgangTilBrukerUriMedFnr = delMedFastlegeUriTemplate.build().toUri()
         val token = getSluttbrukerToken(contextHolder)
         val exchangedToken = tokenDingsConsumer.exchangeToken(token, dialogmeldingClientId)
+        log.info("Token: $token Exchangedtoken: $exchangedToken sendesTilFnr: $sendesTilFnr")
         try {
             kallUriMedTemplate(
                 tilgangTilBrukerUriMedFnr,
