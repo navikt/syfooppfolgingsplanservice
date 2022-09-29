@@ -164,4 +164,3 @@ spec:
       value: https://isdialogmelding.intern.nav.no
     - name: ISDIALOGMELDING_CLIENT_ID
       value: prod-gcp:teamsykefravr:isdialogmelding
-
