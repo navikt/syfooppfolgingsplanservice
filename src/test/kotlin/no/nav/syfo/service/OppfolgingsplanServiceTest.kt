@@ -176,16 +176,19 @@ class OppfolgingsplanServiceTest {
     @Test
     @Throws(Exception::class)
     fun delMedFastlege() {
+        val aktoerId = "aktoerId"
+        val fnr = "fnr"
         val oppfolgingsplan = Oppfolgingsplan()
-        oppfolgingsplan.arbeidstaker.aktoerId="fnr"
+        oppfolgingsplan.arbeidstaker.aktoerId(aktoerId)
         mockSvarFraSendOppfolgingsplanTilIsDialogmelding(HttpStatus.OK)
         Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(oppfolgingsplan)
-        val fnr = "123456789"
-        Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(ArgumentMatchers.anyString())).thenReturn(fnr)
+        Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(aktoerId)).thenReturn(fnr)
         Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.eq(fnr), ArgumentMatchers.any(Oppfolgingsplan::class.java))).thenReturn(true)
         Mockito.`when`(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(ArgumentMatchers.anyLong())).thenReturn(Optional.of(GodkjentPlan().dokumentUuid("dokumentUuid")))
         Mockito.`when`(dokumentDAO.hent(ArgumentMatchers.anyString())).thenReturn(byteArrayOf(0, 1, 2))
+
         oppfolgingsplanService.delMedFastlege(1L, fnr)
+
         Mockito.verify(godkjentplanDAO).delMedFastlege(1L)
         mockRestServiceServer.verify()
     }
