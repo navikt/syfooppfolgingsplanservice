@@ -15,7 +15,6 @@ import no.nav.syfo.testhelper.any
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
@@ -174,7 +173,6 @@ class OppfolgingsplanServiceTest {
         Mockito.verify(kommentarDAO).create(any())
     }
 
-    @Ignore
     @Test
     @Throws(Exception::class)
     fun delMedFastlege() {
@@ -192,7 +190,6 @@ class OppfolgingsplanServiceTest {
         mockRestServiceServer.verify()
     }
 
-    @Ignore
     @Test(expected = ForbiddenException::class)
     @Throws(Exception::class)
     fun delMedFastlegeIkkeTilgang() {
@@ -202,7 +199,6 @@ class OppfolgingsplanServiceTest {
         oppfolgingsplanService.delMedFastlege(1L, "fnr")
     }
 
-    @Ignore
     @Test(expected = RuntimeException::class)
     @Throws(Exception::class)
     fun delMedFastlegeFinnerIkkeGodkjentPlan() {
@@ -213,7 +209,6 @@ class OppfolgingsplanServiceTest {
         oppfolgingsplanService.delMedFastlege(1L, "fnr")
     }
 
-    @Ignore
     @Test(expected = RuntimeException::class)
     @Throws(Exception::class)
     fun delMedFastlegeFeilFraFastlegerest() {
