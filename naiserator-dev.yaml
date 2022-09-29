@@ -167,3 +167,5 @@ spec:
       value: https://isdialogmelding.dev.intern.nav.no
     - name: ISDIALOGMELDING_CLIENT_ID
       value: dev-gcp:teamsykefravr:isdialogmelding
+    - name: ISDIALOGMELDING_AAD_CLIENT_ID
+      value: dev-gcp.teamsykefravr.isdialogmelding

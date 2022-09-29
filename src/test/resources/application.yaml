@@ -114,3 +114,4 @@ ditt.sykefravaer.frontend.client.id: "localhost:flex:ditt-sykefravaer"
 
 isdialogmelding.url:  "https://isdialogmelding.localhost"
 isdialogmelding.client.id: "localhost:teamsykefravr:isdialogmelding"
+isdialogmelding.aad.client.id: "localhost.teamsykefravr.isdialogmelding"

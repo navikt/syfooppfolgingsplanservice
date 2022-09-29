@@ -1,6 +1,7 @@
 package no.nav.syfo.dialogmelding
 
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
+import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oidc.OIDCUtil.getSluttbrukerToken
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
@@ -24,14 +25,19 @@ class DialogmeldingService(
     @Value("\${isdialogmelding.url}") dialogmeldingUrl: String,
     @Value("\${isdialogmelding.client.id}")
     private val dialogmeldingClientId: String,
+    @Value("\${isdialogmelding.aad.client.id}")
+    private val dialogmeldingAadClientId: String,
     private val metrikk: Metrikk,
     private val contextHolder: TokenValidationContextHolder,
     private val restTemplate: RestTemplate,
     private val tokenDingsConsumer: TokenDingsConsumer,
+    private val azureAdV2TokenConsumer: AzureAdV2TokenConsumer,
 ) {
 
     private val delMedFastlegeUriTemplate: UriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(dialogmeldingUrl)
         .path(SEND_OPPFOLGINGSPLAN_PATH)
+    private val delLPSMedFastlegeUriTemplate: UriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(dialogmeldingUrl)
+        .path(SEND_OPPFOLGINGSPLAN_LPS_PATH)
     private val log = LoggerFactory.getLogger(DialogmeldingService::class.java)
 
     fun sendOppfolgingsplanTilFastlege(sykmeldtFnr: String, pdf: ByteArray) {
@@ -50,6 +56,18 @@ class DialogmeldingService(
             log.warn("Fanget OppslagFeiletException: {}", e.message)
             throw e
         }
+    }
+
+    fun sendOppfolgingsplanLPSTilFastlege(sendesTilFnr: String, pdf: ByteArray) {
+        val rsOppfoelgingsplan = RSOppfoelgingsplan(sendesTilFnr, pdf)
+        val tilgangTilBrukerUriMedFnr = delLPSMedFastlegeUriTemplate.build().toUri()
+        val token = azureAdV2TokenConsumer.getSystemToken(dialogmeldingAadClientId)
+        kallUriMedTemplate(
+            tilgangTilBrukerUriMedFnr,
+            rsOppfoelgingsplan,
+            token,
+            true
+        )
     }
 
     private fun kallUriMedTemplate(uri: URI, rsOppfoelgingsplan: RSOppfoelgingsplan, token: String, lps: Boolean) {
@@ -97,5 +115,6 @@ class DialogmeldingService(
 
     companion object {
         const val SEND_OPPFOLGINGSPLAN_PATH = "/api/person/v1/oppfolgingsplan"
+        const val SEND_OPPFOLGINGSPLAN_LPS_PATH = "/api/v2/send/oppfolgingsplan"
     }
 }
