@@ -44,9 +44,9 @@ fun Oppfolgingsplan.toArbeidstaker() =
 fun Oppfolgingsplan.toArbeidsgiver() =
     Arbeidsgiver(
         narmesteLeder = NarmesteLeder(
-            sistInnlogget = arbeidstaker.sistInnlogget,
+            sistInnlogget = arbeidsgiver.sistInnlogget,
             evaluering = if (godkjentPlan != null) Evaluering() else null,
-            samtykke = arbeidstaker.samtykke,
+            samtykke = arbeidsgiver.samtykke,
         )
     )
 
