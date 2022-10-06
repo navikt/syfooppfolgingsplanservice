@@ -12,7 +12,7 @@ data class NarmesteLeder(
     val fnr: String? = null,
     val epost: String? = null,
     val tlf: String? = null,
-    val sistInnlogget: LocalDateTime,
-    val samtykke: Boolean,
-    val evaluering: Evaluering?,
+    val sistInnlogget: LocalDateTime? = null,
+    val samtykke: Boolean? = null,
+    val evaluering: Evaluering? = null,
 )
