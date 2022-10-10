@@ -268,15 +268,15 @@ public class OppfolgingsplanService {
 
         throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
 
-        String sendesTilAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
-        String sendesTilFnr = aktorregisterConsumer.hentFnrForAktor(sendesTilAktoerId);
+        String arbeidstakerAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
+        String arbeidstakerFnr = aktorregisterConsumer.hentFnrForAktor(arbeidstakerAktoerId);
 
         byte[] pdf = godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingsplanId)
                 .map(GodkjentPlan::dokumentUuid)
                 .map(dokumentDAO::hent)
                 .orElseThrow(() -> new RuntimeException("Finner ikke pdf for oppfølgingsplan med id " + oppfolgingsplanId));
 
-        dialogmeldingService.sendOppfolgingsplanTilFastlege(sendesTilFnr, pdf);
+        dialogmeldingService.sendOppfolgingsplanTilFastlege(arbeidstakerFnr, pdf);
 
         godkjentplanDAO.delMedFastlege(oppfolgingsplanId);
     }

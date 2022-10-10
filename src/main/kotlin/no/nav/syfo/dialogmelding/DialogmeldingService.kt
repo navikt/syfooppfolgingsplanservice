@@ -34,8 +34,8 @@ class DialogmeldingService(
         .path(SEND_OPPFOLGINGSPLAN_PATH)
     private val log = LoggerFactory.getLogger(DialogmeldingService::class.java)
 
-    fun sendOppfolgingsplanTilFastlege(sendesTilFnr: String, pdf: ByteArray) {
-        val rsOppfoelgingsplan = RSOppfoelgingsplan(sendesTilFnr, pdf)
+    fun sendOppfolgingsplanTilFastlege(sykmeldtFnr: String, pdf: ByteArray) {
+        val rsOppfoelgingsplan = RSOppfoelgingsplan(sykmeldtFnr, pdf)
         val tilgangTilBrukerUriMedFnr = delMedFastlegeUriTemplate.build().toUri()
         val token = getSluttbrukerToken(contextHolder)
         val exchangedToken = tokenDingsConsumer.exchangeToken(token, dialogmeldingClientId)
