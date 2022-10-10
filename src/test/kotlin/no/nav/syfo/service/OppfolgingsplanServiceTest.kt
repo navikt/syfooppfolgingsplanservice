@@ -3,24 +3,28 @@ package no.nav.syfo.service
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.LocalApplication
 import no.nav.syfo.aktorregister.AktorregisterConsumer
+import no.nav.syfo.dialogmelding.DialogmeldingService
 import no.nav.syfo.domain.*
 import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
-import no.nav.syfo.oidc.OIDCIssuer
 import no.nav.syfo.repository.dao.*
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.any
-import org.junit.*
+import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.*
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.client.ExpectedCount
@@ -73,14 +77,16 @@ class OppfolgingsplanServiceTest {
     @MockBean
     private lateinit var godkjenningerDAO: GodkjenningerDAO
 
-    @Value("\${fastlege.dialogmelding.api}")
-    private lateinit var fastlegerestUrl: String
+    @MockBean
+    lateinit var tokenDingsConsumer: TokenDingsConsumer
+
+    @Value("\${isdialogmelding.url}")
+    private lateinit var isdialogmeldingUrl: String
 
     @Inject
     lateinit var contextHolder: TokenValidationContextHolder
 
     @Inject
-    @Qualifier("scheduler")
     private lateinit var restTemplate: RestTemplate
     private lateinit var mockRestServiceServer: MockRestServiceServer
 
@@ -170,13 +176,19 @@ class OppfolgingsplanServiceTest {
     @Test
     @Throws(Exception::class)
     fun delMedFastlege() {
-        mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.OK)
-        Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(Oppfolgingsplan())
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("aktoerId")
-        Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.eq("fnr"), ArgumentMatchers.any(Oppfolgingsplan::class.java))).thenReturn(true)
+        val aktoerId = "aktoerId"
+        val fnr = "fnr"
+        val oppfolgingsplan = Oppfolgingsplan()
+        oppfolgingsplan.arbeidstaker.aktoerId(aktoerId)
+        mockSvarFraSendOppfolgingsplanTilIsDialogmelding(HttpStatus.OK)
+        Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(oppfolgingsplan)
+        Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(aktoerId)).thenReturn(fnr)
+        Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.eq(fnr), ArgumentMatchers.any(Oppfolgingsplan::class.java))).thenReturn(true)
         Mockito.`when`(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(ArgumentMatchers.anyLong())).thenReturn(Optional.of(GodkjentPlan().dokumentUuid("dokumentUuid")))
         Mockito.`when`(dokumentDAO.hent(ArgumentMatchers.anyString())).thenReturn(byteArrayOf(0, 1, 2))
-        oppfolgingsplanService.delMedFastlege(1L, "fnr")
+
+        oppfolgingsplanService.delMedFastlege(1L, fnr)
+
         Mockito.verify(godkjentplanDAO).delMedFastlege(1L)
         mockRestServiceServer.verify()
     }
@@ -203,7 +215,7 @@ class OppfolgingsplanServiceTest {
     @Test(expected = RuntimeException::class)
     @Throws(Exception::class)
     fun delMedFastlegeFeilFraFastlegerest() {
-        mockSvarFraSendOppfolgingsplanTilFastlegerest(HttpStatus.INTERNAL_SERVER_ERROR)
+        mockSvarFraSendOppfolgingsplanTilIsDialogmelding(HttpStatus.INTERNAL_SERVER_ERROR)
         Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(Oppfolgingsplan())
         Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("aktoerId")
         Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.eq("fnr"), ArgumentMatchers.any(Oppfolgingsplan::class.java))).thenReturn(true)
@@ -213,14 +225,15 @@ class OppfolgingsplanServiceTest {
         mockRestServiceServer.verify()
     }
 
-    fun mockSvarFraSendOppfolgingsplanTilFastlegerest(status: HttpStatus) {
-        val uriString = UriComponentsBuilder.fromHttpUrl(fastlegerestUrl)
-            .path(FastlegeService.SEND_OPPFOLGINGSPLAN_PATH)
+    fun mockSvarFraSendOppfolgingsplanTilIsDialogmelding(status: HttpStatus) {
+        val token = "token"
+        Mockito.`when`(tokenDingsConsumer.exchangeToken(ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(token)
+        val uriString = UriComponentsBuilder.fromHttpUrl(isdialogmeldingUrl)
+            .path(DialogmeldingService.SEND_OPPFOLGINGSPLAN_PATH)
             .toUriString()
-        val idToken = contextHolder.tokenValidationContext.getJwtToken(OIDCIssuer.EKSTERN).tokenAsString
         mockRestServiceServer.expect(ExpectedCount.manyTimes(), MockRestRequestMatchers.requestTo(uriString))
             .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
-            .andExpect(MockRestRequestMatchers.header(HttpHeaders.AUTHORIZATION, "Bearer $idToken"))
+            .andExpect(MockRestRequestMatchers.header(HttpHeaders.AUTHORIZATION, "Bearer $token"))
             .andRespond(MockRestResponseCreators.withStatus(status))
     }
 }

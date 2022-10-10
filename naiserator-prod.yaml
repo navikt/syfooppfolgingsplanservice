@@ -160,3 +160,7 @@ spec:
       value: prod-gcp:team-esyfo:oppfolgingsplan-frontend
     - name: DITT_SYKEFRAVAER_FRONTEND_CLIENT_ID
       value: prod-gcp:flex:ditt-sykefravaer
+    - name: ISDIALOGMELDING_URL
+      value: https://isdialogmelding.intern.nav.no
+    - name: ISDIALOGMELDING_CLIENT_ID
+      value: prod-gcp:teamsykefravr:isdialogmelding
