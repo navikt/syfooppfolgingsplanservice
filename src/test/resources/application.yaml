@@ -74,9 +74,6 @@ client.secret: clientSecret
 
 dev: true
 
-fastlege.dialogmelding.client.id: "fastlegerestclientid"
-fastlege.dialogmelding.api: "https://app-q.adeo.no/fastlegerest/api"
-
 syfotilgangskontroll.client.id: "syfotilgangskontrollId"
 tilgangskontrollapi.url: "https://www.ikke.no"
 
