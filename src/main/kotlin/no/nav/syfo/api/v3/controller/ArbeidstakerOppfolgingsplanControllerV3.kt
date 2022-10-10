@@ -21,7 +21,7 @@ import javax.inject.Inject
 @RestController
 @ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4"])
 @RequestMapping(value = ["/api/v3/arbeidstaker/oppfolgingsplaner"])
-class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
+class ArbeidstakerOppfolgingsplanControllerV3 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val oppfolgingsplanService: OppfolgingsplanService,
     private val metrikk: Metrikk,
