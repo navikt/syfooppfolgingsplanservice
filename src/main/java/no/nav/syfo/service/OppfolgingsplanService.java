@@ -2,6 +2,7 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.*;
+import no.nav.syfo.dialogmelding.DialogmeldingService;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Ansatt;
 import no.nav.syfo.model.Naermesteleder;
@@ -51,6 +52,8 @@ public class OppfolgingsplanService {
 
     private FastlegeService fastlegeService;
 
+    private DialogmeldingService dialogmeldingService;
+
     private ServiceVarselService serviceVarselService;
 
     private NarmesteLederVarselService narmesteLederVarselService;
@@ -74,6 +77,7 @@ public class OppfolgingsplanService {
             TiltakDAO tiltakDAO,
             AktorregisterConsumer aktorregisterConsumer,
             FastlegeService fastlegeService,
+            DialogmeldingService dialogmeldingService,
             NarmesteLederConsumer narmesteLederConsumer,
             PdlConsumer pdlConsumer,
             ServiceVarselService serviceVarselService,
@@ -89,6 +93,7 @@ public class OppfolgingsplanService {
         this.tiltakDAO = tiltakDAO;
         this.aktorregisterConsumer = aktorregisterConsumer;
         this.fastlegeService = fastlegeService;
+        this.dialogmeldingService = dialogmeldingService;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.pdlConsumer = pdlConsumer;
         this.serviceVarselService = serviceVarselService;
@@ -263,15 +268,15 @@ public class OppfolgingsplanService {
 
         throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
 
-        String sendesTilAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
-        String sendesTilFnr = aktorregisterConsumer.hentFnrForAktor(sendesTilAktoerId);
+        String arbeidstakerAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
+        String arbeidstakerFnr = aktorregisterConsumer.hentFnrForAktor(arbeidstakerAktoerId);
 
         byte[] pdf = godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingsplanId)
                 .map(GodkjentPlan::dokumentUuid)
                 .map(dokumentDAO::hent)
                 .orElseThrow(() -> new RuntimeException("Finner ikke pdf for oppfølgingsplan med id " + oppfolgingsplanId));
 
-        fastlegeService.sendOppfolgingsplan(sendesTilFnr, pdf);
+        dialogmeldingService.sendOppfolgingsplanTilFastlege(arbeidstakerFnr, pdf);
 
         godkjentplanDAO.delMedFastlege(oppfolgingsplanId);
     }
