@@ -5,6 +5,8 @@ import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.model.Sykmelding
+import no.nav.syfo.api.v2.domain.sykmelding.SykmeldingV2
+import no.nav.syfo.api.v2.domain.sykmelding.toSykmeldingV2
 import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
 import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer
 import no.nav.syfo.tokenx.TokenXUtil
@@ -35,7 +37,7 @@ class ArbeidstakerSykmeldingerControllerV2 @Inject constructor(
 ) {
     @ResponseBody
     @GetMapping
-    fun getSendteSykmeldinger(@RequestParam(required = false) today: String?): ResponseEntity<List<Sykmelding>> {
+    fun getSendteSykmeldinger(@RequestParam(required = false) today: String?): ResponseEntity<List<SykmeldingV2>> {
         metrikk.tellHendelse("get_sykmeldinger")
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
@@ -47,14 +49,11 @@ class ArbeidstakerSykmeldingerControllerV2 @Inject constructor(
         val oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent)
         val isTodayPresent = today.toBoolean()
         val sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, bearerToken, isTodayPresent)
-        return sendteSykmeldinger.map { sykmeldinger: List<Sykmelding> ->
-            ResponseEntity
+            .map { sykmeldinger: List<Sykmelding> -> sykmeldinger.map { it.toSykmeldingV2() } }
+            .orElseGet { emptyList() }
+
+        return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(sykmeldinger)
-        }.orElseGet {
-            ResponseEntity
-                .status(HttpStatus.OK)
-                .body(java.util.List.of())
-        }
+                .body(sendteSykmeldinger)
     }
 }
