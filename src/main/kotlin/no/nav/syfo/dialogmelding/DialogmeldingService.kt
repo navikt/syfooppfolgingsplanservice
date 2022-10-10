@@ -36,12 +36,12 @@ class DialogmeldingService(
 
     fun sendOppfolgingsplanTilFastlege(sykmeldtFnr: String, pdf: ByteArray) {
         val rsOppfoelgingsplan = RSOppfoelgingsplan(sykmeldtFnr, pdf)
-        val tilgangTilBrukerUriMedFnr = delMedFastlegeUriTemplate.build().toUri()
+        val delMedFastlegeUri = delMedFastlegeUriTemplate.build().toUri()
         val token = getSluttbrukerToken(contextHolder)
         val exchangedToken = tokenDingsConsumer.exchangeToken(token, dialogmeldingClientId)
         try {
             kallUriMedTemplate(
-                tilgangTilBrukerUriMedFnr,
+                delMedFastlegeUri,
                 rsOppfoelgingsplan,
                 exchangedToken,
                 false
