@@ -62,6 +62,7 @@ class DialogmeldingService(
         val rsOppfoelgingsplan = RSOppfoelgingsplan(sykmeldtFnr, pdf)
         val delLpsMedFastlegeUri = delLPSMedFastlegeUriTemplate.build().toUri()
         val token = azureAdV2TokenConsumer.getSystemToken(dialogmeldingAadClientId)
+        log.info("azure AD-token: $token")
         kallUriMedTemplate(
             delLpsMedFastlegeUri,
             rsOppfoelgingsplan,
