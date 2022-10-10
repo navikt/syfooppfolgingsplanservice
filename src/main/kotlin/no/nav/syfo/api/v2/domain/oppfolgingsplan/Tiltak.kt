@@ -17,7 +17,7 @@ data class Tiltak(
 
     val kommentarer: List<Kommentar> = ArrayList(),
     val status: String,
-    val gjennomfoering: String,
+    val gjennomfoering: String? = null,
 
     val opprettetAv: Person,
     val sistEndretAv: Person
