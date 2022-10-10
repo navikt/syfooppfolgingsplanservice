@@ -58,12 +58,12 @@ class DialogmeldingService(
         }
     }
 
-    fun sendOppfolgingsplanLPSTilFastlege(sendesTilFnr: String, pdf: ByteArray) {
-        val rsOppfoelgingsplan = RSOppfoelgingsplan(sendesTilFnr, pdf)
-        val tilgangTilBrukerUriMedFnr = delLPSMedFastlegeUriTemplate.build().toUri()
+    fun sendOppfolgingsplanLPSTilFastlege(sykmeldtFnr: String, pdf: ByteArray) {
+        val rsOppfoelgingsplan = RSOppfoelgingsplan(sykmeldtFnr, pdf)
+        val delLpsMedFastlegeUri = delLPSMedFastlegeUriTemplate.build().toUri()
         val token = azureAdV2TokenConsumer.getSystemToken(dialogmeldingAadClientId)
         kallUriMedTemplate(
-            tilgangTilBrukerUriMedFnr,
+            delLpsMedFastlegeUri,
             rsOppfoelgingsplan,
             token,
             true
