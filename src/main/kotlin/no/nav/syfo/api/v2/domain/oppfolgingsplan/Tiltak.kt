@@ -10,7 +10,7 @@ data class Tiltak(
     val fom: LocalDate,
     val tom: LocalDate,
     val beskrivelse: String?,
-    val beskrivelseIkkeAktuelt: String,
+    val beskrivelseIkkeAktuelt: String? = null,
 
     val opprettetDato: LocalDateTime,
     val sistEndretDato: LocalDateTime,
@@ -20,5 +20,5 @@ data class Tiltak(
     val gjennomfoering: String,
 
     val opprettetAv: Person,
-    val sistEndretAv: Person,
+    val sistEndretAv: Person
 )
