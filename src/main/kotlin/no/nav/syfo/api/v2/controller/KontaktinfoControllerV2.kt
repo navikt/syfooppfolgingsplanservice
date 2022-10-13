@@ -3,7 +3,7 @@ package no.nav.syfo.api.v2.controller
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.api.v2.domain.Kontaktinfo
-import no.nav.syfo.api.v2.util.fodselsnummerInvalid
+import no.nav.syfo.api.util.fodselsnummerInvalid
 import no.nav.syfo.dkif.DigitalKontaktinfo
 import no.nav.syfo.dkif.DkifConsumer
 import no.nav.syfo.oidc.OIDCIssuer

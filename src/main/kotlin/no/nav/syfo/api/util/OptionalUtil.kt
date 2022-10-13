@@ -1,4 +1,4 @@
-package no.nav.syfo.api.v2.util
+package no.nav.syfo.api.util
 
 import java.util.*
 
