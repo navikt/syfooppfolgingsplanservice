@@ -10,6 +10,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import generated.DataBatch
 import no.nav.helse.op2016.Oppfoelgingsplan4UtfyllendeInfoM
 import no.nav.helse.op2016.Skjemainnhold
+import no.nav.syfo.dialogmelding.DialogmeldingService
 import no.nav.syfo.domain.*
 import no.nav.syfo.lps.database.*
 import no.nav.syfo.lps.kafka.OppfolgingsplanLPSNAVProducer
@@ -41,7 +42,7 @@ val xmlMapper: ObjectMapper = XmlMapper(JacksonXmlModule().apply {
 
 @Repository
 class OppfolgingsplanLPSService @Inject constructor(
-    private val fastlegeService: FastlegeService,
+    private val dialogmeldingService: DialogmeldingService,
     private val journalforOPService: JournalforOPService,
     private val oppfolgingsplanLPSNAVProducer: OppfolgingsplanLPSNAVProducer,
     private val metrikk: Metrikk,
@@ -216,7 +217,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         try_num: Int
     ) {
         try {
-            fastlegeService.sendOppfolgingsplanLPS(fnr, pdf)
+            dialogmeldingService.sendOppfolgingsplanLPSTilFastlege(fnr, pdf)
             oppfolgingsplanLPSDAO.updateSharedWithFastlege(oppfolgingsplanId)
             if (try_num > 0) {
                 metrikk.tellHendelse("lps_plan_delt_etter_feilet_sending")

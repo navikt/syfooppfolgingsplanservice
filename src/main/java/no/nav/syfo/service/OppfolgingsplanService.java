@@ -50,8 +50,6 @@ public class OppfolgingsplanService {
 
     private AktorregisterConsumer aktorregisterConsumer;
 
-    private FastlegeService fastlegeService;
-
     private DialogmeldingService dialogmeldingService;
 
     private ServiceVarselService serviceVarselService;
@@ -76,7 +74,6 @@ public class OppfolgingsplanService {
             OppfolgingsplanDAO oppfolgingsplanDAO,
             TiltakDAO tiltakDAO,
             AktorregisterConsumer aktorregisterConsumer,
-            FastlegeService fastlegeService,
             DialogmeldingService dialogmeldingService,
             NarmesteLederConsumer narmesteLederConsumer,
             PdlConsumer pdlConsumer,
@@ -92,7 +89,6 @@ public class OppfolgingsplanService {
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.tiltakDAO = tiltakDAO;
         this.aktorregisterConsumer = aktorregisterConsumer;
-        this.fastlegeService = fastlegeService;
         this.dialogmeldingService = dialogmeldingService;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.pdlConsumer = pdlConsumer;
