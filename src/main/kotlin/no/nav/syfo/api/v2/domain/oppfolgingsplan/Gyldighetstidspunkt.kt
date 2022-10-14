@@ -5,5 +5,5 @@ import java.time.LocalDate
 data class Gyldighetstidspunkt(
     val fom: LocalDate?,
     val tom: LocalDate?,
-    val evalueres: LocalDate
+    val evalueres: LocalDate?
 )
