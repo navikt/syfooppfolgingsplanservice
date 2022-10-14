@@ -4,6 +4,8 @@ package no.nav.syfo.api.v2.controller
 import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.selvbetjening.controller.ArbeidstakerSykmeldingerControllerV2
+import no.nav.syfo.api.v2.domain.sykmelding.SykmeldingV2
+import no.nav.syfo.api.v2.domain.sykmelding.toSykmeldingV2
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.Organisasjonsinformasjon
 import no.nav.syfo.model.Sykmelding
@@ -74,8 +76,10 @@ class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger("false")
         val body = res.body as List<*>
 
+        val sendteSykmeldingerV2 = sendteSykmeldinger.map { it.toSykmeldingV2() }
+
         assertEquals(200, res.statusCodeValue.toLong())
-        assertEquals(sendteSykmeldinger, body)
+        assertEquals(sendteSykmeldingerV2, body)
     }
 
     @Test
@@ -85,7 +89,9 @@ class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
             .thenReturn(Optional.empty())
 
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger("false")
+        val body = res.body as List<*>
 
         assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(emptyList<SykmeldingV2>(), body)
     }
 }

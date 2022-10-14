@@ -3,7 +3,7 @@ package no.nav.syfo.api.v3.controller
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.api.v2.domain.Person
-import no.nav.syfo.api.v2.util.fodselsnummerInvalid
+import no.nav.syfo.api.util.fodselsnummerInvalid
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.pdl.fullName
 import no.nav.syfo.service.BrukertilgangService
