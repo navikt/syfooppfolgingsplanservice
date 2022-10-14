@@ -1,4 +1,4 @@
-package no.nav.syfo.api.v3.domain.oppfolgingsplan
+package no.nav.syfo.api.v2.domain.oppfolgingsplan
 
 enum class Status {
     AVBRUTT,

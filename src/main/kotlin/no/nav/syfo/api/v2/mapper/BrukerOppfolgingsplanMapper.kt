@@ -1,11 +1,11 @@
-package no.nav.syfo.api.v3.mapper
+package no.nav.syfo.api.v2.mapper
 
 import no.nav.syfo.aktorregister.AktorregisterConsumer.aktorregisterConsumer
 import no.nav.syfo.api.util.unwrap
 import no.nav.syfo.api.v2.domain.Virksomhet
-import no.nav.syfo.api.v3.domain.oppfolgingsplan.*
-import no.nav.syfo.api.v3.domain.oppfolgingsplan.Person
-import no.nav.syfo.api.v3.domain.oppfolgingsplan.Status.*
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.*
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.Person
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.Status.*
 import no.nav.syfo.domain.*
 import no.nav.syfo.domain.Arbeidsoppgave
 import no.nav.syfo.domain.Gjennomfoering
@@ -64,7 +64,7 @@ fun Oppfolgingsplan.getStatus(): Status {
 }
 
 fun GodkjentPlan.toGodkjentPlan() =
-    no.nav.syfo.api.v3.domain.oppfolgingsplan.GodkjentPlan(
+    no.nav.syfo.api.v2.domain.oppfolgingsplan.GodkjentPlan(
         avbruttPlan = avbruttPlan.unwrap()?.toAvbruttPlan(),
         deltMedNAV = deltMedNAV,
         deltMedNAVTidspunkt = deltMedNAVTidspunkt,
@@ -83,7 +83,7 @@ fun Avbruttplan.toAvbruttPlan() =
     )
 
 fun Godkjenning.toGodkjenning() =
-    no.nav.syfo.api.v3.domain.oppfolgingsplan.Godkjenning(
+    no.nav.syfo.api.v2.domain.oppfolgingsplan.Godkjenning(
         beskrivelse = beskrivelse,
         godkjent = godkjent,
         delMedNav = delMedNav,
@@ -93,14 +93,14 @@ fun Godkjenning.toGodkjenning() =
     )
 
 fun Gyldighetstidspunkt.toGyldighetstidspunkt() =
-    no.nav.syfo.api.v3.domain.oppfolgingsplan.Gyldighetstidspunkt(
+    no.nav.syfo.api.v2.domain.oppfolgingsplan.Gyldighetstidspunkt(
         fom = fom,
         tom = tom,
         evalueres = evalueres
     )
 
 fun Tiltak.toTiltak() =
-    no.nav.syfo.api.v3.domain.oppfolgingsplan.Tiltak(
+    no.nav.syfo.api.v2.domain.oppfolgingsplan.Tiltak(
         tiltakId = id,
         tiltaknavn = navn,
         beskrivelse = beskrivelse,
@@ -117,7 +117,7 @@ fun Tiltak.toTiltak() =
     )
 
 fun Kommentar.toKommentar() =
-    no.nav.syfo.api.v3.domain.oppfolgingsplan.Kommentar(
+    no.nav.syfo.api.v2.domain.oppfolgingsplan.Kommentar(
         id = id,
         tekst = tekst,
         opprettetAv = Person(fnr = aktorregisterConsumer().hentFnrForAktor(opprettetAvAktoerId)),
@@ -127,7 +127,7 @@ fun Kommentar.toKommentar() =
     )
 
 fun Arbeidsoppgave.toArbeidsoppgave() =
-    no.nav.syfo.api.v3.domain.oppfolgingsplan.Arbeidsoppgave(
+    no.nav.syfo.api.v2.domain.oppfolgingsplan.Arbeidsoppgave(
         arbeidsoppgaveId = id,
         arbeidsoppgavenavn = navn,
         erVurdertAvSykmeldt = erVurdertAvSykmeldt,
@@ -140,13 +140,13 @@ fun Arbeidsoppgave.toArbeidsoppgave() =
 
 fun Gjennomfoering.toGjennomfoering() =
     when (gjennomfoeringStatus) {
-        KAN.name -> no.nav.syfo.api.v3.domain.oppfolgingsplan.Gjennomfoering(kanGjennomfoeres = KAN.name)
-        KAN_IKKE.name -> no.nav.syfo.api.v3.domain.oppfolgingsplan.Gjennomfoering(
+        KAN.name -> no.nav.syfo.api.v2.domain.oppfolgingsplan.Gjennomfoering(kanGjennomfoeres = KAN.name)
+        KAN_IKKE.name -> no.nav.syfo.api.v2.domain.oppfolgingsplan.Gjennomfoering(
             kanGjennomfoeres = KAN_IKKE.name,
             kanIkkeBeskrivelse = kanIkkeBeskrivelse
         )
 
-        TILRETTELEGGING.name -> no.nav.syfo.api.v3.domain.oppfolgingsplan.Gjennomfoering(
+        TILRETTELEGGING.name -> no.nav.syfo.api.v2.domain.oppfolgingsplan.Gjennomfoering(
             kanGjennomfoeres = TILRETTELEGGING.name,
             kanBeskrivelse = kanBeskrivelse,
             paaAnnetSted = paaAnnetSted,

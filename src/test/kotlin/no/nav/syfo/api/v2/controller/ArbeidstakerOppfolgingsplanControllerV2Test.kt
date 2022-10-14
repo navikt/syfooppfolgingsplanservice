@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import javax.inject.Inject
 
-class ArbeidstakerOppfolgingsplanControllerV3Test : AbstractRessursTilgangTest() {
+class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var oppfolgingsplanService: OppfolgingsplanService
 
@@ -26,7 +26,7 @@ class ArbeidstakerOppfolgingsplanControllerV3Test : AbstractRessursTilgangTest()
     lateinit var metrikk: Metrikk
 
     @Inject
-    private lateinit var arbeidstakerOppfolgingsplanController: ArbeidstakerOppfolgingsplanControllerV3
+    private lateinit var arbeidstakerOppfolgingsplanController: ArbeidstakerOppfolgingsplanControllerV2
 
     @Value("\${tokenx.idp}")
     private lateinit var tokenxIdp: String
