@@ -7,8 +7,8 @@ data class Tiltak(
     val tiltakId: Long,
     val tiltaknavn: String,
     val knyttetTilArbeidsoppgaveId: Long? = null,
-    val fom: LocalDate,
-    val tom: LocalDate,
+    val fom: LocalDate?,
+    val tom: LocalDate?,
     val beskrivelse: String?,
     val beskrivelseIkkeAktuelt: String? = null,
 
