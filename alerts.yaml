@@ -27,7 +27,7 @@ spec:
       expr: (100 * (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", status=~"^4\\d\\d", service="syfooppfolgingsplanservice"}[5m]))) / (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", service="syfooppfolgingsplanservice"}[5m])))) > 10
       for: 5m
       description: "syfooppfolgingsplanservice har en høy andel 400 feil"
-      action: "Sjekk i Grafana eller logger hvorfro syfooppfolgingsplanservice returnerer mange 400-feil"
+      action: "Sjekk i Grafana eller logger hvorfor syfooppfolgingsplanservice returnerer mange 400-feil"
       severity: warning
     - alert: ALTINN KAFKA OPPFOLGINGSPLAN CONSUMER LAG
       expr: kafka_consumergroup_group_topic_sum_lag{topic="aapen-altinn-oppfolgingsplan-Mottatt", group="kafka2jms-oppfolgingsplan"} > 0
