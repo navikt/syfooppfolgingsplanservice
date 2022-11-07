@@ -15,7 +15,7 @@ spec:
       expr: up{app="syfooppfolgingsplanservice", job="kubernetes-pods"} == 0
       for: 5m
       description: "syfooppfolgingsplanservice er nede"
-      action: "Undersøk hvofor syfooppfolgingsplanservice er nede"
+      action: "Undersøk hvorfor syfooppfolgingsplanservice er nede"
       severity: danger
     - alert: HIGH RATIO OF HTTP 5XX RESPONSE
       expr: (100 * (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", status=~"^5\\d\\d", service="syfooppfolgingsplanservice"}[5m]))) / (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", service="syfooppfolgingsplanservice"}[5m])))) > 2
