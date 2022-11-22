@@ -131,7 +131,7 @@ spec:
     - name: AKTORREGISTER_REST_URL
       value: https://app.adeo.no/aktoerregister/api/v1
     - name: AAREG_SERVICES_URL
-      value: https://modapp.adeo.no/aareg-services/api
+      value: https://aareg-services.intern.nav.no/api
     - name: EREG_BASEURL
       value: https://modapp.adeo.no
     - name: SYFOBRUKERTILGANG_URL
