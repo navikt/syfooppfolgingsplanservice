@@ -95,7 +95,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         return rsGyldighetstidspunkt
     }
 
-    @PostMapping(path = ["/godkjennsist"], produces = [APPLICATION_JSON_VALUE])
+    @PostMapping(path = ["/godkjennsist"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun godkjenn(
         @PathVariable("id") id: Long,
         @RequestParam("aktoer") aktor: String,
