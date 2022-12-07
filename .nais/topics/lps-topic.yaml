@@ -13,7 +13,7 @@ spec:
     partitions: 1
     replication: 3
     retentionBytes: -1  # Messages will never be deleted because of disk space
-    retentionHours: -1  # Messages will never be timed out
+    retentionHours: -1  # Messages will never be timed  out
   acl:
     - team: team-esyfo
       application: syfooppfolgingsplanservice
