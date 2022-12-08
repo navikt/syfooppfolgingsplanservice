@@ -1,7 +1,6 @@
 package no.nav.syfo.lps.kafka
 
 import no.nav.syfo.kafka.AivenKafkaConfig
-import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.annotation.EnableKafka
