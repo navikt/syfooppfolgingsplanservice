@@ -15,7 +15,6 @@ object Versions {
     const val tokenTestSupportVersion = "2.0.5"
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.5d21db9"
-    const val syfoOppfolgingsplanSchemaVersion = "1.0.2"
     const val syfotjenesterVersion = "1.2020.07.02-07.44-62078cd74f7e"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
     const val altinnKanalSchemasVersion = "1.0.1"
@@ -64,13 +63,6 @@ repositories {
     maven(url = "https://packages.confluent.io/maven/")
     maven {
         url = uri("https://maven.pkg.github.com/navikt/syfo-xml-codegen")
-        credentials {
-            username = githubUser
-            password = githubPassword
-        }
-    }
-    maven {
-        url = uri("https://maven.pkg.github.com/navikt/syfoopservice-schema")
         credentials {
             username = githubUser
             password = githubPassword
@@ -139,7 +131,6 @@ dependencies {
 
     implementation("no.nav.helse.xml:oppfolgingsplan:${Versions.helseXmlVersion}")
 
-    implementation("no.nav.syfo.oppfolgingsplan.avro:syfoopservice-schema:${Versions.syfoOppfolgingsplanSchemaVersion}")
     implementation("no.nav.syfotjenester:oppfolgingsplanlps:${Versions.syfotjenesterVersion}")
     implementation("no.nav.altinnkanal.avro:altinnkanal-schemas:${Versions.altinnKanalSchemasVersion}")
 

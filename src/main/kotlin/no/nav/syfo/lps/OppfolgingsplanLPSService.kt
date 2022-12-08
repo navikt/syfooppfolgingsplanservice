@@ -13,9 +13,9 @@ import no.nav.helse.op2016.Skjemainnhold
 import no.nav.syfo.dialogmelding.DialogmeldingService
 import no.nav.syfo.domain.*
 import no.nav.syfo.lps.database.*
+import no.nav.syfo.lps.kafka.KOppfolgingsplanLPSNAV
 import no.nav.syfo.lps.kafka.OppfolgingsplanLPSNAVProducer
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.pdl.isKode6Or7
 import no.nav.syfo.service.*

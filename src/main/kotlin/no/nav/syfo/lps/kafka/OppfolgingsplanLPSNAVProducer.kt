@@ -1,7 +1,6 @@
 package no.nav.syfo.lps.kafka
 
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
@@ -10,12 +9,12 @@ import javax.inject.Inject
 
 @Component
 class OppfolgingsplanLPSNAVProducer @Inject constructor(
-    private val kafkaTemplate: KafkaTemplate<String, KOppfolgingsplanLPSNAV>,
+    private val oppfolgingsplanLPSNAVkafkaTemplate: KafkaTemplate<String, KOppfolgingsplanLPSNAV>,
     private val metrikk: Metrikk
 ) {
     fun sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV: KOppfolgingsplanLPSNAV) {
         try {
-            kafkaTemplate.send(
+            oppfolgingsplanLPSNAVkafkaTemplate.send(
                 OPPFOLGINGSPLAN_LPS_NAV_TOPIC,
                 UUID.randomUUID().toString(),
                 kOppfolgingsplanLPSNAV
@@ -31,7 +30,7 @@ class OppfolgingsplanLPSNAVProducer @Inject constructor(
 
     companion object {
         private val log = LoggerFactory.getLogger(OppfolgingsplanLPSNAVProducer::class.java)
-        const val OPPFOLGINGSPLAN_LPS_NAV_TOPIC = "aapen-syfo-oppfolgingsplan-lps-nav-v1"
+        const val OPPFOLGINGSPLAN_LPS_NAV_TOPIC = "aapen-syfo-oppfolgingsplan-lps-nav-v2"
     }
 
     fun tellLpsPlanDeltMedNav(delt: Boolean) {

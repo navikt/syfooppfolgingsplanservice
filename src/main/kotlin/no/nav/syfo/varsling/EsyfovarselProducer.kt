@@ -4,20 +4,19 @@ import no.nav.syfo.varsling.domain.EsyfovarselHendelse
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
 class EsyfovarselProducer @Autowired constructor(
-    @Qualifier("EsyfovarselKafkaTemplate") private val kafkaTemplate: KafkaTemplate<String, EsyfovarselHendelse>,
+    private val esyfovarselKafkaTemplate: KafkaTemplate<String, EsyfovarselHendelse>,
 ) {
     fun sendVarselTilEsyfovarsel(
         esyfovarselHendelse: EsyfovarselHendelse,
     ) {
         try {
-            kafkaTemplate.send(
+            esyfovarselKafkaTemplate.send(
                 ProducerRecord(
                     ESYFOVARSEL_TOPIC,
                     UUID.randomUUID().toString(),
