@@ -13,7 +13,7 @@ class OppfolgingsplanLPSNAVConfig(
     private val aivenKafkaConfig: AivenKafkaConfig,
 ) {
     @Bean
-    fun oppfolgingsplanLPSNAVkafkaTemplate(): KafkaTemplate<String, KOppfolgingsplanLPSNAV> {
+    fun oppfolgingsplanLPSNAVKafkaTemplate(): KafkaTemplate<String, KOppfolgingsplanLPSNAV> {
         return KafkaTemplate(DefaultKafkaProducerFactory(aivenKafkaConfig.producerProperties()))
     }
 }

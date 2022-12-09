@@ -9,12 +9,12 @@ import javax.inject.Inject
 
 @Component
 class OppfolgingsplanLPSNAVProducer @Inject constructor(
-    private val oppfolgingsplanLPSNAVkafkaTemplate: KafkaTemplate<String, KOppfolgingsplanLPSNAV>,
+    private val oppfolgingsplanLPSNAVKafkaTemplate: KafkaTemplate<String, KOppfolgingsplanLPSNAV>,
     private val metrikk: Metrikk
 ) {
     fun sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV: KOppfolgingsplanLPSNAV) {
         try {
-            oppfolgingsplanLPSNAVkafkaTemplate.send(
+            oppfolgingsplanLPSNAVKafkaTemplate.send(
                 OPPFOLGINGSPLAN_LPS_NAV_TOPIC,
                 UUID.randomUUID().toString(),
                 kOppfolgingsplanLPSNAV
