@@ -9,11 +9,11 @@ import org.springframework.kafka.core.KafkaTemplate
 
 @EnableKafka
 @Configuration
-class OppfolgingsplanLPSNAVConfig(
+class OppfolgingsplanLPSConfig(
     private val aivenKafkaConfig: AivenKafkaConfig,
 ) {
     @Bean
-    fun oppfolgingsplanLPSNAVKafkaTemplate(): KafkaTemplate<String, KOppfolgingsplanLPSNAV> {
+    fun oppfolgingsplanLPSKafkaTemplate(): KafkaTemplate<String, KOppfolgingsplanLPS> {
         return KafkaTemplate(DefaultKafkaProducerFactory(aivenKafkaConfig.producerProperties()))
     }
 }
