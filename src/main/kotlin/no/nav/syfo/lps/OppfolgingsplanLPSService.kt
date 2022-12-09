@@ -13,9 +13,9 @@ import no.nav.helse.op2016.Skjemainnhold
 import no.nav.syfo.dialogmelding.DialogmeldingService
 import no.nav.syfo.domain.*
 import no.nav.syfo.lps.database.*
-import no.nav.syfo.lps.kafka.OppfolgingsplanLPSNAVProducer
+import no.nav.syfo.lps.kafka.KOppfolgingsplanLPS
+import no.nav.syfo.lps.kafka.OppfolgingsplanLPSProducer
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.oppfolgingsplan.avro.KOppfolgingsplanLPSNAV
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.pdl.isKode6Or7
 import no.nav.syfo.service.*
@@ -44,7 +44,7 @@ val xmlMapper: ObjectMapper = XmlMapper(JacksonXmlModule().apply {
 class OppfolgingsplanLPSService @Inject constructor(
     private val dialogmeldingService: DialogmeldingService,
     private val journalforOPService: JournalforOPService,
-    private val oppfolgingsplanLPSNAVProducer: OppfolgingsplanLPSNAVProducer,
+    private val oppfolgingsplanLPSProducer: OppfolgingsplanLPSProducer,
     private val metrikk: Metrikk,
     private val oppfolgingsplanLPSDAO: OppfolgingsplanLPSDAO,
     private val oppfolgingsplanLPSRetryService: OppfolgingsplanLPSRetryService,
@@ -162,7 +162,7 @@ class OppfolgingsplanLPSService @Inject constructor(
             log.info("KAFKA-trace: pdf generated and stored")
 
             if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
-                val kOppfolgingsplanLPSNAV = KOppfolgingsplanLPSNAV(
+                val kOppfolgingsplanLPS = KOppfolgingsplanLPS(
                     idList.second.toString(),
                     incomingMetadata.userPersonNumber,
                     virksomhetsnummer.value,
@@ -170,7 +170,7 @@ class OppfolgingsplanLPSService @Inject constructor(
                     LocalDate.now().toEpochDay().toInt()
                 )
                 metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand", lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
-                oppfolgingsplanLPSNAVProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPSNAV)
+                oppfolgingsplanLPSProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPS)
             }
             if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
                 sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
