@@ -23,6 +23,7 @@ class FlywayConfig (private val dataSource: DataSource) {
         return FlywayMigrationStrategy { flyway: Flyway ->
             flyway.isValidateOnMigrate = false
             flyway.dataSource = dataSource
+            flyway.table = "schema_version"
             flyway.migrate()
         }
     }
