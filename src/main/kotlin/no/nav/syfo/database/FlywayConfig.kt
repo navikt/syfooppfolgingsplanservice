@@ -11,24 +11,20 @@ import javax.sql.DataSource
 
 @Profile("remote")
 @Configuration
-class FlywayConfig (private val dataSource: DataSource) {
+class FlywayConfig() {
 
     @Bean
-    fun flyway(dataSource: DataSource) = Flyway().apply {
-        setDataSource(dataSource)
-    }
+    fun flyway(dataSource: DataSource): Flyway = Flyway.configure().dataSource(dataSource).load()
 
+    // Sørger for at flyway migrering skjer etter at JTA transaction manager er ferdig satt opp av Spring.
+    // Forhindrer WARNING: transaction manager not running? loggspam fra Atomikos.
     @Bean
-    fun flywayMigrationStrategy(jtaTransactionManager: JtaTransactionManager): FlywayMigrationStrategy {
-        return FlywayMigrationStrategy { flyway: Flyway ->
-            flyway.isValidateOnMigrate = false
-            flyway.dataSource = dataSource
-            flyway.table = "schema_version"
+    fun flywayMigrationStrategy(jtaTransactionManager: JtaTransactionManager) =
+        FlywayMigrationStrategy { flyway ->
             flyway.migrate()
         }
-    }
 
     @Bean
     fun flywayMigrationInitializer(flyway: Flyway, flywayMigrationStrategy: FlywayMigrationStrategy): FlywayMigrationInitializer =
-            FlywayMigrationInitializer(flyway, flywayMigrationStrategy)
+        FlywayMigrationInitializer(flyway, flywayMigrationStrategy)
 }
