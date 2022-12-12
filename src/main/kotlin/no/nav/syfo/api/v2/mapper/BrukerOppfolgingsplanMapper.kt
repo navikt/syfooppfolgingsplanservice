@@ -168,7 +168,7 @@ fun BrukerOppfolgingsplan.populerPlanerMedAvbruttPlanListe(planer: List<BrukerOp
             it.opprettetDato.isBefore(opprettetDato)
     }
         .map {
-            it.godkjentPlan!!.avbruttPlan!!.id = id
+            it.godkjentPlan!!.avbruttPlan!!.id = it.id
             it.godkjentPlan.avbruttPlan!!
         }
 }
