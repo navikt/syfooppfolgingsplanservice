@@ -10,7 +10,7 @@ object Versions {
     const val avroVersion = "1.11.0"
     const val confluentVersion = "7.1.0"
     const val cxfVersion = "3.5.0"
-    const val flywayVersion = "5.1.4"
+    const val flywayVersion = "6.5.7"
     const val tokenSupportVersion = "2.1.3"
     const val tokenTestSupportVersion = "2.0.5"
     const val ojdbc8Version = "19.3.0.0"
