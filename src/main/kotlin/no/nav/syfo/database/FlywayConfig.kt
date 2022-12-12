@@ -14,7 +14,11 @@ import javax.sql.DataSource
 class FlywayConfig() {
 
     @Bean
-    fun flyway(dataSource: DataSource): Flyway = Flyway.configure().dataSource(dataSource).load()
+    fun flyway(dataSource: DataSource): Flyway = Flyway
+        .configure()
+        .dataSource(dataSource)
+        .table("schema_version")
+        .load()
 
     // Sørger for at flyway migrering skjer etter at JTA transaction manager er ferdig satt opp av Spring.
     // Forhindrer WARNING: transaction manager not running? loggspam fra Atomikos.
