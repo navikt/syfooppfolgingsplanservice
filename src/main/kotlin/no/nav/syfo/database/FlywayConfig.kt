@@ -17,6 +17,7 @@ class FlywayConfig() {
     fun flyway(dataSource: DataSource): Flyway = Flyway
         .configure()
         .dataSource(dataSource)
+        .validateOnMigrate(false)
         .table("schema_version")
         .load()
 
