@@ -1,22 +1,21 @@
-package no.nav.syfo.api.selvbetjening.controller
+package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER
-import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
-import no.nav.syfo.api.selvbetjening.mapper.RSBrukerOppfolgingsplanMapper.oppfolgingsplan2rs
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.BrukerOppfolgingsplan
+import no.nav.syfo.api.v2.mapper.populerPlanerMedAvbruttPlanListe
+import no.nav.syfo.api.v2.mapper.toBrukerOppfolgingsplan
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.tokenx.TokenXUtil
 import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
 import no.nav.syfo.tokenx.TokenXUtil.fnrFromIdportenTokenX
-import no.nav.syfo.util.MapUtil.mapListe
-import no.nav.syfo.util.OppfoelgingsdialogUtil.populerOppfolgingsplanerMedAvbruttPlanListe
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.* // ktlint-disable no-wildcard-imports
 import javax.inject.Inject
 import javax.ws.rs.ForbiddenException
 
@@ -31,19 +30,18 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
     @Value("\${tokenx.idp}")
     private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
-    private val oppfolgingsplanClientId: String,
+    private val oppfolgingsplanClientId: String
 ) {
     @GetMapping(produces = [APPLICATION_JSON_VALUE])
-    fun hentArbeidsgiversOppfolgingsplaner(): List<RSBrukerOppfolgingsplan> {
+    fun hentArbeidsgiversOppfolgingsplaner(): List<BrukerOppfolgingsplan> {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        val liste = mapListe(
-            oppfolgingsplanService.hentAktorsOppfolgingsplaner(ARBEIDSGIVER, innloggetIdent),
-            oppfolgingsplan2rs
-        )
+        val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.hentAktorsOppfolgingsplaner(ARBEIDSGIVER, innloggetIdent)
+        val liste = arbeidsgiversOppfolgingsplaner.map { it.toBrukerOppfolgingsplan() }
+        liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
         metrikk.tellHendelse("hent_oppfolgingsplan_ag")
-        return populerOppfolgingsplanerMedAvbruttPlanListe(liste)
+        return liste
     }
 
     @PostMapping(consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
