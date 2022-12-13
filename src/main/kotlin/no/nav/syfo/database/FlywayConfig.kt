@@ -11,23 +11,23 @@ import javax.sql.DataSource
 
 @Profile("remote")
 @Configuration
-class FlywayConfig (private val dataSource: DataSource) {
+class FlywayConfig() {
 
     @Bean
-    fun flyway(dataSource: DataSource) = Flyway().apply {
-        setDataSource(dataSource)
-    }
+    fun flyway(dataSource: DataSource): Flyway = Flyway
+        .configure()
+        .dataSource(dataSource)
+        .validateOnMigrate(false)
+        .table("schema_version")
+        .load()
 
     @Bean
-    fun flywayMigrationStrategy(jtaTransactionManager: JtaTransactionManager): FlywayMigrationStrategy {
-        return FlywayMigrationStrategy { flyway: Flyway ->
-            flyway.isValidateOnMigrate = false
-            flyway.dataSource = dataSource
+    fun flywayMigrationStrategy(jtaTransactionManager: JtaTransactionManager) =
+        FlywayMigrationStrategy { flyway ->
             flyway.migrate()
         }
-    }
 
     @Bean
     fun flywayMigrationInitializer(flyway: Flyway, flywayMigrationStrategy: FlywayMigrationStrategy): FlywayMigrationInitializer =
-            FlywayMigrationInitializer(flyway, flywayMigrationStrategy)
+        FlywayMigrationInitializer(flyway, flywayMigrationStrategy)
 }
