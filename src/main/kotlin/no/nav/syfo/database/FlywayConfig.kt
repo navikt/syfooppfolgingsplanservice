@@ -21,8 +21,6 @@ class FlywayConfig() {
         .table("schema_version")
         .load()
 
-    // Sørger for at flyway migrering skjer etter at JTA transaction manager er ferdig satt opp av Spring.
-    // Forhindrer WARNING: transaction manager not running? loggspam fra Atomikos.
     @Bean
     fun flywayMigrationStrategy(jtaTransactionManager: JtaTransactionManager) =
         FlywayMigrationStrategy { flyway ->
