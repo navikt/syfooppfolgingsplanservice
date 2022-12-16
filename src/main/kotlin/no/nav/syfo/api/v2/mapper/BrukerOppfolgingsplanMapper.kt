@@ -78,7 +78,6 @@ fun GodkjentPlan.toGodkjentPlan() =
 
 fun Avbruttplan.toAvbruttPlan() =
     AvbruttPlan(
-        av = Person(fnr = avAktoerId?.let { aktorregisterConsumer().hentFnrForAktor(avAktoerId) }),
         tidspunkt = tidspunkt
     )
 
