@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 data class Person(
     val navn: String = " ",
-    val fnr: String?,
+    val fnr: String,
     val epost: String? = null,
     val tlf: String? = null,
     val sistInnlogget: LocalDateTime? = null,
