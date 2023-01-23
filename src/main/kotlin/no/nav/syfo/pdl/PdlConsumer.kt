@@ -4,6 +4,7 @@ import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.sts.StsConsumer
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
@@ -15,11 +16,11 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class PdlConsumer(
-        private val metric: Metrikk,
-        @Value("\${pdl.url}") private val pdlUrl: String,
-        private val stsConsumer: StsConsumer,
-        @param:Qualifier("scheduler") private val restTemplate: RestTemplate
-) {
+    private val metric: Metrikk,
+    @Value("\${pdl.url}") private val pdlUrl: String,
+    private val stsConsumer: StsConsumer,
+    @param:Qualifier("scheduler") private val restTemplate: RestTemplate
+) : InitializingBean {
     fun person(ident: String): PdlHentPerson? {
         metric.tellHendelse("call_pdl")
 
@@ -27,10 +28,10 @@ class PdlConsumer(
         val entity = createRequestEntity(PdlRequest(query, Variables(ident)))
         try {
             val pdlPerson = restTemplate.exchange<PdlPersonResponse>(
-                    pdlUrl,
-                    HttpMethod.POST,
-                    entity,
-                    object : ParameterizedTypeReference<PdlPersonResponse>() {}
+                pdlUrl,
+                HttpMethod.POST,
+                entity,
+                object : ParameterizedTypeReference<PdlPersonResponse>() {}
             )
 
             val pdlPersonReponse = pdlPerson.body!!
@@ -64,14 +65,14 @@ class PdlConsumer(
 
         val query = this::class.java.getResource("/pdl/hentIdenter.graphql").readText().replace("[\n\r]", "")
         val entity = createRequestEntity(
-                PdlRequest(query, Variables(ident = fnr, grupper = IdentType.AKTORID.name))
+            PdlRequest(query, Variables(ident = fnr, grupper = IdentType.AKTORID.name))
         )
         try {
             val pdlIdenter = restTemplate.exchange(
-                    pdlUrl,
-                    HttpMethod.POST,
-                    entity,
-                    object : ParameterizedTypeReference<PdlIdenterResponse>() {}
+                pdlUrl,
+                HttpMethod.POST,
+                entity,
+                object : ParameterizedTypeReference<PdlIdenterResponse>() {}
             )
 
             val pdlIdenterReponse = pdlIdenter.body!!
@@ -103,14 +104,14 @@ class PdlConsumer(
 
         val query = this::class.java.getResource("/pdl/hentIdenter.graphql").readText().replace("[\n\r]", "")
         val entity = createRequestEntity(
-                PdlRequest(query, Variables(ident = aktorid, grupper = IdentType.FOLKEREGISTERIDENT.name))
+            PdlRequest(query, Variables(ident = aktorid, grupper = IdentType.FOLKEREGISTERIDENT.name))
         )
         try {
             val pdlIdenter = restTemplate.exchange(
-                    pdlUrl,
-                    HttpMethod.POST,
-                    entity,
-                    object : ParameterizedTypeReference<PdlIdenterResponse>() {}
+                pdlUrl,
+                HttpMethod.POST,
+                entity,
+                object : ParameterizedTypeReference<PdlIdenterResponse>() {}
             )
 
             val pdlIdenterReponse = pdlIdenter.body!!
@@ -149,5 +150,10 @@ class PdlConsumer(
 
     companion object {
         private val LOG = LoggerFactory.getLogger(PdlConsumer::class.java)
+        lateinit var pdlConsumer: PdlConsumer
+    }
+
+    override fun afterPropertiesSet() {
+        pdlConsumer = this
     }
 }

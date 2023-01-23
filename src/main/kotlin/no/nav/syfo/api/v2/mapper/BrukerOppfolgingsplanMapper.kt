@@ -1,6 +1,5 @@
 package no.nav.syfo.api.v2.mapper
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer.aktorregisterConsumer
 import no.nav.syfo.api.util.unwrap
 import no.nav.syfo.api.v2.domain.Virksomhet
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.*
@@ -15,6 +14,7 @@ import no.nav.syfo.domain.GodkjentPlan
 import no.nav.syfo.domain.Gyldighetstidspunkt
 import no.nav.syfo.domain.Kommentar
 import no.nav.syfo.domain.Tiltak
+import no.nav.syfo.pdl.PdlConsumer.Companion.pdlConsumer
 import java.time.LocalDate
 
 fun Oppfolgingsplan.toBrukerOppfolgingsplan() =
@@ -24,7 +24,7 @@ fun Oppfolgingsplan.toBrukerOppfolgingsplan() =
         arbeidsoppgaveListe = arbeidsoppgaveListe.map { it.toArbeidsoppgave() },
         tiltakListe = tiltakListe.map { it.toTiltak() },
         godkjenninger = godkjenninger.map { it.toGodkjenning() },
-        sistEndretAv = Person(fnr = aktorregisterConsumer().hentFnrForAktor(sistEndretAvAktoerId)),
+        sistEndretAv = Person(fnr = pdlConsumer.fnr(sistEndretAvAktoerId)),
         sistEndretDato = sistEndretDato,
         godkjentPlan = godkjentPlan.unwrap()?.toGodkjentPlan(),
         status = getStatus(),
@@ -35,7 +35,7 @@ fun Oppfolgingsplan.toBrukerOppfolgingsplan() =
 
 fun Oppfolgingsplan.toArbeidstaker() =
     Person(
-        fnr = aktorregisterConsumer().hentFnrForAktor(arbeidstaker.aktoerId),
+        fnr = pdlConsumer.fnr(arbeidstaker.aktoerId),
         sistInnlogget = arbeidstaker.sistInnlogget,
         evaluering = if (godkjentPlan != null) Evaluering() else null,
         samtykke = arbeidstaker.samtykke
@@ -86,7 +86,7 @@ fun Godkjenning.toGodkjenning() =
         beskrivelse = beskrivelse,
         godkjent = godkjent,
         delMedNav = delMedNav,
-        godkjentAv = Person(fnr = aktorregisterConsumer().hentFnrForAktor(godkjentAvAktoerId)),
+        godkjentAv = Person(fnr = pdlConsumer.fnr(godkjentAvAktoerId)),
         godkjenningsTidspunkt = godkjenningsTidspunkt,
         gyldighetstidspunkt = gyldighetstidspunkt.toGyldighetstidspunkt()
     )
@@ -108,9 +108,9 @@ fun Tiltak.toTiltak() =
         status = status,
         gjennomfoering = gjennomfoering,
         beskrivelseIkkeAktuelt = beskrivelseIkkeAktuelt,
-        opprettetAv = Person(fnr = aktorregisterConsumer().hentFnrForAktor(opprettetAvAktoerId)),
+        opprettetAv = Person(fnr = pdlConsumer.fnr(opprettetAvAktoerId)),
         opprettetDato = opprettetDato,
-        sistEndretAv = Person(fnr = aktorregisterConsumer().hentFnrForAktor(sistEndretAvAktoerId)),
+        sistEndretAv = Person(fnr = pdlConsumer.fnr(sistEndretAvAktoerId)),
         sistEndretDato = sistEndretDato,
         kommentarer = kommentarer.map { it.toKommentar() }
     )
@@ -119,9 +119,9 @@ fun Kommentar.toKommentar() =
     no.nav.syfo.api.v2.domain.oppfolgingsplan.Kommentar(
         id = id,
         tekst = tekst,
-        opprettetAv = Person(fnr = aktorregisterConsumer().hentFnrForAktor(opprettetAvAktoerId)),
+        opprettetAv = Person(fnr = pdlConsumer.fnr(opprettetAvAktoerId)),
         opprettetTidspunkt = opprettetDato,
-        sistEndretAv = Person(fnr = aktorregisterConsumer().hentFnrForAktor(sistEndretAvAktoerId)),
+        sistEndretAv = Person(fnr = pdlConsumer.fnr(sistEndretAvAktoerId)),
         sistEndretDato = sistEndretDato
     )
 
@@ -131,9 +131,9 @@ fun Arbeidsoppgave.toArbeidsoppgave() =
         arbeidsoppgavenavn = navn,
         erVurdertAvSykmeldt = erVurdertAvSykmeldt,
         gjennomfoering = gjennomfoering.toGjennomfoering(),
-        opprettetAv = Person(fnr = aktorregisterConsumer().hentFnrForAktor(opprettetAvAktoerId)),
+        opprettetAv = Person(fnr = pdlConsumer.fnr(opprettetAvAktoerId)),
         opprettetDato = opprettetDato,
-        sistEndretAv = Person(fnr = aktorregisterConsumer().hentFnrForAktor(sistEndretAvAktoerId)),
+        sistEndretAv = Person(fnr = pdlConsumer.fnr(sistEndretAvAktoerId)),
         sistEndretDato = sistEndretDato
     )
 
@@ -161,10 +161,10 @@ fun Gjennomfoering.toGjennomfoering() =
 fun BrukerOppfolgingsplan.populerPlanerMedAvbruttPlanListe(planer: List<BrukerOppfolgingsplan>) {
     avbruttPlanListe = planer.filter {
         it.arbeidstaker.fnr == arbeidstaker.fnr &&
-            it.virksomhet.virksomhetsnummer == virksomhet.virksomhetsnummer &&
-            it.godkjentPlan != null &&
-            it.godkjentPlan.avbruttPlan != null &&
-            it.opprettetDato.isBefore(opprettetDato)
+                it.virksomhet.virksomhetsnummer == virksomhet.virksomhetsnummer &&
+                it.godkjentPlan != null &&
+                it.godkjentPlan.avbruttPlan != null &&
+                it.opprettetDato.isBefore(opprettetDato)
     }
         .map {
             it.godkjentPlan!!.avbruttPlan!!.id = it.id
