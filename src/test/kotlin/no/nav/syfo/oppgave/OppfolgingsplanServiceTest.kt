@@ -1,10 +1,10 @@
 package no.nav.syfo.oppgave
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant
 import no.nav.syfo.domain.*
 import no.nav.syfo.model.Ansatt
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.GodkjentplanDAO
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO
 import no.nav.syfo.service.*
@@ -31,7 +31,7 @@ class OppfolgingsplanServiceTest {
     private lateinit var tilgangskontrollService: TilgangskontrollService
 
     @Mock
-    private lateinit var aktorregisterConsumer: AktorregisterConsumer
+    private lateinit var pdlConsumer: PdlConsumer
 
     @Mock
     private lateinit var godkjentplanDAO: GodkjentplanDAO
@@ -46,8 +46,8 @@ class OppfolgingsplanServiceTest {
     fun oppfolgingsplanerFraAndreBedrifterBlirFiltrertBort() {
         val dialog1 = Oppfolgingsplan().id(1L).arbeidstaker(Person().aktoerId("sykmeldt")).virksomhet(Virksomhet().virksomhetsnummer("1"))
         val dialog2 = Oppfolgingsplan().id(2L).arbeidstaker(Person().aktoerId("sykmeldt")).virksomhet(Virksomhet().virksomhetsnummer("2"))
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr("123")).thenReturn(LEDER_FNR)
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ARBEIDSTAKER_FNR)).thenReturn("sykmeldt")
+        Mockito.`when`(pdlConsumer.aktorid("123")).thenReturn(LEDER_FNR)
+        Mockito.`when`(pdlConsumer.aktorid(ARBEIDSTAKER_FNR)).thenReturn("sykmeldt")
         Mockito.`when`(narmesteLederConsumer.ansatte(ArgumentMatchers.anyString())).thenReturn(Arrays.asList(Ansatt().fnr(ARBEIDSTAKER_FNR).virksomhetsnummer("1")))
         Mockito.`when`(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ArgumentMatchers.anyString())).thenReturn(Arrays.asList(
             dialog1,

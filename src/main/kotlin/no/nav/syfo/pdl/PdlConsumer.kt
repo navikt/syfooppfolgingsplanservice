@@ -59,6 +59,84 @@ class PdlConsumer(
         return person(ident)?.isKode6Or7() ?: throw PdlRequestFailedException()
     }
 
+    fun aktorid(fnr: String): String {
+        metric.tellHendelse("call_pdl")
+
+        val query = this::class.java.getResource("/pdl/hentIdenter.graphql").readText().replace("[\n\r]", "")
+        val entity = createRequestEntity(
+                PdlRequest(query, Variables(ident = fnr, grupper = IdentType.AKTORID.name))
+        )
+        try {
+            val pdlIdenter = restTemplate.exchange(
+                    pdlUrl,
+                    HttpMethod.POST,
+                    entity,
+                    object : ParameterizedTypeReference<PdlIdenterResponse>() {}
+            )
+
+            val pdlIdenterReponse = pdlIdenter.body!!
+            if (pdlIdenterReponse.errors != null && pdlIdenterReponse.errors.isNotEmpty()) {
+                metric.tellHendelse("call_pdl_fail")
+                pdlIdenterReponse.errors.forEach {
+                    LOG.error("Error while requesting AKTORID from PersonDataLosningen: ${it.errorMessage()}")
+                }
+                throw RuntimeException("Error while requesting AKTORID from PDL")
+            } else {
+                metric.tellHendelse("call_pdl_success")
+                try {
+                    val aktorid = pdlIdenterReponse.data?.hentIdenter?.identer?.first()?.ident!!
+                    return aktorid
+                } catch (e: NoSuchElementException) {
+                    LOG.info("Error while requesting AKTORID from PDL. Empty list in hentIdenter response")
+                    throw RuntimeException("Error while requesting AKTORID from PDL")
+                }
+            }
+        } catch (exception: RestClientResponseException) {
+            metric.tellHendelse("call_pdl_fail")
+            LOG.error("Error from PDL with request-url: $pdlUrl", exception)
+            throw exception
+        }
+    }
+
+    fun fnr(aktorid: String): String {
+        metric.tellHendelse("call_pdl")
+
+        val query = this::class.java.getResource("/pdl/hentIdenter.graphql").readText().replace("[\n\r]", "")
+        val entity = createRequestEntity(
+                PdlRequest(query, Variables(ident = aktorid, grupper = IdentType.FOLKEREGISTERIDENT.name))
+        )
+        try {
+            val pdlIdenter = restTemplate.exchange(
+                    pdlUrl,
+                    HttpMethod.POST,
+                    entity,
+                    object : ParameterizedTypeReference<PdlIdenterResponse>() {}
+            )
+
+            val pdlIdenterReponse = pdlIdenter.body!!
+            if (pdlIdenterReponse.errors != null && pdlIdenterReponse.errors.isNotEmpty()) {
+                metric.tellHendelse("call_pdl_fail")
+                pdlIdenterReponse.errors.forEach {
+                    LOG.error("Error while requesting FNR from PersonDataLosningen: ${it.errorMessage()}")
+                }
+                throw RuntimeException("Error while requesting FNR from PDL")
+            } else {
+                metric.tellHendelse("call_pdl_success")
+                try {
+                    val fnr = pdlIdenterReponse.data?.hentIdenter?.identer?.first()?.ident!!
+                    return fnr
+                } catch (e: NoSuchElementException) {
+                    LOG.info("Error while requesting FNR from PDL. Empty list in hentIdenter response")
+                    throw RuntimeException("Error while requesting FNR from PDL")
+                }
+            }
+        } catch (exception: RestClientResponseException) {
+            metric.tellHendelse("call_pdl_fail")
+            LOG.error("Error from PDL with request-url: $pdlUrl", exception)
+            throw exception
+        }
+    }
+
     private fun createRequestEntity(request: PdlRequest): HttpEntity<PdlRequest> {
         val stsToken: String = stsConsumer.token()
         val headers = HttpHeaders()

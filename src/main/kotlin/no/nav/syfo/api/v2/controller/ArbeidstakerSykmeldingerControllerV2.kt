@@ -2,12 +2,12 @@ package no.nav.syfo.api.selvbetjening.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.model.Sykmelding
 import no.nav.syfo.api.v2.domain.sykmelding.SykmeldingV2
 import no.nav.syfo.api.v2.domain.sykmelding.toSykmeldingV2
 import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer
 import no.nav.syfo.tokenx.TokenXUtil
 import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class ArbeidstakerSykmeldingerControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val metrikk: Metrikk,
-    private val aktorregisterConsumer: AktorregisterConsumer,
+    private val pdlConsumer: PdlConsumer,
     private val arbeidstakerSykmeldingerConsumer: ArbeidstakerSykmeldingerConsumer,
     private val tokenDingsConsumer: TokenDingsConsumer,
     @Value("\${tokenx.idp}")
@@ -46,7 +46,7 @@ class ArbeidstakerSykmeldingerControllerV2 @Inject constructor(
         val exchangedToken = tokenDingsConsumer.exchangeToken(issuerToken, targetApp!!)
         val bearerToken = "Bearer $exchangedToken"
 
-        val oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent)
+        val oppslattIdentAktorId = pdlConsumer.aktorid(innloggetIdent)
         val isTodayPresent = today.toBoolean()
         val sendteSykmeldinger = arbeidstakerSykmeldingerConsumer.getSendteSykmeldinger(oppslattIdentAktorId, bearerToken, isTodayPresent)
             .map { sykmeldinger: List<Sykmelding> -> sykmeldinger.map { it.toSykmeldingV2() } }

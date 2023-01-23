@@ -10,6 +10,7 @@ import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.Organisasjonsinformasjon
 import no.nav.syfo.model.Sykmelding
 import no.nav.syfo.model.Sykmeldingsperiode
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
@@ -30,7 +31,7 @@ import javax.inject.Inject
 
 class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
-    lateinit var aktorregisterConsumer: AktorregisterConsumer
+    lateinit var pdlConsumer: PdlConsumer
 
     @MockBean
     lateinit var brukertilgangConsumer: BrukertilgangConsumer
@@ -64,7 +65,7 @@ class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
     fun setup() {
         loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
 
-        `when`(aktorregisterConsumer.hentAktorIdForFnr(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
+        `when`(pdlConsumer.aktorid(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
         `when`(tokenDingsConsumer.exchangeToken(anyString(), anyString())).thenReturn(encodedTokenX)
     }
 

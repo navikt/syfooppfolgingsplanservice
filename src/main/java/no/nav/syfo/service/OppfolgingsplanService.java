@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.*;
 import no.nav.syfo.dialogmelding.DialogmeldingService;
 import no.nav.syfo.domain.*;
@@ -48,8 +47,6 @@ public class OppfolgingsplanService {
 
     private TilgangskontrollService tilgangskontrollService;
 
-    private AktorregisterConsumer aktorregisterConsumer;
-
     private DialogmeldingService dialogmeldingService;
 
     private ServiceVarselService serviceVarselService;
@@ -73,7 +70,6 @@ public class OppfolgingsplanService {
             GodkjentplanDAO godkjentplanDAO,
             OppfolgingsplanDAO oppfolgingsplanDAO,
             TiltakDAO tiltakDAO,
-            AktorregisterConsumer aktorregisterConsumer,
             DialogmeldingService dialogmeldingService,
             NarmesteLederConsumer narmesteLederConsumer,
             PdlConsumer pdlConsumer,
@@ -88,7 +84,6 @@ public class OppfolgingsplanService {
         this.godkjentplanDAO = godkjentplanDAO;
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.tiltakDAO = tiltakDAO;
-        this.aktorregisterConsumer = aktorregisterConsumer;
         this.dialogmeldingService = dialogmeldingService;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.pdlConsumer = pdlConsumer;
@@ -98,7 +93,7 @@ public class OppfolgingsplanService {
     }
 
     public List<Oppfolgingsplan> hentAktorsOppfolgingsplaner(BrukerkontekstConstant brukerkontekst, String innloggetFnr) {
-        String innloggetAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
+        String innloggetAktorId = pdlConsumer.aktorid(innloggetFnr);
 
         if (ARBEIDSGIVER == brukerkontekst) {
             return arbeidsgiversOppfolgingsplaner(innloggetAktorId, innloggetFnr);
@@ -116,7 +111,7 @@ public class OppfolgingsplanService {
         List<Ansatt> ansatte = narmesteLederConsumer.ansatte(fnr);
 
         ansatte.forEach(ansatt -> {
-            String ansattAktorId = aktorregisterConsumer.hentAktorIdForFnr(ansatt.fnr);
+            String ansattAktorId = pdlConsumer.aktorid(ansatt.fnr);
             List<Oppfolgingsplan> ansattesOppfolgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ansattAktorId).stream()
                     .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
                     .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
@@ -146,13 +141,13 @@ public class OppfolgingsplanService {
     @Transactional
     public Long opprettOppfolgingsplan(RSOpprettOppfoelgingsdialog rsOpprettOppfolgingsplan, String innloggetFnr) {
         String virksomhetsnummer = rsOpprettOppfolgingsplan.virksomhetsnummer;
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
         String sykmeldtFnr = rsOpprettOppfolgingsplan.sykmeldtFnr;
         String sykmeldtAktoerId = innloggetFnr.equals(sykmeldtFnr)
                 ? innloggetAktoerId
-                : aktorregisterConsumer.hentAktorIdForFnr(sykmeldtFnr);
+                : pdlConsumer.aktorid(sykmeldtFnr);
 
-        if (pdlConsumer.isKode6Or7(aktorregisterConsumer.hentFnrForAktor(sykmeldtAktoerId))) {
+        if (pdlConsumer.isKode6Or7(pdlConsumer.fnr(sykmeldtAktoerId))) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
@@ -171,7 +166,7 @@ public class OppfolgingsplanService {
     @Transactional
     public long kopierOppfoelgingsdialog(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
 
         if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(innloggetFnr, oppfolgingsplan)) {
             throw new ForbiddenException();
@@ -222,7 +217,7 @@ public class OppfolgingsplanService {
 
     private void sendVarsler(String innloggetAktoerId, Oppfolgingsplan oppfolgingsplan) {
         if (innloggetAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
-            String arbeidstakersFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+            String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
             Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
             narmesteLederVarselService.sendVarselTilNaermesteLeder(SyfoplanOpprettetNL, naermesteleder);
         } else {
@@ -247,7 +242,7 @@ public class OppfolgingsplanService {
     @Transactional
     public void delMedNav(long oppfolgingsplanId, String innloggetFnr) {
         Oppfolgingsplan oppfoelgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
         LocalDateTime deltMedNavTidspunkt = now();
 
         throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfoelgingsplan);
@@ -265,7 +260,7 @@ public class OppfolgingsplanService {
         throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
 
         String arbeidstakerAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
-        String arbeidstakerFnr = aktorregisterConsumer.hentFnrForAktor(arbeidstakerAktoerId);
+        String arbeidstakerFnr = pdlConsumer.fnr(arbeidstakerAktoerId);
 
         byte[] pdf = godkjentplanDAO.godkjentPlanByOppfolgingsplanId(oppfolgingsplanId)
                 .map(GodkjentPlan::dokumentUuid)
@@ -280,7 +275,7 @@ public class OppfolgingsplanService {
     @Transactional
     public void nullstillGodkjenning(long oppfolgingsplanId, String fnr) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(fnr);
 
         throwExceptionWithoutAccessToOppfolgingsplan(fnr, oppfolgingsplan);
 
@@ -291,7 +286,7 @@ public class OppfolgingsplanService {
 
     public void oppdaterSistInnlogget(long oppfolgingsplanId, String fnr) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(fnr);
 
         throwExceptionWithoutAccessToOppfolgingsplan(fnr, oppfolgingsplan);
 
@@ -301,7 +296,7 @@ public class OppfolgingsplanService {
     @Transactional
     public void avbrytPlan(long oppfolgingsplanId, String innloggetFnr) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
 
         throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
 
