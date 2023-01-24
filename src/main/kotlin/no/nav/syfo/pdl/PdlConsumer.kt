@@ -1,5 +1,7 @@
 package no.nav.syfo.pdl
 
+import no.nav.syfo.config.CacheConfig.CACHENAME_AKTOER_FNR
+import no.nav.syfo.config.CacheConfig.CACHENAME_AKTOER_ID
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.sts.StsConsumer
 import no.nav.syfo.util.*
@@ -7,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.*
 import org.springframework.http.HttpHeaders.AUTHORIZATION
@@ -60,6 +63,7 @@ class PdlConsumer(
         return person(ident)?.isKode6Or7() ?: throw PdlRequestFailedException()
     }
 
+    @Cacheable(cacheNames = [CACHENAME_AKTOER_ID], key = "#fnr", condition = "#fnr != null")
     fun aktorid(fnr: String): String {
         metric.tellHendelse("call_pdl")
 
@@ -99,12 +103,13 @@ class PdlConsumer(
         }
     }
 
-    fun fnr(aktorid: String): String {
+    @Cacheable(cacheNames = [CACHENAME_AKTOER_FNR], key = "#aktorId", condition = "#aktorId != null")
+    fun fnr(aktorId: String): String {
         metric.tellHendelse("call_pdl")
 
         val query = this::class.java.getResource("/pdl/hentIdenter.graphql").readText().replace("[\n\r]", "")
         val entity = createRequestEntity(
-            PdlRequest(query, Variables(ident = aktorid, grupper = IdentType.FOLKEREGISTERIDENT.name))
+            PdlRequest(query, Variables(ident = aktorId, grupper = IdentType.FOLKEREGISTERIDENT.name))
         )
         try {
             val pdlIdenter = restTemplate.exchange(
