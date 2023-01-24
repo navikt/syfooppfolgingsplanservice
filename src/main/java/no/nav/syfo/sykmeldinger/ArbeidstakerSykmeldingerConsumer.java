@@ -22,11 +22,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Organisasjonsinformasjon;
 import no.nav.syfo.model.Sykmelding;
 import no.nav.syfo.model.Sykmeldingsperiode;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.sykmeldinger.dto.ArbeidsgiverStatusDTO;
 import no.nav.syfo.sykmeldinger.dto.RegelStatusDTO;
 import no.nav.syfo.sykmeldinger.dto.SykmeldingDTO;
@@ -42,18 +42,18 @@ public class ArbeidstakerSykmeldingerConsumer {
     public static final String HENT_SYKMELDINGER_SYFOSMREGISTER_FEILET = "hent_sykmeldinger_syfosmregister_feilet";
     public static final String HENT_SYKMELDINGER_SYFOSMREGISTER_VELLYKKET = "hent_sykmeldinger_syfosmregister_vellykket";
 
-    private final AktorregisterConsumer aktorregisterConsumer;
+    private final PdlConsumer pdlConsumer;
 
     private final Metrikk metrikk;
     private final RestTemplate restTemplate;
     private final String syfosmregisterURL;
 
     @Autowired
-    public ArbeidstakerSykmeldingerConsumer(AktorregisterConsumer aktorregisterConsumer,
+    public ArbeidstakerSykmeldingerConsumer(PdlConsumer pdlConsumer,
                                             Metrikk metrikk,
                                             RestTemplate restTemplateMedProxy,
                                             @Value("${syfosmregister.url}") String syfosmregisterURL) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
         this.metrikk = metrikk;
         this.restTemplate = restTemplateMedProxy;
         this.syfosmregisterURL = syfosmregisterURL;
@@ -85,7 +85,7 @@ public class ArbeidstakerSykmeldingerConsumer {
     public Optional<List<Sykmelding>> getSendteSykmeldinger(String aktorId, String idToken, boolean isToday) {
         metrikk.tellHendelse(HENT_SYKMELDINGER_SYFOSMREGISTER);
 
-        String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
+        String fnr = pdlConsumer.fnr(aktorId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, idToken);
