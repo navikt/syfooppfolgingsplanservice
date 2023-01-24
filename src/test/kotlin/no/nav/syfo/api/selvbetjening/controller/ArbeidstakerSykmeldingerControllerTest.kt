@@ -3,13 +3,13 @@ package no.nav.syfo.api.selvbetjening.controller
 import no.nav.security.token.support.core.context.TokenValidationContext
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.security.token.support.core.jwt.JwtToken
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.Organisasjonsinformasjon
 import no.nav.syfo.model.Sykmelding
 import no.nav.syfo.model.Sykmeldingsperiode
 import no.nav.syfo.oidc.OIDCIssuer
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
@@ -29,7 +29,7 @@ import no.nav.syfo.util.encodedJWTTokenX
 
 class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
     @MockBean
-    lateinit var aktorregisterConsumer: AktorregisterConsumer
+    lateinit var pdlConsumer: PdlConsumer
 
     @MockBean
     lateinit var brukertilgangConsumer: BrukertilgangConsumer
@@ -67,7 +67,7 @@ class ArbeidstakerSykmeldingerControllerTest : AbstractRessursTilgangTest() {
         )
 
         Mockito.`when`(tokenValidationContextHolder.tokenValidationContext).thenReturn(tokenValidationContext)
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
+        Mockito.`when`(pdlConsumer.aktorid(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
         Mockito.`when`(tokenDingsConsumer.exchangeToken(encodedToken, "localhost:teamsykmelding:syfosmregister")).thenReturn(encodedTokenX)
     }
 

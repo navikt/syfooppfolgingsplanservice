@@ -1,12 +1,13 @@
 package no.nav.syfo.api.intern.controller.v2;
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
+
 import no.nav.syfo.api.intern.domain.RSHistorikk;
 import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog;
 import no.nav.syfo.domain.Fodselsnummer;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.ereg.EregConsumer;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import no.nav.syfo.service.BrukerprofilService;
 import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer;
@@ -26,7 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/api/internad/v2/oppfolgingsplan/{fnr}")
 public class OppfolgingsplanInternControllerV2 {
 
-    private final AktorregisterConsumer aktorregisterConsumer;
+    private final PdlConsumer pdlConsumer;
     private final BrukerprofilService brukerprofilService;
     private final EregConsumer eregConsumer;
     private final OppfolgingsplanDAO oppfolgingsplanDAO;
@@ -34,13 +35,13 @@ public class OppfolgingsplanInternControllerV2 {
 
     @Inject
     public OppfolgingsplanInternControllerV2(
-            AktorregisterConsumer aktorregisterConsumer,
+            PdlConsumer pdlConsumer,
             BrukerprofilService brukerprofilService,
             EregConsumer eregConsumer,
             OppfolgingsplanDAO oppfolgingsplanDAO,
             VeilederTilgangConsumer veilederTilgangConsumer
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
         this.brukerprofilService = brukerprofilService;
         this.eregConsumer = eregConsumer;
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
@@ -61,7 +62,7 @@ public class OppfolgingsplanInternControllerV2 {
 
         veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessWithOBO(personFnr);
 
-        List<Oppfolgingsplan> oppfoelgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getValue()))
+        List<Oppfolgingsplan> oppfoelgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(pdlConsumer.aktorid(personFnr.getValue()))
                 .stream()
                 .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
                 .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())
@@ -83,7 +84,7 @@ public class OppfolgingsplanInternControllerV2 {
 
         veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessWithOBO(personFnr);
 
-        return mapListe(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorregisterConsumer.hentAktorIdForFnr(personFnr.getValue()))
+        return mapListe(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(pdlConsumer.aktorid(personFnr.getValue()))
                         .stream()
                         .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
                         .filter(oppfoelgingsdialog -> oppfoelgingsdialog.godkjentPlan.isPresent())
