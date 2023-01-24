@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer.HENT_SYKMELDINGER_SYFOSMREGISTER;
@@ -28,9 +27,9 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Sykmelding;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.sykmeldinger.dto.ArbeidsgiverStatusDTO;
 import no.nav.syfo.sykmeldinger.dto.BehandlingsutfallDTO;
 import no.nav.syfo.sykmeldinger.dto.RegelStatusDTO;
@@ -44,7 +43,7 @@ import no.nav.syfo.sykmeldinger.dto.SykmeldingsperiodeDTO;
 public class ArbeidstakerSykmeldingerConsumerTest {
 
     @Mock
-    private AktorregisterConsumer aktorregisterConsumer;
+    private PdlConsumer pdlConsumer;
 
     @Mock
     private Metrikk metrikk;
