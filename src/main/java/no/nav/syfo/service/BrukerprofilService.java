@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Person;
 import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.pdl.exceptions.NameFromPDLIsNull;
@@ -12,15 +11,12 @@ import java.util.Optional;
 @Service
 public class BrukerprofilService {
 
-    private AktorregisterConsumer aktorregisterConsumer;
     private final PdlConsumer pdlConsumer;
 
     @Inject
     public BrukerprofilService(
-            AktorregisterConsumer aktorregisterConsumer,
             PdlConsumer pdlConsumer
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
         this.pdlConsumer = pdlConsumer;
     }
 
@@ -28,7 +24,7 @@ public class BrukerprofilService {
         if (!aktoerId.matches("\\d{13}$")) {
             throw new RuntimeException();
         }
-        String fnr = aktorregisterConsumer.hentFnrForAktor(aktoerId);
+        String fnr = pdlConsumer.fnr(aktoerId);
         return Optional.ofNullable(pdlConsumer.personName(fnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of person was null"));
     }
 
@@ -36,7 +32,7 @@ public class BrukerprofilService {
         if (!aktorId.matches("\\d{13}$")) {
             throw new RuntimeException();
         }
-        String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
+        String fnr = pdlConsumer.fnr(aktorId);
         String navn = Optional.ofNullable(pdlConsumer.personName(fnr)).orElseThrow(() -> new NameFromPDLIsNull("Name of person was null"));
 
         return new Person()
