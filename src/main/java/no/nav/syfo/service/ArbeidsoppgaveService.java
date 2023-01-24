@@ -1,8 +1,8 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.metric.Metrikk;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeArbeidsoppgave
 @Service
 public class ArbeidsoppgaveService {
 
-    private AktorregisterConsumer aktorregisterConsumer;
+    private PdlConsumer pdlConsumer;
     private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
     private GodkjenningerDAO godkjenningerDAO;
     private Metrikk metrikk;
@@ -25,14 +25,14 @@ public class ArbeidsoppgaveService {
 
     @Inject
     public ArbeidsoppgaveService(
-            AktorregisterConsumer aktorregisterConsumer,
+            PdlConsumer pdlConsumer,
             ArbeidsoppgaveDAO arbeidsoppgaveDAO,
             GodkjenningerDAO godkjenningerDAO,
             Metrikk metrikk,
             OppfolgingsplanDAO oppfolgingsplanDAO,
             TilgangskontrollService tilgangskontrollService
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
         this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
         this.godkjenningerDAO = godkjenningerDAO;
         this.metrikk = metrikk;
@@ -43,7 +43,7 @@ public class ArbeidsoppgaveService {
     @Transactional
     public Long lagreArbeidsoppgave(Long oppfoelgingsdialogId, Arbeidsoppgave arbeidsoppgave, String fnr) throws ConflictException {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(fnr);
 
         if (!eksisterendeArbeidsoppgaveHoererTilDialog(arbeidsoppgave.id, arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(oppfoelgingsdialogId))
                 || !tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan)) {
@@ -73,7 +73,7 @@ public class ArbeidsoppgaveService {
 
     @Transactional
     public void slettArbeidsoppgave(Long arbeidsoppgaveId, String fnr) throws ConflictException {
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(fnr);
         Arbeidsoppgave arbeidsoppgave = arbeidsoppgaveDAO.finnArbeidsoppgave(arbeidsoppgaveId);
         if (!arbeidsoppgave.opprettetAvAktoerId.equals(innloggetAktoerId)) {
             throw new ForbiddenException("Ikke tilgang");
