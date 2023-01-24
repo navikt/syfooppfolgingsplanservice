@@ -2,8 +2,8 @@ package no.nav.syfo.service;
 
 import no.nav.melding.virksomhet.servicemeldingmedkontaktinformasjon.v1.servicemeldingmedkontaktinformasjon.*;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.model.*;
+import no.nav.syfo.pdl.PdlConsumer;
 
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
@@ -26,12 +26,12 @@ public class TredjepartsvarselService {
 
     private JmsTemplate tredjepartsvarselqueue;
 
-    AktorregisterConsumer aktorregisterConsumer;
+    PdlConsumer pdlConsumer;
 
     @Autowired
-    public TredjepartsvarselService(@Qualifier("tredjepartsvarselqueue") JmsTemplate tredjepartsvarselqueue, AktorregisterConsumer aktorregisterConsumer) {
+    public TredjepartsvarselService(@Qualifier("tredjepartsvarselqueue") JmsTemplate tredjepartsvarselqueue, PdlConsumer pdlConsumer) {
         this.tredjepartsvarselqueue = tredjepartsvarselqueue;
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
     }
 
     public void sendVarselTilNaermesteLeder(Varseltype varseltype, Naermesteleder naermesteleder) {
@@ -40,7 +40,7 @@ public class TredjepartsvarselService {
         );
         WSServicemeldingMedKontaktinformasjon melding = new WSServicemeldingMedKontaktinformasjon();
 
-        String narmesteLederAktorId = aktorregisterConsumer.hentAktorIdForFnr(naermesteleder.naermesteLederFnr);
+        String narmesteLederAktorId = pdlConsumer.aktorid(naermesteleder.naermesteLederFnr);
 
         populerServiceMelding(melding, kontaktinformasjon(naermesteleder), narmesteLederAktorId, naermesteleder.orgnummer, varseltype, parametere);
 
