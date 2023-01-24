@@ -2,7 +2,6 @@ package no.nav.syfo.service
 
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.LocalApplication
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.dialogmelding.DialogmeldingService
 import no.nav.syfo.domain.*
 import no.nav.syfo.model.Naermesteleder

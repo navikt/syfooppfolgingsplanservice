@@ -1,8 +1,8 @@
 package no.nav.syfo.api.intern.controller.v2
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.ereg.EregConsumer
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO
 import no.nav.syfo.service.BrukerprofilService
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
@@ -19,7 +19,7 @@ import javax.ws.rs.ForbiddenException
 
 class OppfolgingsplanInternControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
-    private lateinit var aktorregisterConsumer: AktorregisterConsumer
+    private lateinit var pdlConsumer: PdlConsumer
 
     @MockBean
     private lateinit var eregConsumer: EregConsumer

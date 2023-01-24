@@ -1,7 +1,6 @@
 package no.nav.syfo.api.v2.controller
 
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.selvbetjening.controller.ArbeidstakerSykmeldingerControllerV2
 import no.nav.syfo.api.v2.domain.sykmelding.SykmeldingV2
