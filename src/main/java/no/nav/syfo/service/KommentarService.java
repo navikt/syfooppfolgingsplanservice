@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.*;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import javax.ws.rs.ForbiddenException;
 @Service
 public class KommentarService {
 
-    private AktorregisterConsumer aktorregisterConsumer;
+    private PdlConsumer pdlConsumer;
     private GodkjenningerDAO godkjenningerDAO;
     private KommentarDAO kommentarDAO;
     private OppfolgingsplanDAO oppfolgingsplanDAO;
@@ -21,13 +21,13 @@ public class KommentarService {
 
     @Inject
     public KommentarService(
-            AktorregisterConsumer aktorregisterConsumer,
+            PdlConsumer pdlConsumer,
             GodkjenningerDAO godkjenningerDAO,
             KommentarDAO kommentarDAO,
             OppfolgingsplanDAO oppfolgingsplanDAO,
             TiltakDAO tiltakDAO
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
         this.godkjenningerDAO = godkjenningerDAO;
         this.kommentarDAO = kommentarDAO;
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
@@ -37,7 +37,7 @@ public class KommentarService {
     @Transactional
     public Long lagreKommentar(Long tiltakId, Kommentar kommentar, String fnr) {
         Tiltak tiltak = tiltakDAO.finnTiltakById(tiltakId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(fnr);
 
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(tiltak.oppfoelgingsdialogId);
         if (kommentarenErIkkeOpprettetAvNoenAndre(kommentar, innloggetAktoerId, oppfolgingsplan)) {
@@ -66,7 +66,7 @@ public class KommentarService {
 
     @Transactional
     public void slettKommentar(Long kommentarId, String fnr) {
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(fnr);
         Kommentar kommentar = kommentarDAO.finnKommentar(kommentarId);
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.oppfolgingsplanByTiltakId(kommentar.tiltakId);
 

@@ -1,8 +1,9 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
+import no.nav.syfo.pdl.PdlConsumer;
+
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -11,19 +12,19 @@ import javax.inject.Inject;
 public class TilgangskontrollService {
 
     private NarmesteLederConsumer narmesteLederConsumer;
-    private AktorregisterConsumer aktorregisterConsumer;
+    private PdlConsumer pdlConsumer;
 
     @Inject
     public TilgangskontrollService(
             NarmesteLederConsumer narmesteLederConsumer,
-            AktorregisterConsumer aktorregisterConsumer
+            PdlConsumer pdlConsumer
     ) {
         this.narmesteLederConsumer = narmesteLederConsumer;
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
     }
 
     public boolean brukerTilhorerOppfolgingsplan(String fnr, Oppfolgingsplan oppfolgingsplan) {
-        String arbeidstakersFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+        String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         return arbeidstakersFnr.equals(fnr)
                 || erNaermesteLederForSykmeldt(fnr, arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
     }
