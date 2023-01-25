@@ -72,7 +72,6 @@ class PdlConsumer(
             PdlRequest(query, Variables(ident = fnr, grupper = IdentType.AKTORID.name))
         )
         try {
-            LOG.info("Kaller pdl for å finne aktorId for " + fnr)
             val pdlIdenter = restTemplate.exchange(
                 pdlUrl,
                 HttpMethod.POST,
@@ -113,7 +112,6 @@ class PdlConsumer(
             PdlRequest(query, Variables(ident = aktorId, grupper = IdentType.FOLKEREGISTERIDENT.name))
         )
         try {
-            LOG.info("Kaller pdl for å finne fnr for " + aktorId)
             val pdlIdenter = restTemplate.exchange(
                 pdlUrl,
                 HttpMethod.POST,
