@@ -1,7 +1,6 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.aareg.AaregConsumer;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.dkif.DigitalKontaktinfo;
 import no.nav.syfo.dkif.DkifConsumer;
@@ -11,6 +10,7 @@ import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.pdf.domain.*;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.repository.domain.Dokument;
 import no.nav.syfo.util.ConflictException;
@@ -53,7 +53,7 @@ public class GodkjenningService {
 
     private TilgangskontrollService tilgangskontrollService;
 
-    private AktorregisterConsumer aktorregisterConsumer;
+    private PdlConsumer pdlConsumer;
 
     private DkifConsumer dkifConsumer;
 
@@ -82,7 +82,7 @@ public class GodkjenningService {
             GodkjenningerDAO godkjenningerDAO,
             GodkjentplanDAO godkjentplanDAO,
             OppfolgingsplanDAO oppfolgingsplanDAO,
-            AktorregisterConsumer aktorregisterConsumer,
+            PdlConsumer pdlConsumer,
             BrukerprofilService brukerprofilService,
             DkifConsumer dkifConsumer,
             EregConsumer eregConsumer,
@@ -98,7 +98,7 @@ public class GodkjenningService {
         this.godkjenningerDAO = godkjenningerDAO;
         this.godkjentplanDAO = godkjentplanDAO;
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
         this.brukerprofilService = brukerprofilService;
         this.dkifConsumer = dkifConsumer;
         this.eregConsumer = eregConsumer;
@@ -111,8 +111,8 @@ public class GodkjenningService {
     @Transactional
     public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning, boolean delMedNav) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
 
+        String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
         if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(innloggetFnr, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
         }
@@ -128,7 +128,7 @@ public class GodkjenningService {
         oppfolgingsplan = oppfolgingsplanDAO.populate(oppfolgingsplan);
 
         if (tvungenGodkjenning && erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
-            String arbeidstakersFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+            String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
             Optional<Naermesteleder> narmesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
             if (narmesteleder.isPresent() && narmesteleder.get().naermesteLederFnr.equals(innloggetFnr)) {
                 LOG.info("TRACE: Arbeidstaker attempting to Tvangsgodkjenne oppfolginsplan {}", oppfoelgingsdialogId);
@@ -169,7 +169,7 @@ public class GodkjenningService {
             if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId)) {
                 serviceVarselService.sendServiceVarsel(oppfolgingsplan.arbeidstaker.aktoerId, SyfoplangodkjenningSyk, oppfoelgingsdialogId);
             } else {
-                String arbeidstakersFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+                String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
                 Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
                 narmesteLederVarselService.sendVarselTilNaermesteLeder(SyfoplangodkjenningNl, naermesteleder);
             }
@@ -263,12 +263,12 @@ public class GodkjenningService {
     public void genererNyPlan(Oppfolgingsplan oppfolgingsplan, String innloggetAktoerId, boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfolgingsplan, false, delMedNav);
 
-        String arbeidstakersFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+        String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
         DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
-        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+        String sykmeldtFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
                 .withArbeidsgiverEpost(naermesteleder.epost)
@@ -350,12 +350,12 @@ public class GodkjenningService {
     public void genererTvungenPlan(Oppfolgingsplan oppfolgingsplan, RSGyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfolgingsplan, true, delMedNav);
 
-        String arbeidstakersFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+        String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
         DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
-        String sykmeldtFnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+        String sykmeldtFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
                 .withArbeidsgiverEpost(naermesteleder.epost)
@@ -432,7 +432,7 @@ public class GodkjenningService {
     @Transactional
     public void avvisGodkjenning(long oppfoelgingsdialogId, String innloggetFnr) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
-        String innloggetAktoerId = aktorregisterConsumer.hentAktorIdForFnr(innloggetFnr);
+        String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
 
         if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(innloggetFnr, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");

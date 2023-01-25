@@ -2,9 +2,9 @@ package no.nav.syfo.aareg;
 
 import no.nav.syfo.fellesKodeverk.FellesKodeverkConsumer;
 import no.nav.syfo.aareg.exceptions.RestErrorFromAareg;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Stilling;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.sts.StsConsumer;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RunWith(MockitoJUnitRunner.class)
 public class AaregConsumerTest {
     @Mock
-    private AktorregisterConsumer aktorregisterConsumer;
+    private PdlConsumer pdlConsumer;
     @Mock
     private FellesKodeverkConsumer fellesKodeverkConsumer;
     @Mock
@@ -120,7 +120,7 @@ public class AaregConsumerTest {
 
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<Arbeidsforhold>>() {
         }))).thenReturn(new ResponseEntity<>(arbeidsforholdList, OK));
-        when(aktorregisterConsumer.hentFnrForAktor(AT_AKTORID)).thenReturn(AT_FNR);
+        when(pdlConsumer.fnr(AT_AKTORID)).thenReturn(AT_FNR);
 
         List<Stilling> actualStillingList = aaregConsumer.arbeidstakersStillingerForOrgnummer(AT_AKTORID, LocalDate.now(), ORGNUMMER);
 
@@ -133,7 +133,7 @@ public class AaregConsumerTest {
     private void test_arbeidstakersStillingerForOrgnummer(List<Arbeidsforhold> arbeidsforholdList) {
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<Arbeidsforhold>>() {
         }))).thenReturn(new ResponseEntity<>(arbeidsforholdList, OK));
-        when(aktorregisterConsumer.hentFnrForAktor(AT_AKTORID)).thenReturn(AT_FNR);
+        when(pdlConsumer.fnr(AT_AKTORID)).thenReturn(AT_FNR);
 
         List<Stilling> actualStillingList = aaregConsumer.arbeidstakersStillingerForOrgnummer(AT_AKTORID, LocalDate.now(), ORGNUMMER);
 

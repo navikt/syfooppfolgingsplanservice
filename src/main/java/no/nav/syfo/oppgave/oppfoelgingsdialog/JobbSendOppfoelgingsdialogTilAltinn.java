@@ -1,11 +1,11 @@
 package no.nav.syfo.oppgave.oppfoelgingsdialog;
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.domain.OppfolgingsplanAltinn;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
 import no.nav.syfo.oppgave.Oppgavetype;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.service.OppfolgingsplanService;
 import no.nav.syfo.service.PdfService;
 import no.nav.syfo.ws.AltinnConsumer;
@@ -22,7 +22,7 @@ import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
 @Service
 public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 
-    private final AktorregisterConsumer aktorregisterConsumer;
+    private final PdlConsumer pdlConsumer;
     private final AltinnConsumer altinnConsumer;
     private final Metrikk metrikk;
     private final OppfolgingsplanService oppfolgingsplanService;
@@ -35,13 +35,13 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
 
     @Inject
     public JobbSendOppfoelgingsdialogTilAltinn(
-            AktorregisterConsumer aktorregisterConsumer,
+            PdlConsumer pdlConsumer,
             AltinnConsumer altinnConsumer,
             Metrikk metrikk,
             OppfolgingsplanService oppfolgingsplanService,
             PdfService pdfService
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
         this.altinnConsumer = altinnConsumer;
         this.metrikk = metrikk;
         this.oppfolgingsplanService = oppfolgingsplanService;
@@ -52,7 +52,7 @@ public class JobbSendOppfoelgingsdialogTilAltinn implements Jobb {
     @Override
     public void utfoerOppgave(String oppfoelgingsdialogId) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
-        oppfolgingsplan.arbeidstaker.fnr = aktorregisterConsumer.hentFnrForAktor(oppfolgingsplan.arbeidstaker.aktoerId);
+        oppfolgingsplan.arbeidstaker.fnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
 
         byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilAltinn(oppfolgingsplan);
 

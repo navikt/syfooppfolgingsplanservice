@@ -1,11 +1,11 @@
 package no.nav.syfo.api.selvbetjening.controller
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
@@ -14,7 +14,9 @@ import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
-import org.junit.*
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 import org.mockito.Mockito
 import org.springframework.boot.test.mock.mockito.MockBean
 import javax.inject.Inject
@@ -22,7 +24,7 @@ import javax.ws.rs.ForbiddenException
 
 class ArbeidsgiverOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
     @MockBean
-    lateinit var aktorregisterConsumer: AktorregisterConsumer
+    lateinit var pdlConsumer: PdlConsumer
 
     @MockBean
     lateinit var narmesteLederConsumer: NarmesteLederConsumer
@@ -39,7 +41,7 @@ class ArbeidsgiverOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
     @Before
     fun setup() {
         loggInnBruker(contextHolder, LEDER_FNR)
-        mockAktorregisterConsumer()
+        mockPdlConsumer()
     }
 
     @Test
@@ -84,10 +86,10 @@ class ArbeidsgiverOppfolgingsplanControllerTest : AbstractRessursTilgangTest() {
         arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog)
     }
 
-    private fun mockAktorregisterConsumer() {
-        Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(ARBEIDSTAKER_AKTORID)).thenReturn(ARBEIDSTAKER_FNR)
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
-        Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(LEDER_AKTORID)).thenReturn(LEDER_FNR)
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(LEDER_FNR)).thenReturn(LEDER_AKTORID)
+    private fun mockPdlConsumer() {
+        Mockito.`when`(pdlConsumer.fnr(ARBEIDSTAKER_AKTORID)).thenReturn(ARBEIDSTAKER_FNR)
+        Mockito.`when`(pdlConsumer.aktorid(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
+        Mockito.`when`(pdlConsumer.fnr(LEDER_AKTORID)).thenReturn(LEDER_FNR)
+        Mockito.`when`(pdlConsumer.aktorid(LEDER_FNR)).thenReturn(LEDER_AKTORID)
     }
 }

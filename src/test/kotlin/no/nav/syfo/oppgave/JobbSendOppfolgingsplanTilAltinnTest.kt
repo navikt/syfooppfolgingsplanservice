@@ -1,8 +1,8 @@
 package no.nav.syfo.oppgave
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oppgave.oppfoelgingsdialog.JobbSendOppfoelgingsdialogTilAltinn
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.service.PdfService
 import no.nav.syfo.testhelper.oppfolgingsplanGodkjentTvang
@@ -28,7 +28,7 @@ class JobbSendOppfolgingsplanTilAltinnTest {
     private lateinit var altinnConsumer: AltinnConsumer
 
     @Mock
-    private lateinit var aktorregisterConsumer: AktorregisterConsumer
+    private lateinit var pdlConsumer: PdlConsumer
 
     @InjectMocks
     private lateinit var jobbSendOppfoelgingsdialogTilAltinn: JobbSendOppfoelgingsdialogTilAltinn

@@ -128,8 +128,6 @@ spec:
       value: https://pdl-api.nais.adeo.no/graphql
     - name: SECURITY_TOKEN_SERVICE_REST_URL
       value: https://security-token-service.nais.adeo.no
-    - name: AKTORREGISTER_REST_URL
-      value: https://app.adeo.no/aktoerregister/api/v1
     - name: AAREG_SERVICES_URL
       value: https://aareg-services.intern.nav.no/api
     - name: EREG_BASEURL

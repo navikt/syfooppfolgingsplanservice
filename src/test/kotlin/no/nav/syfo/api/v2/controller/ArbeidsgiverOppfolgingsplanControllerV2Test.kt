@@ -1,6 +1,5 @@
 package no.nav.syfo.api.v2.controller
 
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
@@ -8,9 +7,7 @@ import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
-import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
-import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
@@ -24,8 +21,6 @@ import javax.inject.Inject
 import javax.ws.rs.ForbiddenException
 
 class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
-    @MockBean
-    lateinit var aktorregisterConsumer: AktorregisterConsumer
 
     @MockBean
     lateinit var narmesteLederConsumer: NarmesteLederConsumer
@@ -48,7 +43,6 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Before
     fun setup() {
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
-        mockAktorregisterConsumer()
     }
 
     @Test
@@ -91,12 +85,5 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
         loggUtAlle(contextHolder)
         val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
         arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog)
-    }
-
-    private fun mockAktorregisterConsumer() {
-        Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(ARBEIDSTAKER_AKTORID)).thenReturn(ARBEIDSTAKER_FNR)
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
-        Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(LEDER_AKTORID)).thenReturn(LEDER_FNR)
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(LEDER_FNR)).thenReturn(LEDER_AKTORID)
     }
 }

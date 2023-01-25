@@ -2,9 +2,9 @@ package no.nav.syfo.aareg;
 
 import no.nav.syfo.fellesKodeverk.FellesKodeverkConsumer;
 import no.nav.syfo.aareg.exceptions.RestErrorFromAareg;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Stilling;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.sts.StsConsumer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ import static org.springframework.http.HttpMethod.GET;
 public class AaregConsumer {
     private static final Logger LOG = getLogger(AaregConsumer.class);
 
-    private final AktorregisterConsumer aktorregisterConsumer;
+    private final PdlConsumer pdlConsumer;
     private final FellesKodeverkConsumer fellesKodeverkConsumer;
     private final Metrikk metrikk;
     private final RestTemplate restTemplate;
@@ -42,14 +42,14 @@ public class AaregConsumer {
 
     @Autowired
     public AaregConsumer(
-            AktorregisterConsumer aktorregisterConsumer,
+            PdlConsumer pdlConsumer,
             FellesKodeverkConsumer fellesKodeverkConsumer,
             Metrikk metrikk,
             RestTemplate restTemplate,
             StsConsumer stsConsumer,
             @Value("${aareg.services.url}") String url
     ) {
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
         this.fellesKodeverkConsumer = fellesKodeverkConsumer;
         this.metrikk = metrikk;
         this.restTemplate = restTemplate;
@@ -80,7 +80,7 @@ public class AaregConsumer {
     }
 
     public List<Stilling> arbeidstakersStillingerForOrgnummer(String aktorId, LocalDate fom, String orgnummer) {
-        String fnr = aktorregisterConsumer.hentFnrForAktor(aktorId);
+        String fnr = pdlConsumer.fnr(aktorId);
         List<Arbeidsforhold> arbeidsforholdList = arbeidsforholdArbeidstaker(fnr);
 
         return arbeidsforholdList2StillingForOrgnummer(arbeidsforholdList, fom, orgnummer);

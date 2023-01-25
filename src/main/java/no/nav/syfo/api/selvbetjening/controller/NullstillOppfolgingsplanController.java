@@ -1,7 +1,8 @@
 package no.nav.syfo.api.selvbetjening.controller;
 
 import no.nav.security.token.support.core.api.Unprotected;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
+
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,15 +24,15 @@ public class NullstillOppfolgingsplanController {
 
     private static final Logger logger = getLogger(NullstillOppfolgingsplanController.class);
     private final OppfolgingsplanDAO oppfolgingsplanDAO;
-    private final AktorregisterConsumer aktorregisterConsumer;
+    private final PdlConsumer pdlConsumer;
 
     @Inject
     public NullstillOppfolgingsplanController(
             OppfolgingsplanDAO oppfolgingsplanDAO,
-            AktorregisterConsumer aktorregisterConsumer
+            PdlConsumer pdlConsumer
     ) {
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
     }
 
     @DeleteMapping(path = "/slett/{id}")
@@ -55,7 +56,7 @@ public class NullstillOppfolgingsplanController {
             @Value("${nais.cluster.name}") String env
     ) {
         if (isDev(env)) {
-            String aktorId = aktorregisterConsumer.hentAktorIdForFnr(fnr);
+            String aktorId = pdlConsumer.aktorid(fnr);
             List<Long> dialogIder = oppfolgingsplanDAO.hentDialogIDerByAktoerId(aktorId);
 
             logger.info("Sletter oppfolgingsplaner for aktorId");

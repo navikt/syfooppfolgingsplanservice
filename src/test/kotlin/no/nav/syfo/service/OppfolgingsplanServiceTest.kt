@@ -2,11 +2,11 @@ package no.nav.syfo.service
 
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.LocalApplication
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.dialogmelding.DialogmeldingService
 import no.nav.syfo.domain.*
 import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.*
 import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
@@ -66,7 +66,7 @@ class OppfolgingsplanServiceTest {
     private lateinit var tilgangskontrollService: TilgangskontrollService
 
     @MockBean
-    private lateinit var aktorregisterConsumer: AktorregisterConsumer
+    private lateinit var pdlConsumer: PdlConsumer
 
     @MockBean
     private lateinit var serviceVarselService: ServiceVarselService
@@ -122,9 +122,9 @@ class OppfolgingsplanServiceTest {
             ))
         Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(oppfolgingsplan)
         Mockito.`when`(oppfolgingsplanDAO.create(ArgumentMatchers.any())).thenReturn(oppfolgingsplan.id(2L))
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("1234567890123")
+        Mockito.`when`(pdlConsumer.aktorid(ArgumentMatchers.anyString())).thenReturn("1234567890123")
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(Optional.of(Naermesteleder()))
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("1234567890123")
+        Mockito.`when`(pdlConsumer.aktorid(ArgumentMatchers.anyString())).thenReturn("1234567890123")
         Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.anyString(), ArgumentMatchers.any())).thenReturn(true)
         Mockito.`when`(tiltakDAO.create(any())).thenReturn(Tiltak().id(1L))
         Mockito.`when`(arbeidsoppgaveDAO.arbeidsoppgaverByOppfoelgingsdialogId(ArgumentMatchers.anyLong())).thenReturn(listOf(Arbeidsoppgave().id(1L)))
@@ -157,7 +157,7 @@ class OppfolgingsplanServiceTest {
             ))
         Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(oppfolgingsplan)
         Mockito.`when`(oppfolgingsplanDAO.create(ArgumentMatchers.any())).thenReturn(oppfolgingsplan.id(2L))
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("1234567890123")
+        Mockito.`when`(pdlConsumer.aktorid(ArgumentMatchers.anyString())).thenReturn("1234567890123")
         Mockito.`when`(narmesteLederConsumer.narmesteLeder(ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(Optional.of(Naermesteleder()))
         Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.anyString(), ArgumentMatchers.any())).thenReturn(true)
         Mockito.`when`(tiltakDAO.create(any())).thenReturn(Tiltak().id(1L))
@@ -182,7 +182,7 @@ class OppfolgingsplanServiceTest {
         oppfolgingsplan.arbeidstaker.aktoerId(aktoerId)
         mockSvarFraSendOppfolgingsplanTilIsDialogmelding(HttpStatus.OK)
         Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(oppfolgingsplan)
-        Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(aktoerId)).thenReturn(fnr)
+        Mockito.`when`(pdlConsumer.fnr(aktoerId)).thenReturn(fnr)
         Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.eq(fnr), ArgumentMatchers.any(Oppfolgingsplan::class.java))).thenReturn(true)
         Mockito.`when`(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(ArgumentMatchers.anyLong())).thenReturn(Optional.of(GodkjentPlan().dokumentUuid("dokumentUuid")))
         Mockito.`when`(dokumentDAO.hent(ArgumentMatchers.anyString())).thenReturn(byteArrayOf(0, 1, 2))
@@ -197,7 +197,7 @@ class OppfolgingsplanServiceTest {
     @Throws(Exception::class)
     fun delMedFastlegeIkkeTilgang() {
         Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(Oppfolgingsplan())
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("aktoerId")
+        Mockito.`when`(pdlConsumer.aktorid(ArgumentMatchers.anyString())).thenReturn("aktoerId")
         Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.eq("fnr"), ArgumentMatchers.any(Oppfolgingsplan::class.java))).thenReturn(false)
         oppfolgingsplanService.delMedFastlege(1L, "fnr")
     }
@@ -206,7 +206,7 @@ class OppfolgingsplanServiceTest {
     @Throws(Exception::class)
     fun delMedFastlegeFinnerIkkeGodkjentPlan() {
         Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(Oppfolgingsplan())
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("aktoerId")
+        Mockito.`when`(pdlConsumer.aktorid(ArgumentMatchers.anyString())).thenReturn("aktoerId")
         Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.eq("fnr"), ArgumentMatchers.any(Oppfolgingsplan::class.java))).thenReturn(true)
         Mockito.`when`(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(ArgumentMatchers.anyLong())).thenReturn(Optional.empty())
         oppfolgingsplanService.delMedFastlege(1L, "fnr")
@@ -217,7 +217,7 @@ class OppfolgingsplanServiceTest {
     fun delMedFastlegeFeilFraFastlegerest() {
         mockSvarFraSendOppfolgingsplanTilIsDialogmelding(HttpStatus.INTERNAL_SERVER_ERROR)
         Mockito.`when`(oppfolgingsplanDAO.finnOppfolgingsplanMedId(ArgumentMatchers.anyLong())).thenReturn(Oppfolgingsplan())
-        Mockito.`when`(aktorregisterConsumer.hentAktorIdForFnr(ArgumentMatchers.anyString())).thenReturn("aktoerId")
+        Mockito.`when`(pdlConsumer.aktorid(ArgumentMatchers.anyString())).thenReturn("aktoerId")
         Mockito.`when`(tilgangskontrollService.brukerTilhorerOppfolgingsplan(ArgumentMatchers.eq("fnr"), ArgumentMatchers.any(Oppfolgingsplan::class.java))).thenReturn(true)
         Mockito.`when`(godkjentplanDAO.godkjentPlanByOppfolgingsplanId(ArgumentMatchers.anyLong())).thenReturn(Optional.of(GodkjentPlan().dokumentUuid("dokumentUuid")))
         Mockito.`when`(dokumentDAO.hent(ArgumentMatchers.anyString())).thenReturn(byteArrayOf(0, 1, 2))

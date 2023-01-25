@@ -1,7 +1,6 @@
 package no.nav.syfo.service
 
 import no.nav.syfo.aareg.AaregConsumer
-import no.nav.syfo.aktorregister.AktorregisterConsumer
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
 import no.nav.syfo.dkif.DkifConsumer
 import no.nav.syfo.domain.*
@@ -9,6 +8,7 @@ import no.nav.syfo.ereg.EregConsumer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.*
 import no.nav.syfo.testhelper.generateDigitalKontaktinfo
 import no.nav.syfo.util.PropertyUtil
@@ -40,7 +40,7 @@ class GodkjenningServiceTest {
     private lateinit var tilgangskontrollService: TilgangskontrollService
 
     @Mock
-    private lateinit var aktorregisterConsumer: AktorregisterConsumer
+    private lateinit var pdlConsumer: PdlConsumer
 
     @Mock
     private lateinit var dkifConsumer: DkifConsumer
@@ -111,7 +111,7 @@ class GodkjenningServiceTest {
         val digitalKontaktinfo = generateDigitalKontaktinfo()
         Mockito.`when`(dkifConsumer.kontaktinformasjon(ArgumentMatchers.anyString())).thenReturn(digitalKontaktinfo)
         Mockito.`when`(brukerprofilService.hentNavnByAktoerId(ArgumentMatchers.anyString())).thenReturn("navn")
-        Mockito.`when`(aktorregisterConsumer.hentFnrForAktor(ArgumentMatchers.anyString())).thenReturn("fnr")
+        Mockito.`when`(pdlConsumer.fnr(ArgumentMatchers.anyString())).thenReturn("fnr")
         Mockito.`when`(eregConsumer.virksomhetsnavn(ArgumentMatchers.anyString())).thenReturn("Virksomhet")
         Mockito.`when`(aaregConsumer.arbeidstakersStillingerForOrgnummer(ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.anyString())).thenReturn(emptyList())
         System.setProperty(PropertyUtil.ENVIRONMENT_NAME, ToggleUtil.ENVIRONMENT_MODE.dev.name)

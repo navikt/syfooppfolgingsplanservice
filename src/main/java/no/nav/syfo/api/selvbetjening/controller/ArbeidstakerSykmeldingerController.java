@@ -2,12 +2,13 @@ package no.nav.syfo.api.selvbetjening.controller;
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
-import no.nav.syfo.aktorregister.AktorregisterConsumer;
+
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.model.Sykmelding;
+import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer;
 import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer;
-import org.slf4j.Logger;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,6 @@ import java.util.Optional;
 import static no.nav.syfo.oidc.OIDCIssuer.EKSTERN;
 import static no.nav.syfo.oidc.OIDCUtil.getIssuerToken;
 import static no.nav.syfo.oidc.OIDCUtil.getSubjectEksternMedThrows;
-import static org.slf4j.LoggerFactory.getLogger;
 
 @RestController
 @ProtectedWithClaims(issuer = EKSTERN)
@@ -29,7 +29,7 @@ public class ArbeidstakerSykmeldingerController {
 
     private final TokenValidationContextHolder oidcContextHolder;
     private final Metrikk metrikk;
-    private final AktorregisterConsumer aktorregisterConsumer;
+    private final PdlConsumer pdlConsumer;
     private final ArbeidstakerSykmeldingerConsumer arbeidstakerSykmeldingerConsumer;
     private final TokenDingsConsumer tokenDingsConsumer;
     @Value("${syfosmregister.id}")
@@ -39,12 +39,12 @@ public class ArbeidstakerSykmeldingerController {
     public ArbeidstakerSykmeldingerController(
             TokenValidationContextHolder oidcContextHolder,
             Metrikk metrikk,
-            AktorregisterConsumer aktorregisterConsumer,
+            PdlConsumer pdlConsumer,
             ArbeidstakerSykmeldingerConsumer arbeidstakerSykmeldingerConsumer,
             TokenDingsConsumer tokenDingsConsumer) {
         this.oidcContextHolder = oidcContextHolder;
         this.metrikk = metrikk;
-        this.aktorregisterConsumer = aktorregisterConsumer;
+        this.pdlConsumer = pdlConsumer;
         this.arbeidstakerSykmeldingerConsumer = arbeidstakerSykmeldingerConsumer;
         this.tokenDingsConsumer = tokenDingsConsumer;
     }
@@ -60,7 +60,7 @@ public class ArbeidstakerSykmeldingerController {
         String bearerToken = "Bearer " + exchangedToken;
 
         String innloggetIdent = getSubjectEksternMedThrows(oidcContextHolder);
-        String oppslattIdentAktorId = aktorregisterConsumer.hentAktorIdForFnr(innloggetIdent);
+        String oppslattIdentAktorId = pdlConsumer.aktorid(innloggetIdent);
 
         final boolean isTodayPresent = Boolean.parseBoolean(today);
 
