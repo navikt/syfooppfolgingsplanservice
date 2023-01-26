@@ -20,6 +20,7 @@ public class Oppfolgingsplan {
 
     public String sistEndretAvAktoerId;
     public String opprettetAvAktoerId;
+    public String opprettetAvFnr;
     public LocalDateTime sistEndretDato;
     public LocalDateTime sistEndretArbeidsgiver;
     public LocalDateTime sistEndretSykmeldt;
@@ -33,5 +34,4 @@ public class Oppfolgingsplan {
 
     public Person arbeidsgiver = new Person();
     public Person arbeidstaker = new Person();
-
 }

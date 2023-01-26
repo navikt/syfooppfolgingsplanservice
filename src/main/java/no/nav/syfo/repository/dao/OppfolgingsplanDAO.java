@@ -72,7 +72,9 @@ public class OppfolgingsplanDAO {
                 .addValue("arbeidsgiver_sist_endret", convert(oppfolgingsplan.arbeidsgiver.sisteEndring))
                 .addValue("sykmeldt_sist_endret", convert(oppfolgingsplan.arbeidstaker.sisteEndring))
                 .addValue("samtykke_sykmeldt", null)
-                .addValue("samtykke_arbeidsgiver", null);
+                .addValue("samtykke_arbeidsgiver", null)
+                .addValue("sm_fnr", oppfolgingsplan.arbeidstaker.fnr)
+                .addValue("opprettet_av_fnr", oppfolgingsplan.opprettetAvFnr);
 
         namedParameterJdbcTemplate.update("insert into oppfoelgingsdialog " +
                 "(oppfoelgingsdialog_id, uuid, aktoer_id, virksomhetsnummer, opprettet_av, created, arbeidsgiver_sist_innlogget, " +
@@ -80,7 +82,7 @@ public class OppfolgingsplanDAO {
                 "arbeidsgiver_sist_endret, sykmeldt_sist_endret, samtykke_sykmeldt, samtykke_arbeidsgiver) " +
                 "values(:oppfoelgingsdialog_id, :uuid, :aktoer_id, :virksomhetsnummer, :opprettet_av, :created, :arbeidsgiver_sist_innlogget, " +
                 ":sykmeldt_sist_innlogget, :sist_endret_av, :sist_endret, :arbeidsgiver_sist_aksessert, :sykmeldt_sist_aksessert, " +
-                ":arbeidsgiver_sist_endret, :sykmeldt_sist_endret, :samtykke_sykmeldt, :samtykke_arbeidsgiver)", namedParameters);
+                ":arbeidsgiver_sist_endret, :sykmeldt_sist_endret, :samtykke_sykmeldt, :samtykke_arbeidsgiver, :sm_fnr, :opprettet_av_fnr)", namedParameters);
 
         return oppfolgingsplan.id(id);
     }
@@ -206,7 +208,9 @@ public class OppfolgingsplanDAO {
                     .sistEndretArbeidsgiver(convert(rs.getTimestamp("arbeidsgiver_sist_endret")))
                     .sistEndretSykmeldt(convert(rs.getTimestamp("sykmeldt_sist_endret")))
                     .samtykkeSykmeldt(samtykke_sykmeldt)
-                    .samtykkeArbeidsgiver(samtykke_arbeidsgiver);
+                    .samtykkeArbeidsgiver(samtykke_arbeidsgiver)
+                    .smFnr(rs.getString("sm_fnr"))
+                    .opprettetAvFnr(rs.getString("opprettet_av_fnr"));
         }
     }
 }

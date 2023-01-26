@@ -160,7 +160,7 @@ public class OppfolgingsplanService {
             throw new ConflictException();
         }
 
-        return opprettDialog(sykmeldtAktoerId, virksomhetsnummer, innloggetAktoerId);
+        return opprettDialog(sykmeldtAktoerId, sykmeldtFnr, virksomhetsnummer, innloggetAktoerId, innloggetFnr);
     }
 
     @Transactional
@@ -178,7 +178,7 @@ public class OppfolgingsplanService {
             throw new ConflictException();
         }
 
-        long nyOppfoelgingsdialogId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId);
+        long nyOppfoelgingsdialogId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId, innloggetFnr);
         overfoerDataFraDialogTilNyDialog(oppfoelgingsdialogId, nyOppfoelgingsdialogId);
 
         return nyOppfoelgingsdialogId;
@@ -195,11 +195,12 @@ public class OppfolgingsplanService {
                 });
     }
 
-    private Long opprettDialog(String sykmeldtAktorId, String virksomhetsnummer, String innloggetAktorId) {
+    private Long opprettDialog(String sykmeldtAktorId, String sykmeldtFnr, String virksomhetsnummer, String innloggetAktorId, String innloggetFnr) {
         Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan()
                 .sistEndretAvAktoerId(innloggetAktorId)
                 .opprettetAvAktoerId(innloggetAktorId)
-                .arbeidstaker(new Person().aktoerId(sykmeldtAktorId))
+                .opprettetAvFnr(innloggetFnr)
+                .arbeidstaker(new Person().aktoerId(sykmeldtAktorId).fnr(sykmeldtFnr))
                 .virksomhet(new Virksomhet().virksomhetsnummer(virksomhetsnummer));
         if (innloggetAktorId.equals(sykmeldtAktorId)) {
             oppfolgingsplan.arbeidstaker.sistInnlogget(now());
@@ -301,7 +302,7 @@ public class OppfolgingsplanService {
         throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
 
         oppfolgingsplanDAO.avbryt(oppfolgingsplan.id, innloggetAktoerId);
-        long nyOppfolgingsplanId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId);
+        long nyOppfolgingsplanId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId, innloggetFnr);
         overfoerDataFraDialogTilNyDialog(oppfolgingsplanId, nyOppfolgingsplanId);
     }
 
