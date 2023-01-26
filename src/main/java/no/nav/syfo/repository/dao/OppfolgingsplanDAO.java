@@ -79,7 +79,7 @@ public class OppfolgingsplanDAO {
         namedParameterJdbcTemplate.update("insert into oppfoelgingsdialog " +
                 "(oppfoelgingsdialog_id, uuid, aktoer_id, virksomhetsnummer, opprettet_av, created, arbeidsgiver_sist_innlogget, " +
                 "sykmeldt_sist_innlogget, sist_endret_av, sist_endret, arbeidsgiver_sist_aksessert, sykmeldt_sist_aksessert, " +
-                "arbeidsgiver_sist_endret, sykmeldt_sist_endret, samtykke_sykmeldt, samtykke_arbeidsgiver) " +
+                "arbeidsgiver_sist_endret, sykmeldt_sist_endret, samtykke_sykmeldt, samtykke_arbeidsgiver, sm_fnr, opprettet_av_fnr) " +
                 "values(:oppfoelgingsdialog_id, :uuid, :aktoer_id, :virksomhetsnummer, :opprettet_av, :created, :arbeidsgiver_sist_innlogget, " +
                 ":sykmeldt_sist_innlogget, :sist_endret_av, :sist_endret, :arbeidsgiver_sist_aksessert, :sykmeldt_sist_aksessert, " +
                 ":arbeidsgiver_sist_endret, :sykmeldt_sist_endret, :samtykke_sykmeldt, :samtykke_arbeidsgiver, :sm_fnr, :opprettet_av_fnr)", namedParameters);
