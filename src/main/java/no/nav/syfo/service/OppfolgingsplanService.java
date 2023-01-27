@@ -172,13 +172,14 @@ public class OppfolgingsplanService {
             throw new ForbiddenException();
         }
         String sykmeldtAktoerId = oppfolgingsplan.arbeidstaker.aktoerId;
+        String sykmeldtFnr = oppfolgingsplan.arbeidstaker.fnr != null ? oppfolgingsplan.arbeidstaker.fnr : pdlConsumer.fnr(sykmeldtAktoerId);
 
         if (parteneHarEkisterendeAktivOppfolgingsplan(sykmeldtAktoerId, oppfolgingsplan.virksomhet.virksomhetsnummer)) {
             log.warn("Kan ikke opprette en plan når det allerede eksisterer en aktiv plan mellom partene!");
             throw new ConflictException();
         }
 
-        long nyOppfoelgingsdialogId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId, innloggetFnr);
+        long nyOppfoelgingsdialogId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, sykmeldtFnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId, innloggetFnr);
         overfoerDataFraDialogTilNyDialog(oppfoelgingsdialogId, nyOppfoelgingsdialogId);
 
         return nyOppfoelgingsdialogId;
