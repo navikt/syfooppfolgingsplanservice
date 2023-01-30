@@ -24,4 +24,7 @@ public class POppfoelgingsdialog {
     public LocalDateTime sistEndretArbeidsgiver;
     public LocalDateTime sistEndretSykmeldt;
     public LocalDateTime sistEndret;
+
+    public String smFnr;
+    public String opprettetAvFnr;
 }
