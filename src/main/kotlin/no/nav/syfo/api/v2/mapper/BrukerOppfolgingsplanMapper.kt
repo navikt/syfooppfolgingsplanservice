@@ -1,5 +1,6 @@
 package no.nav.syfo.api.v2.mapper
 
+import no.nav.syfo.aareg.AaregConsumer
 import no.nav.syfo.api.util.unwrap
 import no.nav.syfo.api.v2.domain.Virksomhet
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.*
@@ -170,4 +171,9 @@ fun BrukerOppfolgingsplan.populerPlanerMedAvbruttPlanListe(planer: List<BrukerOp
             it.godkjentPlan!!.avbruttPlan!!.id = it.id
             it.godkjentPlan.avbruttPlan!!
         }
+}
+
+fun BrukerOppfolgingsplan.populerArbeidstakersStillinger(aaregConsumer: AaregConsumer) {
+    val stillinger = aaregConsumer.arbeidstakersFnrStillingerForOrgnummer(arbeidstaker.fnr, opprettetDato, virksomhet.virksomhetsnummer)
+    arbeidstaker.stillinger = stillinger.map { stilling -> Stilling(stilling.yrke, stilling.prosent) }
 }
