@@ -1,6 +1,7 @@
 package no.nav.syfo.api.v2.mapper
 
 import no.nav.syfo.aareg.AaregConsumer
+import no.nav.syfo.aareg.exceptions.RestErrorFromAareg
 import no.nav.syfo.api.util.unwrap
 import no.nav.syfo.api.v2.domain.Virksomhet
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.*
@@ -175,6 +176,10 @@ fun BrukerOppfolgingsplan.populerPlanerMedAvbruttPlanListe(planer: List<BrukerOp
 }
 
 fun BrukerOppfolgingsplan.populerArbeidstakersStillinger(aaregConsumer: AaregConsumer) {
-    val stillinger = aaregConsumer.arbeidstakersFnrStillingerForOrgnummer(arbeidstaker.fnr, opprettetDato, virksomhet.virksomhetsnummer)
-    arbeidstaker.stillinger = stillinger.map { stilling -> Stilling(stilling.yrke, stilling.prosent) }
+    try {
+        val stillinger = aaregConsumer.arbeidstakersFnrStillingerForOrgnummer(arbeidstaker.fnr, opprettetDato, virksomhet.virksomhetsnummer)
+        arbeidstaker.stillinger = stillinger.map { stilling -> Stilling(stilling.yrke, stilling.prosent) }
+    } catch (_: RestErrorFromAareg) {
+    }
+
 }
