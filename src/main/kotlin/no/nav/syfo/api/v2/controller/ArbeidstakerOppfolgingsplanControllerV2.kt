@@ -2,9 +2,11 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
+import no.nav.syfo.aareg.AaregConsumer
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.BrukerOppfolgingsplan
+import no.nav.syfo.api.v2.mapper.populerArbeidstakersStillinger
 import no.nav.syfo.api.v2.mapper.populerPlanerMedAvbruttPlanListe
 import no.nav.syfo.api.v2.mapper.toBrukerOppfolgingsplan
 import no.nav.syfo.domain.Oppfolgingsplan
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val oppfolgingsplanService: OppfolgingsplanService,
+    private val aaregConsumer: AaregConsumer,
     private val metrikk: Metrikk,
     @Value("\${tokenx.idp}")
     private val tokenxIdp: String,
@@ -42,6 +45,7 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
             oppfolgingsplanService.hentAktorsOppfolgingsplaner(BrukerkontekstConstant.ARBEIDSTAKER, innloggetIdent)
         val liste = arbeidstakersOppfolgingsplaner.map { it.toBrukerOppfolgingsplan() }
         liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
+        liste.forEach { plan -> plan.populerArbeidstakersStillinger(aaregConsumer) }
         metrikk.tellHendelse("hent_oppfolgingsplan_at")
         return liste
     }

@@ -10,5 +10,5 @@ data class Person(
     val sistInnlogget: LocalDateTime? = null,
     val samtykke: Boolean? = null,
     val evaluering: Evaluering? = null,
-    val stillinger: List<Stilling> = ArrayList(),
+    var stillinger: List<Stilling> = ArrayList(),
 )
