@@ -201,12 +201,18 @@ public class OppfolgingsplanDAO {
         return jdbcTemplate.update(updateSql, fnr, id) == 0;
     }
 
+    public boolean updateSistEndretAvFnr(Long id, String fnr) {
+        String updateSql = "UPDATE oppfoelgingsdialog SET sist_endret_av_fnr = ? WHERE id = ?";
+        return jdbcTemplate.update(updateSql, fnr, id) == 0;
+    }
+    
     private class AktorIdMigrationRowMapper implements RowMapper<POppfoelgingsdialog> {
         public POppfoelgingsdialog mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new POppfoelgingsdialog()
                     .id(rs.getLong("oppfoelgingsdialog_id"))
                     .aktoerId(rs.getString("aktoer_id"))
-                    .opprettetAv(rs.getString("opprettet_av"));
+                    .opprettetAv(rs.getString("opprettet_av"))
+                    .sistEndretAv(rs.getString("sist_endret_av"));
         }
     }
 
