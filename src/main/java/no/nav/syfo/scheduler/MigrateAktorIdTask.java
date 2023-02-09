@@ -41,6 +41,7 @@ public class MigrateAktorIdTask {
     private void migrateRow(POppfoelgingsdialog row) {
         String smFnr = pdlConsumer.fnr(row.aktoerId);
         String opprettetAvFnr = pdlConsumer.fnr(row.opprettetAv);
+        String sistEndretAvFnr = pdlConsumer.fnr(row.sistEndretAv);
 
         if (oppfolgingsplanDAO.updateSmFnr(row.id, smFnr))
             LOG.error("ERROR: Could not update sm_fnr in row " + row.id);
@@ -48,6 +49,8 @@ public class MigrateAktorIdTask {
         if (oppfolgingsplanDAO.updateOpprettetAvFnr(row.id, opprettetAvFnr))
             LOG.error("ERROR: Could not update opprettet_av_fnr in row " + row.id);
 
+        if (oppfolgingsplanDAO.updateSistEndretAvFnr(row.id, sistEndretAvFnr))
+            LOG.error("ERROR: Could not update sist_endret_av_fnr in row " + row.id);
     }
 
 }
