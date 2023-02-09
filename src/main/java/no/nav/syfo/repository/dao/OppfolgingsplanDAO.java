@@ -186,6 +186,29 @@ public class OppfolgingsplanDAO {
         return jdbcTemplate.query("SELECT * FROM OPPFOELGINGSDIALOG WHERE AKTOER_ID = ?", (rs, rowNum) -> rs.getLong("OPPFOELGINGSDIALOG_ID"), aktoerId);
     }
 
+    public List<POppfoelgingsdialog> plansWithoutFnr() {
+        return jdbcTemplate.query("SELECT * FROM oppfoelgingsdialog WHERE sm_fnr IS NULL OR opprettet_av_fnr OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY", new AktorIdMigrationRowMapper());
+    }
+
+    public boolean updateSmFnr(Long id, String fnr) {
+        String updateSql = "UPDATE oppfoelgingsdialog SET sm_fnr = ? WHERE id = ?";
+        return jdbcTemplate.update(updateSql, fnr, id) == 0;
+    }
+
+    public boolean updateOpprettetAvFnr(Long id, String fnr) {
+        String updateSql = "UPDATE oppfoelgingsdialog SET opprettet_av_fnr = ? WHERE id = ?";
+        return jdbcTemplate.update(updateSql, fnr, id) == 0;
+    }
+
+    private class AktorIdMigrationRowMapper implements RowMapper<POppfoelgingsdialog> {
+        public POppfoelgingsdialog mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new POppfoelgingsdialog()
+                    .id(rs.getLong("oppfoelgingsdialog_id"))
+                    .aktoerId(rs.getString("aktoer_id"))
+                    .opprettetAv(rs.getString("opprettet_av"));
+        }
+    }
+
     private class OppfoelgingsdialogRowMapper implements RowMapper<POppfoelgingsdialog> {
         public POppfoelgingsdialog mapRow(ResultSet rs, int rowNum) throws SQLException {
             Boolean samtykke_sykmeldt = rs.getBoolean("samtykke_sykmeldt");

@@ -19,6 +19,7 @@ public class Oppfolgingsplan {
     public LocalDateTime opprettet;
 
     public String sistEndretAvAktoerId;
+    public String sistEndretAvFnr;
     public String opprettetAvAktoerId;
     public String opprettetAvFnr;
     public LocalDateTime sistEndretDato;
