@@ -199,6 +199,7 @@ public class OppfolgingsplanService {
     private Long opprettDialog(String sykmeldtAktorId, String sykmeldtFnr, String virksomhetsnummer, String innloggetAktorId, String innloggetFnr) {
         Oppfolgingsplan oppfolgingsplan = new Oppfolgingsplan()
                 .sistEndretAvAktoerId(innloggetAktorId)
+                .sistEndretAvFnr(innloggetFnr)
                 .opprettetAvAktoerId(innloggetAktorId)
                 .opprettetAvFnr(innloggetFnr)
                 .arbeidstaker(new Person().aktoerId(sykmeldtAktorId).fnr(sykmeldtFnr))
