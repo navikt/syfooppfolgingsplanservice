@@ -28,13 +28,14 @@ public class MigrateAktorIdTask {
     @Inject
     private OppfolgingsplanDAO oppfolgingsplanDAO;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 16 * * *")
     public void run() {
         if (leaderElectionService.isLeader()) {
             LOG.info("Running aktorid migration ... ");
             List<POppfoelgingsdialog> rowsToMigrate = oppfolgingsplanDAO.plansWithoutFnr();
             LOG.info("# rows to migrate: " + rowsToMigrate.size());
             rowsToMigrate.forEach(this::migrateRow);
+            LOG.info("Partial migration finished");
         }
     }
 

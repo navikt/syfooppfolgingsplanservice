@@ -205,7 +205,7 @@ public class OppfolgingsplanDAO {
         String updateSql = "UPDATE oppfoelgingsdialog SET sist_endret_av_fnr = ? WHERE id = ?";
         return jdbcTemplate.update(updateSql, fnr, id) == 0;
     }
-    
+
     private class AktorIdMigrationRowMapper implements RowMapper<POppfoelgingsdialog> {
         public POppfoelgingsdialog mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new POppfoelgingsdialog()
