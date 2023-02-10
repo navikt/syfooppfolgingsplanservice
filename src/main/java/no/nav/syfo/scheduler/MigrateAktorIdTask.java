@@ -40,6 +40,7 @@ public class MigrateAktorIdTask {
     }
 
     private void migrateRow(POppfoelgingsdialog row) {
+        LOG.info("ROW: " + row.id + " " + row.aktoerId + " " + row.opprettetAv + " " + row.sistEndretAv);
         String smFnr = pdlConsumer.fnr(row.aktoerId);
         String opprettetAvFnr = pdlConsumer.fnr(row.opprettetAv);
         String sistEndretAvFnr = pdlConsumer.fnr(row.sistEndretAv);
