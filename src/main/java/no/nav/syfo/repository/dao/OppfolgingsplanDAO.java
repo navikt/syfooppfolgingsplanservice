@@ -188,7 +188,7 @@ public class OppfolgingsplanDAO {
     }
 
     public List<POppfoelgingsdialog> plansWithoutFnr() {
-        return jdbcTemplate.query("SELECT * FROM oppfoelgingsdialog WHERE sm_fnr IS NULL OR opprettet_av_fnr OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY", new AktorIdMigrationRowMapper());
+        return jdbcTemplate.query("SELECT * FROM oppfoelgingsdialog WHERE sm_fnr IS NULL OR opprettet_av_fnr OR sist_endret_av is NULL OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY", new AktorIdMigrationRowMapper());
     }
 
     public boolean updateSmFnr(Long id, String fnr) {
