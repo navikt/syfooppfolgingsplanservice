@@ -187,23 +187,23 @@ public class OppfolgingsplanDAO {
         return jdbcTemplate.query("SELECT * FROM OPPFOELGINGSDIALOG WHERE AKTOER_ID = ?", (rs, rowNum) -> rs.getLong("OPPFOELGINGSDIALOG_ID"), aktoerId);
     }
 
-    public List<POppfoelgingsdialog> plansWithoutFnr() {
-        return jdbcTemplate.query("SELECT * FROM oppfoelgingsdialog WHERE sm_fnr IS NULL OR opprettet_av_fnr IS NULL OR sist_endret_av is NULL OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY", new AktorIdMigrationRowMapper());
+    public List<POppfoelgingsdialog> plansWithoutFnr(int batchSize) {
+        return jdbcTemplate.query("SELECT * FROM oppfoelgingsdialog WHERE sm_fnr IS NULL OR opprettet_av_fnr IS NULL OR sist_endret_av is NULL OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY", new AktorIdMigrationRowMapper(), batchSize);
     }
 
     public boolean updateSmFnr(Long id, String fnr) {
-        String updateSql = "UPDATE oppfoelgingsdialog SET sm_fnr = ? WHERE id = ?";
-        return jdbcTemplate.update(updateSql, fnr, id) == 0;
+        String updateSql = "UPDATE oppfoelgingsdialog SET sm_fnr = ? WHERE oppfoelgingsdialog_id = ?";
+        return jdbcTemplate.update(updateSql, fnr, id) == 1;
     }
 
     public boolean updateOpprettetAvFnr(Long id, String fnr) {
-        String updateSql = "UPDATE oppfoelgingsdialog SET opprettet_av_fnr = ? WHERE id = ?";
-        return jdbcTemplate.update(updateSql, fnr, id) == 0;
+        String updateSql = "UPDATE oppfoelgingsdialog SET opprettet_av_fnr = ? WHERE oppfoelgingsdialog_id = ?";
+        return jdbcTemplate.update(updateSql, fnr, id) == 1;
     }
 
     public boolean updateSistEndretAvFnr(Long id, String fnr) {
-        String updateSql = "UPDATE oppfoelgingsdialog SET sist_endret_av_fnr = ? WHERE id = ?";
-        return jdbcTemplate.update(updateSql, fnr, id) == 0;
+        String updateSql = "UPDATE oppfoelgingsdialog SET sist_endret_av_fnr = ? WHERE oppfoelgingsdialog_id = ?";
+        return jdbcTemplate.update(updateSql, fnr, id) ==  1;
     }
 
     private class AktorIdMigrationRowMapper implements RowMapper<POppfoelgingsdialog> {
