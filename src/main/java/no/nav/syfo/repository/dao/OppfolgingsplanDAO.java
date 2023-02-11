@@ -192,21 +192,21 @@ public class OppfolgingsplanDAO {
     }
 
     public boolean updateSmFnr(Long id, String fnr) {
-        String updateSql = "UPDATE oppfoelgingsdialog SET sm_fnr = ? WHERE id = ?";
+        String updateSql = "UPDATE oppfoelgingsdialog SET sm_fnr = ? WHERE oppfoelgingsdialog_id = ?";
         int res = jdbcTemplate.update(updateSql, fnr, id);
         log.info("UPDATE SM FNR: " + res);
         return res == 0;
     }
 
     public boolean updateOpprettetAvFnr(Long id, String fnr) {
-        String updateSql = "UPDATE oppfoelgingsdialog SET opprettet_av_fnr = ? WHERE id = ?";
+        String updateSql = "UPDATE oppfoelgingsdialog SET opprettet_av_fnr = ? WHERE oppfoelgingsdialog_id = ?";
         int res = jdbcTemplate.update(updateSql, fnr, id);
         log.info("UPDATE OPPRETTET AV FNR: " + res);
         return res == 0;
     }
 
     public boolean updateSistEndretAvFnr(Long id, String fnr) {
-        String updateSql = "UPDATE oppfoelgingsdialog SET sist_endret_av_fnr = ? WHERE id = ?";
+        String updateSql = "UPDATE oppfoelgingsdialog SET sist_endret_av_fnr = ? WHERE oppfoelgingsdialog_id = ?";
         int res = jdbcTemplate.update(updateSql, fnr, id);
         log.info("UPDATE SIST ENDRET AV FNR: " + res);
         return res == 0;
