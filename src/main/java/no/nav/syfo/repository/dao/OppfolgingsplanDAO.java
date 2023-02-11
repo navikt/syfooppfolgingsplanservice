@@ -188,22 +188,28 @@ public class OppfolgingsplanDAO {
     }
 
     public List<POppfoelgingsdialog> plansWithoutFnr() {
-        return jdbcTemplate.query("SELECT * FROM oppfoelgingsdialog WHERE sm_fnr IS NULL OR opprettet_av_fnr IS NULL OR sist_endret_av is NULL OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY", new AktorIdMigrationRowMapper());
+        return jdbcTemplate.query("SELECT * FROM oppfoelgingsdialog WHERE sm_fnr IS NULL OR opprettet_av_fnr IS NULL OR sist_endret_av is NULL", new AktorIdMigrationRowMapper());
     }
 
     public boolean updateSmFnr(Long id, String fnr) {
         String updateSql = "UPDATE oppfoelgingsdialog SET sm_fnr = ? WHERE id = ?";
-        return jdbcTemplate.update(updateSql, fnr, id) == 0;
+        int res = jdbcTemplate.update(updateSql, fnr, id);
+        log.info("UPDATE SM FNR: " + res);
+        return res == 0;
     }
 
     public boolean updateOpprettetAvFnr(Long id, String fnr) {
         String updateSql = "UPDATE oppfoelgingsdialog SET opprettet_av_fnr = ? WHERE id = ?";
-        return jdbcTemplate.update(updateSql, fnr, id) == 0;
+        int res = jdbcTemplate.update(updateSql, fnr, id);
+        log.info("UPDATE OPPRETTET AV FNR: " + res);
+        return res == 0;
     }
 
     public boolean updateSistEndretAvFnr(Long id, String fnr) {
         String updateSql = "UPDATE oppfoelgingsdialog SET sist_endret_av_fnr = ? WHERE id = ?";
-        return jdbcTemplate.update(updateSql, fnr, id) == 0;
+        int res = jdbcTemplate.update(updateSql, fnr, id);
+        log.info("UPDATE SIST ENDRET AV FNR: " + res);
+        return res == 0;
     }
 
     private class AktorIdMigrationRowMapper implements RowMapper<POppfoelgingsdialog> {

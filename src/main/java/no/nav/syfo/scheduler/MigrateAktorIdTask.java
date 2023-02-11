@@ -28,7 +28,7 @@ public class MigrateAktorIdTask {
     @Inject
     private OppfolgingsplanDAO oppfolgingsplanDAO;
 
-    @Scheduled(cron = "0 30 14 * * *")
+    @Scheduled(cron = "0 15 21 * * *")
     public void run() {
         if (leaderElectionService.isLeader()) {
             LOG.info("Running aktorid migration ... ");
