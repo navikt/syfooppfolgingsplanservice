@@ -41,18 +41,27 @@ public class MigrateAktorIdTask {
 
     private void migrateRow(POppfoelgingsdialog row) {
         LOG.info("ROW: " + row.id + " " + row.aktoerId + " " + row.opprettetAv + " " + row.sistEndretAv);
-        String smFnr = pdlConsumer.fnr(row.aktoerId);
-        String opprettetAvFnr = pdlConsumer.fnr(row.opprettetAv);
-        String sistEndretAvFnr = pdlConsumer.fnr(row.sistEndretAv);
+        String smFnr = getFnrForRowIfPresent(row.aktoerId, row.id);
+        String opprettetAvFnr = getFnrForRowIfPresent(row.opprettetAv, row.id);
+        String sistEndretAvFnr = getFnrForRowIfPresent(row.sistEndretAv, row.id);
 
-        if (oppfolgingsplanDAO.updateSmFnr(row.id, smFnr))
+        if (smFnr == null || oppfolgingsplanDAO.updateSmFnr(row.id, smFnr))
             LOG.error("ERROR: Could not update sm_fnr in row " + row.id);
 
-        if (oppfolgingsplanDAO.updateOpprettetAvFnr(row.id, opprettetAvFnr))
+        if (opprettetAvFnr == null || oppfolgingsplanDAO.updateOpprettetAvFnr(row.id, opprettetAvFnr))
             LOG.error("ERROR: Could not update opprettet_av_fnr in row " + row.id);
 
-        if (oppfolgingsplanDAO.updateSistEndretAvFnr(row.id, sistEndretAvFnr))
+        if (sistEndretAvFnr == null || oppfolgingsplanDAO.updateSistEndretAvFnr(row.id, sistEndretAvFnr))
             LOG.error("ERROR: Could not update sist_endret_av_fnr in row " + row.id);
+    }
+
+    public String getFnrForRowIfPresent(String aktorid, Long rowNum) {
+        try {
+            return pdlConsumer.fnr(aktorid);
+        } catch (RuntimeException e) {
+            LOG.error("Could not migrate row " + rowNum + " unable to exchange aktorid for fnr");
+        }
+        return null;
     }
 
 }
