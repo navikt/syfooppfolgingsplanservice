@@ -3,10 +3,14 @@ package no.nav.syfo.api.v2.controller
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
+import no.nav.syfo.domain.Oppfolgingsplan
+import no.nav.syfo.domain.Person
 import no.nav.syfo.metric.Metrikk
+import no.nav.syfo.model.Ansatt
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
+import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
@@ -56,6 +60,13 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     fun hent_oppfolgingsplaner_finner_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
         arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplaner()
+    }
+
+    @Test
+    fun hent_oppfolgingsplaner_som_arbeidgiver_pa_fnr() {
+        arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplanerPaFnr(ARBEIDSTAKER_FNR)
+        Mockito.verify(oppfolgingsplanService).arbeidsgiveroppfolgingsplanerPaFnr(LEDER_FNR, ARBEIDSTAKER_FNR)
+        Mockito.verify(metrikk).tellHendelse("hent_oppfolgingsplan_ag")
     }
 
     @Test

@@ -106,6 +106,28 @@ public class OppfolgingsplanService {
         return emptyList();
     }
 
+    public List<Oppfolgingsplan> arbeidsgiveroppfolgingsplanerPaFnr(String lederFnr, String ansattFnr) {
+        List<Oppfolgingsplan> oppfolgingsplaner = new ArrayList<>();
+        String lederAktorId = pdlConsumer.aktorid(lederFnr);
+        narmesteLederConsumer.ansatte(lederFnr)
+                .stream()
+                .filter(ans -> ans.fnr.equals(ansattFnr))
+                .findFirst()
+                .ifPresent( ans -> {
+                    String ansattAktorId = pdlConsumer.aktorid(ans.fnr);
+                    oppfolgingsplaner.addAll(
+                            oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ansattAktorId)
+                                    .stream()
+                                    .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ans.virksomhetsnummer))
+                                    .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
+                                    .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, lederAktorId))
+                                    .collect(toList())
+                    );
+                });
+        return oppfolgingsplaner;
+    }
+
+
     private List<Oppfolgingsplan> arbeidsgiversOppfolgingsplaner(String aktorId, String fnr) {
         List<Oppfolgingsplan> oppfoelgingsdialoger = new ArrayList<>();
         List<Ansatt> ansatte = narmesteLederConsumer.ansatte(fnr);
