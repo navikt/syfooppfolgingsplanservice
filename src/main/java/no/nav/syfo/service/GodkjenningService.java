@@ -23,7 +23,9 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -109,7 +111,42 @@ public class GodkjenningService {
     }
 
     @Transactional
-    public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning, boolean delMedNav) {
+    public void godkjennLederSinEgenOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean delMedNav) {
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
+
+        if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(innloggetFnr, oppfolgingsplan)) {
+            throw new ForbiddenException("Ikke tilgang");
+        }
+        String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
+
+        if (annenPartHarGjortEndringerImellomtiden(oppfolgingsplan, innloggetAktoerId)) {
+            throw new ConflictException();
+        }
+
+        if (innloggetBrukerHarAlleredeGodkjentPlan(oppfolgingsplan, innloggetAktoerId)) {
+            throw new ConflictException();
+        }
+
+        oppfolgingsplan = oppfolgingsplanDAO.populate(oppfolgingsplan);
+        Optional<Naermesteleder> narmesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
+
+        if (isLoggedInpersonLeaderAndOwnLeader(oppfolgingsplan, innloggetFnr, narmesteleder.get().naermesteLederFnr())) {
+            LOG.info("TRACE: innlogget user attempting to godkjenne oppfolginsplan {}", oppfoelgingsdialogId);
+            genererSinEgenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
+            godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
+            sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
+            LOG.info("TRACE: innlogget user godkjente oppfolginsplan successfully {}", oppfoelgingsdialogId);
+        } else {
+            String message = "Fulløring av oppfølgingplan feilet pga innlogget bruker ikke er egen leder";
+            LOG.error(message);
+            metrikk.tellHendelse("feil_godkjenn_plan_egen_leder");
+            throw new RuntimeException(message);
+        }
+    }
+
+    @Transactional
+    public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt
+            gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning, boolean delMedNav) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
 
         String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
@@ -130,6 +167,7 @@ public class GodkjenningService {
         if (tvungenGodkjenning && erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
             String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
             Optional<Naermesteleder> narmesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
+
             if (narmesteleder.isPresent() && narmesteleder.get().naermesteLederFnr.equals(innloggetFnr)) {
                 LOG.info("TRACE: Arbeidstaker attempting to Tvangsgodkjenne oppfolginsplan {}", oppfoelgingsdialogId);
                 genererTvungenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
@@ -145,7 +183,6 @@ public class GodkjenningService {
             genererTvungenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
             sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
-
         } else if (erGodkjentAvAnnenPart(oppfolgingsplanDAO.populate(oppfolgingsplan), innloggetAktoerId)) {
             genererNyPlan(oppfolgingsplan, innloggetAktoerId, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
@@ -415,6 +452,89 @@ public class GodkjenningService {
                 .deltMedNAVTidspunkt(delMedNav ? LocalDateTime.now() : null)
                 .deltMedFastlege(false)
                 .tvungenGodkjenning(true)
+                .dokumentUuid(dokumentUuid)
+                .gyldighetstidspunkt(new Gyldighetstidspunkt()
+                        .fom(gyldighetstidspunkt.fom)
+                        .tom(gyldighetstidspunkt.tom)
+                        .evalueres(gyldighetstidspunkt.evalueres)
+                ));
+
+        dokumentDAO.lagre(new Dokument()
+                .uuid(dokumentUuid)
+                .pdf(tilPdf(xml))
+                .xml(xml)
+        );
+    }
+
+    public void genererSinEgenPlan(Oppfolgingsplan oppfolgingsplan, RSGyldighetstidspunkt gyldighetstidspunkt,
+                                   boolean delMedNav) {
+        rapporterMetrikkerForNyPlan(oppfolgingsplan, true, delMedNav);
+
+        String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
+        Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer)
+                .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
+        DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
+        String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
+        String sykmeldtFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
+        String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
+        String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
+                .withArbeidsgiverEpost(naermesteleder.epost)
+                .withArbeidsgivernavn(naermesteleder.navn)
+                .withArbeidsgiverOrgnr(oppfolgingsplan.virksomhet.virksomhetsnummer)
+                .withVirksomhetsnavn(virksomhetsnavn)
+                .withArbeidsgiverTlf(naermesteleder.mobil)
+                .withEvalueres(tilMuntligDatoAarFormat(gyldighetstidspunkt.evalueres()))
+                .withGyldigfra(tilMuntligDatoAarFormat(gyldighetstidspunkt.fom))
+                .withGyldigtil(tilMuntligDatoAarFormat(gyldighetstidspunkt.tom))
+                .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanIkkeGjennomfoeresArbeidsoppgaveXML()
+                                .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanIkkeBeskrivelse)
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML()
+                                .withMedHjelp(arbeidsoppgave.gjennomfoering.medHjelp)
+                                .withMedMerTid(arbeidsoppgave.gjennomfoering.medMerTid)
+                                .withPaaAnnetSted(arbeidsoppgave.gjennomfoering.paaAnnetSted)
+                                .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanBeskrivelse)
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanGjennomfoeresArbeidsoppgaveXML()
+                                .withNavn(arbeidsoppgave.navn)))
+                .withTiltak(mapListe(oppfolgingsplan.tiltakListe, tiltak -> new TiltakXML()
+                        .withNavn(tiltak.navn)
+                        .withBeskrivelse(tiltak.beskrivelse)
+                        .withBeskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
+                        .withStatus(tiltak.status)
+                        .withId(tiltak.id)
+                        .withGjennomfoering(tiltak.gjennomfoering)
+                        .withFom(tilMuntligDatoAarFormat(ofNullable(tiltak.fom).orElse(gyldighetstidspunkt.fom)))
+                        .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(gyldighetstidspunkt.tom)))
+                        .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
+                ))
+                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                        .withYrke(stilling.yrke)
+                        .withProsent(stilling.prosent)))
+                .withSykmeldtFnr(sykmeldtFnr)
+                .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
+                .withSykmeldtNavn(sykmeldtnavn)
+                .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
+                .withSykmeldtEpost(sykmeldtKontaktinfo.getEpostadresse())
+                .withVisAdvarsel(true)
+                .withGodkjentAv(naermesteleder.navn)
+                .withOpprettetAv(naermesteleder.navn)
+                .withOpprettetDato(tilMuntligDatoAarFormat(LocalDate.now()))
+                .withGodkjentDato(tilMuntligDatoAarFormat(LocalDate.now()))
+        );
+        String dokumentUuid = UUID.randomUUID().toString();
+        godkjentplanDAO.create(new GodkjentPlan()
+                .oppfoelgingsdialogId(oppfolgingsplan.id)
+                .deltMedNAV(delMedNav)
+                .deltMedNAVTidspunkt(delMedNav ? LocalDateTime.now() : null)
+                .deltMedFastlege(false)
+                .tvungenGodkjenning(false)
                 .dokumentUuid(dokumentUuid)
                 .gyldighetstidspunkt(new Gyldighetstidspunkt()
                         .fom(gyldighetstidspunkt.fom)

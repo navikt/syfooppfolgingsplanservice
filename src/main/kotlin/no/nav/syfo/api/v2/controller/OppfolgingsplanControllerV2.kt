@@ -1,25 +1,24 @@
 package no.nav.syfo.api.v2.controller
 
+import java.util.*
+import javax.inject.Inject
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER
+import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
 import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
 import no.nav.syfo.api.selvbetjening.domain.RSTiltak
-import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.rs2arbeidsoppgave
-import no.nav.syfo.api.selvbetjening.mapper.RSTiltakMapper.rs2tiltak
+import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.*
+import no.nav.syfo.api.selvbetjening.mapper.RSTiltakMapper.*
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.*
 import no.nav.syfo.tokenx.TokenXUtil
 import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
 import no.nav.syfo.tokenx.TokenXUtil.fnrFromIdportenTokenX
-import no.nav.syfo.util.MapUtil.map
+import no.nav.syfo.util.MapUtil.*
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import org.springframework.http.MediaType.*
 import org.springframework.web.bind.annotation.*
-import java.util.*
-import javax.inject.Inject
 
 @RestController
 @ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4"])
@@ -94,6 +93,30 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         metrikk.tellHendelse("godkjenn_plan")
         return rsGyldighetstidspunkt
     }
+
+    @PostMapping(path = ["/egenarbedsgiver/godkjenn"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
+    fun godkjennEgenPlanArbeidsgiver(
+        @PathVariable("id") id: Long,
+        @RequestBody rsGyldighetstidspunkt: RSGyldighetstidspunkt,
+        @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
+    ): RSGyldighetstidspunkt {
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+            .fnrFromIdportenTokenX()
+            .value
+
+        val isPlanSharedWithNAV = Optional.ofNullable(delMedNav).orElse(false)
+        if (isPlanSharedWithNAV) {
+            countShareWithNAVAtApproval()
+        }
+
+        godkjenningService.godkjennLederSinEgenOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, isPlanSharedWithNAV)
+
+        metrikk.tellHendelse("godkjenn_plan")
+        metrikk.tellHendelse("godkjenn_plan_egen_leder")
+
+        return rsGyldighetstidspunkt
+    }
+
 
     @PostMapping(path = ["/godkjennsist"], produces = [APPLICATION_JSON_VALUE])
     fun godkjenn(

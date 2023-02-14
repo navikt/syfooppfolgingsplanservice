@@ -1,17 +1,17 @@
 package no.nav.syfo.api.v2.controller
 
+import javax.inject.Inject
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER
+import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
 import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave
 import no.nav.syfo.api.selvbetjening.domain.RSGjennomfoering
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
 import no.nav.syfo.api.selvbetjening.domain.RSTiltak
-import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.rs2arbeidsoppgave
+import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.*
 import no.nav.syfo.api.selvbetjening.mapper.RSTiltakMapper
 import no.nav.syfo.api.v2.controller.OppfolgingsplanControllerV2.Companion.METRIC_SHARE_WITH_NAV_AT_APPROVAL
 import no.nav.syfo.domain.Arbeidsoppgave
-import no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres
+import no.nav.syfo.domain.Gjennomfoering.*
 import no.nav.syfo.domain.Tiltak
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.*
@@ -21,8 +21,8 @@ import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import no.nav.syfo.testhelper.rsTiltakLagreEksisterende
 import no.nav.syfo.testhelper.rsTiltakLagreNytt
-import no.nav.syfo.util.MapUtil.map
-import org.junit.Assert.assertEquals
+import no.nav.syfo.util.MapUtil.*
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
@@ -30,7 +30,6 @@ import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
-import javax.inject.Inject
 
 class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Inject
@@ -223,6 +222,27 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     fun godkjennsist_plan_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidsgiver", null)
+    }
+
+    @Test
+    fun godkjenn_plan_som_egen_arbeidsgiver_med_nav() {
+        loggUtAlle(contextHolder)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        val gyldighetstidspunkt = RSGyldighetstidspunkt()
+
+        val rsGyldighetstidspunkt = oppfolgingsplanController.godkjennEgenPlanArbeidsgiver(oppfolgingsplanId, gyldighetstidspunkt, true)
+        verify(godkjenningService).godkjennLederSinEgenOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true)
+
+        verify(metrikk).tellHendelse("godkjenn_plan_egen_leder")
+        verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL)
+        assertEquals(gyldighetstidspunkt, rsGyldighetstidspunkt)
+    }
+
+    @Test(expected = RuntimeException::class)
+    fun godkjenn_egen_plan_ikke_innlogget_bruker() {
+        loggUtAlle(contextHolder)
+        val gyldighetstidspunkt = RSGyldighetstidspunkt()
+        oppfolgingsplanController.godkjennEgenPlanArbeidsgiver(oppfolgingsplanId, gyldighetstidspunkt, true)
     }
 
     @Test
