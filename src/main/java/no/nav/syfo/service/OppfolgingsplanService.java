@@ -115,7 +115,7 @@ public class OppfolgingsplanService {
                 .findFirst()
                 .orElse(null);
         
-        if (ansatt == null || !tilgangskontrollService.erNaermesteLederForSykmeldt(lederFnr, ansattFnr, ansatt.virksomhetsnummer)) {
+        if (ansatt == null) {
             throw new ForbiddenException();
         }
 
@@ -145,8 +145,8 @@ public class OppfolgingsplanService {
 
     private List<Oppfolgingsplan> arbeidstakersOppfolgingsplaner(String aktorId) {
         return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorId).stream()
-                .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktorId))
-                .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
+                .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, aktorId))
+                .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
                 .collect(toList());
     }
 
