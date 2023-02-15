@@ -230,6 +230,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
         val gyldighetstidspunkt = RSGyldighetstidspunkt()
 
+        oppfolgingsplanController.godkjennEgenPlanArbeidsgiver(oppfolgingsplanId, gyldighetstidspunkt, true)
         verify(godkjenningService).godkjennLederSinEgenOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true)
 
         verify(metrikk).tellHendelse("godkjenn_plan_egen_leder")
