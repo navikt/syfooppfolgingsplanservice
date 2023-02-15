@@ -132,7 +132,7 @@ public class GodkjenningService {
 
         if (isLoggedInpersonLeaderAndOwnLeader(oppfolgingsplan, innloggetFnr, narmesteleder.get().naermesteLederFnr())) {
             LOG.info("TRACE: innlogget user attempting to godkjenne oppfolginsplan {}", oppfoelgingsdialogId);
-            genererSinEgenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
+            genererLederSinEgenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
             sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
             LOG.info("TRACE: innlogget user godkjente oppfolginsplan successfully {}", oppfoelgingsdialogId);
@@ -466,8 +466,8 @@ public class GodkjenningService {
         );
     }
 
-    public void genererSinEgenPlan(Oppfolgingsplan oppfolgingsplan, RSGyldighetstidspunkt gyldighetstidspunkt,
-                                   boolean delMedNav) {
+    public void genererLederSinEgenPlan(Oppfolgingsplan oppfolgingsplan, RSGyldighetstidspunkt gyldighetstidspunkt,
+                                        boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfolgingsplan, true, delMedNav);
 
         String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
