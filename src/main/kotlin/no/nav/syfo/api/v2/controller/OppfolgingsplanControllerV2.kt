@@ -38,12 +38,13 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 ) {
 
     @PostMapping(path = ["/avbryt"])
-    fun avbryt(@PathVariable("id") id: Long) {
+    fun avbryt(@PathVariable("id") id: Long): Long {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        oppfolgingsplanService.avbrytPlan(id, innloggetIdent)
+        val newId = oppfolgingsplanService.avbrytPlan(id, innloggetIdent)
         metrikk.tellHendelse("avbryt_plan")
+        return newId
     }
 
     @PostMapping(path = ["/avvis"])
@@ -89,7 +90,13 @@ class OppfolgingsplanControllerV2 @Inject constructor(
             countShareWithNAVAtApproval()
         }
         val tvungenGodkjenning = status == "tvungenGodkjenning"
-        godkjenningService.godkjennOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, tvungenGodkjenning, isPlanSharedWithNAV)
+        godkjenningService.godkjennOppfolgingsplan(
+            id,
+            rsGyldighetstidspunkt,
+            innloggetIdent,
+            tvungenGodkjenning,
+            isPlanSharedWithNAV
+        )
         metrikk.tellHendelse("godkjenn_plan")
         return rsGyldighetstidspunkt
     }
@@ -135,7 +142,11 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         return hentGyldighetstidspunktForPlan(id, aktor, innloggetIdent)
     }
 
-    private fun hentGyldighetstidspunktForPlan(@PathVariable("id") id: Long, @RequestParam("aktoer") aktor: String, innloggetIdent: String): RSGyldighetstidspunkt {
+    private fun hentGyldighetstidspunktForPlan(
+        @PathVariable("id") id: Long,
+        @RequestParam("aktoer") aktor: String,
+        innloggetIdent: String
+    ): RSGyldighetstidspunkt {
         return if ("arbeidsgiver" == aktor) {
             oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSGIVER, innloggetIdent)
         } else {
@@ -153,7 +164,11 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         return nyPlanId
     }
 
-    @PostMapping(path = ["/lagreArbeidsoppgave"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
+    @PostMapping(
+        path = ["/lagreArbeidsoppgave"],
+        consumes = [APPLICATION_JSON_VALUE],
+        produces = [APPLICATION_JSON_VALUE]
+    )
     fun lagreArbeidsoppgave(
         @PathVariable("id") id: Long,
         @RequestBody rsArbeidsoppgave: RSArbeidsoppgave

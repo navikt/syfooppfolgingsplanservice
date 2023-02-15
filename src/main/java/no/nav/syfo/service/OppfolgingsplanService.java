@@ -296,7 +296,7 @@ public class OppfolgingsplanService {
     }
 
     @Transactional
-    public void avbrytPlan(long oppfolgingsplanId, String innloggetFnr) {
+    public long avbrytPlan(long oppfolgingsplanId, String innloggetFnr) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
         String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
 
@@ -305,6 +305,7 @@ public class OppfolgingsplanService {
         oppfolgingsplanDAO.avbryt(oppfolgingsplan.id, innloggetAktoerId);
         long nyOppfolgingsplanId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId, innloggetFnr);
         overfoerDataFraDialogTilNyDialog(oppfolgingsplanId, nyOppfolgingsplanId);
+        return nyOppfolgingsplanId;
     }
 
     public RSGyldighetstidspunkt hentGyldighetstidspunktForGodkjentPlan(Long id, BrukerkontekstConstant arbeidsgiver, String innloggetIdent) {
