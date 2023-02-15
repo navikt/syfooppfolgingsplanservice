@@ -34,7 +34,7 @@ public class TilgangskontrollService {
                 || erNaermesteLederForSykmeldt(innloggetFnr, sykmeldtFnr, virksomhetsnummer);
     }
 
-    private boolean erNaermesteLederForSykmeldt(String lederFnr, String sykmeldtFnr, String virksomhetsnummer) {
+    public boolean erNaermesteLederForSykmeldt(String lederFnr, String sykmeldtFnr, String virksomhetsnummer) {
         return narmesteLederConsumer.ansatte(lederFnr).stream()
                 .anyMatch(ansatt -> virksomhetsnummer.equals(ansatt.virksomhetsnummer) && ansatt.fnr.equals(sykmeldtFnr));
     }

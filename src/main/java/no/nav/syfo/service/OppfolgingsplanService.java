@@ -107,24 +107,23 @@ public class OppfolgingsplanService {
     }
 
     public List<Oppfolgingsplan> arbeidsgiveroppfolgingsplanerPaFnr(String lederFnr, String ansattFnr) {
-        List<Oppfolgingsplan> oppfolgingsplaner = new ArrayList<>();
         String lederAktorId = pdlConsumer.aktorid(lederFnr);
-        narmesteLederConsumer.ansatte(lederFnr)
+        String ansattAktorId = pdlConsumer.aktorid(ansattFnr);
+        Ansatt ansatt = narmesteLederConsumer.ansatte(lederFnr)
                 .stream()
                 .filter(ans -> ans.fnr.equals(ansattFnr))
                 .findFirst()
-                .ifPresent( ans -> {
-                    String ansattAktorId = pdlConsumer.aktorid(ans.fnr);
-                    oppfolgingsplaner.addAll(
-                            oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ansattAktorId)
-                                    .stream()
-                                    .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ans.virksomhetsnummer))
-                                    .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
-                                    .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, lederAktorId))
-                                    .collect(toList())
-                    );
-                });
-        return oppfolgingsplaner;
+                .orElse(null);
+        
+        if (ansatt == null || !tilgangskontrollService.erNaermesteLederForSykmeldt(lederFnr, ansattFnr, ansatt.virksomhetsnummer) {
+            throw new ForbiddenException();
+        }
+
+        return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ansattAktorId, ansatt.virksomhetsnummer)
+                .stream()
+                .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
+                .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, lederAktorId))
+                .collect(toList());
     }
 
 
