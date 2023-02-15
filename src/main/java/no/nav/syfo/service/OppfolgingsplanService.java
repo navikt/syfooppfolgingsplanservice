@@ -115,32 +115,32 @@ public class OppfolgingsplanService {
                 .findFirst()
                 .orElse(null);
         
-        if (ansatt == null || !tilgangskontrollService.erNaermesteLederForSykmeldt(lederFnr, ansattFnr, ansatt.virksomhetsnummer) {
+        if (ansatt == null || !tilgangskontrollService.erNaermesteLederForSykmeldt(lederFnr, ansattFnr, ansatt.virksomhetsnummer)) {
             throw new ForbiddenException();
         }
 
         return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ansattAktorId, ansatt.virksomhetsnummer)
                 .stream()
-                .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
-                .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, lederAktorId))
+                .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
+                .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, lederAktorId))
                 .collect(toList());
     }
 
 
     private List<Oppfolgingsplan> arbeidsgiversOppfolgingsplaner(String aktorId, String fnr) {
-        List<Oppfolgingsplan> oppfoelgingsdialoger = new ArrayList<>();
+        List<Oppfolgingsplan> oppfolgingsplaner = new ArrayList<>();
         List<Ansatt> ansatte = narmesteLederConsumer.ansatte(fnr);
 
         ansatte.forEach(ansatt -> {
             String ansattAktorId = pdlConsumer.aktorid(ansatt.fnr);
             List<Oppfolgingsplan> ansattesOppfolgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ansattAktorId).stream()
-                    .filter(oppfoelgingsdialog -> oppfoelgingsdialog.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
-                    .map(oppfoelgingsdialog -> oppfolgingsplanDAO.populate(oppfoelgingsdialog))
-                    .peek(oppfoelgingsdialog -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfoelgingsdialog, aktorId))
+                    .filter(oppfolgingsplan -> oppfolgingsplan.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
+                    .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
+                    .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, aktorId))
                     .collect(toList());
-            oppfoelgingsdialoger.addAll(ansattesOppfolgingsplaner);
+            oppfolgingsplaner.addAll(ansattesOppfolgingsplaner);
         });
-        return oppfoelgingsdialoger;
+        return oppfolgingsplaner;
     }
 
     private List<Oppfolgingsplan> arbeidstakersOppfolgingsplaner(String aktorId) {
