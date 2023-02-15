@@ -11,6 +11,7 @@ import no.nav.syfo.api.v2.mapper.populerPlanerMedAvbruttPlanListe
 import no.nav.syfo.api.v2.mapper.toBrukerOppfolgingsplan
 import no.nav.syfo.domain.Oppfolgingsplan
 import no.nav.syfo.metric.Metrikk
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.tokenx.TokenXUtil
 import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
@@ -27,6 +28,7 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val oppfolgingsplanService: OppfolgingsplanService,
     private val aaregConsumer: AaregConsumer,
+    private val pdlConsumer: PdlConsumer,
     private val metrikk: Metrikk,
     @Value("\${tokenx.idp}")
     private val tokenxIdp: String,
@@ -43,7 +45,7 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
                 .value
         val arbeidstakersOppfolgingsplaner: List<Oppfolgingsplan> =
             oppfolgingsplanService.hentAktorsOppfolgingsplaner(BrukerkontekstConstant.ARBEIDSTAKER, innloggetIdent)
-        val liste = arbeidstakersOppfolgingsplaner.map { it.toBrukerOppfolgingsplan() }
+        val liste = arbeidstakersOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
         liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
         liste.forEach { plan -> plan.populerArbeidstakersStillinger(aaregConsumer) }
         metrikk.tellHendelse("hent_oppfolgingsplan_at")
