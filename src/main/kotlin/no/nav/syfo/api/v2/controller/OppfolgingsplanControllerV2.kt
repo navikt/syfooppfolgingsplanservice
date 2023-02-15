@@ -106,7 +106,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         @PathVariable("id") id: Long,
         @RequestBody rsGyldighetstidspunkt: RSGyldighetstidspunkt,
         @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
-    ): RSGyldighetstidspunkt {
+    ) {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
@@ -120,8 +120,6 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
         metrikk.tellHendelse("godkjenn_plan")
         metrikk.tellHendelse("godkjenn_plan_egen_leder")
-
-        return rsGyldighetstidspunkt
     }
 
     @PostMapping(path = ["/godkjennsist"], produces = [APPLICATION_JSON_VALUE])
