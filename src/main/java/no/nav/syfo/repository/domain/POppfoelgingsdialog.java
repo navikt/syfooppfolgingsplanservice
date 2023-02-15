@@ -27,4 +27,5 @@ public class POppfoelgingsdialog {
 
     public String smFnr;
     public String opprettetAvFnr;
+    public String sistEndretAvFnr;
 }
