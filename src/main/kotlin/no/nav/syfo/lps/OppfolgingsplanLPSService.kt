@@ -89,7 +89,13 @@ class OppfolgingsplanLPSService @Inject constructor(
             userPersonNumber = skjemainnhold.sykmeldtArbeidstaker.fnr
         )
 
-        val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
+        val skjemaFnr = incomingMetadata.userPersonNumber
+        val (gjeldendeFnr, pdlCallFailed) = gjeldendeFnr(skjemaFnr)
+        if (pdlCallFailed) {
+            log.error("Unable to generate PDF for plan with id: $id, calling PDL failed..")
+            return
+        }
+        val lpsPdfModel = mapFormdataToFagmelding(gjeldendeFnr, skjemainnhold, incomingMetadata)
         val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
         oppfolgingsplanLPSDAO.updatePdf(id, pdf)
         log.info("PDF generation retry successful for plan with id: $id")
@@ -113,7 +119,7 @@ class OppfolgingsplanLPSService @Inject constructor(
             virksomhetsnummer,
             isRetry
         )
-        metrikk.tellHendelse("prosessering_av_lps_plan_vellykket")
+        metrikk.tellHendelse(METRIKK_PROSSESERING_VELLYKKET)
     }
 
     private fun processPlan(
@@ -135,28 +141,42 @@ class OppfolgingsplanLPSService @Inject constructor(
         } catch (e: HttpServerErrorException) {
             log.error("Could not process LPS-plan due to server error: ${e.message}")
             null
+        } catch (e: RuntimeException) {
+            log.error("Could not process LPS-plan due to error: ${e.message}")
+            null
         }
 
         if (isUserDiskresjonsmerket == null) {
-            storePlanForRetry(incomingMetadata, batch)
+            val errorMessage = "Diskresjonskode was not received from PDL and LPS-plan is stored for retry."
+            storePlanForRetry(incomingMetadata, batch, errorMessage)
         } else if (isUserDiskresjonsmerket) {
             log.warn("Received Oppfolgingsplan from LPS for a person that is denied access to Oppfolgingsplan")
-            metrikk.tellHendelse("lps_plan_diskresjonsmerket")
+            metrikk.tellHendelse(METRIKK_DISKRESJONSMERKET)
             if (isRetry) {
                 oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
             }
             return
         } else {
+            val skjemaFnr = incomingMetadata.userPersonNumber
+            val (gjeldendeFnr, pdlCallFailed) = gjeldendeFnr(skjemaFnr)
+            if (pdlCallFailed) {
+                val errorMessage = "Unable to determine current fnr: PDL call 'hentIdenter' failed"
+                storePlanForRetry(incomingMetadata, batch, errorMessage)
+                return
+            }
+
             val idList: Pair<Long, UUID> = savePlan(
+                gjeldendeFnr,
                 batch,
                 skjemainnhold,
                 virksomhetsnummer
             )
+
             if (isRetry) {
                 oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
             }
 
-            val lpsPdfModel = mapFormdataToFagmelding(skjemainnhold, incomingMetadata)
+            val lpsPdfModel = mapFormdataToFagmelding(gjeldendeFnr, skjemainnhold, incomingMetadata)
             val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
             oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
             log.info("KAFKA-trace: pdf generated and stored")
@@ -164,12 +184,12 @@ class OppfolgingsplanLPSService @Inject constructor(
             if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
                 val kOppfolgingsplanLPS = KOppfolgingsplanLPS(
                     idList.second.toString(),
-                    incomingMetadata.userPersonNumber,
+                    gjeldendeFnr,
                     virksomhetsnummer.value,
                     lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
                     LocalDate.now().toEpochDay().toInt()
                 )
-                metrikk.tellHendelseMedTag("lps_plan_behov_for_bistand_fra_nav", "bistand", lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
+                metrikk.tellHendelseMedTag(METRIKK_BISTAND_FRA_NAV, METRIKK_TAG_BISTAND, lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
                 oppfolgingsplanLPSProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPS)
             }
             if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
@@ -178,25 +198,37 @@ class OppfolgingsplanLPSService @Inject constructor(
         }
     }
 
-    private fun storePlanForRetry(incomingMetadata: IncomingMetadata, batch: String) {
+    private fun storePlanForRetry(incomingMetadata: IncomingMetadata, batch: String, errorMessage: String) {
         oppfolgingsplanLPSRetryService.getOrCreate(incomingMetadata.archiveReference, batch)
-        log.warn("Diskresjonskode was not received from PDL and LPS-plan is stored for retry.")
-        metrikk.tellHendelse("lps_plan_retry_created")
+        log.warn(errorMessage)
+        metrikk.tellHendelse(METRIKK_LPS_RETRY)
     }
 
     private fun savePlan(
+        fnr: String,
         batch: String,
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer
     ): Pair<Long, UUID> {
         return oppfolgingsplanLPSDAO.create(
-            arbeidstakerFnr = Fodselsnummer(skjemainnhold.sykmeldtArbeidstaker.fnr),
+            arbeidstakerFnr = Fodselsnummer(fnr),
             virksomhetsnummer = virksomhetsnummer.value,
             xml = batch,
             delt_med_nav = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav ?: false,
             del_med_fastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege ?: false,
             delt_med_fastlege = false
         )
+    }
+
+    private fun gjeldendeFnr(fnr: String): Pair<String, Boolean> {
+        return try {
+            val gjeldendeFnr = pdlConsumer.gjeldendeFnr(fnr)
+            if (gjeldendeFnr != fnr)
+                metrikk.tellHendelse(METRIKK_OLD_FNR)
+            Pair(gjeldendeFnr, false)
+        } catch (e: RuntimeException) {
+            Pair("", true)
+        }
     }
 
     fun retrySendLpsPlanTilFastlege(
@@ -220,8 +252,10 @@ class OppfolgingsplanLPSService @Inject constructor(
             dialogmeldingService.sendOppfolgingsplanLPSTilFastlege(fnr, pdf)
             oppfolgingsplanLPSDAO.updateSharedWithFastlege(oppfolgingsplanId)
             if (try_num > 0) {
-                metrikk.tellHendelse("lps_plan_delt_etter_feilet_sending")
+                metrikk.tellHendelse(METRIKK_DELT_MED_FASTLEGE_ETTER_FEILET_SENDING)
                 feiletSendingService.fjernSendtOppfolgingsplan(oppfolgingsplanId)
+            } else {
+                metrikk.tellHendelse(METRIKK_DELT_MED_FASTLEGE)
             }
         } catch (e: InnsendingFeiletException) {
             log.error("Fanget InnsendingFeiletException", e)
@@ -244,7 +278,19 @@ class OppfolgingsplanLPSService @Inject constructor(
                 planLPS.id,
                 journalpostId
             )
-            metrikk.tellHendelse("plan_lps_opprettet_journal_gosys")
+            metrikk.tellHendelse(METRIKK_LPS_JOURNALFORT_TIL_GOSYS)
         }
+    }
+
+    companion object {
+        val METRIKK_PROSSESERING_VELLYKKET = "prosessering_av_lps_plan_vellykket"
+        val METRIKK_DISKRESJONSMERKET = "lps_plan_diskresjonsmerket"
+        val METRIKK_LPS_RETRY = "lps_plan_retry_created"
+        val METRIKK_OLD_FNR = "lps_plan_old_fnr"
+        val METRIKK_DELT_MED_FASTLEGE_ETTER_FEILET_SENDING = "lps_plan_delt_etter_feilet_sending"
+        val METRIKK_DELT_MED_FASTLEGE = "lps_plan_delt"
+        val METRIKK_LPS_JOURNALFORT_TIL_GOSYS = "plan_lps_opprettet_journal_gosys"
+        val METRIKK_BISTAND_FRA_NAV = "lps_plan_behov_for_bistand_fra_nav"
+        val METRIKK_TAG_BISTAND = "bistand"
     }
 }

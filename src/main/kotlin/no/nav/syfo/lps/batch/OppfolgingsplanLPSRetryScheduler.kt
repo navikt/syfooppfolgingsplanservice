@@ -3,7 +3,6 @@ package no.nav.syfo.lps.batch
 import no.nav.syfo.lps.OppfolgingsplanLPSService
 import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
 import no.nav.syfo.lps.database.OppfolgingsplanLPSRetryDAO
-import no.nav.syfo.lps.database.POppfolgingsplanLPSRetry
 import no.nav.syfo.service.LeaderElectionService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
