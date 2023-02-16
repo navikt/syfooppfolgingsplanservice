@@ -50,6 +50,19 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
         return liste
     }
 
+    @GetMapping(produces = [APPLICATION_JSON_VALUE], value = ["/{fnr}"])
+    fun hentArbeidsgiversOppfolgingsplanerPaFnr(@PathVariable fnr: String): List<BrukerOppfolgingsplan> {
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+            .fnrFromIdportenTokenX()
+            .value
+        val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.arbeidsgiveroppfolgingsplanerPaFnr(innloggetIdent, fnr)
+        val liste = arbeidsgiversOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
+        liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
+        liste.forEach { plan -> plan.populerArbeidstakersStillinger(aaregConsumer) }
+        metrikk.tellHendelse("hent_oppfolgingsplan_ag")
+        return liste
+    }
+
     @PostMapping(consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun opprettOppfolgingsplanSomArbeidsgiver(@RequestBody rsOpprettOppfolgingsplan: RSOpprettOppfoelgingsdialog): Long {
         val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
