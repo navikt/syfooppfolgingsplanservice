@@ -67,7 +67,7 @@ public class AaregConsumer {
                     arbeidstakerUrl(),
                     GET,
                     entity(fnr, token),
-                    new ParameterizedTypeReference<List<Arbeidsforhold>>() {
+                    new ParameterizedTypeReference<>() {
                     }
             );
             metrikk.tellHendelse("call_aareg_success");
