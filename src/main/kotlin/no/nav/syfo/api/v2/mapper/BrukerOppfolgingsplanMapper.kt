@@ -178,7 +178,7 @@ fun BrukerOppfolgingsplan.populerPlanerMedAvbruttPlanListe(planer: List<BrukerOp
 fun BrukerOppfolgingsplan.populerArbeidstakersStillinger(arbeidsforholdService: ArbeidsforholdService) {
     try {
         arbeidstaker.stillinger =
-            arbeidsforholdService.arbeidstakersStillingerForOrgnummer(arbeidstaker.fnr, opprettetDato, virksomhet.virksomhetsnummer)
+            arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(arbeidstaker.fnr, opprettetDato, virksomhet.virksomhetsnummer)
                 .map { stilling -> Stilling(stilling.yrke, stilling.prosent) }
     } catch (_: RestErrorFromAareg) {
     }
