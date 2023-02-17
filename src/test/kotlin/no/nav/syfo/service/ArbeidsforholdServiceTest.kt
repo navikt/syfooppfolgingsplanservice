@@ -1,7 +1,6 @@
 package no.nav.syfo.service
 
 import no.nav.syfo.aareg.AaregConsumer
-import no.nav.syfo.aareg.AaregUtils
 import no.nav.syfo.aareg.Arbeidsforhold
 import no.nav.syfo.aareg.utils.AaregConsumerTestUtils
 import no.nav.syfo.aareg.utils.AaregConsumerTestUtils.YRKESKODE
@@ -109,6 +108,6 @@ class ArbeidsforholdServiceTest {
         assertThat(stillingList.size).isEqualTo(1)
         val stilling = stillingList[0]
         assertThat(stilling.yrke).isEqualTo(AaregConsumerTestUtils.YRKESNAVN_CAPITALIZED)
-        assertThat(stilling.prosent).isEqualTo(AaregUtils.stillingsprosentWithMaxScale(AaregConsumerTestUtils.STILLINGSPROSENT))
+        assertThat(stilling.prosent).isEqualTo(AaregConsumerTestUtils.STILLINGSPROSENT.withMaxScale())
     }
 }
