@@ -40,28 +40,28 @@ class ArbeidsforholdServiceTest {
     }
 
     @Test
-    fun getStillinger_with_type_organisasjon() {
+    fun arbeidstakersStillingerForOrgnummerShouldOnlyReturnStillingerWithTypeOrganization() {
         val arbeidsforholdList = listOf(AaregConsumerTestUtils.validArbeidsforhold(), AaregConsumerTestUtils.arbeidsforholdTypePerson())
 
         test_arbeidstakersStillingerForOrgnummer(arbeidsforholdList)
     }
 
     @Test
-    fun getStillinger_with_arbeidsforhold_that_are_still_valid() {
+    fun arbeidstakersStillingerForOrgnummerShouldOnlyReturnStillingerValidOnDate() {
         val arbeidsforholdList = listOf(AaregConsumerTestUtils.validArbeidsforhold(), AaregConsumerTestUtils.arbeidsforholdWithPassedDate())
 
         test_arbeidstakersStillingerForOrgnummer(arbeidsforholdList)
     }
 
     @Test
-    fun getStillinger_with_arbeidsforhold_with_correct_orgnummer() {
+    fun arbeidstakersStillingerForOrgnummerShouldOnlyReturnStillingerWithOrgnummer() {
         val arbeidsforholdList = listOf(AaregConsumerTestUtils.validArbeidsforhold(), AaregConsumerTestUtils.arbeidsforholdWithWrongOrgnummer())
 
         test_arbeidstakersStillingerForOrgnummer(arbeidsforholdList)
     }
 
     @Test
-    fun getStillinger_with_no_valid_arbeidsforhold() {
+    fun arbeidstakersStillingerForOrgnummerShouldReturnEmptyListWhenNoValidArbeidsforhold() {
         val arbeidsforholdList = listOf(
             AaregConsumerTestUtils.arbeidsforholdTypePerson(),
             AaregConsumerTestUtils.arbeidsforholdWithPassedDate(),
