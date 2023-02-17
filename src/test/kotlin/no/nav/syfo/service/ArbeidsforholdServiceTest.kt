@@ -41,37 +41,32 @@ class ArbeidsforholdServiceTest {
 
     @Test
     fun getStillinger_with_type_organisasjon() {
-        val arbeidsforholdList: MutableList<Arbeidsforhold> = ArrayList()
-        arbeidsforholdList.add(AaregConsumerTestUtils.validArbeidsforhold())
-        arbeidsforholdList.add(AaregConsumerTestUtils.arbeidsforholdTypePerson())
+        val arbeidsforholdList = listOf(AaregConsumerTestUtils.validArbeidsforhold(), AaregConsumerTestUtils.arbeidsforholdTypePerson())
 
         test_arbeidstakersStillingerForOrgnummer(arbeidsforholdList)
     }
 
     @Test
     fun getStillinger_with_arbeidsforhold_that_are_still_valid() {
-        val arbeidsforholdList: MutableList<Arbeidsforhold> = ArrayList()
-        arbeidsforholdList.add(AaregConsumerTestUtils.validArbeidsforhold())
-        arbeidsforholdList.add(AaregConsumerTestUtils.arbeidsforholdWithPassedDate())
+        val arbeidsforholdList = listOf(AaregConsumerTestUtils.validArbeidsforhold(), AaregConsumerTestUtils.arbeidsforholdWithPassedDate())
 
         test_arbeidstakersStillingerForOrgnummer(arbeidsforholdList)
     }
 
     @Test
     fun getStillinger_with_arbeidsforhold_with_correct_orgnummer() {
-        val arbeidsforholdList: MutableList<Arbeidsforhold> = ArrayList()
-        arbeidsforholdList.add(AaregConsumerTestUtils.validArbeidsforhold())
-        arbeidsforholdList.add(AaregConsumerTestUtils.arbeidsforholdWithWrongOrgnummer())
+        val arbeidsforholdList = listOf(AaregConsumerTestUtils.validArbeidsforhold(), AaregConsumerTestUtils.arbeidsforholdWithWrongOrgnummer())
 
         test_arbeidstakersStillingerForOrgnummer(arbeidsforholdList)
     }
 
     @Test
     fun getStillinger_with_no_valid_arbeidsforhold() {
-        val arbeidsforholdList: MutableList<Arbeidsforhold> = java.util.ArrayList()
-        arbeidsforholdList.add(AaregConsumerTestUtils.arbeidsforholdTypePerson())
-        arbeidsforholdList.add(AaregConsumerTestUtils.arbeidsforholdWithPassedDate())
-        arbeidsforholdList.add(AaregConsumerTestUtils.arbeidsforholdWithWrongOrgnummer())
+        val arbeidsforholdList = listOf(
+            AaregConsumerTestUtils.arbeidsforholdTypePerson(),
+            AaregConsumerTestUtils.arbeidsforholdWithPassedDate(),
+            AaregConsumerTestUtils.arbeidsforholdWithWrongOrgnummer()
+        )
 
         `when`(aaregConsumer.arbeidsforholdArbeidstaker(AaregConsumerTestUtils.AT_FNR)).thenReturn(arbeidsforholdList)
         `when`(pdlConsumer.fnr(AaregConsumerTestUtils.AT_AKTORID)).thenReturn(AaregConsumerTestUtils.AT_FNR)
