@@ -3,7 +3,6 @@ package no.nav.syfo.aareg;
 import no.nav.syfo.fellesKodeverk.FellesKodeverkConsumer;
 import no.nav.syfo.aareg.exceptions.RestErrorFromAareg;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.model.Stilling;
 import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.sts.StsConsumer;
 import org.slf4j.Logger;
@@ -18,10 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static no.nav.syfo.aareg.AaregUtils.stillingsprosentWithMaxScale;
-import static no.nav.syfo.aareg.OpplysningspliktigArbeidsgiver.Type.Organisasjon;
 import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
@@ -29,9 +25,6 @@ import static org.springframework.http.HttpMethod.GET;
 @Service
 public class AaregConsumer {
     private static final Logger LOG = getLogger(AaregConsumer.class);
-
-    private final PdlConsumer pdlConsumer;
-    private final FellesKodeverkConsumer fellesKodeverkConsumer;
     private final Metrikk metrikk;
     private final RestTemplate restTemplate;
     private final StsConsumer stsConsumer;
@@ -42,15 +35,11 @@ public class AaregConsumer {
 
     @Autowired
     public AaregConsumer(
-            PdlConsumer pdlConsumer,
-            FellesKodeverkConsumer fellesKodeverkConsumer,
             Metrikk metrikk,
             RestTemplate restTemplate,
             StsConsumer stsConsumer,
             @Value("${aareg.services.url}") String url
     ) {
-        this.pdlConsumer = pdlConsumer;
-        this.fellesKodeverkConsumer = fellesKodeverkConsumer;
         this.metrikk = metrikk;
         this.restTemplate = restTemplate;
         this.stsConsumer = stsConsumer;
@@ -77,29 +66,6 @@ public class AaregConsumer {
             LOG.error("Error from AAREG with request-url: " + url, e);
             throw new RestErrorFromAareg("Tried to get arbeidsforhold for arbeidstaker", e);
         }
-    }
-
-    public List<Stilling> arbeidstakersStillingerForOrgnummer(String aktorId, LocalDate fom, String orgnummer) {
-        String fnr = pdlConsumer.fnr(aktorId);
-        List<Arbeidsforhold> arbeidsforholdList = arbeidsforholdArbeidstaker(fnr);
-
-        return arbeidsforholdList2StillingForOrgnummer(arbeidsforholdList, fom, orgnummer);
-    }
-
-    private List<Stilling> arbeidsforholdList2StillingForOrgnummer(List<Arbeidsforhold> arbeidsforholdList, LocalDate fom, String orgnummer) {
-        return arbeidsforholdList.stream()
-                .filter(arbeidsforhold -> arbeidsforhold.arbeidsgiver.type.equals(Organisasjon))
-                .filter(arbeidsforhold -> arbeidsforhold.arbeidsgiver.organisasjonsnummer.equals(orgnummer))
-                .filter(arbeidsforhold -> arbeidsforhold.ansettelsesperiode.periode.tom == null || !tilLocalDate(arbeidsforhold.ansettelsesperiode.periode.tom).isBefore(fom))
-                .flatMap(arbeidsforhold -> arbeidsforhold.arbeidsavtaler().stream())
-                .map(arbeidsavtale -> new Stilling()
-                        .yrke(fellesKodeverkConsumer.stillingsnavnFromKode(arbeidsavtale.yrke))
-                        .prosent(stillingsprosentWithMaxScale(arbeidsavtale.stillingsprosent)))
-                .collect(Collectors.toList());
-    }
-
-    private LocalDate tilLocalDate(String date) {
-        return LocalDate.parse(date);
     }
 
     private HttpEntity entity(String fnr, String token) {
