@@ -132,7 +132,7 @@ class OppfolgingsplanLPSService @Inject constructor(
 
         val isUserDiskresjonsmerket = try {
             pdlConsumer.person(incomingMetadata.userPersonNumber)?.isKode6Or7()
-        }  catch (e: HttpServerErrorException) {
+        } catch (e: HttpServerErrorException) {
             log.error("Could not process LPS-plan due to server error: ${e.message}")
             null
         }

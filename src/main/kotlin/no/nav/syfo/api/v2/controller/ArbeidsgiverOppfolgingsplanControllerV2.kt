@@ -2,7 +2,6 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.aareg.AaregConsumer
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.BrukerOppfolgingsplan
@@ -11,6 +10,8 @@ import no.nav.syfo.api.v2.mapper.populerPlanerMedAvbruttPlanListe
 import no.nav.syfo.api.v2.mapper.toBrukerOppfolgingsplan
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
+import no.nav.syfo.pdl.PdlConsumer
+import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.tokenx.TokenXUtil
 import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
@@ -28,7 +29,8 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val narmesteLederConsumer: NarmesteLederConsumer,
     private val oppfolgingsplanService: OppfolgingsplanService,
-    private val aaregConsumer: AaregConsumer,
+    private val arbeidsforholdService: ArbeidsforholdService,
+    private val pdlConsumer: PdlConsumer,
     private val metrikk: Metrikk,
     @Value("\${tokenx.idp}")
     private val tokenxIdp: String,
@@ -41,9 +43,22 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
             .fnrFromIdportenTokenX()
             .value
         val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.hentAktorsOppfolgingsplaner(ARBEIDSGIVER, innloggetIdent)
-        val liste = arbeidsgiversOppfolgingsplaner.map { it.toBrukerOppfolgingsplan() }
+        val liste = arbeidsgiversOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
         liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
-        liste.forEach { plan -> plan.populerArbeidstakersStillinger(aaregConsumer) }
+        liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidsforholdService) }
+        metrikk.tellHendelse("hent_oppfolgingsplan_ag")
+        return liste
+    }
+
+    @GetMapping(produces = [APPLICATION_JSON_VALUE], value = ["/{fnr}"])
+    fun hentArbeidsgiversOppfolgingsplanerPaFnr(@PathVariable fnr: String): List<BrukerOppfolgingsplan> {
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+            .fnrFromIdportenTokenX()
+            .value
+        val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.arbeidsgiveroppfolgingsplanerPaFnr(innloggetIdent, fnr)
+        val liste = arbeidsgiversOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
+        liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
+        liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidsforholdService) }
         metrikk.tellHendelse("hent_oppfolgingsplan_ag")
         return liste
     }

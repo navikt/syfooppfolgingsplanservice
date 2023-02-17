@@ -70,6 +70,7 @@ public class POppfoelgingsdialogMapper {
                             .samtykke(pOppfoelgingsdialog.samtykkeArbeidsgiver)
                     )
                     .sistEndretAvAktoerId(pOppfoelgingsdialog.sistEndretAv)
+                    .sistEndretAvFnr(pOppfoelgingsdialog.sistEndretAvFnr)
                     .sistEndretDato(pOppfoelgingsdialog.sistEndret)
                     .opprettetAvAktoerId(pOppfoelgingsdialog.opprettetAv)
                     .opprettetAvFnr(pOppfoelgingsdialog.opprettetAvFnr)

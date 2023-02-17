@@ -1,6 +1,5 @@
 package no.nav.syfo.api.v2.mapper
 
-import no.nav.syfo.aareg.AaregConsumer
 import no.nav.syfo.aareg.exceptions.RestErrorFromAareg
 import no.nav.syfo.api.util.unwrap
 import no.nav.syfo.api.v2.domain.Virksomhet
@@ -16,26 +15,27 @@ import no.nav.syfo.domain.GodkjentPlan
 import no.nav.syfo.domain.Gyldighetstidspunkt
 import no.nav.syfo.domain.Kommentar
 import no.nav.syfo.domain.Tiltak
-import no.nav.syfo.pdl.PdlConsumer.Companion.pdlConsumer
+import no.nav.syfo.pdl.PdlConsumer
+import no.nav.syfo.service.ArbeidsforholdService
 import java.time.LocalDate
 
-fun Oppfolgingsplan.toBrukerOppfolgingsplan() =
+fun Oppfolgingsplan.toBrukerOppfolgingsplan(pdlConsumer: PdlConsumer) =
     BrukerOppfolgingsplan(
         id = id,
         virksomhet = Virksomhet(virksomhet.virksomhetsnummer),
-        arbeidsoppgaveListe = arbeidsoppgaveListe.map { it.toArbeidsoppgave() },
-        tiltakListe = tiltakListe.map { it.toTiltak() },
-        godkjenninger = godkjenninger.map { it.toGodkjenning() },
+        arbeidsoppgaveListe = arbeidsoppgaveListe.map { it.toArbeidsoppgave(pdlConsumer) },
+        tiltakListe = tiltakListe.map { it.toTiltak(pdlConsumer) },
+        godkjenninger = godkjenninger.map { it.toGodkjenning(pdlConsumer) },
         sistEndretAv = Person(fnr = pdlConsumer.fnr(sistEndretAvAktoerId)),
         sistEndretDato = sistEndretDato,
         godkjentPlan = godkjentPlan.unwrap()?.toGodkjentPlan(),
         status = getStatus(),
         opprettetDato = LocalDate.from(opprettet),
-        arbeidstaker = toArbeidstaker(),
+        arbeidstaker = toArbeidstaker(pdlConsumer),
         arbeidsgiver = toArbeidsgiver()
     )
 
-fun Oppfolgingsplan.toArbeidstaker() =
+fun Oppfolgingsplan.toArbeidstaker(pdlConsumer: PdlConsumer) =
     Person(
         fnr = pdlConsumer.fnr(arbeidstaker.aktoerId),
         sistInnlogget = arbeidstaker.sistInnlogget,
@@ -83,7 +83,7 @@ fun Avbruttplan.toAvbruttPlan() =
         tidspunkt = tidspunkt
     )
 
-fun Godkjenning.toGodkjenning() =
+fun Godkjenning.toGodkjenning(pdlConsumer: PdlConsumer) =
     no.nav.syfo.api.v2.domain.oppfolgingsplan.Godkjenning(
         beskrivelse = beskrivelse,
         godkjent = godkjent,
@@ -100,7 +100,7 @@ fun Gyldighetstidspunkt.toGyldighetstidspunkt() =
         evalueres = evalueres
     )
 
-fun Tiltak.toTiltak() =
+fun Tiltak.toTiltak(pdlConsumer: PdlConsumer) =
     no.nav.syfo.api.v2.domain.oppfolgingsplan.Tiltak(
         tiltakId = id,
         tiltaknavn = navn,
@@ -114,10 +114,10 @@ fun Tiltak.toTiltak() =
         opprettetDato = opprettetDato,
         sistEndretAv = Person(fnr = pdlConsumer.fnr(sistEndretAvAktoerId)),
         sistEndretDato = sistEndretDato,
-        kommentarer = kommentarer.map { it.toKommentar() }
+        kommentarer = kommentarer.map { it.toKommentar(pdlConsumer) }
     )
 
-fun Kommentar.toKommentar() =
+fun Kommentar.toKommentar(pdlConsumer: PdlConsumer) =
     no.nav.syfo.api.v2.domain.oppfolgingsplan.Kommentar(
         id = id,
         tekst = tekst,
@@ -127,7 +127,7 @@ fun Kommentar.toKommentar() =
         sistEndretDato = sistEndretDato
     )
 
-fun Arbeidsoppgave.toArbeidsoppgave() =
+fun Arbeidsoppgave.toArbeidsoppgave(pdlConsumer: PdlConsumer) =
     no.nav.syfo.api.v2.domain.oppfolgingsplan.Arbeidsoppgave(
         arbeidsoppgaveId = id,
         arbeidsoppgavenavn = navn,
@@ -175,11 +175,11 @@ fun BrukerOppfolgingsplan.populerPlanerMedAvbruttPlanListe(planer: List<BrukerOp
         }
 }
 
-fun BrukerOppfolgingsplan.populerArbeidstakersStillinger(aaregConsumer: AaregConsumer) {
+fun BrukerOppfolgingsplan.populerArbeidstakersStillinger(arbeidsforholdService: ArbeidsforholdService) {
     try {
-        val stillinger = aaregConsumer.arbeidstakersFnrStillingerForOrgnummer(arbeidstaker.fnr, opprettetDato, virksomhet.virksomhetsnummer)
-        arbeidstaker.stillinger = stillinger.map { stilling -> Stilling(stilling.yrke, stilling.prosent) }
+        arbeidstaker.stillinger =
+            arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(arbeidstaker.fnr, opprettetDato, virksomhet.virksomhetsnummer)
+                .map { stilling -> Stilling(stilling.yrke, stilling.prosent) }
     } catch (_: RestErrorFromAareg) {
     }
-
 }

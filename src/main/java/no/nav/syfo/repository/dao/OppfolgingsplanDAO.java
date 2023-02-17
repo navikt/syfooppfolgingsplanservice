@@ -74,15 +74,16 @@ public class OppfolgingsplanDAO {
                 .addValue("samtykke_sykmeldt", null)
                 .addValue("samtykke_arbeidsgiver", null)
                 .addValue("sm_fnr", oppfolgingsplan.arbeidstaker.fnr)
-                .addValue("opprettet_av_fnr", oppfolgingsplan.opprettetAvFnr);
+                .addValue("opprettet_av_fnr", oppfolgingsplan.opprettetAvFnr)
+                .addValue("sist_endret_av_fnr", oppfolgingsplan.sistEndretAvFnr);
 
         namedParameterJdbcTemplate.update("insert into oppfoelgingsdialog " +
                 "(oppfoelgingsdialog_id, uuid, aktoer_id, virksomhetsnummer, opprettet_av, created, arbeidsgiver_sist_innlogget, " +
                 "sykmeldt_sist_innlogget, sist_endret_av, sist_endret, arbeidsgiver_sist_aksessert, sykmeldt_sist_aksessert, " +
-                "arbeidsgiver_sist_endret, sykmeldt_sist_endret, samtykke_sykmeldt, samtykke_arbeidsgiver, sm_fnr, opprettet_av_fnr) " +
+                "arbeidsgiver_sist_endret, sykmeldt_sist_endret, samtykke_sykmeldt, samtykke_arbeidsgiver, sm_fnr, opprettet_av_fnr, sist_endret_av_fnr) " +
                 "values(:oppfoelgingsdialog_id, :uuid, :aktoer_id, :virksomhetsnummer, :opprettet_av, :created, :arbeidsgiver_sist_innlogget, " +
                 ":sykmeldt_sist_innlogget, :sist_endret_av, :sist_endret, :arbeidsgiver_sist_aksessert, :sykmeldt_sist_aksessert, " +
-                ":arbeidsgiver_sist_endret, :sykmeldt_sist_endret, :samtykke_sykmeldt, :samtykke_arbeidsgiver, :sm_fnr, :opprettet_av_fnr)", namedParameters);
+                ":arbeidsgiver_sist_endret, :sykmeldt_sist_endret, :samtykke_sykmeldt, :samtykke_arbeidsgiver, :sm_fnr, :opprettet_av_fnr, :sist_endret_av_fnr)", namedParameters);
 
         return oppfolgingsplan.id(id);
     }
@@ -186,6 +187,35 @@ public class OppfolgingsplanDAO {
         return jdbcTemplate.query("SELECT * FROM OPPFOELGINGSDIALOG WHERE AKTOER_ID = ?", (rs, rowNum) -> rs.getLong("OPPFOELGINGSDIALOG_ID"), aktoerId);
     }
 
+    public List<POppfoelgingsdialog> plansWithoutFnr(int batchSize) {
+        return jdbcTemplate.query("SELECT * FROM oppfoelgingsdialog WHERE sm_fnr IS NULL OR opprettet_av_fnr IS NULL OR sist_endret_av is NULL OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY", new AktorIdMigrationRowMapper(), batchSize);
+    }
+
+    public boolean updateSmFnr(Long id, String fnr) {
+        String updateSql = "UPDATE oppfoelgingsdialog SET sm_fnr = ? WHERE oppfoelgingsdialog_id = ?";
+        return jdbcTemplate.update(updateSql, fnr, id) == 1;
+    }
+
+    public boolean updateOpprettetAvFnr(Long id, String fnr) {
+        String updateSql = "UPDATE oppfoelgingsdialog SET opprettet_av_fnr = ? WHERE oppfoelgingsdialog_id = ?";
+        return jdbcTemplate.update(updateSql, fnr, id) == 1;
+    }
+
+    public boolean updateSistEndretAvFnr(Long id, String fnr) {
+        String updateSql = "UPDATE oppfoelgingsdialog SET sist_endret_av_fnr = ? WHERE oppfoelgingsdialog_id = ?";
+        return jdbcTemplate.update(updateSql, fnr, id) ==  1;
+    }
+
+    private class AktorIdMigrationRowMapper implements RowMapper<POppfoelgingsdialog> {
+        public POppfoelgingsdialog mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new POppfoelgingsdialog()
+                    .id(rs.getLong("oppfoelgingsdialog_id"))
+                    .aktoerId(rs.getString("aktoer_id"))
+                    .opprettetAv(rs.getString("opprettet_av"))
+                    .sistEndretAv(rs.getString("sist_endret_av"));
+        }
+    }
+
     private class OppfoelgingsdialogRowMapper implements RowMapper<POppfoelgingsdialog> {
         public POppfoelgingsdialog mapRow(ResultSet rs, int rowNum) throws SQLException {
             Boolean samtykke_sykmeldt = rs.getBoolean("samtykke_sykmeldt");
@@ -210,7 +240,8 @@ public class OppfolgingsplanDAO {
                     .samtykkeSykmeldt(samtykke_sykmeldt)
                     .samtykkeArbeidsgiver(samtykke_arbeidsgiver)
                     .smFnr(rs.getString("sm_fnr"))
-                    .opprettetAvFnr(rs.getString("opprettet_av_fnr"));
+                    .opprettetAvFnr(rs.getString("opprettet_av_fnr"))
+                    .sistEndretAvFnr(rs.getString("sist_endret_av_fnr"));
         }
     }
 }
