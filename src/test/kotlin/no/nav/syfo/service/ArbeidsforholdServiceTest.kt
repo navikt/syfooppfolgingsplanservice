@@ -4,7 +4,9 @@ import no.nav.syfo.aareg.AaregConsumer
 import no.nav.syfo.aareg.AaregUtils
 import no.nav.syfo.aareg.Arbeidsforhold
 import no.nav.syfo.aareg.utils.AaregConsumerTestUtils
-import no.nav.syfo.fellesKodeverk.FellesKodeverkConsumer
+import no.nav.syfo.aareg.utils.AaregConsumerTestUtils.YRKESKODE
+import no.nav.syfo.aareg.utils.AaregConsumerTestUtils.YRKESNAVN
+import no.nav.syfo.fellesKodeverk.*
 import no.nav.syfo.model.Stilling
 import no.nav.syfo.pdl.PdlConsumer
 import org.assertj.core.api.Assertions.assertThat
@@ -12,7 +14,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
@@ -36,7 +37,27 @@ class ArbeidsforholdServiceTest {
 
     @Before
     fun setup() {
-        `when`(fellesKodeverkConsumer.stillingsnavnFromKode(ArgumentMatchers.anyString())).thenReturn(AaregConsumerTestUtils.YRKESNAVN)
+        `when`(fellesKodeverkConsumer.kodeverkKoderBetydninger()).thenReturn(fellesKodeverkResponseBody(YRKESNAVN, YRKESKODE))
+    }
+
+    @Test
+    fun arbeidstakersStillingerForOrgnummerShouldReturnCorrectYrke() {
+        val arbeidsforholdList = listOf(AaregConsumerTestUtils.validArbeidsforhold())
+
+        test_arbeidstakersStillingerForOrgnummer(arbeidsforholdList)
+    }
+
+    @Test
+    fun arbeidstakersStillingerForOrgnummerShouldReturnCustomMessageIfNavnNotFound() {
+        val arbeidsforholdList = listOf(AaregConsumerTestUtils.validArbeidsforhold())
+        `when`(fellesKodeverkConsumer.kodeverkKoderBetydninger()).thenReturn(fellesKodeverkResponseBodyWithWrongKode())
+        `when`(aaregConsumer.arbeidsforholdArbeidstaker(AaregConsumerTestUtils.AT_FNR)).thenReturn(arbeidsforholdList)
+        `when`(pdlConsumer.fnr(AaregConsumerTestUtils.AT_AKTORID)).thenReturn(AaregConsumerTestUtils.AT_FNR)
+        val actualStillingList =
+            arbeidsforholdService.arbeidstakersStillingerForOrgnummer(AaregConsumerTestUtils.AT_AKTORID, now(), AaregConsumerTestUtils.ORGNUMMER)
+
+        val stilling = actualStillingList[0]
+        assertThat(stilling.yrke).isEqualTo("Ugyldig yrkeskode $STILLINGSKODE")
     }
 
     @Test
@@ -87,7 +108,7 @@ class ArbeidsforholdServiceTest {
     private fun verifyStilling(stillingList: List<Stilling>) {
         assertThat(stillingList.size).isEqualTo(1)
         val stilling = stillingList[0]
-        assertThat(stilling.yrke).isEqualTo(AaregConsumerTestUtils.YRKESNAVN)
+        assertThat(stilling.yrke).isEqualTo(AaregConsumerTestUtils.YRKESNAVN_CAPITALIZED)
         assertThat(stilling.prosent).isEqualTo(AaregUtils.stillingsprosentWithMaxScale(AaregConsumerTestUtils.STILLINGSPROSENT))
     }
 }

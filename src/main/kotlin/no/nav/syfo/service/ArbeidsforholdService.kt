@@ -5,13 +5,18 @@ import no.nav.syfo.aareg.AaregUtils.stillingsprosentWithMaxScale
 import no.nav.syfo.aareg.Arbeidsforhold
 import no.nav.syfo.aareg.OpplysningspliktigArbeidsgiver
 import no.nav.syfo.fellesKodeverk.FellesKodeverkConsumer
+import no.nav.syfo.fellesKodeverk.KodeverkKoderBetydningerResponse
 import no.nav.syfo.model.Stilling
 import no.nav.syfo.pdl.PdlConsumer
+import no.nav.syfo.util.lowerCapitalize
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
 class ArbeidsforholdService(private val aaregConsumer: AaregConsumer, private val fellesKodeverkConsumer: FellesKodeverkConsumer, private val pdlConsumer: PdlConsumer) {
+
+    private val log = LoggerFactory.getLogger(ArbeidsforholdService::class.java)
 
     fun arbeidstakersStillingerForOrgnummer(aktorId: String, fom: LocalDate, orgnummer: String): List<Stilling> {
         val fnr: String = pdlConsumer.fnr(aktorId)
@@ -35,11 +40,22 @@ class ArbeidsforholdService(private val aaregConsumer: AaregConsumer, private va
             }
             .map { arbeidsavtale ->
                 Stilling().apply {
-                    yrke = fellesKodeverkConsumer.stillingsnavnFromKode(arbeidsavtale.yrke)
+                    yrke = stillingsnavnFromKode(arbeidsavtale.yrke)
                     prosent = stillingsprosentWithMaxScale(arbeidsavtale.stillingsprosent)
                 }
             }
     }
+
+    private fun stillingsnavnFromKode(stillingskode: String): String {
+        val kodeverkBetydninger: KodeverkKoderBetydningerResponse = fellesKodeverkConsumer.kodeverkKoderBetydninger()
+        val stillingsnavnFraFellesKodeverk = kodeverkBetydninger.betydninger[stillingskode]?.get(0)?.beskrivelser?.get("nb")?.tekst
+        if (stillingsnavnFraFellesKodeverk == null) {
+            log.error("Couldn't find navn for stillingskode: $stillingskode")
+        }
+        val stillingsnavn = stillingsnavnFraFellesKodeverk ?: "Ugyldig yrkeskode $stillingskode"
+        return stillingsnavn.lowerCapitalize()
+    }
+
 }
 
 private fun String.tilLocalDate(): LocalDate {
