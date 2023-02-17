@@ -187,7 +187,7 @@ fun BrukerOppfolgingsplan.populerArbeidstakersStillinger(arbeidsforholdService: 
 
 fun BrukerOppfolgingsplan.populerArbeidstakersStillinger(arbeidsforholdListe: Map<String, List<Arbeidsforhold>>) {
     val stillinger = arbeidsforholdListe[virksomhet.virksomhetsnummer]
-        ?.filter { arbeidsforhold -> !arbeidsforhold.tom.isBefore(opprettetDato) }
+        ?.filter { arbeidsforhold -> arbeidsforhold.tom == null || !arbeidsforhold.tom.isBefore(opprettetDato) }
         ?.flatMap { arbeidsforhold -> arbeidsforhold.stillinger }
         ?.map { stilling -> Stilling(stilling.yrke, stilling.prosent) }
     arbeidstaker.stillinger = stillinger ?: emptyList()
