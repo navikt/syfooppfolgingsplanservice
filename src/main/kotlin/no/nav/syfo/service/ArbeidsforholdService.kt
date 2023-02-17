@@ -37,8 +37,8 @@ class ArbeidsforholdService(private val aaregConsumer: AaregConsumer, private va
             .map { arbeidsforhold ->
                 no.nav.syfo.model.Arbeidsforhold().apply {
                     orgnummer = arbeidsforhold.arbeidsgiver.organisasjonsnummer
-                    fom = LocalDate.parse(arbeidsforhold.ansettelsesperiode.periode.fom)
-                    tom = LocalDate.parse(arbeidsforhold.ansettelsesperiode.periode.tom)
+                    fom = if (arbeidsforhold.ansettelsesperiode.periode.fom != null) LocalDate.parse(arbeidsforhold.ansettelsesperiode.periode.fom) else null
+                    tom = if (arbeidsforhold.ansettelsesperiode.periode.tom != null) LocalDate.parse(arbeidsforhold.ansettelsesperiode.periode.tom) else null
                     stillinger = arbeidsforhold.arbeidsavtaler.map {
                         Stilling().apply {
                             yrke = it.yrke.toStillingsnavn()
