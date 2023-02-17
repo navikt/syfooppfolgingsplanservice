@@ -515,9 +515,10 @@ public class GodkjenningService {
                         .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(gyldighetstidspunkt.tom)))
                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
                 ))
-                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
-                        .withYrke(stilling.yrke)
-                        .withProsent(stilling.prosent)))
+                .withStillingListe(mapListe(
+                        arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                                .withYrke(stilling.yrke)
+                                .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)
                 .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
                 .withSykmeldtNavn(sykmeldtnavn)
