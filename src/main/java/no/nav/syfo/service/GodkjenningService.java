@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.aareg.AaregConsumer;
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.dkif.DigitalKontaktinfo;
 import no.nav.syfo.dkif.DkifConsumer;
@@ -43,7 +42,7 @@ public class GodkjenningService {
 
     private static final Logger LOG = getLogger(GodkjenningService.class);
 
-    private AaregConsumer aaregConsumer;
+    private ArbeidsforholdService arbeidsforholdService;
 
     private Metrikk metrikk;
 
@@ -75,7 +74,7 @@ public class GodkjenningService {
 
     @Inject
     public GodkjenningService(
-            AaregConsumer aaregConsumer,
+            ArbeidsforholdService arbeidsforholdService,
             Metrikk metrikk,
             AsynkOppgaveDAO asynkOppgaveDAO,
             DokumentDAO dokumentDAO,
@@ -91,7 +90,7 @@ public class GodkjenningService {
             NarmesteLederVarselService narmesteLederVarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
-        this.aaregConsumer = aaregConsumer;
+        this.arbeidsforholdService = arbeidsforholdService;
         this.metrikk = metrikk;
         this.asynkOppgaveDAO = asynkOppgaveDAO;
         this.dokumentDAO = dokumentDAO;
@@ -307,7 +306,8 @@ public class GodkjenningService {
                         .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom)))
                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
                 ))
-                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                .withStillingListe(mapListe(
+                        arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
                         .withYrke(stilling.yrke)
                         .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)
@@ -394,7 +394,8 @@ public class GodkjenningService {
                         .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(gyldighetstidspunkt.tom)))
                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
                 ))
-                .withStillingListe(mapListe(aaregConsumer.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                .withStillingListe(mapListe(
+                        arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
                         .withYrke(stilling.yrke)
                         .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)

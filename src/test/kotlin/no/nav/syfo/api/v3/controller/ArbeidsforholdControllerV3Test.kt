@@ -1,10 +1,10 @@
 package no.nav.syfo.api.v3.controller
 
-import no.nav.syfo.aareg.AaregConsumer
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.v2.domain.Arbeidsforhold
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.Stilling
+import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.VIRKSOMHETSNUMMER
@@ -25,7 +25,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
     lateinit var brukertilgangConsumer: BrukertilgangConsumer
 
     @MockBean
-    lateinit var aaregConsumer: AaregConsumer
+    lateinit var arbeidsforholdService: ArbeidsforholdService
 
     @Inject
     private lateinit var arbeidsforholdController: ArbeidsforholdControllerV3
@@ -42,7 +42,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
     fun narmesteLeder_ansatt_ok() {
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        `when`(aaregConsumer.arbeidstakersFnrStillingerForOrgnummer(ARBEIDSTAKER_FNR, LocalDate.now(), VIRKSOMHETSNUMMER))
+        `when`(arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(ARBEIDSTAKER_FNR, LocalDate.now(), VIRKSOMHETSNUMMER))
             .thenReturn(listOf(stilling))
         val res: ResponseEntity<*> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER, LocalDate.now())
         val body = res.body as List<Arbeidsforhold>
@@ -55,7 +55,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
     @Test
     fun narmesteLeder_self_ok() {
         loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
-        `when`(aaregConsumer.arbeidstakersFnrStillingerForOrgnummer(ARBEIDSTAKER_FNR, LocalDate.now(), VIRKSOMHETSNUMMER))
+        `when`(arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(ARBEIDSTAKER_FNR, LocalDate.now(), VIRKSOMHETSNUMMER))
             .thenReturn(listOf(stilling))
         val res: ResponseEntity<*> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER, LocalDate.now())
         val body = res.body as List<Arbeidsforhold>
