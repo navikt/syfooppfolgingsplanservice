@@ -15,6 +15,7 @@ import no.nav.syfo.domain.GodkjentPlan
 import no.nav.syfo.domain.Gyldighetstidspunkt
 import no.nav.syfo.domain.Kommentar
 import no.nav.syfo.domain.Tiltak
+import no.nav.syfo.model.Arbeidsforhold
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.ArbeidsforholdService
 import java.time.LocalDate
@@ -182,4 +183,12 @@ fun BrukerOppfolgingsplan.populerArbeidstakersStillinger(arbeidsforholdService: 
                 .map { stilling -> Stilling(stilling.yrke, stilling.prosent) }
     } catch (_: RestErrorFromAareg) {
     }
+}
+
+fun BrukerOppfolgingsplan.populerArbeidstakersStillinger(arbeidsforholdListe: Map<String, List<Arbeidsforhold>>) {
+    val stillinger = arbeidsforholdListe[virksomhet.virksomhetsnummer]
+        ?.filter { arbeidsforhold -> !arbeidsforhold.tom.isBefore(opprettetDato) }
+        ?.flatMap { arbeidsforhold -> arbeidsforhold.stillinger }
+        ?.map { stilling -> Stilling(stilling.yrke, stilling.prosent) }
+    arbeidstaker.stillinger = stillinger ?: emptyList()
 }

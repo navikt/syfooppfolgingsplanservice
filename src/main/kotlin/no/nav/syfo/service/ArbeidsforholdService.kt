@@ -31,6 +31,24 @@ class ArbeidsforholdService(private val aaregConsumer: AaregConsumer, private va
             .toStillingForOrgnummer(orgnummer, fom)
     }
 
+    fun arbeidsforhold(fnr: String): Map<String, List<no.nav.syfo.model.Arbeidsforhold>> {
+        return aaregConsumer.arbeidsforholdArbeidstaker(fnr)
+            .filter { arbeidsforhold -> arbeidsforhold.hasType(Organisasjon) }
+            .map { arbeidsforhold ->
+                no.nav.syfo.model.Arbeidsforhold().apply {
+                    orgnummer = arbeidsforhold.arbeidsgiver.organisasjonsnummer
+                    fom = LocalDate.parse(arbeidsforhold.ansettelsesperiode.periode.fom)
+                    tom = LocalDate.parse(arbeidsforhold.ansettelsesperiode.periode.tom)
+                    stillinger = arbeidsforhold.arbeidsavtaler.map {
+                        Stilling().apply {
+                            yrke = it.yrke.toStillingsnavn()
+                            prosent = it.stillingsprosent.withMaxScale()
+                        }
+                    }
+                }
+            }.groupBy { arbeidsforhold -> arbeidsforhold.orgnummer }
+    }
+
     private fun List<Arbeidsforhold>.toStillingForOrgnummer(orgnummer: String, fom: LocalDate): List<Stilling> {
         return filter { arbeidsforhold -> arbeidsforhold.hasType(Organisasjon) }
             .filter { arbeidsforhold -> arbeidsforhold.hasOrgnummer(orgnummer) }
