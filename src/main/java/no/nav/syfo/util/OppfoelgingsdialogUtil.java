@@ -92,6 +92,10 @@ public class OppfoelgingsdialogUtil {
         return !erArbeidstakeren(oppfolgingsplan, aktoerId);
     }
 
+    public static boolean isLoggedInpersonLeaderAndOwnLeader(Oppfolgingsplan oppfolgingsplan, String loggedInPersonFnr, String leaderFnr) {
+        return oppfolgingsplan.arbeidstaker.fnr.equals(leaderFnr) && loggedInPersonFnr.equals(leaderFnr);
+    }
+
     public static boolean eksisterendeTiltakHoererTilDialog(Long tiltakId, List<Tiltak> tiltakListe) {
         return tiltakId == null || tiltakListe.stream().anyMatch(tiltak -> tiltak.id.equals(tiltakId));
     }
