@@ -17,6 +17,7 @@ import java.util.Map;
 public class CacheConfig {
     public static final String CACHENAME_AKTOER_ID = "aktoerid";
     public static final String CACHENAME_AKTOER_FNR = "aktoerfnr";
+    public static final String CACHENAME_GJELDENDE_FNR = "gjeldendefnr";
     public static final String CACHENAME_ANSATTE = "lederansatte";
     public static final String CACHENAME_DKIF_IDENT = "dkifident";
     public static final String CACHENAME_EREG_VIRKSOMHETSNAVN = "virksomhetsnavn";
@@ -35,6 +36,7 @@ public class CacheConfig {
 
         cacheConfigurations.put(CACHENAME_AKTOER_ID, defaultConfig);
         cacheConfigurations.put(CACHENAME_AKTOER_FNR, defaultConfig);
+        cacheConfigurations.put(CACHENAME_GJELDENDE_FNR, defaultConfig);
         cacheConfigurations.put(CACHENAME_ANSATTE, defaultConfig);
         cacheConfigurations.put(CACHENAME_DKIF_IDENT, defaultConfig);
         cacheConfigurations.put(CACHENAME_EREG_VIRKSOMHETSNAVN, defaultConfig);
