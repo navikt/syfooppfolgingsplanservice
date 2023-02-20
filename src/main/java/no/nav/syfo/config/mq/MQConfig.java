@@ -40,7 +40,6 @@ public class MQConfig {
     private String serviceuserPassword;
 
     private static final String VARSELPRODUKSJON_VARSLINGER_QUEUENAME = "VARSELPRODUKSJON_VARSLINGER_QUEUENAME";
-    private static final String VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME = "VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME";
 
     @Bean
     public DestinationResolver destinationResolver(ApplicationContext context) {
@@ -60,23 +59,6 @@ public class MQConfig {
     ) {
         JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestination(serviceVarselDestination);
-        jmsTemplate.setConnectionFactory(connectionFactory);
-        jmsTemplate.setSessionTransacted(true);
-        return jmsTemplate;
-    }
-
-    @Bean(name = "tredjepartsVarselDestination")
-    public Queue tredjepartsVarselDestination() throws JMSException {
-        return new MQQueue(getenv(VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME));
-    }
-
-    @Bean(name = "tredjepartsvarselqueue")
-    public JmsTemplate tredjepartsvarselqueue(
-            @Autowired @Qualifier("tredjepartsVarselDestination") Queue tredjepartsVarselDestination,
-            ConnectionFactory connectionFactory
-    ) {
-        JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestination(tredjepartsVarselDestination);
         jmsTemplate.setConnectionFactory(connectionFactory);
         jmsTemplate.setSessionTransacted(true);
         return jmsTemplate;

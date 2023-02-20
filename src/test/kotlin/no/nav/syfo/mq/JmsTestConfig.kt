@@ -13,9 +13,4 @@ class JmsTestConfig {
     fun servicevarselqueue(): JmsTemplate {
         return JmsTemplateMock("servicevarselqueue")
     }
-
-    @Bean(name = ["tredjepartsvarselqueue"])
-    fun tredjepartsvarselqueue(): JmsTemplate {
-        return JmsTemplateMock("tredjepartsvarselqueue")
-    }
 }

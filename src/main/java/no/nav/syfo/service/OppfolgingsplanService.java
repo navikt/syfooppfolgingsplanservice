@@ -1,10 +1,12 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.api.selvbetjening.domain.*;
+import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant;
+import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
+import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
+import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.dialogmelding.DialogmeldingService;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Ansatt;
-import no.nav.syfo.model.Naermesteleder;
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.*;
@@ -18,7 +20,9 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
@@ -26,7 +30,6 @@ import static java.util.stream.Collectors.toList;
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER;
 import static no.nav.syfo.api.selvbetjening.mapper.RSBrukerOppfolgingsplanMapper.oppfolgingsplan2rs;
-import static no.nav.syfo.model.Varseltype.*;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -35,31 +38,27 @@ public class OppfolgingsplanService {
 
     private static final Logger log = getLogger(OppfolgingsplanService.class);
 
-    private OppfolgingsplanDAO oppfolgingsplanDAO;
+    private final OppfolgingsplanDAO oppfolgingsplanDAO;
 
-    private ArbeidsoppgaveDAO arbeidsoppgaveDAO;
+    private final ArbeidsoppgaveDAO arbeidsoppgaveDAO;
 
-    private GodkjentplanDAO godkjentplanDAO;
+    private final GodkjentplanDAO godkjentplanDAO;
 
-    private TiltakDAO tiltakDAO;
+    private final TiltakDAO tiltakDAO;
 
-    private NarmesteLederConsumer narmesteLederConsumer;
+    private final NarmesteLederConsumer narmesteLederConsumer;
 
-    private TilgangskontrollService tilgangskontrollService;
+    private final TilgangskontrollService tilgangskontrollService;
 
-    private DialogmeldingService dialogmeldingService;
-
-    private ServiceVarselService serviceVarselService;
-
-    private NarmesteLederVarselService narmesteLederVarselService;
+    private final DialogmeldingService dialogmeldingService;
 
     private final PdlConsumer pdlConsumer;
 
-    private GodkjenningerDAO godkjenningerDAO;
+    private final GodkjenningerDAO godkjenningerDAO;
 
-    private KommentarDAO kommentarDAO;
+    private final KommentarDAO kommentarDAO;
 
-    private DokumentDAO dokumentDAO;
+    private final DokumentDAO dokumentDAO;
 
     @Inject
     public OppfolgingsplanService(
@@ -73,8 +72,6 @@ public class OppfolgingsplanService {
             DialogmeldingService dialogmeldingService,
             NarmesteLederConsumer narmesteLederConsumer,
             PdlConsumer pdlConsumer,
-            ServiceVarselService serviceVarselService,
-            NarmesteLederVarselService narmesteLederVarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
         this.arbeidsoppgaveDAO = arbeidsoppgaveDAO;
@@ -87,8 +84,6 @@ public class OppfolgingsplanService {
         this.dialogmeldingService = dialogmeldingService;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.pdlConsumer = pdlConsumer;
-        this.serviceVarselService = serviceVarselService;
-        this.narmesteLederVarselService = narmesteLederVarselService;
         this.tilgangskontrollService = tilgangskontrollService;
     }
 
@@ -114,7 +109,7 @@ public class OppfolgingsplanService {
                 .filter(ans -> ans.fnr.equals(ansattFnr))
                 .findFirst()
                 .orElse(null);
-        
+
         if (ansatt == null) {
             throw new ForbiddenException();
         }
@@ -148,10 +143,6 @@ public class OppfolgingsplanService {
                 .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, aktorId))
                 .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
                 .collect(toList());
-    }
-
-    public Oppfolgingsplan hentOppfoelgingsdialog(Long oppfoelgingsdialogId) {
-        return oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
     }
 
     public Oppfolgingsplan hentGodkjentOppfolgingsplan(Long oppfoelgingsdialogId) {
@@ -235,18 +226,7 @@ public class OppfolgingsplanService {
             oppfolgingsplan.arbeidsgiver.sistAksessert(now());
         }
         oppfolgingsplan = oppfolgingsplanDAO.create(oppfolgingsplan);
-        sendVarsler(innloggetAktorId, oppfolgingsplan);
         return oppfolgingsplan.id;
-    }
-
-    private void sendVarsler(String innloggetAktoerId, Oppfolgingsplan oppfolgingsplan) {
-        if (innloggetAktoerId.equals(oppfolgingsplan.arbeidstaker.aktoerId)) {
-            String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
-            Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
-            narmesteLederVarselService.sendVarselTilNaermesteLeder(SyfoplanOpprettetNL, naermesteleder);
-        } else {
-            serviceVarselService.sendServiceVarsel(oppfolgingsplan.arbeidstaker.aktoerId, SyfoplanOpprettetSyk, oppfolgingsplan.id);
-        }
     }
 
     private boolean parteneHarEkisterendeAktivOppfolgingsplan(String sykmeldtAktoerId, String virksomhetsnummer) {

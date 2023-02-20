@@ -72,9 +72,6 @@ class OppfolgingsplanServiceTest {
     private lateinit var serviceVarselService: ServiceVarselService
 
     @MockBean
-    private lateinit var tredjepartsvarselService: TredjepartsvarselService
-
-    @MockBean
     private lateinit var godkjenningerDAO: GodkjenningerDAO
 
     @MockBean
