@@ -44,35 +44,35 @@ public class GodkjenningService {
 
     private static final Logger LOG = getLogger(GodkjenningService.class);
 
-    private ArbeidsforholdService arbeidsforholdService;
+    private final ArbeidsforholdService arbeidsforholdService;
 
-    private Metrikk metrikk;
+    private final Metrikk metrikk;
 
-    private OppfolgingsplanDAO oppfolgingsplanDAO;
+    private final OppfolgingsplanDAO oppfolgingsplanDAO;
 
-    private NarmesteLederConsumer narmesteLederConsumer;
+    private final NarmesteLederConsumer narmesteLederConsumer;
 
-    private TilgangskontrollService tilgangskontrollService;
+    private final TilgangskontrollService tilgangskontrollService;
 
-    private PdlConsumer pdlConsumer;
+    private final PdlConsumer pdlConsumer;
 
-    private DkifConsumer dkifConsumer;
+    private final DkifConsumer dkifConsumer;
 
-    private GodkjentplanDAO godkjentplanDAO;
+    private final GodkjentplanDAO godkjentplanDAO;
 
-    private DokumentDAO dokumentDAO;
+    private final DokumentDAO dokumentDAO;
 
-    private BrukerprofilService brukerprofilService;
+    private final BrukerprofilService brukerprofilService;
 
-    private EregConsumer eregConsumer;
+    private final EregConsumer eregConsumer;
 
-    private ServiceVarselService serviceVarselService;
+    private final ServiceVarselService serviceVarselService;
 
-    private NarmesteLederVarselService narmesteLederVarselService;
+    private final EsyfovarselService esyfovarselService;
 
-    private GodkjenningerDAO godkjenningerDAO;
+    private final GodkjenningerDAO godkjenningerDAO;
 
-    private AsynkOppgaveDAO asynkOppgaveDAO;
+    private final AsynkOppgaveDAO asynkOppgaveDAO;
 
     @Inject
     public GodkjenningService(
@@ -89,7 +89,7 @@ public class GodkjenningService {
             EregConsumer eregConsumer,
             NarmesteLederConsumer narmesteLederConsumer,
             ServiceVarselService serviceVarselService,
-            NarmesteLederVarselService narmesteLederVarselService,
+            EsyfovarselService esyfovarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
         this.arbeidsforholdService = arbeidsforholdService;
@@ -105,7 +105,7 @@ public class GodkjenningService {
         this.eregConsumer = eregConsumer;
         this.narmesteLederConsumer = narmesteLederConsumer;
         this.serviceVarselService = serviceVarselService;
-        this.narmesteLederVarselService = narmesteLederVarselService;
+        this.esyfovarselService = esyfovarselService;
         this.tilgangskontrollService = tilgangskontrollService;
     }
 
@@ -207,7 +207,7 @@ public class GodkjenningService {
             } else {
                 String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
                 Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
-                narmesteLederVarselService.sendVarselTilNaermesteLeder(SyfoplangodkjenningNl, naermesteleder);
+                esyfovarselService.sendVarselTilNarmesteLeder(SyfoplangodkjenningNl, naermesteleder);
             }
         }
         oppfolgingsplanDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);

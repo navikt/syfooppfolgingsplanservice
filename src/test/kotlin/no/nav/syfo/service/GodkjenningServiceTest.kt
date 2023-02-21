@@ -61,9 +61,6 @@ class GodkjenningServiceTest {
     private lateinit var serviceVarselService: ServiceVarselService
 
     @Mock
-    private lateinit var tredjepartsvarselService: TredjepartsvarselService
-
-    @Mock
     private lateinit var godkjenningerDAO: GodkjenningerDAO
 
     @InjectMocks
