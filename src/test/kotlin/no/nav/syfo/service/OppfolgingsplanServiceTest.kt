@@ -69,9 +69,6 @@ class OppfolgingsplanServiceTest {
     private lateinit var pdlConsumer: PdlConsumer
 
     @MockBean
-    private lateinit var serviceVarselService: ServiceVarselService
-
-    @MockBean
     private lateinit var godkjenningerDAO: GodkjenningerDAO
 
     @MockBean
