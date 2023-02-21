@@ -3,6 +3,7 @@ package no.nav.syfo.lps
 import no.nav.helse.op2016.Skjemainnhold
 
 fun mapFormdataToFagmelding(
+    fnr: String,
     skjemainnhold: Skjemainnhold,
     incomingMetadata: IncomingMetadata
 ): Fagmelding = Fagmelding(
@@ -29,7 +30,7 @@ fun mapFormdataToFagmelding(
                 fornavn = skjemainnhold.sykmeldtArbeidstaker.fornavn,
                 etternavn = skjemainnhold.sykmeldtArbeidstaker.etternavn
             ),
-            fodselsnummer = skjemainnhold.sykmeldtArbeidstaker.fnr,
+            fodselsnummer = fnr,
             tlf = skjemainnhold.sykmeldtArbeidstaker.tlf,
             stillingAvdeling = skjemainnhold.sykmeldtArbeidstaker.stillingAvdeling,
             ordineareArbeidsoppgaver = skjemainnhold.sykmeldtArbeidstaker.ordinaereArbeidsoppgaver

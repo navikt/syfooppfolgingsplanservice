@@ -20,6 +20,7 @@ object Versions {
     const val altinnKanalSchemasVersion = "1.0.1"
     const val jaxwsVersion = "2.3.2"
     const val h2Version = "2.1.210"
+    const val mockkVersion = "1.13.4"
 }
 
 plugins {
@@ -166,6 +167,7 @@ dependencies {
     }
 
     testImplementation("junit:junit")
+    testImplementation("io.mockk:mockk:${Versions.mockkVersion}")
 }
 
 tasks {
