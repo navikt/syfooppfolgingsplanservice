@@ -58,9 +58,6 @@ class GodkjenningServiceTest {
     private lateinit var eregConsumer: EregConsumer
 
     @Mock
-    private lateinit var serviceVarselService: ServiceVarselService
-
-    @Mock
     private lateinit var godkjenningerDAO: GodkjenningerDAO
 
     @InjectMocks

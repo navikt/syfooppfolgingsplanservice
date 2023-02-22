@@ -17,7 +17,5 @@ class LocalApplicationConfig(environment: Environment) {
         System.setProperty("SRV_PASSWORD", Objects.requireNonNull(environment.getProperty("srvsyfooppfolgingsplanservice.password")))
         System.setProperty(PropertyUtil.FASIT_ENVIRONMENT_NAME, ToggleUtil.ENVIRONMENT_MODE.q1.name)
         System.setProperty(PropertyUtil.LOCAL_MOCK, "true")
-        System.setProperty("VARSELPRODUKSJON_VARSLINGER_QUEUENAME", Objects.requireNonNull(environment.getProperty("varselproduksjon.varslinger.queuename")))
-        System.setProperty("VARSELPRODUKSJON_BEST_SRVMLD_M_KONTAKT_QUEUENAME", Objects.requireNonNull(environment.getProperty("varselproduksjon.best.srvmled.m.kontakt.queuename")))
     }
 }

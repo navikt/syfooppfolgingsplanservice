@@ -66,8 +66,6 @@ public class GodkjenningService {
 
     private final EregConsumer eregConsumer;
 
-    private final ServiceVarselService serviceVarselService;
-
     private final EsyfovarselService esyfovarselService;
 
     private final GodkjenningerDAO godkjenningerDAO;
@@ -88,7 +86,6 @@ public class GodkjenningService {
             DkifConsumer dkifConsumer,
             EregConsumer eregConsumer,
             NarmesteLederConsumer narmesteLederConsumer,
-            ServiceVarselService serviceVarselService,
             EsyfovarselService esyfovarselService,
             TilgangskontrollService tilgangskontrollService
     ) {
@@ -104,7 +101,6 @@ public class GodkjenningService {
         this.dkifConsumer = dkifConsumer;
         this.eregConsumer = eregConsumer;
         this.narmesteLederConsumer = narmesteLederConsumer;
-        this.serviceVarselService = serviceVarselService;
         this.esyfovarselService = esyfovarselService;
         this.tilgangskontrollService = tilgangskontrollService;
     }
@@ -203,7 +199,7 @@ public class GodkjenningService {
             );
 
             if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId)) {
-                serviceVarselService.sendServiceVarsel(oppfolgingsplan.arbeidstaker.aktoerId, SyfoplangodkjenningSyk, oppfoelgingsdialogId);
+                esyfovarselService.sendVarselTilArbeidstaker(SyfoplangodkjenningSyk, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
             } else {
                 String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
                 Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer).get();
@@ -345,8 +341,8 @@ public class GodkjenningService {
                 ))
                 .withStillingListe(mapListe(
                         arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
-                        .withYrke(stilling.yrke)
-                        .withProsent(stilling.prosent)))
+                                .withYrke(stilling.yrke)
+                                .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)
                 .withSykmeldtNavn(sykmeldtnavn)
                 .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
@@ -433,8 +429,8 @@ public class GodkjenningService {
                 ))
                 .withStillingListe(mapListe(
                         arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
-                        .withYrke(stilling.yrke)
-                        .withProsent(stilling.prosent)))
+                                .withYrke(stilling.yrke)
+                                .withProsent(stilling.prosent)))
                 .withSykmeldtFnr(sykmeldtFnr)
                 .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
                 .withSykmeldtNavn(sykmeldtnavn)
