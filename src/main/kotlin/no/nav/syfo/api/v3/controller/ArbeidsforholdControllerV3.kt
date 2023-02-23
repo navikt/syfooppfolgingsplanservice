@@ -2,9 +2,9 @@ package no.nav.syfo.api.v3.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.aareg.AaregConsumer
 import no.nav.syfo.api.v2.domain.Arbeidsforhold
 import no.nav.syfo.api.v2.domain.mapToArbeidsforhold
+import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.tokenx.TokenXUtil
 import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
@@ -29,7 +29,7 @@ import javax.inject.Inject
 @RequestMapping(value = ["/api/v3/arbeidsforhold"])
 class ArbeidsforholdControllerV3 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
-    private val aaregConsumer: AaregConsumer,
+    private val arbeidsforholdService: ArbeidsforholdService,
     private val brukertilgangService: BrukertilgangService,
     @Value("\${tokenx.idp}")
     private val tokenxIdp: String,
@@ -53,7 +53,7 @@ class ArbeidsforholdControllerV3 @Inject constructor(
                 .status(HttpStatus.FORBIDDEN)
                 .build()
         }
-        val arbeidsforhold = aaregConsumer.arbeidstakersFnrStillingerForOrgnummer(fnr, fom, virksomhetsnummer)
+        val arbeidsforhold = arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(fnr, fom, virksomhetsnummer)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(arbeidsforhold.map { it.mapToArbeidsforhold() })

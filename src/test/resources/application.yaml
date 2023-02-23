@@ -84,13 +84,6 @@ serviceoppfoelgingsdialogdb.url: serviceoppfoelgingsdialogdburl
 serviceoppfoelgingsdialogdb.username: serviceoppfoelgingsdialog_Q1
 serviceoppfoelgingsdialogdb.password: 12345
 
-mqgateway03.name: mq
-mqgateway03.hostname: mq
-mqgateway03.port: "0001"
-syfooppfolgingsplanservice.channel.name: mq
-varselproduksjon.best.srvmled.m.kontakt.queuename: mqbestbarsel
-varselproduksjon.varslinger.queuename: mqvarslinger
-
 tjenester.url: https://tjenester-q.nav.no
 dine.sykmeldte.url : https://localhost/arbeidsgiver/sykmeldte
 

@@ -13,6 +13,7 @@ class OppfolgingsplanLPSRetryService @Inject constructor(
         xml: String
     ): Long {
         val planLPSRetryList = oppfolgingsplanLPSRetryDAO.get(archiveReference)
+
         return if (planLPSRetryList.isNotEmpty()) {
             planLPSRetryList.first().id
         } else {

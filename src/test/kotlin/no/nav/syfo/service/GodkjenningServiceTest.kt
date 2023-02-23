@@ -1,6 +1,5 @@
 package no.nav.syfo.service
 
-import no.nav.syfo.aareg.AaregConsumer
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
 import no.nav.syfo.dkif.DkifConsumer
 import no.nav.syfo.domain.*
@@ -10,6 +9,7 @@ import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.*
+import no.nav.syfo.testhelper.any
 import no.nav.syfo.testhelper.generateDigitalKontaktinfo
 import no.nav.syfo.util.PropertyUtil
 import no.nav.syfo.util.ToggleUtil
@@ -25,7 +25,7 @@ import java.util.*
 @RunWith(SpringRunner::class)
 class GodkjenningServiceTest {
     @Mock
-    private lateinit var aaregConsumer: AaregConsumer
+    private lateinit var arbeidsforholdService: ArbeidsforholdService
 
     @Mock
     private lateinit var metrikk: Metrikk
@@ -56,12 +56,6 @@ class GodkjenningServiceTest {
 
     @Mock
     private lateinit var eregConsumer: EregConsumer
-
-    @Mock
-    private lateinit var serviceVarselService: ServiceVarselService
-
-    @Mock
-    private lateinit var tredjepartsvarselService: TredjepartsvarselService
 
     @Mock
     private lateinit var godkjenningerDAO: GodkjenningerDAO
@@ -113,7 +107,7 @@ class GodkjenningServiceTest {
         Mockito.`when`(brukerprofilService.hentNavnByAktoerId(ArgumentMatchers.anyString())).thenReturn("navn")
         Mockito.`when`(pdlConsumer.fnr(ArgumentMatchers.anyString())).thenReturn("fnr")
         Mockito.`when`(eregConsumer.virksomhetsnavn(ArgumentMatchers.anyString())).thenReturn("Virksomhet")
-        Mockito.`when`(aaregConsumer.arbeidstakersStillingerForOrgnummer(ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.anyString())).thenReturn(emptyList())
+        Mockito.`when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ArgumentMatchers.anyString(), any(), ArgumentMatchers.anyString())).thenReturn(emptyList())
         System.setProperty(PropertyUtil.ENVIRONMENT_NAME, ToggleUtil.ENVIRONMENT_MODE.dev.name)
     }
 

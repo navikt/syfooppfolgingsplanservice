@@ -15,6 +15,7 @@ public class AaregConsumerTestUtils {
     public static final LocalDate PASSED_DATE = LocalDate.of(1970, 1, 2);
     public static final String YRKESKODE = "1234567";
     public static final String YRKESNAVN = "yrkesnavn";
+    public static final String YRKESNAVN_CAPITALIZED = "Yrkesnavn";
     public static final Double STILLINGSPROSENT = 50.0;
 
     public static Arbeidsforhold simpleArbeidsforhold() {
