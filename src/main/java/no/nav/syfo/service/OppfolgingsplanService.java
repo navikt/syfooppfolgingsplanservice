@@ -101,20 +101,15 @@ public class OppfolgingsplanService {
         return emptyList();
     }
 
-    public List<Oppfolgingsplan> arbeidsgiveroppfolgingsplanerPaFnr(String lederFnr, String ansattFnr) {
+    public List<Oppfolgingsplan> arbeidsgiversOppfolgingsplanerPaFnr(String lederFnr, String ansattFnr, String virksomhetsnummer) {
         String lederAktorId = pdlConsumer.aktorid(lederFnr);
         String ansattAktorId = pdlConsumer.aktorid(ansattFnr);
-        Ansatt ansatt = narmesteLederConsumer.ansatte(lederFnr)
-                .stream()
-                .filter(ans -> ans.fnr.equals(ansattFnr))
-                .findFirst()
-                .orElse(null);
 
-        if (ansatt == null) {
-            throw new ForbiddenException();
+        if(!tilgangskontrollService.erNaermesteLederForSykmeldt(lederFnr, ansattFnr, virksomhetsnummer)) {
+            throw new ForbiddenException("Ikke tilgang");
         }
 
-        return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ansattAktorId, ansatt.virksomhetsnummer)
+        return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ansattAktorId, virksomhetsnummer)
                 .stream()
                 .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
                 .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, lederAktorId))
@@ -131,8 +126,7 @@ public class OppfolgingsplanService {
             List<Oppfolgingsplan> ansattesOppfolgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ansattAktorId).stream()
                     .filter(oppfolgingsplan -> oppfolgingsplan.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
                     .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
-                    .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, aktorId))
-                    .collect(toList());
+                    .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, aktorId)).toList();
             oppfolgingsplaner.addAll(ansattesOppfolgingsplaner);
         });
         return oppfolgingsplaner;

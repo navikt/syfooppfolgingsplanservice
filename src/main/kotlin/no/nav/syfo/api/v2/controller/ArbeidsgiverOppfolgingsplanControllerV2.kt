@@ -51,11 +51,11 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
     }
 
     @GetMapping(produces = [APPLICATION_JSON_VALUE], value = ["/{fnr}"])
-    fun hentArbeidsgiversOppfolgingsplanerPaFnr(@PathVariable fnr: String): List<BrukerOppfolgingsplan> {
+    fun hentArbeidsgiversOppfolgingsplanerPaFnr(@PathVariable fnr: String, @RequestParam("virksomhetsnummer") virksomhetsnummer: String): List<BrukerOppfolgingsplan> {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.arbeidsgiveroppfolgingsplanerPaFnr(innloggetIdent, fnr)
+        val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.arbeidsgiversOppfolgingsplanerPaFnr(innloggetIdent, fnr, virksomhetsnummer)
         val liste = arbeidsgiversOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
         liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
         liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidsforholdService) }
