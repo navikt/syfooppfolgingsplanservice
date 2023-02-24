@@ -93,24 +93,25 @@ public class OppfolgingsplanService {
         return emptyList();
     }
 
-    public List<Oppfolgingsplan> arbeidsgiveroppfolgingsplanerPaFnr(String lederFnr, String ansattFnr) {
+    public List<Oppfolgingsplan> arbeidsgiveroppfolgingsplanerPaFnr(String lederFnr, String ansattFnr, String virksomhetsnummer) {
         String lederAktorId = pdlConsumer.aktorid(lederFnr);
         String ansattAktorId = pdlConsumer.aktorid(ansattFnr);
-        List<Ansatt> ansatte = narmesteLederConsumer.ansatte(lederFnr).stream().filter(ans -> ans.fnr.equals(ansattFnr)).toList();
+        Ansatt ansatt =
+                narmesteLederConsumer.ansatte(lederFnr).stream()
+                        .filter(ans -> ans.fnr.equals(ansattFnr))
+                        .filter(ans -> ans.virksomhetsnummer.equals(virksomhetsnummer))
+                        .findFirst()
+                        .orElse(null);
 
-        if (ansatte.isEmpty()) {
+        if (ansatt == null) {
             throw new ForbiddenException();
         }
-        List<Oppfolgingsplan> oppfolgingsplaner = new ArrayList<>();
-        ansatte.forEach(ansatt -> {
-            oppfolgingsplaner.addAll(
-                    oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ansattAktorId, ansatt.virksomhetsnummer)
-                            .stream()
-                            .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
-                            .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, lederAktorId))
-                            .toList());
-        });
-        return oppfolgingsplaner;
+
+        return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ansattAktorId, ansatt.virksomhetsnummer)
+                .stream()
+                .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
+                .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, lederAktorId))
+                .collect(toList());
     }
 
 
