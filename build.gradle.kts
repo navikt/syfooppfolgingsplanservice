@@ -115,8 +115,6 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    implementation("org.springframework:spring-jms")
-
     implementation("org.apache.httpcomponents:httpclient")
 
     implementation("no.nav.security:token-validation-spring:${Versions.tokenSupportVersion}")
