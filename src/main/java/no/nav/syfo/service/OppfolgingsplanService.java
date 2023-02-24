@@ -96,18 +96,12 @@ public class OppfolgingsplanService {
     public List<Oppfolgingsplan> arbeidsgiveroppfolgingsplanerPaFnr(String lederFnr, String ansattFnr, String virksomhetsnummer) {
         String lederAktorId = pdlConsumer.aktorid(lederFnr);
         String ansattAktorId = pdlConsumer.aktorid(ansattFnr);
-        Ansatt ansatt =
-                narmesteLederConsumer.ansatte(lederFnr).stream()
-                        .filter(ans -> ans.fnr.equals(ansattFnr))
-                        .filter(ans -> ans.virksomhetsnummer.equals(virksomhetsnummer))
-                        .findFirst()
-                        .orElse(null);
 
-        if (ansatt == null) {
-            throw new ForbiddenException();
+        if(!tilgangskontrollService.erNaermesteLederForSykmeldt(lederFnr, ansattFnr, virksomhetsnummer)) {
+            throw new ForbiddenException("Ikke tilgang");
         }
 
-        return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ansattAktorId, ansatt.virksomhetsnummer)
+        return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ansattAktorId, virksomhetsnummer)
                 .stream()
                 .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
                 .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, lederAktorId))
