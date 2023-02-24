@@ -61,7 +61,7 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Test
     fun hent_oppfolgingsplaner_som_arbeidgiver_pa_fnr() {
         arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplanerPaFnr(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
-        Mockito.verify(oppfolgingsplanService).arbeidsgiveroppfolgingsplanerPaFnr(LEDER_FNR, ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
+        Mockito.verify(oppfolgingsplanService).arbeidsgiversOppfolgingsplanerPaFnr(LEDER_FNR, ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         Mockito.verify(metrikk).tellHendelse("hent_oppfolgingsplan_ag")
     }
 

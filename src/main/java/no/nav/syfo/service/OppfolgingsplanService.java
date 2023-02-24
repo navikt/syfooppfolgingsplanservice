@@ -101,7 +101,7 @@ public class OppfolgingsplanService {
         return emptyList();
     }
 
-    public List<Oppfolgingsplan> arbeidsgiveroppfolgingsplanerPaFnr(String lederFnr, String ansattFnr, String virksomhetsnummer) {
+    public List<Oppfolgingsplan> arbeidsgiversOppfolgingsplanerPaFnr(String lederFnr, String ansattFnr, String virksomhetsnummer) {
         String lederAktorId = pdlConsumer.aktorid(lederFnr);
         String ansattAktorId = pdlConsumer.aktorid(ansattFnr);
 

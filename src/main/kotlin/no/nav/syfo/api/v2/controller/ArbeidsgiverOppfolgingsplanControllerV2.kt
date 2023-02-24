@@ -55,7 +55,7 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.arbeidsgiveroppfolgingsplanerPaFnr(innloggetIdent, fnr, virksomhetsnummer)
+        val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.arbeidsgiversOppfolgingsplanerPaFnr(innloggetIdent, fnr, virksomhetsnummer)
         val liste = arbeidsgiversOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
         liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
         liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidsforholdService) }
