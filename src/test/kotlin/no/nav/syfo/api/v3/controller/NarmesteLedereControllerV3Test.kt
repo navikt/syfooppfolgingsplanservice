@@ -1,7 +1,7 @@
 package no.nav.syfo.api.v3.controller
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.api.v2.domain.NarmesteLeder
+import no.nav.syfo.api.v3.domain.NarmesteLeder
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.NaermesteLederStatus
 import no.nav.syfo.model.Naermesteleder
