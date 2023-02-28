@@ -2,8 +2,8 @@ package no.nav.syfo.api.v3.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.v2.domain.Arbeidsforhold
-import no.nav.syfo.api.v2.domain.mapToArbeidsforhold
+import no.nav.syfo.api.v3.domain.Arbeidsforhold
+import no.nav.syfo.api.v3.domain.mapToArbeidsforhold
 import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.tokenx.TokenXUtil
