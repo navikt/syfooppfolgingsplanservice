@@ -1,7 +1,7 @@
 package no.nav.syfo.api.v3.controller
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.api.v2.domain.Arbeidsforhold
+import no.nav.syfo.api.v3.domain.Arbeidsforhold
 import no.nav.syfo.brukertilgang.BrukertilgangConsumer
 import no.nav.syfo.model.Stilling
 import no.nav.syfo.service.ArbeidsforholdService
@@ -44,7 +44,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(ARBEIDSTAKER_FNR, LocalDate.now(), VIRKSOMHETSNUMMER))
             .thenReturn(listOf(stilling))
-        val res: ResponseEntity<*> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER, LocalDate.now())
+        val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER, LocalDate.now())
         val body = res.body as List<Arbeidsforhold>
         val arbeidsforhold = body[0]
         assertEquals(200, res.statusCodeValue.toLong())
@@ -57,7 +57,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
         loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
         `when`(arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(ARBEIDSTAKER_FNR, LocalDate.now(), VIRKSOMHETSNUMMER))
             .thenReturn(listOf(stilling))
-        val res: ResponseEntity<*> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER, LocalDate.now())
+        val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER, LocalDate.now())
         val body = res.body as List<Arbeidsforhold>
         val arbeidsforhold = body[0]
         assertEquals(200, res.statusCodeValue.toLong())
