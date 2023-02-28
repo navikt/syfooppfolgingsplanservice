@@ -1,6 +1,8 @@
 name: main
 
-on: push
+on:
+  push:
+  merge_group:
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
