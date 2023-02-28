@@ -1,8 +1,8 @@
 package no.nav.syfo.brukertilgang
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.brukertilgang.BrukerTilgangController.Companion.IKKE_TILGANG_GRUNN_DISKRESJONSMERKET
 import no.nav.syfo.brukertilgang.v2.BrukerTilgangControllerV2
+import no.nav.syfo.brukertilgang.v2.BrukerTilgangControllerV2.Companion.IKKE_TILGANG_GRUNN_DISKRESJONSMERKET
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.testhelper.OidcTestHelper
