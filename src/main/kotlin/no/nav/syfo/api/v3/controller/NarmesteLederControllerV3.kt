@@ -2,9 +2,9 @@ package no.nav.syfo.api.v3.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.v2.domain.NarmesteLeder
-import no.nav.syfo.api.v2.domain.mapToNarmesteLeder
 import no.nav.syfo.api.util.fodselsnummerInvalid
+import no.nav.syfo.api.v3.domain.NarmesteLeder
+import no.nav.syfo.api.v3.domain.mapToNarmesteLeder
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.service.BrukertilgangService
