@@ -81,7 +81,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         @RequestParam("status") status: String,
         @RequestParam("aktoer") aktor: String,
         @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
-    ): RSGyldighetstidspunkt {
+    ) {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
@@ -98,7 +98,6 @@ class OppfolgingsplanControllerV2 @Inject constructor(
             isPlanSharedWithNAV
         )
         metrikk.tellHendelse("godkjenn_plan")
-        return rsGyldighetstidspunkt
     }
 
     @PostMapping(path = ["/egenarbedsgiver/godkjenn"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
@@ -127,7 +126,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         @PathVariable("id") id: Long,
         @RequestParam("aktoer") aktor: String,
         @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
-    ): RSGyldighetstidspunkt {
+    ) {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
@@ -137,19 +136,6 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         }
         godkjenningService.godkjennOppfolgingsplan(id, null, innloggetIdent, false, isPlanSharedWithNAV)
         metrikk.tellHendelse("godkjenn_plan_svar")
-        return hentGyldighetstidspunktForPlan(id, aktor, innloggetIdent)
-    }
-
-    private fun hentGyldighetstidspunktForPlan(
-        @PathVariable("id") id: Long,
-        @RequestParam("aktoer") aktor: String,
-        innloggetIdent: String
-    ): RSGyldighetstidspunkt {
-        return if ("arbeidsgiver" == aktor) {
-            oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSGIVER, innloggetIdent)
-        } else {
-            oppfolgingsplanService.hentGyldighetstidspunktForGodkjentPlan(id, ARBEIDSTAKER, innloggetIdent)
-        }
     }
 
     @PostMapping(path = ["/kopier"], produces = [APPLICATION_JSON_VALUE])
