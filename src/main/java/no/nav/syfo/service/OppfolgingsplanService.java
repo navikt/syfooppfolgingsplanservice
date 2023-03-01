@@ -1,23 +1,11 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant;
-import no.nav.syfo.api.selvbetjening.domain.RSBrukerOppfolgingsplan;
-import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
-import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
-import no.nav.syfo.dialogmelding.DialogmeldingService;
-import no.nav.syfo.domain.*;
-import no.nav.syfo.model.Ansatt;
-import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
-import no.nav.syfo.pdl.PdlConsumer;
-import no.nav.syfo.repository.dao.*;
-import no.nav.syfo.util.ConflictException;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,9 +17,27 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
 import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER;
-import static no.nav.syfo.api.selvbetjening.mapper.RSBrukerOppfolgingsplanMapper.oppfolgingsplan2rs;
-import static no.nav.syfo.util.MapUtil.mapListe;
 import static org.slf4j.LoggerFactory.getLogger;
+
+import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant;
+import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
+import no.nav.syfo.dialogmelding.DialogmeldingService;
+import no.nav.syfo.domain.GodkjentPlan;
+import no.nav.syfo.domain.Oppfolgingsplan;
+import no.nav.syfo.domain.Person;
+import no.nav.syfo.domain.Tiltak;
+import no.nav.syfo.domain.Virksomhet;
+import no.nav.syfo.model.Ansatt;
+import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
+import no.nav.syfo.pdl.PdlConsumer;
+import no.nav.syfo.repository.dao.ArbeidsoppgaveDAO;
+import no.nav.syfo.repository.dao.DokumentDAO;
+import no.nav.syfo.repository.dao.GodkjenningerDAO;
+import no.nav.syfo.repository.dao.GodkjentplanDAO;
+import no.nav.syfo.repository.dao.KommentarDAO;
+import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
+import no.nav.syfo.repository.dao.TiltakDAO;
+import no.nav.syfo.util.ConflictException;
 
 @Service
 public class OppfolgingsplanService {
@@ -302,14 +308,6 @@ public class OppfolgingsplanService {
         long nyOppfolgingsplanId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId, innloggetFnr);
         overfoerDataFraDialogTilNyDialog(oppfolgingsplanId, nyOppfolgingsplanId);
         return nyOppfolgingsplanId;
-    }
-
-    public RSGyldighetstidspunkt hentGyldighetstidspunktForGodkjentPlan(Long id, BrukerkontekstConstant arbeidsgiver, String innloggetIdent) {
-        RSBrukerOppfolgingsplan oppfolgingsplan = mapListe(hentAktorsOppfolgingsplaner(arbeidsgiver, innloggetIdent), oppfolgingsplan2rs)
-                .stream()
-                .filter(plan -> plan.id.equals(id))
-                .findFirst().orElseThrow(NotFoundException::new);
-        return oppfolgingsplan.godkjentPlan != null ? oppfolgingsplan.godkjentPlan.gyldighetstidspunkt : null;
     }
 
     public boolean harBrukerTilgangTilDialog(long oppfolgingsplanId, String fnr) {
