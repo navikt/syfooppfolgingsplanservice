@@ -1,4 +1,4 @@
-package no.nav.syfo.api.v2.domain
+package no.nav.syfo.api.v3.domain
 
 data class Kontaktinfo(
     val fnr: String,
