@@ -1,4 +1,4 @@
-package no.nav.syfo.api.v2.domain
+package no.nav.syfo.api.v3.domain
 
 import no.nav.syfo.model.Naermesteleder
 import java.time.LocalDate
