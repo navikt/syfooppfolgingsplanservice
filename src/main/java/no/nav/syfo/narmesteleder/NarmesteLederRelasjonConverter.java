@@ -10,6 +10,7 @@ public class NarmesteLederRelasjonConverter {
 
     protected Naermesteleder convert(NarmesteLederRelasjon narmesteLederRelasjon, String lederNavn) {
         return new Naermesteleder()
+                .naermesteLederId(narmesteLederRelasjon.narmesteLederId)
                 .epost(narmesteLederRelasjon.narmesteLederEpost)
                 .mobil(narmesteLederRelasjon.narmesteLederTelefonnummer)
                 .naermesteLederStatus(

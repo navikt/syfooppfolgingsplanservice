@@ -1,14 +1,18 @@
 package no.nav.syfo.service
 
 import no.nav.syfo.aareg.*
+import no.nav.syfo.aareg.AaregConsumer
+import no.nav.syfo.aareg.AaregUtils
+import no.nav.syfo.aareg.Arbeidsforhold
 import no.nav.syfo.aareg.utils.AaregConsumerTestUtils.*
+import no.nav.syfo.aareg.utils.AaregConsumerTestUtils.YRKESKODE
+import no.nav.syfo.aareg.utils.AaregConsumerTestUtils.YRKESNAVN
 import no.nav.syfo.fellesKodeverk.*
 import no.nav.syfo.model.Stilling
 import no.nav.syfo.pdl.PdlConsumer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.jupiter.api.Assertions.*
 import org.junit.runner.RunWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -201,7 +205,6 @@ class ArbeidsforholdServiceTest {
         assertThat(stilling2.prosent).isEqualTo(AaregUtils.stillingsprosentWithMaxScale(stilling2Stillingsprosent))
         assertThat(stilling2.fom).isEqualTo(stilling2StartDate)
         assertThat(stilling2.tom).isNull()
-
     }
 
     private fun test_arbeidstakersStillingerForOrgnummer(arbeidsforholdList: List<Arbeidsforhold>) {
