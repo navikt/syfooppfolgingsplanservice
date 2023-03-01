@@ -8,10 +8,10 @@ import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.*
-import no.nav.syfo.testhelper.OidcTestHelper.loggInnBruker
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.any
+import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
 import org.junit.After
 import org.junit.Before
@@ -87,10 +87,16 @@ class OppfolgingsplanServiceTest {
     @Inject
     private lateinit var oppfolgingsplanService: OppfolgingsplanService
 
+    @Value("\${tokenx.idp}")
+    private lateinit var tokenxIdp: String
+
+    @Value("\${oppfolgingsplan.frontend.client.id}")
+    private lateinit var oppfolgingsplanClientId: String
+
     @Before
     fun setUp() {
         mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build()
-        loggInnBruker(contextHolder, ARBEIDSTAKER_FNR)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
     }
 
     @After

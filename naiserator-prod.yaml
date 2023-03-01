@@ -78,8 +78,6 @@ spec:
     enabled: true
   webproxy: true
   leaderElection: true
-  envFrom:
-    - configmap: loginservice-idporten
   kafka:
     pool: nav-prod
   env:

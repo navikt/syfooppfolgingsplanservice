@@ -5,7 +5,8 @@ import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.oidc.OIDCIssuer
-import no.nav.syfo.oidc.OIDCUtil
+import no.nav.syfo.oidc.TokenUtil
+import no.nav.syfo.oidc.TokenUtil.getIssuerToken
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -42,7 +43,7 @@ class VeilederTilgangConsumer(
     fun hasVeilederAccessToPersonWithOBO(fnr: Fodselsnummer): Boolean {
         val oboToken = azureAdV2TokenConsumer.getOnBehalfOfToken(
             scopeClientId = syfotilgangskontrollClientId,
-            token = OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.INTERN_AZUREAD_V2)
+            token = getIssuerToken(contextHolder, OIDCIssuer.INTERN_AZUREAD_V2)
         )
         val httpEntity = entityPerson(
             personIdentNumber = fnr,
@@ -64,7 +65,7 @@ class VeilederTilgangConsumer(
     fun hasVeilederAccessToSYFOWithOBO(): Boolean {
         val oboToken = azureAdV2TokenConsumer.getOnBehalfOfToken(
             scopeClientId = syfotilgangskontrollClientId,
-            token = OIDCUtil.getIssuerToken(contextHolder, OIDCIssuer.INTERN_AZUREAD_V2)
+            token = getIssuerToken(contextHolder, OIDCIssuer.INTERN_AZUREAD_V2)
         )
         val httpEntity = entitySYFO(token = oboToken)
         return checkAccess(

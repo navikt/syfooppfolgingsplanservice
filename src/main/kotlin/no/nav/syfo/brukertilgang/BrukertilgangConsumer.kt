@@ -2,7 +2,8 @@ package no.nav.syfo.brukertilgang
 
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.oidc.OIDCUtil.getSluttbrukerToken
+import no.nav.syfo.oidc.TokenUtil.getIssuerToken
+import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
@@ -25,7 +26,7 @@ class BrukertilgangConsumer @Autowired constructor(
     @Value("\${syfobrukertilgang.id}") private var targetApp: String,
 ) {
     fun hasAccessToAnsatt(ansattFnr: String): Boolean {
-        val issuerToken = getSluttbrukerToken(contextHolder)
+        val issuerToken = getIssuerToken(contextHolder, TOKENX)
         val exchangedToken: String = tokenDingsConsumer.exchangeToken(issuerToken, targetApp)
         val httpEntity = entity(exchangedToken)
         return try {

@@ -37,11 +37,6 @@ object TokenXUtil {
         return Fodselsnummer(claims.getStringClaim("pid"))
     }
 
-    fun tokenFromTokenX(contextHolder: TokenValidationContextHolder): String {
-        val context = contextHolder.tokenValidationContext
-        return context.getJwtToken(TokenXIssuer.TOKENX).tokenAsString
-    }
-
     object TokenXIssuer {
         const val TOKENX = "tokenx"
     }
