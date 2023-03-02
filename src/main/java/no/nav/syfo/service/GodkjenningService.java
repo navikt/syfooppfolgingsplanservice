@@ -27,9 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
-import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.KAN;
-import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.KAN_IKKE;
-import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.TILRETTELEGGING;
+import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.*;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningNl;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningSyk;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
