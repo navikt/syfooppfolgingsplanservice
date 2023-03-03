@@ -81,8 +81,6 @@ spec:
       - kvPath: "/kv/preprod/fss/syfooppfolgingsplanservice/team-esyfo"
         mountPath: "/var/run/secrets/nais.io/vault"
   leaderElection: true
-  envFrom:
-    - configmap: loginservice-idporten
   kafka:
     pool: nav-dev
   env:

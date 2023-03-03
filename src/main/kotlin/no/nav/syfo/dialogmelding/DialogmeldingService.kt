@@ -3,7 +3,9 @@ package no.nav.syfo.dialogmelding
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.oidc.OIDCUtil.getSluttbrukerToken
+import no.nav.syfo.oidc.TokenUtil
+import no.nav.syfo.oidc.TokenUtil.getIssuerToken
+import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
@@ -43,7 +45,7 @@ class DialogmeldingService(
     fun sendOppfolgingsplanTilFastlege(sykmeldtFnr: String, pdf: ByteArray) {
         val rsOppfoelgingsplan = RSOppfoelgingsplan(sykmeldtFnr, pdf)
         val delMedFastlegeUri = delMedFastlegeUriTemplate.build().toUri()
-        val token = getSluttbrukerToken(contextHolder)
+        val token = getIssuerToken(contextHolder, TOKENX)
         val exchangedToken = tokenDingsConsumer.exchangeToken(token, dialogmeldingClientId)
         try {
             kallUriMedTemplate(

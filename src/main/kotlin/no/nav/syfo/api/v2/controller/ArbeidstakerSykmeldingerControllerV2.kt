@@ -6,7 +6,7 @@ import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.model.Sykmelding
 import no.nav.syfo.api.v2.domain.sykmelding.SykmeldingV2
 import no.nav.syfo.api.v2.domain.sykmelding.toSykmeldingV2
-import no.nav.syfo.oidc.OIDCUtil.getIssuerToken
+import no.nav.syfo.oidc.TokenUtil.getIssuerToken
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer
 import no.nav.syfo.tokenx.TokenXUtil
