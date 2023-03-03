@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.dkif.DigitalKontaktinfo;
 import no.nav.syfo.dkif.DkifConsumer;
 import no.nav.syfo.domain.*;
@@ -28,7 +27,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
-import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.*;
+import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.KAN;
+import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.KAN_IKKE;
+import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.TILRETTELEGGING;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningNl;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningSyk;
 import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
@@ -106,7 +107,7 @@ public class GodkjenningService {
     }
 
     @Transactional
-    public void godkjennLederSinEgenOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean delMedNav) {
+    public void godkjennLederSinEgenOppfolgingsplan(long oppfoelgingsdialogId, Gyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean delMedNav) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
 
         if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(innloggetFnr, oppfolgingsplan)) {
@@ -140,7 +141,7 @@ public class GodkjenningService {
     }
 
     @Transactional
-    public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt
+    public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, Gyldighetstidspunkt
             gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning, boolean delMedNav) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
 
@@ -213,7 +214,7 @@ public class GodkjenningService {
         return oppfolgingsplan.godkjentPlan.isPresent();
     }
 
-    private boolean godkjenningRemoved(RSGyldighetstidspunkt gyldighetstidspunkt, Oppfolgingsplan oppfolgingsplan) {
+    private boolean godkjenningRemoved(Gyldighetstidspunkt gyldighetstidspunkt, Oppfolgingsplan oppfolgingsplan) {
         return gyldighetstidspunkt == null && oppfolgingsplan.godkjenninger.isEmpty();
     }
 
@@ -380,7 +381,7 @@ public class GodkjenningService {
         );
     }
 
-    public void genererTvungenPlan(Oppfolgingsplan oppfolgingsplan, RSGyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
+    public void genererTvungenPlan(Oppfolgingsplan oppfolgingsplan, Gyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfolgingsplan, true, delMedNav);
 
         String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
@@ -463,7 +464,7 @@ public class GodkjenningService {
         );
     }
 
-    public void genererLederSinEgenPlan(Oppfolgingsplan oppfolgingsplan, RSGyldighetstidspunkt gyldighetstidspunkt,
+    public void genererLederSinEgenPlan(Oppfolgingsplan oppfolgingsplan, Gyldighetstidspunkt gyldighetstidspunkt,
                                         boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfolgingsplan, true, delMedNav);
 

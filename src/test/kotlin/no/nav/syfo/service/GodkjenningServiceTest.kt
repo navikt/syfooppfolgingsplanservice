@@ -1,6 +1,5 @@
 package no.nav.syfo.service
 
-import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
 import no.nav.syfo.dkif.DkifConsumer
 import no.nav.syfo.domain.*
 import no.nav.syfo.ereg.EregConsumer
@@ -137,7 +136,7 @@ class GodkjenningServiceTest {
     @Test
     fun tvungenPlanKompatibelMedVersjon1Avplanen() {
         Mockito.`when`(godkjentplanDAO.create(ArgumentMatchers.any())).thenReturn(GodkjentPlan().id(1))
-        godkjenningService.genererTvungenPlan(oppfolgingsplan, RSGyldighetstidspunkt()
+        godkjenningService.genererTvungenPlan(oppfolgingsplan, Gyldighetstidspunkt()
             .tom(LocalDate.now())
             .fom(LocalDate.now())
             .evalueres(LocalDate.now()
@@ -158,7 +157,7 @@ class GodkjenningServiceTest {
             .fom(LocalDate.now())
             .tom(LocalDate.now())
         )
-        godkjenningService.genererTvungenPlan(oppfolgingsplan, RSGyldighetstidspunkt()
+        godkjenningService.genererTvungenPlan(oppfolgingsplan, Gyldighetstidspunkt()
             .tom(LocalDate.now())
             .fom(LocalDate.now())
             .evalueres(LocalDate.now()
