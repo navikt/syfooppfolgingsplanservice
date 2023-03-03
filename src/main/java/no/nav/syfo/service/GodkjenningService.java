@@ -200,6 +200,7 @@ public class GodkjenningService {
             String arbeidstakersFnr = oppfolgingsplan.arbeidstaker.fnr;
             String virksomhetsnummer = oppfolgingsplan.virksomhet.virksomhetsnummer;
             Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, virksomhetsnummer).get();
+            LOG.info("NL ID!: " + naermesteleder.ansattFnr + " | " + naermesteleder.naermesteLederId + " | " + naermesteleder.naermesteLederStatus.aktivFom);
             if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId)) {
                 esyfovarselService.sendVarselTilArbeidstaker(SyfoplangodkjenningSyk, naermesteleder);
                 esyfovarselService.ferdigstillVarselNarmesteLeder(SyfoplangodkjenningNl, naermesteleder);
