@@ -5,8 +5,8 @@ import java.time.LocalDate
 data class TiltakRequest(
     val tiltakId: Long? = null,
     val tiltaknavn: String,
-    val fom: LocalDate,
-    val tom: LocalDate,
+    val fom: LocalDate?,
+    val tom: LocalDate?,
     val beskrivelse: String,
     val beskrivelseIkkeAktuelt: String? = null,
     val status: String,
