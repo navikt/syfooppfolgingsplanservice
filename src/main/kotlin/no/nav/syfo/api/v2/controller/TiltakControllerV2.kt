@@ -2,8 +2,8 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.v2.domain.oppfolgingsplan.KommentarRequest
-import no.nav.syfo.api.v2.mapper.toKommentar
+import no.nav.syfo.api.selvbetjening.domain.RSKommentar
+import no.nav.syfo.domain.Kommentar
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.KommentarService
 import no.nav.syfo.service.TiltakService
@@ -40,14 +40,21 @@ class TiltakControllerV2 @Inject constructor(
     @PostMapping(path = ["/lagreKommentar"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun lagreKommentar(
         @PathVariable("id") id: Long,
-        @RequestBody kommentarRequest: KommentarRequest
+        @RequestBody rsKommentar: RSKommentar
     ): Long {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        val kommentar = kommentarRequest.toKommentar()
+        val kommentar = rsKommentar.toKommentar()
         val kommentarId = kommentarService.lagreKommentar(id, kommentar, innloggetIdent)
         metrikk.tellHendelse("lagre_kommentar")
         return kommentarId
+    }
+
+    private fun RSKommentar.toKommentar(): Kommentar {
+        val kommentar = Kommentar()
+        kommentar.id = id
+        kommentar.tekst = tekst
+        return kommentar
     }
 }
