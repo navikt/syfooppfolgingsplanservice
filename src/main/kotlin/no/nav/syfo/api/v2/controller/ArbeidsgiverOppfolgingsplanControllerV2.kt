@@ -3,8 +3,8 @@ package no.nav.syfo.api.v2.controller
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.service.BrukerkontekstConstant.ARBEIDSGIVER
-import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.BrukerOppfolgingsplan
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.api.v2.mapper.populerArbeidstakersStillinger
 import no.nav.syfo.api.v2.mapper.populerPlanerMedAvbruttPlanListe
 import no.nav.syfo.api.v2.mapper.toBrukerOppfolgingsplan
@@ -64,13 +64,13 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
     }
 
     @PostMapping(consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
-    fun opprettOppfolgingsplanSomArbeidsgiver(@RequestBody rsOpprettOppfolgingsplan: RSOpprettOppfoelgingsdialog): Long {
+    fun opprettOppfolgingsplanSomArbeidsgiver(@RequestBody opprettOppfolgingsplan: OpprettOppfolgingsplanRequest): Long {
         val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        val sykmeldtFnr = rsOpprettOppfolgingsplan.sykmeldtFnr
+        val sykmeldtFnr = opprettOppfolgingsplan.sykmeldtFnr
         return if (narmesteLederConsumer.erNaermesteLederForAnsatt(innloggetFnr, sykmeldtFnr)) {
-            val id = oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfolgingsplan, innloggetFnr)
+            val id = oppfolgingsplanService.opprettOppfolgingsplan(innloggetFnr, opprettOppfolgingsplan.virksomhetsnummer, sykmeldtFnr)
             metrikk.tellHendelse("opprett_oppfolgingsplan_ag")
             id
         } else {

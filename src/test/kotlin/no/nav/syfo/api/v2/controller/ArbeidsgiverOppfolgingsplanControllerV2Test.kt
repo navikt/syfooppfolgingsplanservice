@@ -2,7 +2,7 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.service.BrukerkontekstConstant
-import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.service.OppfolgingsplanService
@@ -68,29 +68,25 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Test
     fun opprett_oppfolgingsplan_som_arbeidsgiver() {
         val ressursId = 1L
-        val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
-            .sykmeldtFnr(ARBEIDSTAKER_FNR)
-            .virksomhetsnummer(VIRKSOMHETSNUMMER)
+        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         Mockito.`when`(narmesteLederConsumer.erNaermesteLederForAnsatt(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true)
-        Mockito.`when`(oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog, LEDER_FNR)).thenReturn(ressursId)
-        val res = arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog)
+        Mockito.`when`(oppfolgingsplanService.opprettOppfolgingsplan(LEDER_FNR, VIRKSOMHETSNUMMER, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
+        val res = arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(opprettOppfolgingsplan)
         Mockito.verify(metrikk).tellHendelse("opprett_oppfolgingsplan_ag")
         Assert.assertEquals(res, ressursId)
     }
 
     @Test(expected = ForbiddenException::class)
     fun opprett_oppfolgingsplan_som_arbeidsgiver_ikke_leder_arbeidstaker() {
-        val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
-            .sykmeldtFnr(LEDER_FNR)
-            .virksomhetsnummer(VIRKSOMHETSNUMMER)
+        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(LEDER_FNR, VIRKSOMHETSNUMMER)
         Mockito.`when`(narmesteLederConsumer.erNaermesteLederForAnsatt(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(false)
-        arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog)
+        arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(opprettOppfolgingsplan)
     }
 
     @Test(expected = RuntimeException::class)
     fun opprett_oppfolgingsplan_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
-        val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
-        arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(rsOpprettOppfoelgingsdialog)
+        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
+        arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(opprettOppfolgingsplan)
     }
 }
