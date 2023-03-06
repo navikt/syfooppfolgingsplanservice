@@ -7,9 +7,9 @@ import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
 import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
-import no.nav.syfo.api.selvbetjening.domain.RSTiltak
 import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.*
-import no.nav.syfo.api.selvbetjening.mapper.RSTiltakMapper.*
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
+import no.nav.syfo.api.v2.mapper.toTiltak
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.*
 import no.nav.syfo.tokenx.TokenXUtil
@@ -167,12 +167,12 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     @PostMapping(path = ["/lagreTiltak"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun lagreTiltak(
         @PathVariable("id") id: Long,
-        @RequestBody rsTiltak: RSTiltak
+        @RequestBody tiltakRequest: TiltakRequest
     ): Long {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        val tiltak = map(rsTiltak, rs2tiltak)
+        val tiltak = tiltakRequest.toTiltak()
         return tiltakService.lagreTiltak(id, tiltak, innloggetIdent)
     }
 

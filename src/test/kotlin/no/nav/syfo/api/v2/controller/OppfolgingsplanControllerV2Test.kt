@@ -6,10 +6,10 @@ import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
 import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave
 import no.nav.syfo.api.selvbetjening.domain.RSGjennomfoering
 import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
-import no.nav.syfo.api.selvbetjening.domain.RSTiltak
 import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.*
-import no.nav.syfo.api.selvbetjening.mapper.RSTiltakMapper
 import no.nav.syfo.api.v2.controller.OppfolgingsplanControllerV2.Companion.METRIC_SHARE_WITH_NAV_AT_APPROVAL
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
+import no.nav.syfo.api.v2.mapper.toTiltak
 import no.nav.syfo.domain.Arbeidsoppgave
 import no.nav.syfo.domain.Gjennomfoering.*
 import no.nav.syfo.domain.Tiltak
@@ -19,8 +19,6 @@ import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
-import no.nav.syfo.testhelper.rsTiltakLagreEksisterende
-import no.nav.syfo.testhelper.rsTiltakLagreNytt
 import no.nav.syfo.util.MapUtil.*
 import org.junit.Assert.*
 import org.junit.Before
@@ -30,6 +28,7 @@ import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
+import java.time.LocalDate
 
 class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Inject
@@ -284,10 +283,10 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun lagrer_tiltak_ny_som_bruker() {
         val ressursId = 1L
-        val rsTiltak = rsTiltakLagreNytt()
-        val tiltak = map(rsTiltak, RSTiltakMapper.rs2tiltak)
+        val tiltakRequest = tiltakRequestLagreNytt()
+        val tiltak = tiltakRequest.toTiltak()
         `when`(tiltakService.lagreTiltak(oppfolgingsplanId, tiltak, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
-        val res = oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak)
+        val res = oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, tiltakRequest)
         verify(tiltakService).lagreTiltak(eq(oppfolgingsplanId), any(Tiltak::class.java), eq(ARBEIDSTAKER_FNR))
         assertEquals(res, ressursId)
     }
@@ -295,10 +294,10 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun lagre_tiltak_eksisterende_som_bruker() {
         val ressursId = 2L
-        val rsTiltak = rsTiltakLagreEksisterende()
-        val tiltak = map(rsTiltak, RSTiltakMapper.rs2tiltak)
+        val tiltakRequest = tiltakRequestLagreEksisterende()
+        val tiltak = tiltakRequest.toTiltak()
         `when`(tiltakService.lagreTiltak(oppfolgingsplanId, tiltak, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
-        val res = oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak)
+        val res = oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, tiltakRequest)
         verify(tiltakService).lagreTiltak(eq(oppfolgingsplanId), any(Tiltak::class.java), eq(ARBEIDSTAKER_FNR))
         assertEquals(res, ressursId)
     }
@@ -306,8 +305,8 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test(expected = RuntimeException::class)
     fun lagre_tiltak_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
-        val rsTiltak = RSTiltak()
-        oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, rsTiltak)
+        val tiltakRequest = tiltakRequestLagreNytt()
+        oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, tiltakRequest)
     }
 
     @Test
@@ -346,4 +345,19 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     companion object {
         private const val oppfolgingsplanId = 1L
     }
+
+    fun tiltakRequestLagreNytt(): TiltakRequest =
+        TiltakRequest(
+            null,
+            "Tiltaknavn",
+            LocalDate.now().plusDays(2),
+            LocalDate.now().plusDays(4),
+            "Dette er en beskrivelse av et tiltak",
+            null,
+            "FORSLAG",
+            null
+        )
+
+    fun tiltakRequestLagreEksisterende(): TiltakRequest =
+        tiltakRequestLagreNytt().copy(tiltakId = 1L, status = "AVTALT", gjennomfoering = "Dette er en gjennomføring av et tiltak")
 }
