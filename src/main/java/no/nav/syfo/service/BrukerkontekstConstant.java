@@ -1,4 +1,4 @@
-package no.nav.syfo.api.selvbetjening.domain;
+package no.nav.syfo.service;
 
 public enum BrukerkontekstConstant {
     ARBEIDSTAKER,

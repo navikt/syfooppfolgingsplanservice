@@ -2,13 +2,13 @@ package no.nav.syfo.api.v2.controller
 
 import javax.inject.Inject
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
+import no.nav.syfo.service.BrukerkontekstConstant.*
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.ArbeidsoppgaveRequest
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.Gjennomfoering
 import no.nav.syfo.api.v2.mapper.toArbeidsoppgave
+import no.nav.syfo.api.v2.controller.OppfolgingsplanControllerV2.Companion.METRIC_SHARE_WITH_NAV_AT_APPROVAL
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
 import no.nav.syfo.api.v2.mapper.toTiltak
-import no.nav.syfo.api.v2.controller.OppfolgingsplanControllerV2.Companion.METRIC_SHARE_WITH_NAV_AT_APPROVAL
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.Gyldighetstidspunkt
 import no.nav.syfo.domain.Arbeidsoppgave
 import no.nav.syfo.domain.Gjennomfoering.*

@@ -4,7 +4,7 @@ import java.util.*
 import javax.inject.Inject
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
+import no.nav.syfo.service.BrukerkontekstConstant.*
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.ArbeidsoppgaveRequest
 import no.nav.syfo.api.v2.mapper.toArbeidsoppgave
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
