@@ -57,9 +57,9 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     fun opprett_oppfolgingsplan_som_arbeidstaker() {
         val ressursId = 1L
         val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(virksomhetsnummer =  VIRKSOMHETSNUMMER)
-        `when`(oppfolgingsplanService.opprettOppfolgingsplan(ARBEIDSTAKER_FNR, opprettOppfolgingsplan.virksomhetsnummer, opprettOppfolgingsplan.sykmeldtFnr)).thenReturn(ressursId)
+        `when`(oppfolgingsplanService.opprettOppfolgingsplan(ARBEIDSTAKER_FNR, opprettOppfolgingsplan.virksomhetsnummer, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
         val res = arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(opprettOppfolgingsplan)
-        verify(oppfolgingsplanService).opprettOppfolgingsplan(ARBEIDSTAKER_FNR, opprettOppfolgingsplan.virksomhetsnummer, opprettOppfolgingsplan.sykmeldtFnr)
+        verify(oppfolgingsplanService).opprettOppfolgingsplan(ARBEIDSTAKER_FNR, opprettOppfolgingsplan.virksomhetsnummer, ARBEIDSTAKER_FNR)
         verify(metrikk).tellHendelse("opprett_oppfolgingsplan_at")
         assertEquals(res, ressursId)
     }
