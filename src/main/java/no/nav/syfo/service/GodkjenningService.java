@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt;
 import no.nav.syfo.dkif.DigitalKontaktinfo;
 import no.nav.syfo.dkif.DkifConsumer;
 import no.nav.syfo.domain.*;
@@ -106,8 +105,8 @@ public class GodkjenningService {
     }
 
     @Transactional
-    public void godkjennLederSinEgenOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean delMedNav) {
-        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
+    public void godkjennLederSinEgenOppfolgingsplan(long oppfolgingsplanId, Gyldighetstidspunkt gyldighetstidspunkt, String innloggetFnr, boolean delMedNav) {
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
 
         if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(innloggetFnr, oppfolgingsplan)) {
             throw new ForbiddenException("Ikke tilgang");
@@ -126,11 +125,11 @@ public class GodkjenningService {
         Optional<Naermesteleder> narmesteleder = narmesteLederConsumer.narmesteLeder(oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
 
         if (isLoggedInpersonLeaderAndOwnLeader(oppfolgingsplan, innloggetFnr, narmesteleder.get().naermesteLederFnr())) {
-            LOG.info("TRACE: innlogget user attempting to godkjenne oppfolginsplan {}", oppfoelgingsdialogId);
+            LOG.info("TRACE: innlogget user attempting to godkjenne oppfolginsplan {}", oppfolgingsplanId);
             genererLederSinEgenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
-            godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
-            sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
-            LOG.info("TRACE: innlogget user godkjente oppfolginsplan successfully {}", oppfoelgingsdialogId);
+            godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfolgingsplanId);
+            sendGodkjentPlanTilAltinn(oppfolgingsplanId);
+            LOG.info("TRACE: innlogget user godkjente oppfolginsplan successfully {}", oppfolgingsplanId);
         } else {
             String message = "Fulløring av oppfølgingplan feilet pga innlogget bruker ikke er egen leder";
             LOG.error(message);
@@ -140,9 +139,9 @@ public class GodkjenningService {
     }
 
     @Transactional
-    public void godkjennOppfolgingsplan(long oppfoelgingsdialogId, RSGyldighetstidspunkt
+    public void godkjennOppfolgingsplan(long oppfolgingsplanId, Gyldighetstidspunkt
             gyldighetstidspunkt, String innloggetFnr, boolean tvungenGodkjenning, boolean delMedNav) {
-        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfoelgingsdialogId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(oppfolgingsplanId);
 
         String innloggetAktoerId = pdlConsumer.aktorid(innloggetFnr);
         if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(innloggetFnr, oppfolgingsplan)) {
@@ -164,10 +163,10 @@ public class GodkjenningService {
             Optional<Naermesteleder> narmesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
 
             if (narmesteleder.isPresent() && narmesteleder.get().naermesteLederFnr.equals(innloggetFnr)) {
-                LOG.info("TRACE: Arbeidstaker attempting to Tvangsgodkjenne oppfolginsplan {}", oppfoelgingsdialogId);
+                LOG.info("TRACE: Arbeidstaker attempting to Tvangsgodkjenne oppfolginsplan {}", oppfolgingsplanId);
                 genererTvungenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
-                godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
-                sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
+                godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfolgingsplanId);
+                sendGodkjentPlanTilAltinn(oppfolgingsplanId);
             } else {
                 String message = "Tvangsgodkjenning av plan feilet fordi Arbeidstaker ikke er sin egen leder";
                 LOG.error(message);
@@ -176,18 +175,18 @@ public class GodkjenningService {
             }
         } else if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId) && tvungenGodkjenning) {
             genererTvungenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
-            godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
-            sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
+            godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfolgingsplanId);
+            sendGodkjentPlanTilAltinn(oppfolgingsplanId);
         } else if (erGodkjentAvAnnenPart(oppfolgingsplanDAO.populate(oppfolgingsplan), innloggetAktoerId)) {
             genererNyPlan(oppfolgingsplan, innloggetAktoerId, delMedNav);
-            godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
-            sendGodkjentPlanTilAltinn(oppfoelgingsdialogId);
+            godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfolgingsplanId);
+            sendGodkjentPlanTilAltinn(oppfolgingsplanId);
         } else {
             if (godkjenningRemoved(gyldighetstidspunkt, oppfolgingsplan) || godkjent(oppfolgingsplan)) {
                 throw new ConflictException();
             }
             godkjenningerDAO.create(new Godkjenning()
-                    .oppfoelgingsdialogId(oppfoelgingsdialogId)
+                    .oppfoelgingsdialogId(oppfolgingsplanId)
                     .godkjent(true)
                     .delMedNav(delMedNav)
                     .godkjentAvAktoerId(innloggetAktoerId)
@@ -206,14 +205,14 @@ public class GodkjenningService {
                 esyfovarselService.sendVarselTilNarmesteLeder(SyfoplangodkjenningNl, naermesteleder);
             }
         }
-        oppfolgingsplanDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
+        oppfolgingsplanDAO.sistEndretAv(oppfolgingsplanId, innloggetAktoerId);
     }
 
     private boolean godkjent(Oppfolgingsplan oppfolgingsplan) {
         return oppfolgingsplan.godkjentPlan.isPresent();
     }
 
-    private boolean godkjenningRemoved(RSGyldighetstidspunkt gyldighetstidspunkt, Oppfolgingsplan oppfolgingsplan) {
+    private boolean godkjenningRemoved(Gyldighetstidspunkt gyldighetstidspunkt, Oppfolgingsplan oppfolgingsplan) {
         return gyldighetstidspunkt == null && oppfolgingsplan.godkjenninger.isEmpty();
     }
 
@@ -380,7 +379,7 @@ public class GodkjenningService {
         );
     }
 
-    public void genererTvungenPlan(Oppfolgingsplan oppfolgingsplan, RSGyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
+    public void genererTvungenPlan(Oppfolgingsplan oppfolgingsplan, Gyldighetstidspunkt gyldighetstidspunkt, boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfolgingsplan, true, delMedNav);
 
         String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
@@ -463,7 +462,7 @@ public class GodkjenningService {
         );
     }
 
-    public void genererLederSinEgenPlan(Oppfolgingsplan oppfolgingsplan, RSGyldighetstidspunkt gyldighetstidspunkt,
+    public void genererLederSinEgenPlan(Oppfolgingsplan oppfolgingsplan, Gyldighetstidspunkt gyldighetstidspunkt,
                                         boolean delMedNav) {
         rapporterMetrikkerForNyPlan(oppfolgingsplan, true, delMedNav);
 

@@ -5,11 +5,11 @@ import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
 import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave
 import no.nav.syfo.api.selvbetjening.domain.RSGjennomfoering
-import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
 import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.*
 import no.nav.syfo.api.v2.controller.OppfolgingsplanControllerV2.Companion.METRIC_SHARE_WITH_NAV_AT_APPROVAL
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
 import no.nav.syfo.api.v2.mapper.toTiltak
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.Gyldighetstidspunkt
 import no.nav.syfo.domain.Arbeidsoppgave
 import no.nav.syfo.domain.Gjennomfoering.*
 import no.nav.syfo.domain.Tiltak
@@ -117,18 +117,16 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test
     fun godkjenn_plan_som_bruker() {
-        val gyldighetstidspunkt = RSGyldighetstidspunkt()
-        oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "true", "arbeidstaker", null)
-        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, ARBEIDSTAKER_FNR, false, false)
+        oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "true", "arbeidstaker", null)
+        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), ARBEIDSTAKER_FNR, false, false)
         verify(metrikk).tellHendelse("godkjenn_plan")
         verify(metrikk, never()).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL)
     }
 
     @Test
     fun godkjenn_plan_som_bruker_del_med_nav() {
-        val gyldighetstidspunkt = RSGyldighetstidspunkt()
-        oppfolgingsplanController.godkjenn(oppfolgingsplanId, gyldighetstidspunkt, "true", "arbeidstaker", true)
-        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, ARBEIDSTAKER_FNR, false, true)
+        oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "true", "arbeidstaker", true)
+        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), ARBEIDSTAKER_FNR, false, true)
         verify(metrikk).tellHendelse("godkjenn_plan")
         verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL)
     }
@@ -137,8 +135,8 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     fun godkjenn_plan_som_bruker_tvungen() {
         loggUtAlle(contextHolder)
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
-        oppfolgingsplanController.godkjenn(oppfolgingsplanId, RSGyldighetstidspunkt(), "tvungenGodkjenning", "arbeidsgiver", null)
-        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, RSGyldighetstidspunkt(), LEDER_FNR, true, false)
+        oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "tvungenGodkjenning", "arbeidsgiver", null)
+        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), LEDER_FNR, true, false)
         verify(metrikk).tellHendelse("godkjenn_plan")
         verify(metrikk, never()).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL)
     }
@@ -147,8 +145,8 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     fun godkjenn_plan_som_bruker_tvungen_del_med_nav() {
         loggUtAlle(contextHolder)
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
-        oppfolgingsplanController.godkjenn(oppfolgingsplanId, RSGyldighetstidspunkt(), "tvungenGodkjenning", "arbeidsgiver", true)
-        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, RSGyldighetstidspunkt(), LEDER_FNR, true, true)
+        oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "tvungenGodkjenning", "arbeidsgiver", true)
+        verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), LEDER_FNR, true, true)
         verify(metrikk).tellHendelse("godkjenn_plan")
         verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL)
     }
@@ -156,7 +154,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test(expected = RuntimeException::class)
     fun godkjenn_plan_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
-        oppfolgingsplanController.godkjenn(oppfolgingsplanId, RSGyldighetstidspunkt(), "true", "arbeidsgiver", null)
+        oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "true", "arbeidsgiver", null)
     }
 
     @Test
@@ -205,10 +203,9 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     fun godkjenn_plan_som_egen_arbeidsgiver_med_nav() {
         loggUtAlle(contextHolder)
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
-        val gyldighetstidspunkt = RSGyldighetstidspunkt()
 
-        oppfolgingsplanController.godkjennEgenPlanArbeidsgiver(oppfolgingsplanId, gyldighetstidspunkt, true)
-        verify(godkjenningService).godkjennLederSinEgenOppfolgingsplan(oppfolgingsplanId, gyldighetstidspunkt, LEDER_FNR, true)
+        oppfolgingsplanController.godkjennEgenPlanArbeidsgiver(oppfolgingsplanId, Gyldighetstidspunkt(), true)
+        verify(godkjenningService).godkjennLederSinEgenOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), LEDER_FNR, true)
 
         verify(metrikk).tellHendelse("godkjenn_plan_egen_leder")
         verify(metrikk).tellHendelse(METRIC_SHARE_WITH_NAV_AT_APPROVAL)
@@ -217,7 +214,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test(expected = RuntimeException::class)
     fun godkjenn_egen_plan_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
-        val gyldighetstidspunkt = RSGyldighetstidspunkt()
+        val gyldighetstidspunkt = Gyldighetstidspunkt()
         oppfolgingsplanController.godkjennEgenPlanArbeidsgiver(oppfolgingsplanId, gyldighetstidspunkt, true)
     }
 

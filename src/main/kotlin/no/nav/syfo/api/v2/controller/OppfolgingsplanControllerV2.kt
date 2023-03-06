@@ -6,10 +6,11 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
 import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave
-import no.nav.syfo.api.selvbetjening.domain.RSGyldighetstidspunkt
 import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.*
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
 import no.nav.syfo.api.v2.mapper.toTiltak
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.Gyldighetstidspunkt
+import no.nav.syfo.api.v2.mapper.toGyldighetstidspunkt
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.*
 import no.nav.syfo.tokenx.TokenXUtil
@@ -77,7 +78,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     @PostMapping(path = ["/godkjenn"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun godkjenn(
         @PathVariable("id") id: Long,
-        @RequestBody rsGyldighetstidspunkt: RSGyldighetstidspunkt,
+        @RequestBody gyldighetstidspunkt: Gyldighetstidspunkt,
         @RequestParam("status") status: String,
         @RequestParam("aktoer") aktor: String,
         @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
@@ -92,7 +93,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         val tvungenGodkjenning = status == "tvungenGodkjenning"
         godkjenningService.godkjennOppfolgingsplan(
             id,
-            rsGyldighetstidspunkt,
+            gyldighetstidspunkt.toGyldighetstidspunkt(),
             innloggetIdent,
             tvungenGodkjenning,
             isPlanSharedWithNAV
@@ -103,7 +104,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     @PostMapping(path = ["/egenarbedsgiver/godkjenn"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun godkjennEgenPlanArbeidsgiver(
         @PathVariable("id") id: Long,
-        @RequestBody rsGyldighetstidspunkt: RSGyldighetstidspunkt,
+        @RequestBody gyldighetstidspunkt: Gyldighetstidspunkt,
         @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
     ) {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
@@ -115,7 +116,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
             countShareWithNAVAtApproval()
         }
 
-        godkjenningService.godkjennLederSinEgenOppfolgingsplan(id, rsGyldighetstidspunkt, innloggetIdent, isPlanSharedWithNAV)
+        godkjenningService.godkjennLederSinEgenOppfolgingsplan(id, gyldighetstidspunkt.toGyldighetstidspunkt(), innloggetIdent, isPlanSharedWithNAV)
 
         metrikk.tellHendelse("godkjenn_plan")
         metrikk.tellHendelse("godkjenn_plan_egen_leder")
