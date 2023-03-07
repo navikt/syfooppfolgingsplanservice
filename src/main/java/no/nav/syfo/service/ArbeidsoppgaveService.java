@@ -75,7 +75,9 @@ public class ArbeidsoppgaveService {
     public void slettArbeidsoppgave(Long arbeidsoppgaveId, String fnr) throws ConflictException {
         String innloggetAktoerId = pdlConsumer.aktorid(fnr);
         Arbeidsoppgave arbeidsoppgave = arbeidsoppgaveDAO.finnArbeidsoppgave(arbeidsoppgaveId);
-        if (!arbeidsoppgave.opprettetAvAktoerId.equals(innloggetAktoerId)) {
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(arbeidsoppgave.oppfoelgingsdialogId);
+
+        if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan) || !kanEndreElement(innloggetAktoerId, oppfolgingsplan.arbeidstaker.aktoerId, arbeidsoppgave.opprettetAvAktoerId)) {
             throw new ForbiddenException("Ikke tilgang");
         }
         if (godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(arbeidsoppgave.oppfoelgingsdialogId).stream().anyMatch(pGodkjenning -> pGodkjenning.godkjent)) {
@@ -84,5 +86,16 @@ public class ArbeidsoppgaveService {
 
         oppfolgingsplanDAO.sistEndretAv(arbeidsoppgave.oppfoelgingsdialogId, innloggetAktoerId);
         arbeidsoppgaveDAO.delete(arbeidsoppgave.id);
+    }
+
+    private boolean kanEndreElement(String innloggetAktoerId, String arbeidstakerAktoerId, String opprettetAvAktoerId) {
+        if(opprettetAvAktoerId.equals(innloggetAktoerId)) {
+            return true;
+        }
+        //Hvis tidligere nærmeste leder har opprettet elementet, skal ny nærmeste leder kunne endre det
+        if(!innloggetAktoerId.equals(arbeidstakerAktoerId) && !opprettetAvAktoerId.equals(arbeidstakerAktoerId)) {
+            return true;
+        }
+        return false;
     }
 }
