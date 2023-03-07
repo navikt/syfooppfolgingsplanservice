@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant;
 import no.nav.syfo.dialogmelding.DialogmeldingService;
 import no.nav.syfo.domain.*;
 import no.nav.syfo.model.Ansatt;
