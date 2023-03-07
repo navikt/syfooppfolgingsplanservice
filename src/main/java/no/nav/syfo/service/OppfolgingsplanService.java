@@ -1,6 +1,5 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant;
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog;
 import no.nav.syfo.dialogmelding.DialogmeldingService;
 import no.nav.syfo.domain.*;
@@ -24,8 +23,8 @@ import java.util.Optional;
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER;
-import static no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSTAKER;
+import static no.nav.syfo.service.BrukerkontekstConstant.ARBEIDSGIVER;
+import static no.nav.syfo.service.BrukerkontekstConstant.ARBEIDSTAKER;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service

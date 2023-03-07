@@ -1,6 +1,6 @@
 package no.nav.syfo.oppgave
 
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant
+import no.nav.syfo.service.BrukerkontekstConstant
 import no.nav.syfo.domain.*
 import no.nav.syfo.model.Ansatt
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer

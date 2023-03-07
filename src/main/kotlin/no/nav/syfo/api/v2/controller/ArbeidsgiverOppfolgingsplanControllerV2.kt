@@ -2,7 +2,7 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.ARBEIDSGIVER
+import no.nav.syfo.service.BrukerkontekstConstant.ARBEIDSGIVER
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.BrukerOppfolgingsplan
 import no.nav.syfo.api.v2.mapper.populerArbeidstakersStillinger

@@ -1,7 +1,7 @@
 package no.nav.syfo.api.v2.controller
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant
+import no.nav.syfo.service.BrukerkontekstConstant
 import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
