@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeArbeidsoppgaveHoererTilDialog;
+import static no.nav.syfo.util.OppfoelgingsdialogUtil.kanEndreElement;
 
 @Service
 public class ArbeidsoppgaveService {
@@ -86,16 +87,5 @@ public class ArbeidsoppgaveService {
 
         oppfolgingsplanDAO.sistEndretAv(arbeidsoppgave.oppfoelgingsdialogId, innloggetAktoerId);
         arbeidsoppgaveDAO.delete(arbeidsoppgave.id);
-    }
-
-    private boolean kanEndreElement(String innloggetAktoerId, String arbeidstakerAktoerId, String opprettetAvAktoerId) {
-        if(opprettetAvAktoerId.equals(innloggetAktoerId)) {
-            return true;
-        }
-        //Hvis tidligere nærmeste leder har opprettet elementet, skal ny nærmeste leder kunne endre det
-        if(!innloggetAktoerId.equals(arbeidstakerAktoerId) && !opprettetAvAktoerId.equals(arbeidstakerAktoerId)) {
-            return true;
-        }
-        return false;
     }
 }

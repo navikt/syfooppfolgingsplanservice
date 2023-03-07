@@ -103,4 +103,15 @@ public class OppfoelgingsdialogUtil {
         return arbeidsoppgaveId == null || arbeidsoppgaveListe.stream().anyMatch(arbeidsoppgave -> arbeidsoppgave.id.equals(arbeidsoppgaveId));
     }
 
+    public static boolean kanEndreElement(String innloggetAktoerId, String arbeidstakerAktoerId, String opprettetAvAktoerId) {
+        if(opprettetAvAktoerId.equals(innloggetAktoerId)) {
+            return true;
+        }
+        //Hvis tidligere nærmeste leder har opprettet elementet, skal ny nærmeste leder kunne endre det
+        if(!innloggetAktoerId.equals(arbeidstakerAktoerId) && !opprettetAvAktoerId.equals(arbeidstakerAktoerId)) {
+            return true;
+        }
+        return false;
+    }
+
 }
