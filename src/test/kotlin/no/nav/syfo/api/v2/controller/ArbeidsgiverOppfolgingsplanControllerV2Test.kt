@@ -78,7 +78,7 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
 
     @Test(expected = ForbiddenException::class)
     fun opprett_oppfolgingsplan_som_arbeidsgiver_ikke_leder_arbeidstaker() {
-        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(LEDER_FNR, VIRKSOMHETSNUMMER)
+        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         Mockito.`when`(narmesteLederConsumer.erNaermesteLederForAnsatt(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(false)
         arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(opprettOppfolgingsplan)
     }
