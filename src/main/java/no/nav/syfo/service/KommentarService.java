@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 
+import static no.nav.syfo.util.OppfoelgingsdialogUtil.kanEndreElement;
+
 @Service
 public class KommentarService {
 
@@ -18,6 +20,7 @@ public class KommentarService {
     private KommentarDAO kommentarDAO;
     private OppfolgingsplanDAO oppfolgingsplanDAO;
     private TiltakDAO tiltakDAO;
+    private TilgangskontrollService tilgangskontrollService;
 
     @Inject
     public KommentarService(
@@ -25,13 +28,15 @@ public class KommentarService {
             GodkjenningerDAO godkjenningerDAO,
             KommentarDAO kommentarDAO,
             OppfolgingsplanDAO oppfolgingsplanDAO,
-            TiltakDAO tiltakDAO
+            TiltakDAO tiltakDAO,
+            TilgangskontrollService tilgangskontrollService
     ) {
         this.pdlConsumer = pdlConsumer;
         this.godkjenningerDAO = godkjenningerDAO;
         this.kommentarDAO = kommentarDAO;
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.tiltakDAO = tiltakDAO;
+        this.tilgangskontrollService = tilgangskontrollService;
     }
 
     @Transactional
@@ -70,7 +75,7 @@ public class KommentarService {
         Kommentar kommentar = kommentarDAO.finnKommentar(kommentarId);
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.oppfolgingsplanByTiltakId(kommentar.tiltakId);
 
-        if (!kommentar.opprettetAvAktoerId.equals(innloggetAktoerId)) {
+        if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan) || !kanEndreElement(innloggetAktoerId, oppfolgingsplan.arbeidstaker.aktoerId, kommentar.opprettetAvAktoerId)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 

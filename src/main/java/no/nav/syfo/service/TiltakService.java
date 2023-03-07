@@ -13,6 +13,7 @@ import javax.ws.rs.ForbiddenException;
 import java.util.List;
 
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeTiltakHoererTilDialog;
+import static no.nav.syfo.util.OppfoelgingsdialogUtil.kanEndreElement;
 
 @Service
 public class TiltakService {
@@ -76,8 +77,9 @@ public class TiltakService {
     public void slettTiltak(Long tiltakId, String fnr) {
         String innloggetAktoerId = pdlConsumer.aktorid(fnr);
         Tiltak tiltak = tiltakDAO.finnTiltakById(tiltakId);
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(tiltak.oppfoelgingsdialogId);
 
-        if (!tiltak.opprettetAvAktoerId.equals(innloggetAktoerId)) {
+        if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan) || !kanEndreElement(innloggetAktoerId, oppfolgingsplan.arbeidstaker.aktoerId, tiltak.opprettetAvAktoerId)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 

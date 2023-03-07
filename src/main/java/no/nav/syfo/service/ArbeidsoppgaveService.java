@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.eksisterendeArbeidsoppgaveHoererTilDialog;
+import static no.nav.syfo.util.OppfoelgingsdialogUtil.kanEndreElement;
 
 @Service
 public class ArbeidsoppgaveService {
@@ -75,7 +76,9 @@ public class ArbeidsoppgaveService {
     public void slettArbeidsoppgave(Long arbeidsoppgaveId, String fnr) throws ConflictException {
         String innloggetAktoerId = pdlConsumer.aktorid(fnr);
         Arbeidsoppgave arbeidsoppgave = arbeidsoppgaveDAO.finnArbeidsoppgave(arbeidsoppgaveId);
-        if (!arbeidsoppgave.opprettetAvAktoerId.equals(innloggetAktoerId)) {
+        Oppfolgingsplan oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(arbeidsoppgave.oppfoelgingsdialogId);
+
+        if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(fnr, oppfolgingsplan) || !kanEndreElement(innloggetAktoerId, oppfolgingsplan.arbeidstaker.aktoerId, arbeidsoppgave.opprettetAvAktoerId)) {
             throw new ForbiddenException("Ikke tilgang");
         }
         if (godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(arbeidsoppgave.oppfoelgingsdialogId).stream().anyMatch(pGodkjenning -> pGodkjenning.godkjent)) {
