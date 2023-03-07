@@ -56,7 +56,7 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Test
     fun opprett_oppfolgingsplan_som_arbeidstaker() {
         val ressursId = 1L
-        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(virksomhetsnummer =  VIRKSOMHETSNUMMER)
+        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(virksomhetsnummer = VIRKSOMHETSNUMMER)
         `when`(oppfolgingsplanService.opprettOppfolgingsplan(ARBEIDSTAKER_FNR, opprettOppfolgingsplan.virksomhetsnummer, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
         val res = arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(opprettOppfolgingsplan)
         verify(oppfolgingsplanService).opprettOppfolgingsplan(ARBEIDSTAKER_FNR, opprettOppfolgingsplan.virksomhetsnummer, ARBEIDSTAKER_FNR)
@@ -67,7 +67,7 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Test(expected = RuntimeException::class)
     fun opprett_oppfolgingsplan_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
-        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(virksomhetsnummer =  VIRKSOMHETSNUMMER)
+        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(virksomhetsnummer = VIRKSOMHETSNUMMER)
         arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(opprettOppfolgingsplan)
     }
 }
