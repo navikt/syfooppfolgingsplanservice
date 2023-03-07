@@ -3,12 +3,12 @@ package no.nav.syfo.api.v2.controller
 import javax.inject.Inject
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
-import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave
-import no.nav.syfo.api.selvbetjening.domain.RSGjennomfoering
-import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.*
-import no.nav.syfo.api.v2.controller.OppfolgingsplanControllerV2.Companion.METRIC_SHARE_WITH_NAV_AT_APPROVAL
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.ArbeidsoppgaveRequest
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.Gjennomfoering
+import no.nav.syfo.api.v2.mapper.toArbeidsoppgave
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
 import no.nav.syfo.api.v2.mapper.toTiltak
+import no.nav.syfo.api.v2.controller.OppfolgingsplanControllerV2.Companion.METRIC_SHARE_WITH_NAV_AT_APPROVAL
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.Gyldighetstidspunkt
 import no.nav.syfo.domain.Arbeidsoppgave
 import no.nav.syfo.domain.Gjennomfoering.*
@@ -236,45 +236,48 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun lagrer_ny_arbeidsoppgave_som_bruker() {
         val ressursId = 1L
-        val rsArbeidsoppgave = RSArbeidsoppgave()
-            .arbeidsoppgavenavn("Arbeidsoppgavenavn")
-            .gjennomfoering(
-                RSGjennomfoering()
-                    .kanGjennomfoeres(KanGjennomfoeres.TILRETTELEGGING.name)
-                    .medHjelp(true)
-                    .medMerTid(true)
-                    .paaAnnetSted(true)
-            )
-        val arbeidsoppgave = map(rsArbeidsoppgave, rs2arbeidsoppgave)
+        val arbeidsoppgaveRequest = ArbeidsoppgaveRequest(
+            null,
+            "Arbeidsoppgavenavn",
+            Gjennomfoering(
+                KanGjennomfoeres.TILRETTELEGGING.name,
+                true,
+                true,
+                true,
+            ),
+        )
+        val arbeidsoppgave = arbeidsoppgaveRequest.toArbeidsoppgave()
         `when`(arbeidsoppgaveService.lagreArbeidsoppgave(oppfolgingsplanId, arbeidsoppgave, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
-        val res = oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, rsArbeidsoppgave)
+        val res = oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, arbeidsoppgaveRequest)
         verify(arbeidsoppgaveService).lagreArbeidsoppgave(eq(oppfolgingsplanId), any(Arbeidsoppgave::class.java), eq(ARBEIDSTAKER_FNR))
-        assertEquals(res, ressursId)
+        assertEquals(ressursId, res)
     }
 
     @Test
     fun lagrer_eksisterende_arbeidsoppgave_som_bruker() {
         val arbeidsoppgaveId = 2L
-        val rsArbeidsoppgave = RSArbeidsoppgave()
-            .arbeidsoppgaveId(arbeidsoppgaveId)
-            .arbeidsoppgavenavn("Arbeidsoppgavenavn")
-            .gjennomfoering(
-                RSGjennomfoering()
-                    .kanGjennomfoeres(KanGjennomfoeres.KAN.name)
-                    .kanBeskrivelse("Denne kan gjennomfoeres")
-            )
-        val arbeidsoppgave = map(rsArbeidsoppgave, rs2arbeidsoppgave)
+        val arbeidsoppgaveRequest = ArbeidsoppgaveRequest(
+            arbeidsoppgaveId,
+            "Arbeidsoppgavenavn",
+            Gjennomfoering(
+                KanGjennomfoeres.KAN.name,
+                kanBeskrivelse = "Denne kan gjennomfoeres"
+            ),
+        )
+        val arbeidsoppgave = arbeidsoppgaveRequest.toArbeidsoppgave()
         `when`(arbeidsoppgaveService.lagreArbeidsoppgave(oppfolgingsplanId, arbeidsoppgave, ARBEIDSTAKER_FNR)).thenReturn(arbeidsoppgaveId)
-        val res = oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, rsArbeidsoppgave)
+        val res = oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, arbeidsoppgaveRequest)
         verify(arbeidsoppgaveService).lagreArbeidsoppgave(eq(oppfolgingsplanId), any(Arbeidsoppgave::class.java), eq(ARBEIDSTAKER_FNR))
-        assertEquals(res, arbeidsoppgaveId)
+        assertEquals(arbeidsoppgaveId, res)
     }
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_lagre_arbeidsoppgave() {
         loggUtAlle(contextHolder)
-        val rsArbeidsoppgave = RSArbeidsoppgave()
-        oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, rsArbeidsoppgave)
+        val arbeidsoppgaveRequest = ArbeidsoppgaveRequest(
+            arbeidsoppgavenavn = "Arbeidsoppgavenavn"
+        )
+        oppfolgingsplanController.lagreArbeidsoppgave(oppfolgingsplanId, arbeidsoppgaveRequest)
     }
 
     @Test

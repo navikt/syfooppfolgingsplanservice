@@ -5,8 +5,8 @@ import javax.inject.Inject
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.api.selvbetjening.domain.BrukerkontekstConstant.*
-import no.nav.syfo.api.selvbetjening.domain.RSArbeidsoppgave
-import no.nav.syfo.api.selvbetjening.mapper.RSArbeidsoppgaveMapper.*
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.ArbeidsoppgaveRequest
+import no.nav.syfo.api.v2.mapper.toArbeidsoppgave
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
 import no.nav.syfo.api.v2.mapper.toTiltak
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.Gyldighetstidspunkt
@@ -156,12 +156,12 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     )
     fun lagreArbeidsoppgave(
         @PathVariable("id") id: Long,
-        @RequestBody rsArbeidsoppgave: RSArbeidsoppgave
+        @RequestBody arbeidsoppgaveRequest: ArbeidsoppgaveRequest
     ): Long {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        val arbeidsoppgave = map(rsArbeidsoppgave, rs2arbeidsoppgave)
+        val arbeidsoppgave = arbeidsoppgaveRequest.toArbeidsoppgave()
         return arbeidsoppgaveService.lagreArbeidsoppgave(id, arbeidsoppgave, innloggetIdent)
     }
 
