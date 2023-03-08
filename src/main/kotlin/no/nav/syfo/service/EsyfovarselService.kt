@@ -20,8 +20,7 @@ class EsyfovarselService(private val producer: EsyfovarselProducer) {
         val esyfovarselHendelse = NarmesteLederHendelse(
             getEsyfovarselHendelseType(varseltype),
             VarselData(
-                status = VarselStatus(ferdigstilt = false),
-                uuid = VarselUUID("${narmesteleder.naermesteLederId}")
+                status = VarselStatus(ferdigstilt = false)
             ),
             narmesteleder.naermesteLederFnr,
             narmesteleder.ansattFnr,
@@ -38,8 +37,7 @@ class EsyfovarselService(private val producer: EsyfovarselProducer) {
         val esyfovarselHendelse = ArbeidstakerHendelse(
             getEsyfovarselHendelseType(varseltype),
             VarselData(
-                status = VarselStatus(ferdigstilt = false),
-                uuid = VarselUUID("${narmesteleder.naermesteLederId}")
+                status = VarselStatus(ferdigstilt = false)
             ),
             narmesteleder.ansattFnr,
             narmesteleder.orgnummer
@@ -55,8 +53,7 @@ class EsyfovarselService(private val producer: EsyfovarselProducer) {
         val esyfovarselHendelse = ArbeidstakerHendelse(
             getEsyfovarselHendelseType(varseltype),
             VarselData(
-                status = VarselStatus(ferdigstilt = true),
-                uuid = VarselUUID("${narmesteleder.naermesteLederId}")
+                status = VarselStatus(ferdigstilt = true)
             ),
             narmesteleder.ansattFnr,
             narmesteleder.orgnummer
@@ -72,8 +69,7 @@ class EsyfovarselService(private val producer: EsyfovarselProducer) {
         val esyfovarselHendelse = NarmesteLederHendelse(
             getEsyfovarselHendelseType(varseltype),
             VarselData(
-                status = VarselStatus(ferdigstilt = true),
-                uuid = VarselUUID("${narmesteleder.naermesteLederId}")
+                status = VarselStatus(ferdigstilt = true)
             ),
             narmesteleder.naermesteLederFnr,
             narmesteleder.ansattFnr,

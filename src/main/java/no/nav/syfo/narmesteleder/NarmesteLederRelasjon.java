@@ -14,7 +14,6 @@ public class NarmesteLederRelasjon {
     public String narmesteLederId;
     public String fnr;
     public String orgnummer;
-
     public String narmesteLederFnr;
     public String narmesteLederTelefonnummer;
     public String narmesteLederEpost;

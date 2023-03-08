@@ -25,15 +25,10 @@ data class ArbeidstakerHendelse(
 ) : EsyfovarselHendelse
 
 data class VarselData(
-    val status: VarselStatus? = null,
-    val uuid: VarselUUID? = null
+    val status: VarselStatus? = null
 )
 data class VarselStatus(
     val ferdigstilt: Boolean = false
-)
-
-data class VarselUUID(
-    val uuid: String
 )
 
 enum class HendelseType {

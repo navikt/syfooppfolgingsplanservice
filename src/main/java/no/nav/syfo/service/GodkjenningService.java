@@ -157,9 +157,12 @@ public class GodkjenningService {
         }
 
         oppfolgingsplan = oppfolgingsplanDAO.populate(oppfolgingsplan);
+        boolean erArbeidstaker = erArbeidstakeren(oppfolgingsplan, innloggetAktoerId);
+        String arbeidstakersFnr = oppfolgingsplan.arbeidstaker.fnr;
+        String virksomhetsnummer = oppfolgingsplan.virksomhet.virksomhetsnummer;
+        Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, virksomhetsnummer).get();
 
-        if (tvungenGodkjenning && erArbeidstakeren(oppfolgingsplan, innloggetAktoerId)) {
-            String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
+        if (tvungenGodkjenning && erArbeidstaker) {
             Optional<Naermesteleder> narmesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
 
             if (narmesteleder.isPresent() && narmesteleder.get().naermesteLederFnr.equals(innloggetFnr)) {
@@ -173,7 +176,7 @@ public class GodkjenningService {
                 metrikk.tellHendelse("feil_godkjenn_tvang_egen_leder");
                 throw new RuntimeException(message);
             }
-        } else if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId) && tvungenGodkjenning) {
+        } else if (!erArbeidstaker && tvungenGodkjenning) {
             genererTvungenPlan(oppfolgingsplan, gyldighetstidspunkt, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfolgingsplanId);
             sendGodkjentPlanTilAltinn(oppfolgingsplanId);
@@ -181,6 +184,11 @@ public class GodkjenningService {
             genererNyPlan(oppfolgingsplan, innloggetAktoerId, delMedNav);
             godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfolgingsplanId);
             sendGodkjentPlanTilAltinn(oppfolgingsplanId);
+            if (erArbeidstaker) {
+                esyfovarselService.ferdigstillVarselArbeidstaker(SyfoplangodkjenningSyk, naermesteleder);
+            } else {
+                esyfovarselService.ferdigstillVarselNarmesteLeder(SyfoplangodkjenningNl, naermesteleder);
+            }
         } else {
             if (godkjenningRemoved(gyldighetstidspunkt, oppfolgingsplan) || godkjent(oppfolgingsplan)) {
                 throw new ConflictException();
@@ -197,10 +205,6 @@ public class GodkjenningService {
                     )
             );
 
-            String arbeidstakersFnr = oppfolgingsplan.arbeidstaker.fnr;
-            String virksomhetsnummer = oppfolgingsplan.virksomhet.virksomhetsnummer;
-            Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, virksomhetsnummer).get();
-            LOG.info("NL ID!: " + naermesteleder.ansattFnr + " | " + naermesteleder.naermesteLederId + " | " + naermesteleder.naermesteLederStatus.aktivFom);
             if (erArbeidsgiveren(oppfolgingsplan, innloggetAktoerId)) {
                 esyfovarselService.sendVarselTilArbeidstaker(SyfoplangodkjenningSyk, naermesteleder);
                 esyfovarselService.ferdigstillVarselNarmesteLeder(SyfoplangodkjenningNl, naermesteleder);
