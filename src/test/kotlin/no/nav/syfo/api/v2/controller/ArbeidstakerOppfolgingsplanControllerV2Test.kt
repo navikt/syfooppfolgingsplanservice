@@ -2,7 +2,7 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.service.BrukerkontekstConstant
-import no.nav.syfo.api.selvbetjening.domain.RSOpprettOppfoelgingsdialog
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
@@ -56,11 +56,10 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Test
     fun opprett_oppfolgingsplan_som_arbeidstaker() {
         val ressursId = 1L
-        val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
-            .virksomhetsnummer(VIRKSOMHETSNUMMER)
-        `when`(oppfolgingsplanService.opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
-        val res = arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(rsOpprettOppfoelgingsdialog)
-        verify(oppfolgingsplanService).opprettOppfolgingsplan(rsOpprettOppfoelgingsdialog, ARBEIDSTAKER_FNR)
+        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest("", VIRKSOMHETSNUMMER)
+        `when`(oppfolgingsplanService.opprettOppfolgingsplan(ARBEIDSTAKER_FNR, opprettOppfolgingsplan.virksomhetsnummer, ARBEIDSTAKER_FNR)).thenReturn(ressursId)
+        val res = arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(opprettOppfolgingsplan)
+        verify(oppfolgingsplanService).opprettOppfolgingsplan(ARBEIDSTAKER_FNR, opprettOppfolgingsplan.virksomhetsnummer, ARBEIDSTAKER_FNR)
         verify(metrikk).tellHendelse("opprett_oppfolgingsplan_at")
         assertEquals(res, ressursId)
     }
@@ -68,7 +67,7 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Test(expected = RuntimeException::class)
     fun opprett_oppfolgingsplan_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
-        val rsOpprettOppfoelgingsdialog = RSOpprettOppfoelgingsdialog()
-        arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(rsOpprettOppfoelgingsdialog)
+        val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest("", VIRKSOMHETSNUMMER)
+        arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(opprettOppfolgingsplan)
     }
 }
