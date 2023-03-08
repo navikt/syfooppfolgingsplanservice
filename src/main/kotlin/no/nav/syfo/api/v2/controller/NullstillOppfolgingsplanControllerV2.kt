@@ -16,18 +16,18 @@ import javax.inject.Inject
 @RestController
 @Unprotected
 @RequestMapping(value = ["/internal/v2/oppfolgingsplan"])
-class NullstillOppfolgingsplanController @Inject constructor(
+class NullstillOppfolgingsplanControllerV2 @Inject constructor(
     private val oppfolgingsplanDAO: OppfolgingsplanDAO,
     private val pdlConsumer: PdlConsumer
 ) {
     @DeleteMapping(path = ["/slett/{id}"])
     fun deleteOppfolgingsplanById(
-        @PathVariable("id") id: Long?,
+        @PathVariable("id") id: Long,
         @Value("\${nais.cluster.name}") env: String
     ): ResponseEntity<*> {
         return if (isDev(env)) {
             logger.info("Sletter oppfolgingsplan for id")
-            oppfolgingsplanDAO.deleteOppfolgingsplan(id!!)
+            oppfolgingsplanDAO.deleteOppfolgingsplan(id)
             ResponseEntity.ok().build<Any>()
         } else {
             handleEndpointNotAvailableForProdError()
@@ -36,16 +36,16 @@ class NullstillOppfolgingsplanController @Inject constructor(
 
     @DeleteMapping(path = ["/slett/person/{fnr}"])
     fun deleteOppfolgingsplanByFnr(
-        @PathVariable("fnr") fnr: String?,
+        @PathVariable("fnr") fnr: String,
         @Value("\${nais.cluster.name}") env: String
     ): ResponseEntity<*> {
         return if (isDev(env)) {
-            val aktorId = pdlConsumer.aktorid(fnr!!)
+            val aktorId = pdlConsumer.aktorid(fnr)
             val dialogIder = oppfolgingsplanDAO.hentDialogIDerByAktoerId(aktorId)
             logger.info("Sletter oppfolgingsplaner for aktorId")
-            dialogIder.forEach(Consumer { oppfolgingsdialogId: Long? ->
+            dialogIder.forEach(Consumer { oppfolgingsdialogId: Long ->
                 oppfolgingsplanDAO.deleteOppfolgingsplan(
-                    oppfolgingsdialogId!!
+                    oppfolgingsdialogId
                 )
             })
             ResponseEntity.ok().build<Any>()
@@ -64,6 +64,6 @@ class NullstillOppfolgingsplanController @Inject constructor(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(NullstillOppfolgingsplanController::class.java)
+        private val logger = LoggerFactory.getLogger(NullstillOppfolgingsplanControllerV2::class.java)
     }
 }
