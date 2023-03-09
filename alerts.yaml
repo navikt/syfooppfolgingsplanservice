@@ -1,37 +1,47 @@
-apiVersion: "nais.io/v1"
-kind: "Alert"
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
 metadata:
-  name: syfooppfolgingsplanservice-alerts
+  name: syfooppfolgingsplan-alerts
   namespace: team-esyfo
   labels:
     team: team-esyfo
 spec:
-  receivers:
-    slack:
-      channel: '#esyfo-alarm'
-      prependText: '<!here> | '
-  alerts:
-    - alert: SYFOOPPFOLGINGSPLAN IS DOWN!
-      expr: up{app="syfooppfolgingsplanservice", job="kubernetes-pods"} == 0
-      for: 5m
-      description: "syfooppfolgingsplanservice er nede"
-      action: "Undersøk hvorfor syfooppfolgingsplanservice er nede"
-      severity: danger
-    - alert: HIGH RATIO OF HTTP 5XX RESPONSE
-      expr: (100 * (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", status=~"^5\\d\\d", service="syfooppfolgingsplanservice"}[5m]))) / (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", service="syfooppfolgingsplanservice"}[5m])))) > 2
-      for: 5m
-      description: "syfooppfolgingsplanservice har en høy andel 500 feil"
-      action: "Sjekk i Grafana eller logger hvorfor syfooppfolgingsplanservice returnerer mange 500-feil"
-      severity: danger
-    - alert: HIGH RATIO OF HTTP 4XX RESPONSE
-      expr: (100 * (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", status=~"^4\\d\\d", service="syfooppfolgingsplanservice"}[5m]))) / (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", service="syfooppfolgingsplanservice"}[5m])))) > 10
-      for: 5m
-      description: "syfooppfolgingsplanservice har en høy andel 400 feil"
-      action: "Sjekk i Grafana eller logger hvorfor syfooppfolgingsplanservice returnerer mange 400-feil"
-      severity: warning
-    - alert: ALTINN KAFKA OPPFOLGINGSPLAN CONSUMER LAG
-      expr: kafka_consumergroup_group_topic_sum_lag{topic="aapen-altinn-oppfolgingsplan-Mottatt", group="kafka2jms-oppfolgingsplan"} > 0
-      for: 15m
-      description: "syfooppfolgingsplanservice har ukonsumerte Kafkameldinger på Altinn-topic aapen-altinn-oppfolgingsplan-Mottatt"
-      action: "Finn ut hvorfor syfooppfolgingsplanservice har stoppet å konsumere fra topic"
-      severity: danger
+  groups:
+    - name: syfomotebehov-alerts
+      rules:
+        - alert: SYFOOPPFOLGINGSPLAN IS DOWN!
+          expr: up{app="syfooppfolgingsplanservice", job="kubernetes-pods"} == 0
+          for: 5m
+          annotations:
+            summary: "syfooppfolgingsplanservice er nede"
+            action: "Undersøk hvorfor syfooppfolgingsplanservice er nede"
+          labels:
+            namespace: team-esyfo
+            severity: critical
+        - alert: HIGH RATIO OF HTTP 5XX RESPONSE
+          expr: (100 * (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", status=~"^5\\d\\d", service="syfooppfolgingsplanservice"}[5m]))) / (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", service="syfooppfolgingsplanservice"}[5m])))) > 2
+          for: 5m
+          annotations:
+            summary: "syfooppfolgingsplanservice har en høy andel 500 feil"
+            action: "Sjekk i Grafana eller logger hvorfor syfooppfolgingsplanservice returnerer mange 500-feil"
+          labels:
+            namespace: team-esyfo
+            severity: warning
+        - alert: HIGH RATIO OF HTTP 4XX RESPONSE
+          expr: (100 * (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", status=~"^4\\d\\d", service="syfooppfolgingsplanservice"}[5m]))) / (sum by (backend) (rate(nginx_ingress_controller_requests{namespace="team-esyfo", service="syfooppfolgingsplanservice"}[5m])))) > 10
+          for: 5m
+          annotations:
+            summary: "syfooppfolgingsplanservice har en høy andel 400 feil"
+            action: "Sjekk i Grafana eller logger hvorfor syfooppfolgingsplanservice returnerer mange 400-feil"
+          labels:
+            namespace: team-esyfo
+            severity: warning
+        - alert: ALTINN KAFKA OPPFOLGINGSPLAN CONSUMER LAG
+          expr: kafka_consumergroup_group_topic_sum_lag{topic="aapen-altinn-oppfolgingsplan-Mottatt", group="kafka2jms-oppfolgingsplan"} > 0
+          for: 15m
+          annotations:
+            summary: "syfooppfolgingsplanservice har ukonsumerte Kafkameldinger på Altinn-topic aapen-altinn-oppfolgingsplan-Mottatt"
+            action: "Finn ut hvorfor syfooppfolgingsplanservice har stoppet å konsumere fra topic"
+          labels:
+            namespace: team-esyfo
+            severity: warning
