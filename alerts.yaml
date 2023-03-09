@@ -1,13 +1,13 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: syfooppfolgingsplan-alerts
+  name: syfoppfolgingsplanservice-alerts
   namespace: team-esyfo
   labels:
     team: team-esyfo
 spec:
   groups:
-    - name: syfomotebehov-alerts
+    - name: syfoppfolgingsplanservice-alerts
       rules:
         - alert: SYFOOPPFOLGINGSPLAN IS DOWN!
           expr: up{app="syfooppfolgingsplanservice", job="kubernetes-pods"} == 0
