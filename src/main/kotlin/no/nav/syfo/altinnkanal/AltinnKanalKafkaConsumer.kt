@@ -18,12 +18,12 @@ class AltinnKanalKafkaConsumer @Inject constructor(
 ) {
     private val log = LoggerFactory.getLogger(AltinnKanalKafkaConsumer::class.java)
 
-    @KafkaListener(topics = ["aapen-altinn-oppfolgingsplan-Mottatt"])
+    @KafkaListener(topics = ["alf.aapen-altinn-oppfolgingsplan-mottatt-v2"])
     fun handleIncomingAltinnOP(
         consumerRecord: ConsumerRecord<String, ExternalAttachment>
     ) {
         try {
-            log.info("KAFKA-TRACE(LPS): Mottatt melding aapen-altinn-oppfolgingsplan-Mottatt")
+            log.info("KAFKA-TRACE(LPS): Mottatt melding alf.aapen-altinn-oppfolgingsplan-mottatt-v2")
 
             oppfolgingsplanLPSService.receivePlan(
                 consumerRecord.value().getArchiveReference(),
