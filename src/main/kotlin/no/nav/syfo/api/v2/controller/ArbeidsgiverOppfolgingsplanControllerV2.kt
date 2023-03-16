@@ -2,7 +2,6 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.service.BrukerkontekstConstant.ARBEIDSGIVER
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.BrukerOppfolgingsplan
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.api.v2.mapper.populerArbeidstakersStillinger
@@ -37,18 +36,6 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String
 ) {
-    @GetMapping(produces = [APPLICATION_JSON_VALUE])
-    fun hentArbeidsgiversOppfolgingsplaner(): List<BrukerOppfolgingsplan> {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
-            .fnrFromIdportenTokenX()
-            .value
-        val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.hentAktorsOppfolgingsplaner(ARBEIDSGIVER, innloggetIdent)
-        val liste = arbeidsgiversOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
-        liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
-        liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidsforholdService) }
-        metrikk.tellHendelse("hent_oppfolgingsplan_ag")
-        return liste
-    }
 
     @GetMapping(produces = [APPLICATION_JSON_VALUE], value = ["/{fnr}"])
     fun hentArbeidsgiversOppfolgingsplanerPaFnr(@PathVariable fnr: String, @RequestParam("virksomhetsnummer") virksomhetsnummer: String): List<BrukerOppfolgingsplan> {

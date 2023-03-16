@@ -1,7 +1,6 @@
 package no.nav.syfo.api.v2.controller
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.service.BrukerkontekstConstant
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
@@ -45,17 +44,10 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
     }
 
-    @Test
-    fun hent_oppfolgingsplaner_som_arbeidsgiver() {
-        arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplaner()
-        Mockito.verify(oppfolgingsplanService).hentAktorsOppfolgingsplaner(BrukerkontekstConstant.ARBEIDSGIVER, LEDER_FNR)
-        Mockito.verify(metrikk).tellHendelse("hent_oppfolgingsplan_ag")
-    }
-
     @Test(expected = RuntimeException::class)
     fun hent_oppfolgingsplaner_finner_ikke_innlogget_bruker() {
         loggUtAlle(contextHolder)
-        arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplaner()
+        arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplanerPaFnr(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
     }
 
     @Test
