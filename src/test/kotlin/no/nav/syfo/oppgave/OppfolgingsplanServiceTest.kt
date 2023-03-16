@@ -1,7 +1,6 @@
 package no.nav.syfo.oppgave
 
 import no.nav.syfo.domain.*
-import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.GodkjentplanDAO
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO
@@ -22,9 +21,6 @@ import javax.ws.rs.ForbiddenException
 class OppfolgingsplanServiceTest {
     @Mock
     private lateinit var oppfolgingsplanDAO: OppfolgingsplanDAO
-
-    @Mock
-    private lateinit var narmesteLederConsumer: NarmesteLederConsumer
 
     @Mock
     private lateinit var tilgangskontrollService: TilgangskontrollService

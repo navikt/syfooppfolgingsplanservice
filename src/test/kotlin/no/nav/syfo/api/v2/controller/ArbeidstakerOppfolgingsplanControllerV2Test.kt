@@ -1,7 +1,6 @@
 package no.nav.syfo.api.v2.controller
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.service.BrukerkontekstConstant
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.OppfolgingsplanService
@@ -43,7 +42,7 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Test
     fun henter_oppfolgingsplaner_som_arbeidstaker() {
         arbeidstakerOppfolgingsplanController.hentArbeidstakersOppfolgingsplaner()
-        verify(oppfolgingsplanService).hentAktorsOppfolgingsplaner(BrukerkontekstConstant.ARBEIDSTAKER, ARBEIDSTAKER_FNR)
+        verify(oppfolgingsplanService).arbeidstakersOppfolgingsplaner(ARBEIDSTAKER_FNR)
         verify(metrikk).tellHendelse("hent_oppfolgingsplan_at")
     }
 
