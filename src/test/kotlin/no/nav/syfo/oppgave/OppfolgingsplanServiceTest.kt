@@ -1,8 +1,6 @@
 package no.nav.syfo.oppgave
 
-import no.nav.syfo.service.BrukerkontekstConstant
 import no.nav.syfo.domain.*
-import no.nav.syfo.model.Ansatt
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.GodkjentplanDAO
@@ -18,6 +16,7 @@ import org.mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
 import java.util.*
+import javax.ws.rs.ForbiddenException
 
 @RunWith(MockitoJUnitRunner::class)
 class OppfolgingsplanServiceTest {
@@ -43,20 +42,27 @@ class OppfolgingsplanServiceTest {
     private lateinit var oppfolgingsplanService: OppfolgingsplanService
 
     @Test
-    fun oppfolgingsplanerFraAndreBedrifterBlirFiltrertBort() {
+    fun arbeidsgiversOppfolgingsplanerOk() {
         val dialog1 = Oppfolgingsplan().id(1L).arbeidstaker(Person().aktoerId("sykmeldt")).virksomhet(Virksomhet().virksomhetsnummer("1"))
-        val dialog2 = Oppfolgingsplan().id(2L).arbeidstaker(Person().aktoerId("sykmeldt")).virksomhet(Virksomhet().virksomhetsnummer("2"))
-        Mockito.`when`(pdlConsumer.aktorid("123")).thenReturn(LEDER_FNR)
+        Mockito.`when`(pdlConsumer.aktorid(LEDER_FNR)).thenReturn("123")
         Mockito.`when`(pdlConsumer.aktorid(ARBEIDSTAKER_FNR)).thenReturn("sykmeldt")
-        Mockito.`when`(narmesteLederConsumer.ansatte(ArgumentMatchers.anyString())).thenReturn(Arrays.asList(Ansatt().fnr(ARBEIDSTAKER_FNR).virksomhetsnummer("1")))
-        Mockito.`when`(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ArgumentMatchers.anyString())).thenReturn(Arrays.asList(
+        Mockito.`when`(tilgangskontrollService.erNaermesteLederForSykmeldt(LEDER_FNR, ARBEIDSTAKER_FNR, "1")).thenReturn(true)
+        Mockito.`when`(oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ArgumentMatchers.same("sykmeldt"), ArgumentMatchers.same("1"))).thenReturn(Arrays.asList(
             dialog1,
-            dialog2
         ))
         Mockito.`when`(oppfolgingsplanDAO.populate(dialog1)).thenReturn(dialog1)
-        val dialoger = oppfolgingsplanService.hentAktorsOppfolgingsplaner(BrukerkontekstConstant.ARBEIDSGIVER, "123")
+        val dialoger = oppfolgingsplanService.arbeidsgiversOppfolgingsplanerPaFnr( LEDER_FNR, ARBEIDSTAKER_FNR, "1")
         assertThat(dialoger.size).isEqualTo(1)
         assertThat(dialoger[0].id).isEqualTo(1L)
+    }
+
+    @Test(expected=ForbiddenException::class)
+    fun kanIkkeSporrePaEnAnsattManIkkeErNarmesteLederFor() {
+        Mockito.`when`(pdlConsumer.aktorid(LEDER_FNR)).thenReturn("123")
+        Mockito.`when`(pdlConsumer.aktorid(ARBEIDSTAKER_FNR)).thenReturn("sykmeldt")
+        Mockito.`when`(tilgangskontrollService.erNaermesteLederForSykmeldt(LEDER_FNR, ARBEIDSTAKER_FNR, "1")).thenReturn(false)
+
+        oppfolgingsplanService.arbeidsgiversOppfolgingsplanerPaFnr( LEDER_FNR, ARBEIDSTAKER_FNR, "1")
     }
 
     @Test
