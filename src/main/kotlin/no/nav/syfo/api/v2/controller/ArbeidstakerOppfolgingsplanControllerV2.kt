@@ -2,7 +2,6 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.service.BrukerkontekstConstant
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.BrukerOppfolgingsplan
 import no.nav.syfo.api.v2.mapper.populerArbeidstakersStillinger
@@ -44,7 +43,7 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
                 .fnrFromIdportenTokenX()
                 .value
         val arbeidstakersOppfolgingsplaner: List<Oppfolgingsplan> =
-            oppfolgingsplanService.hentAktorsOppfolgingsplaner(BrukerkontekstConstant.ARBEIDSTAKER, innloggetIdent)
+            oppfolgingsplanService.arbeidstakersOppfolgingsplaner(innloggetIdent)
         val liste = arbeidstakersOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
         liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
         liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidsforholdService) }

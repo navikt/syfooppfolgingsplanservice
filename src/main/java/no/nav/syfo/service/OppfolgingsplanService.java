@@ -2,11 +2,10 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.dialogmelding.DialogmeldingService;
 import no.nav.syfo.domain.*;
-import no.nav.syfo.model.Ansatt;
-import no.nav.syfo.narmesteleder.NarmesteLederConsumer;
 import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.util.ConflictException;
+
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,15 +14,11 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static no.nav.syfo.service.BrukerkontekstConstant.ARBEIDSGIVER;
-import static no.nav.syfo.service.BrukerkontekstConstant.ARBEIDSTAKER;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -38,8 +33,6 @@ public class OppfolgingsplanService {
     private final GodkjentplanDAO godkjentplanDAO;
 
     private final TiltakDAO tiltakDAO;
-
-    private final NarmesteLederConsumer narmesteLederConsumer;
 
     private final TilgangskontrollService tilgangskontrollService;
 
@@ -63,7 +56,6 @@ public class OppfolgingsplanService {
             OppfolgingsplanDAO oppfolgingsplanDAO,
             TiltakDAO tiltakDAO,
             DialogmeldingService dialogmeldingService,
-            NarmesteLederConsumer narmesteLederConsumer,
             PdlConsumer pdlConsumer,
             TilgangskontrollService tilgangskontrollService
     ) {
@@ -75,30 +67,15 @@ public class OppfolgingsplanService {
         this.oppfolgingsplanDAO = oppfolgingsplanDAO;
         this.tiltakDAO = tiltakDAO;
         this.dialogmeldingService = dialogmeldingService;
-        this.narmesteLederConsumer = narmesteLederConsumer;
         this.pdlConsumer = pdlConsumer;
         this.tilgangskontrollService = tilgangskontrollService;
-    }
-
-    public List<Oppfolgingsplan> hentAktorsOppfolgingsplaner(BrukerkontekstConstant brukerkontekst, String innloggetFnr) {
-        String innloggetAktorId = pdlConsumer.aktorid(innloggetFnr);
-
-        if (ARBEIDSGIVER == brukerkontekst) {
-            return arbeidsgiversOppfolgingsplaner(innloggetAktorId, innloggetFnr);
-        }
-
-        if (ARBEIDSTAKER == brukerkontekst) {
-            return arbeidstakersOppfolgingsplaner(innloggetAktorId);
-        }
-
-        return emptyList();
     }
 
     public List<Oppfolgingsplan> arbeidsgiversOppfolgingsplanerPaFnr(String lederFnr, String ansattFnr, String virksomhetsnummer) {
         String lederAktorId = pdlConsumer.aktorid(lederFnr);
         String ansattAktorId = pdlConsumer.aktorid(ansattFnr);
 
-        if(!tilgangskontrollService.erNaermesteLederForSykmeldt(lederFnr, ansattFnr, virksomhetsnummer)) {
+        if (!tilgangskontrollService.erNaermesteLederForSykmeldt(lederFnr, ansattFnr, virksomhetsnummer)) {
             throw new ForbiddenException("Ikke tilgang");
         }
 
@@ -109,25 +86,10 @@ public class OppfolgingsplanService {
                 .collect(toList());
     }
 
-
-    private List<Oppfolgingsplan> arbeidsgiversOppfolgingsplaner(String aktorId, String fnr) {
-        List<Oppfolgingsplan> oppfolgingsplaner = new ArrayList<>();
-        List<Ansatt> ansatte = narmesteLederConsumer.ansatte(fnr);
-
-        ansatte.forEach(ansatt -> {
-            String ansattAktorId = pdlConsumer.aktorid(ansatt.fnr);
-            List<Oppfolgingsplan> ansattesOppfolgingsplaner = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(ansattAktorId).stream()
-                    .filter(oppfolgingsplan -> oppfolgingsplan.virksomhet.virksomhetsnummer.equals(ansatt.virksomhetsnummer))
-                    .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
-                    .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, aktorId)).toList();
-            oppfolgingsplaner.addAll(ansattesOppfolgingsplaner);
-        });
-        return oppfolgingsplaner;
-    }
-
-    private List<Oppfolgingsplan> arbeidstakersOppfolgingsplaner(String aktorId) {
-        return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(aktorId).stream()
-                .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, aktorId))
+    public List<Oppfolgingsplan> arbeidstakersOppfolgingsplaner(String innloggetFnr) {
+        String innloggetAktorId = pdlConsumer.aktorid(innloggetFnr);
+        return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(innloggetAktorId).stream()
+                .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, innloggetAktorId))
                 .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
                 .collect(toList());
     }
@@ -176,7 +138,8 @@ public class OppfolgingsplanService {
             throw new ConflictException();
         }
 
-        long nyOppfoelgingsdialogId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, sykmeldtFnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId, innloggetFnr);
+        long nyOppfoelgingsdialogId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, sykmeldtFnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId,
+                                                    innloggetFnr);
         overfoerDataFraDialogTilNyDialog(oppfoelgingsdialogId, nyOppfoelgingsdialogId);
 
         return nyOppfoelgingsdialogId;
@@ -290,7 +253,8 @@ public class OppfolgingsplanService {
         throwExceptionWithoutAccessToOppfolgingsplan(innloggetFnr, oppfolgingsplan);
 
         oppfolgingsplanDAO.avbryt(oppfolgingsplan.id, innloggetAktoerId);
-        long nyOppfolgingsplanId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId, innloggetFnr);
+        long nyOppfolgingsplanId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer,
+                                                 innloggetAktoerId, innloggetFnr);
         overfoerDataFraDialogTilNyDialog(oppfolgingsplanId, nyOppfolgingsplanId);
         return nyOppfolgingsplanId;
     }
