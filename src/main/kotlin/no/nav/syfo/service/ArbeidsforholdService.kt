@@ -61,8 +61,8 @@ class ArbeidsforholdService(private val aaregConsumer: AaregConsumer, private va
     }
 
     fun beregnRiktigTom(gyldighetsperiodeTom: String?, ansettelsesperiodeTom: String?): LocalDate? {
-        // Den siste arbeidsavtalen har alltid tom = null, selv om arbeidsforholdet er avsluttet. Så dersom tom = null og ansettelsesperiodens tom ikke er null,
-        // er det riktig å bruke ansettelsesperioden sin tom
+        /* Den siste arbeidsavtalen har alltid tom = null, selv om arbeidsforholdet er avsluttet. Så dersom tom = null og ansettelsesperiodens tom ikke er null,
+         er det riktig å bruke ansettelsesperioden sin tom */
         return if (gyldighetsperiodeTom != null) {
             gyldighetsperiodeTom.tilLocalDate()
         } else if (ansettelsesperiodeTom != null) {
