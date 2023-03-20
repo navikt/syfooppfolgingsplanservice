@@ -50,8 +50,8 @@ class ArbeidsforholdService(private val aaregConsumer: AaregConsumer, private va
     }
 
     fun beregnRiktigFom(gyldighetsperiodeFom: String?, ansettelsesperiodeFom: String): LocalDate {
-        // Gyldighetsperiode sier noe om hvilken måned arbeidsavtalen er rapportert inn, og starter på den 1. i måneden selv om arbeidsforholdet startet senere.
-        // Så dersom gyldighetsperiode er før ansettelsesperioden er det riktig å bruke ansettelsesperioden sin fom.
+        /* Gyldighetsperiode sier noe om hvilken måned arbeidsavtalen er rapportert inn, og starter på den 1. i måneden selv om arbeidsforholdet startet senere.
+         Så dersom gyldighetsperiode er før ansettelsesperioden er det riktig å bruke ansettelsesperioden sin fom.*/
         val ansattFom = ansettelsesperiodeFom.tilLocalDate()
         return if (gyldighetsperiodeFom == null || LocalDate.parse(gyldighetsperiodeFom).isBefore(ansattFom)) {
             ansattFom
