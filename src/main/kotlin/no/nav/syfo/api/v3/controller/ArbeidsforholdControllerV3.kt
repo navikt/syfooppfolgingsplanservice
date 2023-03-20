@@ -12,6 +12,7 @@ import no.nav.syfo.tokenx.TokenXUtil.fnrFromIdportenTokenX
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 import javax.inject.Inject
 
 
@@ -38,6 +40,7 @@ class ArbeidsforholdControllerV3 @Inject constructor(
     fun getArbeidsforhold(
         @RequestParam("fnr") fnr: String,
         @RequestParam("virksomhetsnummer") virksomhetsnummer: String,
+        @RequestParam("fom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fom: LocalDate
     ): ResponseEntity<List<Arbeidsforhold>> {
 
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
@@ -50,7 +53,7 @@ class ArbeidsforholdControllerV3 @Inject constructor(
                 .status(HttpStatus.FORBIDDEN)
                 .build()
         }
-        val arbeidsforhold = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(fnr, virksomhetsnummer)
+        val arbeidsforhold = arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(fnr, fom, virksomhetsnummer)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(arbeidsforhold.map { it.mapToArbeidsforhold() })

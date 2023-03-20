@@ -46,8 +46,7 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
             oppfolgingsplanService.arbeidstakersOppfolgingsplaner(innloggetIdent)
         val liste = arbeidstakersOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
         liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
-        val arbeidstakersStillinger = arbeidsforholdService.arbeidstakersStillinger(innloggetIdent)
-        liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidstakersStillinger) }
+        liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidsforholdService) }
         metrikk.tellHendelse("hent_oppfolgingsplan_at")
         return liste
     }
