@@ -153,7 +153,7 @@ spec:
     - name: DITT_SYKEFRAVAER_FRONTEND_CLIENT_ID
       value: dev-gcp:flex:ditt-sykefravaer
     - name: ISDIALOGMELDING_URL
-      value: https://isdialogmelding.dev.intern.nav.no
+      value: https://isdialogmelding.intern.dev.nav.no
     - name: ISDIALOGMELDING_CLIENT_ID
       value: dev-gcp:teamsykefravr:isdialogmelding
     - name: ISDIALOGMELDING_AAD_CLIENT_ID
