@@ -4,7 +4,6 @@ import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
-import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
@@ -27,9 +26,6 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
 
     @MockBean
     lateinit var oppfolgingsplanService: OppfolgingsplanService
-
-    @MockBean
-    lateinit var arbeidsforholdService: ArbeidsforholdService
 
     @MockBean
     lateinit var metrikk: Metrikk

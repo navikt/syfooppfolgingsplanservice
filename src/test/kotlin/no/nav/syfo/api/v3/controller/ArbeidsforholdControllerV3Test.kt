@@ -36,37 +36,33 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
-    val stilling = Stilling().yrke("Bilmekaniker").prosent(BigDecimal.TEN).fom(LocalDate.now().minusYears(1)).tom(LocalDate.now())
+    val stilling = Stilling().yrke("Bilmekaniker").prosent(BigDecimal.TEN)
 
     @Test
     fun narmesteLeder_ansatt_ok() {
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER))
+        `when`(arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(ARBEIDSTAKER_FNR, LocalDate.now(), VIRKSOMHETSNUMMER))
             .thenReturn(listOf(stilling))
-        val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
+        val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER, LocalDate.now())
         val body = res.body as List<Arbeidsforhold>
         val arbeidsforhold = body[0]
         assertEquals(200, res.statusCodeValue.toLong())
         assertEquals(stilling.yrke, arbeidsforhold.yrke)
         assertEquals(stilling.prosent, arbeidsforhold.prosent)
-        assertEquals(stilling.fom, arbeidsforhold.fom)
-        assertEquals(stilling.tom, arbeidsforhold.tom)
     }
 
     @Test
     fun narmesteLeder_self_ok() {
         loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
-        `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER))
+        `when`(arbeidsforholdService.arbeidstakersFnrStillingerForOrgnummer(ARBEIDSTAKER_FNR, LocalDate.now(), VIRKSOMHETSNUMMER))
             .thenReturn(listOf(stilling))
-        val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
+        val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER, LocalDate.now())
         val body = res.body as List<Arbeidsforhold>
         val arbeidsforhold = body[0]
         assertEquals(200, res.statusCodeValue.toLong())
         assertEquals(stilling.yrke, arbeidsforhold.yrke)
         assertEquals(stilling.prosent, arbeidsforhold.prosent)
-        assertEquals(stilling.fom, arbeidsforhold.fom)
-        assertEquals(stilling.tom, arbeidsforhold.tom)
     }
 
     @Test
@@ -74,7 +70,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
 
-        val res: ResponseEntity<*> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
+        val res: ResponseEntity<*> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER, LocalDate.now())
         assertEquals(403, res.statusCodeValue.toLong())
     }
 }
