@@ -7,6 +7,7 @@ import no.nav.syfo.api.v2.domain.oppfolgingsplan.BrukerOppfolgingsplan
 import no.nav.syfo.api.v2.mapper.populerArbeidstakersStillinger
 import no.nav.syfo.api.v2.mapper.populerPlanerMedAvbruttPlanListe
 import no.nav.syfo.api.v2.mapper.toBrukerOppfolgingsplan
+import no.nav.syfo.api.v2.mapper.toVirksomhetsnummer
 import no.nav.syfo.domain.Oppfolgingsplan
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.pdl.PdlConsumer
@@ -46,7 +47,7 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
             oppfolgingsplanService.arbeidstakersOppfolgingsplaner(innloggetIdent)
         val liste = arbeidstakersOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
         liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
-        val arbeidstakersStillinger = arbeidsforholdService.arbeidstakersStillinger(innloggetIdent)
+        val arbeidstakersStillinger = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(innloggetIdent, liste.toVirksomhetsnummer())
         liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidstakersStillinger) }
         metrikk.tellHendelse("hent_oppfolgingsplan_at")
         return liste
