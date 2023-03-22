@@ -50,7 +50,7 @@ class ArbeidsforholdControllerV3 @Inject constructor(
                 .status(HttpStatus.FORBIDDEN)
                 .build()
         }
-        val arbeidsforhold = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(fnr, virksomhetsnummer)
+        val arbeidsforhold = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(fnr, listOf(virksomhetsnummer))
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(arbeidsforhold.map { it.mapToArbeidsforhold() })

@@ -7,7 +7,7 @@ import no.nav.syfo.model.Stilling
 import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
-import no.nav.syfo.testhelper.VIRKSOMHETSNUMMER
+import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -42,7 +42,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
     fun narmesteLeder_ansatt_ok() {
         loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
-        `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER))
+        `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER)))
             .thenReturn(listOf(stilling))
         val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         val body = res.body as List<Arbeidsforhold>
@@ -57,7 +57,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
     @Test
     fun narmesteLeder_self_ok() {
         loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
-        `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER))
+        `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER)))
             .thenReturn(listOf(stilling))
         val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         val body = res.body as List<Arbeidsforhold>

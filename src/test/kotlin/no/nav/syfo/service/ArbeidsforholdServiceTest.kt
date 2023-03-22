@@ -114,7 +114,7 @@ class ArbeidsforholdServiceTest {
         )
         `when`(aaregConsumer.arbeidsforholdArbeidstaker(AT_FNR)).thenReturn(arbeidsforholdList)
 
-        val actualStillingList = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(AT_FNR, ORGNUMMER)
+        val actualStillingList = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(AT_FNR, listOf(ORGNUMMER))
 
         assertThat(actualStillingList).isNotEmpty
         val stilling1 = actualStillingList[0]
@@ -145,7 +145,7 @@ class ArbeidsforholdServiceTest {
         )
         `when`(aaregConsumer.arbeidsforholdArbeidstaker(AT_FNR)).thenReturn(arbeidsforholdList)
 
-        val actualStillingList = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(AT_FNR, ORGNUMMER)
+        val actualStillingList = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(AT_FNR, listOf(ORGNUMMER))
 
         assertThat(actualStillingList).isNotEmpty
         val stilling1 = actualStillingList[0]
@@ -186,7 +186,7 @@ class ArbeidsforholdServiceTest {
         )
         `when`(aaregConsumer.arbeidsforholdArbeidstaker(AT_FNR)).thenReturn(arbeidsforholdList)
 
-        val actualStillingList = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(AT_FNR, ORGNUMMER)
+        val actualStillingList = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(AT_FNR, listOf(ORGNUMMER))
 
         assertThat(actualStillingList).isNotEmpty
 

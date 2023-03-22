@@ -25,9 +25,9 @@ class ArbeidsforholdService(private val aaregConsumer: AaregConsumer, private va
         return arbeidsforholdList2StillingForOrgnummer(arbeidsforholdList, orgnummer, fom)
     }
 
-    fun arbeidstakersStillingerForOrgnummer(fnr: String, orgnummer: String): List<Stilling> {
+    fun arbeidstakersStillingerForOrgnummer(fnr: String, orgnummerList: List<String>): List<Stilling> {
         return arbeidstakersStillinger(fnr)
-            .filter { stilling -> stilling.orgnummer.equals(orgnummer) }
+            .filter { stilling -> orgnummerList.contains(stilling.orgnummer) }
     }
 
     fun arbeidstakersStillinger(fnr: String): List<Stilling> {
@@ -94,7 +94,7 @@ class ArbeidsforholdService(private val aaregConsumer: AaregConsumer, private va
     private fun stillingsnavnFromKode(stillingskode: String, kodeverkBetydninger: KodeverkKoderBetydningerResponse): String {
         val stillingsnavnFraFellesKodeverk = kodeverkBetydninger.betydninger[stillingskode]?.get(0)?.beskrivelser?.get("nb")?.tekst
         if (stillingsnavnFraFellesKodeverk == null) {
-            log.error("Couldn't find navn for stillingskode: $stillingskode")
+            log.info("Couldn't find navn for stillingskode: $stillingskode")
         }
         val stillingsnavn = stillingsnavnFraFellesKodeverk ?: "Ugyldig yrkeskode $stillingskode"
         return stillingsnavn.lowerCapitalize()
