@@ -3,12 +3,17 @@ package no.nav.syfo.api.v2.controller
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.metric.Metrikk
+import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
+import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
+import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
+import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
+import no.nav.syfo.testhelper.oppfolgingsplanGodkjentTvang
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -26,6 +31,9 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     lateinit var arbeidsforholdService: ArbeidsforholdService
 
     @MockBean
+    lateinit var pdlConsumer: PdlConsumer
+
+    @MockBean
     lateinit var metrikk: Metrikk
 
     @Inject
@@ -37,7 +45,6 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
-
     @Before
     fun setup() {
         loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
@@ -45,8 +52,12 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
 
     @Test
     fun henter_oppfolgingsplaner_som_arbeidstaker() {
+        `when`(oppfolgingsplanService.arbeidstakersOppfolgingsplaner(ARBEIDSTAKER_FNR)).thenReturn(listOf(oppfolgingsplanGodkjentTvang()))
+        `when`(pdlConsumer.fnr(ARBEIDSTAKER_AKTORID)).thenReturn(ARBEIDSTAKER_FNR)
+        `when`(pdlConsumer.fnr(LEDER_AKTORID)).thenReturn(LEDER_FNR)
         arbeidstakerOppfolgingsplanController.hentArbeidstakersOppfolgingsplaner()
         verify(oppfolgingsplanService).arbeidstakersOppfolgingsplaner(ARBEIDSTAKER_FNR)
+        verify(arbeidsforholdService).arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER))
         verify(metrikk).tellHendelse("hent_oppfolgingsplan_at")
     }
 
