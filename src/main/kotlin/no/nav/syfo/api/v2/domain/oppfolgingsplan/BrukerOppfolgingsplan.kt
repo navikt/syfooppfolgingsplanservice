@@ -10,7 +10,7 @@ data class BrukerOppfolgingsplan (
     val opprettetDato: LocalDate,
     val status: Status,
     val virksomhet: Virksomhet,
-    val godkjentPlan: GodkjentPlan?,
+    val godkjentPlan: GodkjentPlan? = null,
     val godkjenninger: List<Godkjenning> = ArrayList(),
     val arbeidsoppgaveListe: List<Arbeidsoppgave> = ArrayList(),
     val tiltakListe: List<Tiltak> = ArrayList(),
