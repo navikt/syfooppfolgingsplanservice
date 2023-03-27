@@ -23,6 +23,9 @@ object Versions {
     const val mockkVersion = "1.13.4"
 }
 
+val githubUser: String by project
+val githubPassword: String by project
+
 plugins {
     kotlin("jvm") version "1.6.10"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
@@ -57,8 +60,6 @@ allOpen {
     annotation("org.springframework.stereotype.Component")
 }
 
-val githubUser: String by project
-val githubPassword: String by project
 repositories {
     mavenCentral()
     maven(url = "https://packages.confluent.io/maven/")
