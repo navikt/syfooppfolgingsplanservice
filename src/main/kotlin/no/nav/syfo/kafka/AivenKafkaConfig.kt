@@ -47,14 +47,12 @@ class AivenKafkaConfig(
             put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, credstorePassword)
             remove(SaslConfigs.SASL_MECHANISM)
             remove(SaslConfigs.SASL_JAAS_CONFIG)
-            
+
             put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, aivenBrokers)
             put(BASIC_AUTH_CREDENTIALS_SOURCE, USER_INFO)
 
             put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
             put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonKafkaSerializer::class.java)
-
-
         }
         return producerProperties
     }
@@ -78,7 +76,9 @@ class AivenKafkaConfig(
             remove(SaslConfigs.SASL_MECHANISM)
             remove(SaslConfigs.SASL_JAAS_CONFIG)
 
-            put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://kafka-schema-registry.tpa.svc.nais.local:8081")
+            put(BASIC_AUTH_CREDENTIALS_SOURCE, USER_INFO)
+            put(SchemaRegistryClientConfig.USER_INFO_CONFIG, userinfoConfig)
+            put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl)
             put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer")
             put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer")
             put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true)
