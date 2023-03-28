@@ -30,7 +30,6 @@ class AivenKafkaConfig(
     private val SSL = "SSL"
     private val USER_INFO = "USER_INFO"
     private val BASIC_AUTH_CREDENTIALS_SOURCE = "basic.auth.credentials.source"
-    private val GROUP_ID = "syfooppfolgingsplanservice"
     private val userinfoConfig = "$registryUsername:$registryPassword"
 
     fun producerProperties(): HashMap<String, Any> {
@@ -59,7 +58,7 @@ class AivenKafkaConfig(
 
     fun consumerProperties(): HashMap<String, Any> {
         val consumerProperties = HashMap<String, Any>().apply {
-            put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID)
+            put(ConsumerConfig.GROUP_ID_CONFIG, "syfooppfolgingsplanservice")
             put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
             put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1")
             put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false")

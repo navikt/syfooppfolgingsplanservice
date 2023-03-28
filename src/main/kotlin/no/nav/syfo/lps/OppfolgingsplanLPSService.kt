@@ -103,18 +103,16 @@ class OppfolgingsplanLPSService @Inject constructor(
 
     fun receivePlan(
         archiveReference: String,
-        recordBatch: String,
+        payload: String,
         isRetry: Boolean
     ) {
-        val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(recordBatch)) as DataBatch
-        val payload = dataBatch.dataUnits.dataUnit.first().formTask.form.first().formData
         val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
         val skjemainnhold = oppfolgingsplan.skjemainnhold
         val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
 
         processPlan(
             archiveReference,
-            recordBatch,
+            payload,
             skjemainnhold,
             virksomhetsnummer,
             isRetry
@@ -124,7 +122,7 @@ class OppfolgingsplanLPSService @Inject constructor(
 
     private fun processPlan(
         archiveReference: String,
-        batch: String,
+        payload: String,
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer,
         isRetry: Boolean
@@ -148,7 +146,7 @@ class OppfolgingsplanLPSService @Inject constructor(
 
         if (isUserDiskresjonsmerket == null) {
             val errorMessage = "Diskresjonskode was not received from PDL and LPS-plan is stored for retry."
-            storePlanForRetry(incomingMetadata, batch, errorMessage)
+            storePlanForRetry(incomingMetadata, payload, errorMessage)
         } else if (isUserDiskresjonsmerket) {
             log.warn("Received Oppfolgingsplan from LPS for a person that is denied access to Oppfolgingsplan")
             metrikk.tellHendelse(METRIKK_DISKRESJONSMERKET)
@@ -161,13 +159,13 @@ class OppfolgingsplanLPSService @Inject constructor(
             val (gjeldendeFnr, pdlCallFailed) = gjeldendeFnr(skjemaFnr)
             if (pdlCallFailed) {
                 val errorMessage = "Unable to determine current fnr: PDL call 'hentIdenter' failed"
-                storePlanForRetry(incomingMetadata, batch, errorMessage)
+                storePlanForRetry(incomingMetadata, payload, errorMessage)
                 return
             }
 
             val idList: Pair<Long, UUID> = savePlan(
                 gjeldendeFnr,
-                batch,
+                payload,
                 skjemainnhold,
                 virksomhetsnummer
             )
@@ -198,22 +196,22 @@ class OppfolgingsplanLPSService @Inject constructor(
         }
     }
 
-    private fun storePlanForRetry(incomingMetadata: IncomingMetadata, batch: String, errorMessage: String) {
-        oppfolgingsplanLPSRetryService.getOrCreate(incomingMetadata.archiveReference, batch)
+    private fun storePlanForRetry(incomingMetadata: IncomingMetadata, payload: String, errorMessage: String) {
+        oppfolgingsplanLPSRetryService.getOrCreate(incomingMetadata.archiveReference, payload)
         log.warn(errorMessage)
         metrikk.tellHendelse(METRIKK_LPS_RETRY)
     }
 
     private fun savePlan(
         fnr: String,
-        batch: String,
+        payload: String,
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer
     ): Pair<Long, UUID> {
         return oppfolgingsplanLPSDAO.create(
             arbeidstakerFnr = Fodselsnummer(fnr),
             virksomhetsnummer = virksomhetsnummer.value,
-            xml = batch,
+            xml = payload,
             delt_med_nav = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav ?: false,
             del_med_fastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege ?: false,
             delt_med_fastlege = false

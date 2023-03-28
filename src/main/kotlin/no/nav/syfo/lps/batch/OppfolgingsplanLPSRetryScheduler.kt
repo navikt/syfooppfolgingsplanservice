@@ -36,7 +36,7 @@ class OppfolgingsplanLPSRetryScheduler @Inject constructor(
                 LOG.info("Retrying OppfolgingsplanLPS with archiveReference=${it.archiveReference}")
                 oppfolgingsplanLPSService.receivePlan(
                     archiveReference = it.archiveReference,
-                    recordBatch = it.xml,
+                    payload = it.xml,
                     isRetry = true
                 )
             }

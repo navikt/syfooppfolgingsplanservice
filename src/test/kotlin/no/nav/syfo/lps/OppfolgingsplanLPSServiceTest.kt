@@ -7,9 +7,6 @@ import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.helse.op2016.Oppfoelgingsplan4UtfyllendeInfoM
-import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
-import no.nav.syfo.lps.kafka.OppfolgingsplanLPSProducer
-import no.nav.syfo.service.JournalforOPService
 import no.nav.syfo.LocalApplication
 import no.nav.syfo.dialogmelding.DialogmeldingService
 import no.nav.syfo.domain.Fodselsnummer
@@ -20,9 +17,12 @@ import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_LPS_RETRY
 import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_OLD_FNR
 import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_PROSSESERING_VELLYKKET
 import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_TAG_BISTAND
+import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
+import no.nav.syfo.lps.kafka.OppfolgingsplanLPSProducer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.pdl.*
 import no.nav.syfo.service.FeiletSendingService
+import no.nav.syfo.service.JournalforOPService
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,8 +33,6 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.client.HttpServerErrorException
 import java.io.StringReader
 import java.util.*
-import javax.xml.bind.JAXBContext
-import javax.xml.bind.Unmarshaller
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [LocalApplication::class])
@@ -191,22 +189,23 @@ class OppfolgingsplanLPSServiceTest {
     }
 
     private fun receiveLPS(): Triple<String, String, String> {
-        return loadXML("/lps/lps_test.xml")
+        val (fnr, payload) = loadXML("/lps/lps_test.xml")
+        return Triple(archiveReference1, fnr, payload)
     }
 
     private fun receiveLPSDelingFieldsUnset(): Triple<String, String, String> {
-        return loadXML("/lps/lps_test_ingen_deling.xml")
+        val (fnr, payload) = loadXML("/lps/lps_test_ingen_deling.xml")
+        return Triple(archiveReference2, fnr, payload)
     }
 
-    private fun loadXML(resourcePath: String): Triple<String, String, String> {
-        val dataBatchJaxBContext: JAXBContext = JAXBContext.newInstance(DataBatch::class.java)
-        val dataBatchUnmarshaller: Unmarshaller = dataBatchJaxBContext.createUnmarshaller()
-
-        val lpsXml = this::class.java.getResource(resourcePath).readText()
-        val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(lpsXml)) as DataBatch
-        val payload = dataBatch.dataUnits.dataUnit.first().formTask.form.first().formData
+    private fun loadXML(resourcePath: String): Pair<String, String> {
+        val payload = this::class.java.getResource(resourcePath).readText()
         val fnr = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload).skjemainnhold.sykmeldtArbeidstaker.fnr
-        val archiveReference = dataBatch.dataUnits.dataUnit.first().archiveReference
-        return Triple(archiveReference, fnr, lpsXml)
+        return Pair(fnr, payload)
+    }
+
+    companion object {
+        val archiveReference1 = "AR0000000"
+        val archiveReference2 = "AR0000001"
     }
 }
