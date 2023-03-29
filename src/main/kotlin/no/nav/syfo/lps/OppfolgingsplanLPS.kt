@@ -15,7 +15,8 @@ data class OppfolgingsplanLPS(
     val xml: String,
     val deltMedNav: Boolean,
     val delMedFastlege: Boolean,
-    val deltMedFastlege: Boolean
+    val deltMedFastlege: Boolean,
+    val archiveReference: String
 )
 
 fun OppfolgingsplanLPS.mapToRSOppfolgingsplanLPS(): RSOppfolgingsplanLPS {

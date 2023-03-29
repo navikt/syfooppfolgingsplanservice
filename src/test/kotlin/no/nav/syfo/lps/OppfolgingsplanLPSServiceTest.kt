@@ -70,7 +70,7 @@ class OppfolgingsplanLPSServiceTest {
         justRun { oppfolgingplanLPSDAO.updateSharedWithFastlege(rowId) }
         justRun { oppfolgingsplanLPSProducer.sendOppfolgingsLPSTilNAV(any()) }
         justRun { dialogmeldingService.sendOppfolgingsplanLPSTilFastlege(any(), pdfByteArray) }
-        every { oppfolgingplanLPSDAO.create(any(), any(), any(), any(), any(), any()) } returns Pair(rowId, UUID.randomUUID())
+        every { oppfolgingplanLPSDAO.create(any(), any(), any(), any(), any(), any(), any()) } returns Pair(rowId, UUID.randomUUID())
         every { opPdfGenConsumer.pdfgenResponse(any()) } returns pdfByteArray
     }
 
@@ -107,7 +107,7 @@ class OppfolgingsplanLPSServiceTest {
             )
 
         every { pdlConsumer.gjeldendeFnr(arbeidstakerFnr) } returns arbeidstakerFnr
-        every { oppfolgingplanLPSDAO.create(Fodselsnummer(arbeidstakerFnr), any(), any(), any(), any(), any()) } returns Pair(1L, UUID.randomUUID())
+        every { oppfolgingplanLPSDAO.create(Fodselsnummer(arbeidstakerFnr), any(), any(), any(), any(), any(), any()) } returns Pair(1L, UUID.randomUUID())
 
         oppfolgingsplanLPSService.receivePlan(archiveReference, lpsXml, false)
 
@@ -153,8 +153,8 @@ class OppfolgingsplanLPSServiceTest {
         oppfolgingsplanLPSService.receivePlan(archiveReference, lpsXml, false)
 
         verify(exactly = 1) { metrikk.tellHendelse(METRIKK_OLD_FNR) }
-        verify(exactly = 1) { oppfolgingplanLPSDAO.create(Fodselsnummer(currentFnr), any(), any(), any(), any(), any()) }
-        verify(exactly = 0) { oppfolgingplanLPSDAO.create(Fodselsnummer(arbeidstakerFnr), any(), any(), any(), any(), any()) }
+        verify(exactly = 1) { oppfolgingplanLPSDAO.create(Fodselsnummer(currentFnr), any(), any(), any(), any(), any(), any()) }
+        verify(exactly = 0) { oppfolgingplanLPSDAO.create(Fodselsnummer(arbeidstakerFnr), any(), any(), any(), any(), any(), any()) }
         verify(exactly = 1) { metrikk.tellHendelse(METRIKK_PROSSESERING_VELLYKKET) }
     }
 

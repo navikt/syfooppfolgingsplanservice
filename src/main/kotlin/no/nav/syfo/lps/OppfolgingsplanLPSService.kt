@@ -71,16 +71,11 @@ class OppfolgingsplanLPSService @Inject constructor(
         return oppfolgingsplanLPSDAO.get(oppfolgingsplanLPSUUID).mapToOppfolgingsplanLPS()
     }
 
-    fun retryGeneratePDF(id: Long, recordBatch: String) {
+    fun retryGeneratePDF(id: Long, xml: String, archiveReference: String) {
         log.info("Try to generate PDF for plan with Id: $id")
 
-        val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(recordBatch)) as DataBatch
-        val dataUnit = dataBatch.dataUnits.dataUnit.first()
-        val payload = dataUnit.formTask.form.first().formData
-        val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
+        val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(xml)
         val skjemainnhold = oppfolgingsplan.skjemainnhold
-
-        val archiveReference = dataUnit.archiveReference
 
         val incomingMetadata = IncomingMetadata(
             archiveReference = archiveReference,
@@ -167,7 +162,8 @@ class OppfolgingsplanLPSService @Inject constructor(
                 gjeldendeFnr,
                 payload,
                 skjemainnhold,
-                virksomhetsnummer
+                virksomhetsnummer,
+                archiveReference
             )
 
             if (isRetry) {
@@ -206,15 +202,17 @@ class OppfolgingsplanLPSService @Inject constructor(
         fnr: String,
         payload: String,
         skjemainnhold: Skjemainnhold,
-        virksomhetsnummer: Virksomhetsnummer
+        virksomhetsnummer: Virksomhetsnummer,
+        archiveReference: String
     ): Pair<Long, UUID> {
         return oppfolgingsplanLPSDAO.create(
             arbeidstakerFnr = Fodselsnummer(fnr),
             virksomhetsnummer = virksomhetsnummer.value,
             xml = payload,
-            delt_med_nav = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav ?: false,
-            del_med_fastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege ?: false,
-            delt_med_fastlege = false
+            deltMedNAV = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav ?: false,
+            delMedFastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege ?: false,
+            deltMedFastlege = false,
+            archiveReference = archiveReference
         )
     }
 
