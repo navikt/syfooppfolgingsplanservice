@@ -50,6 +50,9 @@ spec:
         - application: syfomodiaperson
           namespace: teamsykefravr
           cluster: dev-fss
+        - application: syfomodiaperson
+          namespace: teamsykefravr
+          cluster: dev-gcp
         - application: isyfomock
           namespace: teamsykefravr
           cluster: dev-gcp
