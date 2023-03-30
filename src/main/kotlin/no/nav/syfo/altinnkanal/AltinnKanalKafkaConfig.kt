@@ -1,6 +1,7 @@
 package no.nav.syfo.altinnkanal
 
 import no.nav.syfo.kafka.AivenKafkaConfig
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.annotation.EnableKafka
@@ -16,7 +17,9 @@ class AltinnKanalKafkaConfig(
 ) {
     @Bean
     fun consumerFactory(): ConsumerFactory<String, String> {
-        return DefaultKafkaConsumerFactory(aivenKafkaConfig.consumerProperties())
+        val aivenConsumerProperties = aivenKafkaConfig.consumerProperties()
+        aivenConsumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, "syfooppfolgingsplanservice")
+        return DefaultKafkaConsumerFactory(aivenConsumerProperties)
     }
 
     @Bean

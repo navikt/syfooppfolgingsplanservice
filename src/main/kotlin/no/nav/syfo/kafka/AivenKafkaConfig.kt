@@ -58,7 +58,6 @@ class AivenKafkaConfig(
 
     fun consumerProperties(): HashMap<String, Any> {
         val consumerProperties = HashMap<String, Any>().apply {
-            put(ConsumerConfig.GROUP_ID_CONFIG, "syfooppfolgingsplanservice")
             put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
             put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1")
             put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false")
