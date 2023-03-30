@@ -104,7 +104,9 @@ class OppfolgingsplanLPSService @Inject constructor(
         val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
         val skjemainnhold = oppfolgingsplan.skjemainnhold
         val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
-
+        if (virksomhetsnummer.value == "947064649") {
+            throw RuntimeException("Feil skjedd!")
+        }
         processPlan(
             archiveReference,
             payload,
