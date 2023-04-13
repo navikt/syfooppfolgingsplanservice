@@ -22,7 +22,7 @@ class OppfolgingsplanLPSRetryScheduler @Inject constructor(
         if (leaderElectionService.isLeader) {
             val plansWithoutPDF = oppfolgingsplanLPSDAO.getPlansWithoutPDF()
             plansWithoutPDF.forEach { plan ->
-                oppfolgingsplanLPSService.retryGeneratePDF(plan.id, plan.xml, plan.archiveReference)
+                oppfolgingsplanLPSService.retryGeneratePDF(plan.id, plan.xml)
             }
         }
     }
@@ -36,7 +36,7 @@ class OppfolgingsplanLPSRetryScheduler @Inject constructor(
                 LOG.info("Retrying OppfolgingsplanLPS with archiveReference=${it.archiveReference}")
                 oppfolgingsplanLPSService.receivePlan(
                     archiveReference = it.archiveReference,
-                    payload = it.xml,
+                    recordBatch = it.xml,
                     isRetry = true
                 )
             }

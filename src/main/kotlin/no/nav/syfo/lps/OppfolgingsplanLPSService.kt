@@ -71,11 +71,16 @@ class OppfolgingsplanLPSService @Inject constructor(
         return oppfolgingsplanLPSDAO.get(oppfolgingsplanLPSUUID).mapToOppfolgingsplanLPS()
     }
 
-    fun retryGeneratePDF(id: Long, xml: String, archiveReference: String) {
+    fun retryGeneratePDF(id: Long, recordBatch: String) {
         log.info("Try to generate PDF for plan with Id: $id")
 
-        val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(xml)
+        val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(recordBatch)) as DataBatch
+        val dataUnit = dataBatch.dataUnits.dataUnit.first()
+        val payload = dataUnit.formTask.form.first().formData
+        val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
         val skjemainnhold = oppfolgingsplan.skjemainnhold
+
+        val archiveReference = dataUnit.archiveReference
 
         val incomingMetadata = IncomingMetadata(
             archiveReference = archiveReference,
@@ -98,16 +103,18 @@ class OppfolgingsplanLPSService @Inject constructor(
 
     fun receivePlan(
         archiveReference: String,
-        payload: String,
+        recordBatch: String,
         isRetry: Boolean
     ) {
+        val dataBatch = dataBatchUnmarshaller.unmarshal(StringReader(recordBatch)) as DataBatch
+        val payload = dataBatch.dataUnits.dataUnit.first().formTask.form.first().formData
         val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
         val skjemainnhold = oppfolgingsplan.skjemainnhold
         val virksomhetsnummer = Virksomhetsnummer(skjemainnhold.arbeidsgiver.orgnr)
 
         processPlan(
             archiveReference,
-            payload,
+            recordBatch,
             skjemainnhold,
             virksomhetsnummer,
             isRetry
@@ -117,7 +124,7 @@ class OppfolgingsplanLPSService @Inject constructor(
 
     private fun processPlan(
         archiveReference: String,
-        payload: String,
+        batch: String,
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer,
         isRetry: Boolean
@@ -141,7 +148,7 @@ class OppfolgingsplanLPSService @Inject constructor(
 
         if (isUserDiskresjonsmerket == null) {
             val errorMessage = "Diskresjonskode was not received from PDL and LPS-plan is stored for retry."
-            storePlanForRetry(incomingMetadata, payload, errorMessage)
+            storePlanForRetry(incomingMetadata, batch, errorMessage)
         } else if (isUserDiskresjonsmerket) {
             log.warn("Received Oppfolgingsplan from LPS for a person that is denied access to Oppfolgingsplan")
             metrikk.tellHendelse(METRIKK_DISKRESJONSMERKET)
@@ -154,16 +161,15 @@ class OppfolgingsplanLPSService @Inject constructor(
             val (gjeldendeFnr, pdlCallFailed) = gjeldendeFnr(skjemaFnr)
             if (pdlCallFailed) {
                 val errorMessage = "Unable to determine current fnr: PDL call 'hentIdenter' failed"
-                storePlanForRetry(incomingMetadata, payload, errorMessage)
+                storePlanForRetry(incomingMetadata, batch, errorMessage)
                 return
             }
 
             val idList: Pair<Long, UUID> = savePlan(
                 gjeldendeFnr,
-                payload,
+                batch,
                 skjemainnhold,
-                virksomhetsnummer,
-                archiveReference
+                virksomhetsnummer
             )
 
             if (isRetry) {
@@ -192,27 +198,25 @@ class OppfolgingsplanLPSService @Inject constructor(
         }
     }
 
-    private fun storePlanForRetry(incomingMetadata: IncomingMetadata, payload: String, errorMessage: String) {
-        oppfolgingsplanLPSRetryService.getOrCreate(incomingMetadata.archiveReference, payload)
+    private fun storePlanForRetry(incomingMetadata: IncomingMetadata, batch: String, errorMessage: String) {
+        oppfolgingsplanLPSRetryService.getOrCreate(incomingMetadata.archiveReference, batch)
         log.warn(errorMessage)
         metrikk.tellHendelse(METRIKK_LPS_RETRY)
     }
 
     private fun savePlan(
         fnr: String,
-        payload: String,
+        batch: String,
         skjemainnhold: Skjemainnhold,
-        virksomhetsnummer: Virksomhetsnummer,
-        archiveReference: String
+        virksomhetsnummer: Virksomhetsnummer
     ): Pair<Long, UUID> {
         return oppfolgingsplanLPSDAO.create(
             arbeidstakerFnr = Fodselsnummer(fnr),
             virksomhetsnummer = virksomhetsnummer.value,
-            xml = payload,
-            deltMedNAV = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav ?: false,
-            delMedFastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege ?: false,
-            deltMedFastlege = false,
-            archiveReference = archiveReference
+            xml = batch,
+            delt_med_nav = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav ?: false,
+            del_med_fastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege ?: false,
+            delt_med_fastlege = false
         )
     }
 

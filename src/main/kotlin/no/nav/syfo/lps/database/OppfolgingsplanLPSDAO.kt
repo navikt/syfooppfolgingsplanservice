@@ -23,7 +23,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             SELECT *
             FROM OPPFOLGINGSPLANLPS
             WHERE fnr = :fnr
-        """.trimIndent()
+            """.trimIndent()
         val mapSql = MapSqlParameterSource()
             .addValue("fnr", fnr.value)
         return namedParameterJdbcTemplate.query(
@@ -38,7 +38,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             SELECT *
             FROM OPPFOLGINGSPLANLPS
             WHERE oppfolgingsplanlps_uuid = :uuid
-        """.trimIndent()
+            """.trimIndent()
         val mapSql = MapSqlParameterSource()
             .addValue("uuid", uuid.toString())
         return namedParameterJdbcTemplate.query(
@@ -53,13 +53,13 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             SELECT *
             FROM OPPFOLGINGSPLANLPS
             WHERE oppfolgingsplanlps_id = :id
-        """.trimIndent()
+            """.trimIndent()
         val mapSql = MapSqlParameterSource()
-            .addValue("id", id.toString())
+                .addValue("id", id.toString())
         return namedParameterJdbcTemplate.query(
-            query,
-            mapSql,
-            oppfolgingsplanLPSRowMapper
+                query,
+                mapSql,
+                oppfolgingsplanLPSRowMapper
         ).first()
     }
 
@@ -68,7 +68,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             SELECT *
             FROM OPPFOLGINGSPLANLPS
             WHERE pdf IS NULL
-        """.trimIndent()
+            """.trimIndent()
         return namedParameterJdbcTemplate.query(
             query,
             oppfolgingsplanLPSRowMapper
@@ -80,7 +80,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             SELECT *
             FROM OPPFOLGINGSPLANLPS
             WHERE journalpost_id IS NULL AND delt_med_nav = 1 AND pdf IS NOT NULL
-        """.trimIndent()
+            """.trimIndent()
         return namedParameterJdbcTemplate.query(
             query,
             oppfolgingsplanLPSRowMapper
@@ -94,7 +94,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             UPDATE OPPFOLGINGSPLANLPS
             SET journalpost_id = :journalpost_id, sist_endret = :sist_endret
             WHERE oppfolgingsplanlps_id = :id
-        """.trimIndent()
+            """.trimIndent()
 
         val mapSaveSql = MapSqlParameterSource()
             .addValue("journalpost_id", journalpostId)
@@ -107,10 +107,9 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         arbeidstakerFnr: Fodselsnummer,
         virksomhetsnummer: String,
         xml: String,
-        deltMedNAV: Boolean,
-        delMedFastlege: Boolean,
-        deltMedFastlege: Boolean,
-        archiveReference: String
+        delt_med_nav: Boolean,
+        del_med_fastlege: Boolean,
+        delt_med_fastlege: Boolean
     ): Pair<Long, UUID> {
         val id = DbUtil.nesteSekvensverdi("OPPFOLGINGSPLANLPS_ID_SEQ", jdbcTemplate)
         val uuid = UUID.randomUUID()
@@ -125,8 +124,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
                 xml,
                 delt_med_nav,
                 del_med_fastlege,
-                delt_med_fastlege,
-                archive_reference
+                delt_med_fastlege
             )
             VALUES (
                 :oppfolgingsplanlps_id,
@@ -138,10 +136,9 @@ class OppfolgingsplanLPSDAO @Inject constructor(
                 :xml,
                 :delt_med_nav,
                 :del_med_fastlege,
-                :delt_med_fastlege,
-                :archive_reference
+                :delt_med_fastlege
             )
-        """.trimIndent()
+            """.trimIndent()
 
         val created = DbUtil.convert(LocalDateTime.now())
 
@@ -153,10 +150,9 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             .addValue("opprettet", created)
             .addValue("sist_endret", created)
             .addValue("xml", SqlLobValue(xml), Types.CLOB)
-            .addValue("delt_med_nav", deltMedNAV)
-            .addValue("del_med_fastlege", delMedFastlege)
-            .addValue("delt_med_fastlege", deltMedFastlege)
-            .addValue("archive_reference", archiveReference)
+            .addValue("delt_med_nav", delt_med_nav)
+            .addValue("del_med_fastlege", del_med_fastlege)
+            .addValue("delt_med_fastlege", delt_med_fastlege)
         namedParameterJdbcTemplate.update(query, mapSaveSql)
         return Pair(id, uuid)
     }
@@ -171,7 +167,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             UPDATE OPPFOLGINGSPLANLPS
             SET pdf = :pdf, sist_endret = :sist_endret
             WHERE oppfolgingsplanlps_id = :id
-        """.trimIndent()
+            """.trimIndent()
 
         val mapSaveSql = MapSqlParameterSource()
             .addValue("pdf", SqlLobValue(pdf), Types.BLOB)
@@ -189,7 +185,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             UPDATE OPPFOLGINGSPLANLPS
             SET delt_med_fastlege = :delt_med_fastlege, sist_endret = :sist_endret
             WHERE oppfolgingsplanlps_id = :id
-        """.trimIndent()
+            """.trimIndent()
 
         val mapSaveSql = MapSqlParameterSource()
             .addValue("delt_med_fastlege", true)
@@ -210,8 +206,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             xml = resultSet.getString("xml"),
             deltMedNav = resultSet.getBoolean("delt_med_nav"),
             delMedFastlege = resultSet.getBoolean("del_med_fastlege"),
-            deltMedFastlege = resultSet.getBoolean("delt_med_fastlege"),
-            archiveReference = resultSet.getString("archive_reference")
+            deltMedFastlege = resultSet.getBoolean("delt_med_fastlege")
         )
     }
 }
