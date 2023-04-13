@@ -2,7 +2,6 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.v2.domain.GodkjennPlanVarsel
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.EsyfovarselService
 import no.nav.syfo.tokenx.TokenXUtil
@@ -23,14 +22,14 @@ class VarselController @Inject constructor(
     private val oppfolgingsplanClientId: String,
     private val esyfovarselService: EsyfovarselService,
 ) {
-    @PostMapping(path = ["/ferdigstill"])
+    @PostMapping(path = ["/{oppfolgingsplanId}/ferdigstill"])
     fun ferdigstillVarsel(
-        @RequestBody godkjennPlanVarsel: GodkjennPlanVarsel
+        @PathVariable("oppfolgingsplanId") oppfolgingsplanId: Long
     ) {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        esyfovarselService.ferdigstillVarsel(innloggetIdent, godkjennPlanVarsel)
+        esyfovarselService.ferdigstillVarsel(innloggetIdent, oppfolgingsplanId)
         metrikk.tellHendelse("call_ferdigstillVarsel")
     }
 }
