@@ -7,7 +7,6 @@ import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.EsyfovarselService
 import no.nav.syfo.tokenx.TokenXUtil
 import no.nav.syfo.tokenx.TokenXUtil.fnrFromIdportenTokenX
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
@@ -24,7 +23,6 @@ class VarselController @Inject constructor(
     private val oppfolgingsplanClientId: String,
     private val esyfovarselService: EsyfovarselService,
 ) {
-    private val log = LoggerFactory.getLogger("no.nav.syfo.api.v2.controller.VarselController")
     @PostMapping(path = ["/ferdigstill"])
     fun ferdigstillVarsel(
         @RequestBody godkjennPlanVarsel: GodkjennPlanVarsel

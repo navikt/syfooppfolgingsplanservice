@@ -159,6 +159,9 @@ public class GodkjenningService {
         oppfolgingsplan = oppfolgingsplanDAO.populate(oppfolgingsplan);
         boolean erArbeidstaker = erArbeidstakeren(oppfolgingsplan, innloggetAktoerId);
         String arbeidstakersFnr = oppfolgingsplan.arbeidstaker.fnr;
+        if (arbeidstakersFnr == null) {
+            arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
+        }
         String virksomhetsnummer = oppfolgingsplan.virksomhet.virksomhetsnummer;
         Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, virksomhetsnummer).get();
 
