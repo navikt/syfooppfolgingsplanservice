@@ -17,7 +17,7 @@ object Versions {
     const val helseXmlVersion = "1.5d21db9"
     const val syfotjenesterVersion = "1.2020.07.02-07.44-62078cd74f7e"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
-    const val altinnKanalSchemasVersion = "1.0.1"
+    const val altinnKanalSchemasVersion = "2.0.0"
     const val jaxwsVersion = "2.3.2"
     const val h2Version = "2.1.210"
     const val mockkVersion = "1.13.4"

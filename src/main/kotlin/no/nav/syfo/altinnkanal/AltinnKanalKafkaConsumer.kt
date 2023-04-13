@@ -1,6 +1,6 @@
 package no.nav.syfo.altinnkanal
 
-import no.nav.altinnkanal.avro.ExternalAttachment
+import no.nav.altinnkanal.avro.ReceivedMessage
 import no.nav.syfo.lps.OppfolgingsplanLPSService
 import no.nav.syfo.metric.Metrikk
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -18,16 +18,18 @@ class AltinnKanalKafkaConsumer @Inject constructor(
 ) {
     private val log = LoggerFactory.getLogger(AltinnKanalKafkaConsumer::class.java)
 
-    @KafkaListener(topics = ["aapen-altinn-oppfolgingsplan-Mottatt"])
+    @KafkaListener(topics = ["alf.aapen-altinn-oppfolgingsplan-mottatt-v2"])
     fun handleIncomingAltinnOP(
-        consumerRecord: ConsumerRecord<String, ExternalAttachment>
+        consumerRecord: ConsumerRecord<String, ReceivedMessage>
     ) {
         try {
-            log.info("KAFKA-TRACE(LPS): Mottatt melding aapen-altinn-oppfolgingsplan-Mottatt")
-
+            log.info("KAFKA-TRACE(LPS): Mottatt melding alf.aapen-altinn-oppfolgingsplan-mottatt-v2")
+            val receivedMessage = consumerRecord.value()
+            val archiveReference = receivedMessage.getArchiveReference()
+            val payload = receivedMessage.getXmlMessage()
             oppfolgingsplanLPSService.receivePlan(
-                consumerRecord.value().getArchiveReference(),
-                consumerRecord.value().getBatch(),
+                archiveReference,
+                payload,
                 false
             )
         } catch (e: Exception) {
