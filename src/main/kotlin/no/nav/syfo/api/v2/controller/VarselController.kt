@@ -23,14 +23,25 @@ class VarselController @Inject constructor(
     private val oppfolgingsplanClientId: String,
     private val esyfovarselService: EsyfovarselService,
 ) {
-    @PostMapping(path = ["/ferdigstill"])
+    @PostMapping(path = ["/{oppfolgingsplanId}/ferdigstill"])
     fun ferdigstillVarsel(
+        @PathVariable("oppfolgingsplanId") oppfolgingsplanId: Long
+    ) {
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+            .fnrFromIdportenTokenX()
+            .value
+        esyfovarselService.ferdigstillVarsel(innloggetIdent, oppfolgingsplanId)
+        metrikk.tellHendelse("call_ferdigstillVarsel")
+    }
+
+    @PostMapping(path = ["/ferdigstill"])
+    fun ferdigstillVarselOld(
         @RequestBody godkjennPlanVarsel: GodkjennPlanVarsel
     ) {
         val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
-        esyfovarselService.ferdigstillVarsel(innloggetIdent, godkjennPlanVarsel)
+        esyfovarselService.ferdigstillVarselOld(innloggetIdent, godkjennPlanVarsel)
         metrikk.tellHendelse("call_ferdigstillVarsel")
     }
 }
