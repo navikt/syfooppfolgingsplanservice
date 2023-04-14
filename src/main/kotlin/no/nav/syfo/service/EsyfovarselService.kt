@@ -1,6 +1,5 @@
 package no.nav.syfo.service
 
-import no.nav.syfo.api.v2.domain.GodkjennPlanVarsel
 import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.model.Varseltype
 import no.nav.syfo.model.Varseltype.SyfoplangodkjenningNl
@@ -83,32 +82,6 @@ class EsyfovarselService(
         }
     }
 
-    fun ferdigstillVarselOld(
-        innloggetFnr: String,
-        godkjennPlanVarsel: GodkjennPlanVarsel
-    ) {
-        val oppfolgingsplan = oppfolgingsplanDAO.finnOppfolgingsplanMedId(godkjennPlanVarsel.oppfolgingsplanId)
-        if (!tilgangskontrollService.brukerTilhorerOppfolgingsplan(innloggetFnr, oppfolgingsplan)) {
-            throw IllegalArgumentException("Bruker forsøker å ferdigstille varsel for plan som ikke tilhørerer vedkommende")
-        }
-        val aktorId = oppfolgingsplan.arbeidstaker.aktoerId
-        val arbeidstakerFnr = oppfolgingsplan.arbeidstaker.fnr ?: pdlConsumer.fnr(aktorId)
-        val virksomhetsnummer = oppfolgingsplan.virksomhet.virksomhetsnummer
-        val narmesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakerFnr, virksomhetsnummer).get()
-        val erSykmeldt = innloggetFnr == arbeidstakerFnr
-
-        if (erSykmeldt) {
-            ferdigstillVarselArbeidstaker(
-                SyfoplangodkjenningSyk,
-                narmesteleder
-            )
-        } else {
-            ferdigstillVarselNarmesteLeder(
-                SyfoplangodkjenningNl,
-                narmesteleder
-            )
-        }
-    }
     private fun ferdigstillVarselArbeidstaker(
         varseltype: Varseltype,
         narmesteleder: Naermesteleder
