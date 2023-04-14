@@ -1,6 +1,5 @@
 package no.nav.syfo.service
 
-import no.nav.syfo.api.v2.domain.GodkjennPlanVarsel
 import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.model.Varseltype
 import no.nav.syfo.model.Varseltype.SyfoplangodkjenningNl
