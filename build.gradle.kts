@@ -14,7 +14,7 @@ object Versions {
     const val tokenSupportVersion = "2.1.3"
     const val tokenTestSupportVersion = "2.0.5"
     const val ojdbc8Version = "19.3.0.0"
-    const val helseXmlVersion = "1.5d21db9"
+    const val helseXmlVersion = "1.0.4"
     const val syfotjenesterVersion = "1.2020.07.02-07.44-62078cd74f7e"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
     const val altinnKanalSchemasVersion = "2.0.0"
