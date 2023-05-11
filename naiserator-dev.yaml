@@ -64,6 +64,8 @@ spec:
         - application: syfooppdfgen
           namespace: team-esyfo
           cluster: dev-gcp
+      external:
+        - host: narmesteleder.intern.dev.nav.no
   azure:
     application:
       allowAllUsers: true
@@ -146,7 +148,7 @@ spec:
     - name: SYFOSMREGISTER_ID
       value: dev-gcp:teamsykmelding:syfosmregister
     - name: NARMESTELEDER_URL
-      value: https://narmesteleder.dev.intern.nav.no
+      value: https://narmesteleder.intern.dev.nav.no
     - name: NARMESTELEDER_SCOPE
       value: api://dev-gcp.teamsykmelding.narmesteleder/.default
     - name: TOKENX_IDP
