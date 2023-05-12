@@ -120,7 +120,7 @@ spec:
     - name: SYFOTILGANGSKONTROLL_CLIENT_ID
       value: "dev-fss.teamsykefravr.syfo-tilgangskontroll"
     - name: SYFOOPPDFGEN_URL
-      value: https://syfooppdfgen.dev.intern.nav.no
+      value: https://syfooppdfgen.intern.dev.nav.no
     - name: TILGANGSKONTROLLAPI_URL
       value: https://syfo-tilgangskontroll.nais.preprod.local/syfo-tilgangskontroll/api/tilgang
     - name: DKIF_URL
