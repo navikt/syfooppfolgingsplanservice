@@ -81,7 +81,7 @@ public class OppfolgingsplanService {
 
         return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldtogVirksomhet(ansattAktorId, virksomhetsnummer)
                 .stream()
-                .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
+                .map(oppfolgingsplanDAO::populate)
                 .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, lederAktorId))
                 .collect(toList());
     }
@@ -90,7 +90,7 @@ public class OppfolgingsplanService {
         String innloggetAktorId = pdlConsumer.aktorid(innloggetFnr);
         return oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(innloggetAktorId).stream()
                 .peek(oppfolgingsplan -> oppfolgingsplanDAO.oppdaterSistAksessert(oppfolgingsplan, innloggetAktorId))
-                .map(oppfolgingsplan -> oppfolgingsplanDAO.populate(oppfolgingsplan))
+                .map(oppfolgingsplanDAO::populate)
                 .collect(toList());
     }
 
@@ -105,10 +105,6 @@ public class OppfolgingsplanService {
         String sykmeldtAktoerId = innloggetFnr.equals(sykmeldtFnr)
                 ? innloggetAktoerId
                 : pdlConsumer.aktorid(sykmeldtFnr);
-
-        if (pdlConsumer.isKode6Or7(pdlConsumer.fnr(sykmeldtAktoerId))) {
-            throw new ForbiddenException("Ikke tilgang");
-        }
 
         if (!tilgangskontrollService.kanOppretteOppfolgingsplan(sykmeldtFnr, innloggetFnr, virksomhetsnummer)) {
             throw new ForbiddenException("Ikke tilgang");
@@ -139,7 +135,7 @@ public class OppfolgingsplanService {
         }
 
         long nyOppfoelgingsdialogId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, sykmeldtFnr, oppfolgingsplan.virksomhet.virksomhetsnummer, innloggetAktoerId,
-                                                    innloggetFnr);
+                innloggetFnr);
         overfoerDataFraDialogTilNyDialog(oppfoelgingsdialogId, nyOppfoelgingsdialogId);
 
         return nyOppfoelgingsdialogId;
@@ -184,11 +180,13 @@ public class OppfolgingsplanService {
     }
 
     private boolean erIkkeAvbruttOgIkkeUtgaatt(Optional<GodkjentPlan> maybeGodkjentplan) {
-        return !maybeGodkjentplan.get().avbruttPlan.isPresent() && maybeGodkjentplan.get().gyldighetstidspunkt.tom.isAfter(LocalDate.now());
+        return maybeGodkjentplan.isPresent()
+                && maybeGodkjentplan.get().avbruttPlan.isEmpty()
+                && maybeGodkjentplan.get().gyldighetstidspunkt.tom.isAfter(LocalDate.now());
     }
 
     private boolean erIkkeFerdigVersjon(Optional<GodkjentPlan> maybeGodkjentplan) {
-        return !maybeGodkjentplan.isPresent();
+        return maybeGodkjentplan.isEmpty();
     }
 
     @Transactional
@@ -254,7 +252,7 @@ public class OppfolgingsplanService {
 
         oppfolgingsplanDAO.avbryt(oppfolgingsplan.id, innloggetAktoerId);
         long nyOppfolgingsplanId = opprettDialog(oppfolgingsplan.arbeidstaker.aktoerId, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer,
-                                                 innloggetAktoerId, innloggetFnr);
+                innloggetAktoerId, innloggetFnr);
         overfoerDataFraDialogTilNyDialog(oppfolgingsplanId, nyOppfolgingsplanId);
         return nyOppfolgingsplanId;
     }

@@ -7,36 +7,34 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import generated.DataBatch
 import no.nav.helse.op2016.Oppfoelgingsplan4UtfyllendeInfoM
 import no.nav.helse.op2016.Skjemainnhold
 import no.nav.syfo.dialogmelding.DialogmeldingService
-import no.nav.syfo.domain.*
-import no.nav.syfo.lps.database.*
+import no.nav.syfo.domain.FeiletSending
+import no.nav.syfo.domain.Fodselsnummer
+import no.nav.syfo.domain.Virksomhetsnummer
+import no.nav.syfo.lps.database.OppfolgingsplanLPSDAO
+import no.nav.syfo.lps.database.POppfolgingsplanLPS
+import no.nav.syfo.lps.database.mapToOppfolgingsplanLPS
 import no.nav.syfo.lps.kafka.KOppfolgingsplanLPS
 import no.nav.syfo.lps.kafka.OppfolgingsplanLPSProducer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.pdl.PdlConsumer
-import no.nav.syfo.pdl.isKode6Or7
-import no.nav.syfo.service.*
+import no.nav.syfo.service.FeiletSendingService
+import no.nav.syfo.service.JournalforOPService
 import no.nav.syfo.util.InnsendingFeiletException
 import no.nav.syfo.util.OppslagFeiletException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
-import org.springframework.web.client.HttpServerErrorException
-import java.io.StringReader
 import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
-import javax.xml.bind.JAXBContext
-import javax.xml.bind.Unmarshaller
 
-val dataBatchJaxBContext: JAXBContext = JAXBContext.newInstance(DataBatch::class.java)
-val dataBatchUnmarshaller: Unmarshaller = dataBatchJaxBContext.createUnmarshaller()
-
-val xmlMapper: ObjectMapper = XmlMapper(JacksonXmlModule().apply {
-    setDefaultUseWrapper(false)
-}).registerModule(JaxbAnnotationModule())
+val xmlMapper: ObjectMapper = XmlMapper(
+    JacksonXmlModule().apply {
+        setDefaultUseWrapper(false)
+    },
+).registerModule(JaxbAnnotationModule())
     .registerKotlinModule()
     .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
 
@@ -50,12 +48,12 @@ class OppfolgingsplanLPSService @Inject constructor(
     private val oppfolgingsplanLPSRetryService: OppfolgingsplanLPSRetryService,
     private val opPdfGenConsumer: OPPdfGenConsumer,
     private val pdlConsumer: PdlConsumer,
-    private val feiletSendingService: FeiletSendingService
+    private val feiletSendingService: FeiletSendingService,
 ) {
     private val log = LoggerFactory.getLogger(OppfolgingsplanLPSService::class.java)
 
     fun getSharedWithNAV(
-        fodselsnummer: Fodselsnummer
+        fodselsnummer: Fodselsnummer,
     ): List<OppfolgingsplanLPS> {
         return oppfolgingsplanLPSDAO.get(fodselsnummer)
             .filter { it.deltMedNav }
@@ -66,7 +64,7 @@ class OppfolgingsplanLPSService @Inject constructor(
     }
 
     fun get(
-        oppfolgingsplanLPSUUID: UUID
+        oppfolgingsplanLPSUUID: UUID,
     ): OppfolgingsplanLPS {
         return oppfolgingsplanLPSDAO.get(oppfolgingsplanLPSUUID).mapToOppfolgingsplanLPS()
     }
@@ -81,7 +79,7 @@ class OppfolgingsplanLPSService @Inject constructor(
             archiveReference = archiveReference,
             senderOrgName = skjemainnhold.arbeidsgiver.orgnavn,
             senderOrgId = skjemainnhold.arbeidsgiver.orgnr,
-            userPersonNumber = skjemainnhold.sykmeldtArbeidstaker.fnr
+            userPersonNumber = skjemainnhold.sykmeldtArbeidstaker.fnr,
         )
 
         val skjemaFnr = incomingMetadata.userPersonNumber
@@ -99,7 +97,7 @@ class OppfolgingsplanLPSService @Inject constructor(
     fun receivePlan(
         archiveReference: String,
         payload: String,
-        isRetry: Boolean
+        isRetry: Boolean,
     ) {
         val oppfolgingsplan = xmlMapper.readValue<Oppfoelgingsplan4UtfyllendeInfoM>(payload)
         val skjemainnhold = oppfolgingsplan.skjemainnhold
@@ -110,7 +108,7 @@ class OppfolgingsplanLPSService @Inject constructor(
             payload,
             skjemainnhold,
             virksomhetsnummer,
-            isRetry
+            isRetry,
         )
         metrikk.tellHendelse(METRIKK_PROSSESERING_VELLYKKET)
     }
@@ -120,75 +118,57 @@ class OppfolgingsplanLPSService @Inject constructor(
         payload: String,
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer,
-        isRetry: Boolean
+        isRetry: Boolean,
     ) {
         val incomingMetadata = IncomingMetadata(
             archiveReference = archiveReference,
             senderOrgName = skjemainnhold.arbeidsgiver.orgnavn,
             senderOrgId = skjemainnhold.arbeidsgiver.orgnr,
-            userPersonNumber = skjemainnhold.sykmeldtArbeidstaker.fnr
+            userPersonNumber = skjemainnhold.sykmeldtArbeidstaker.fnr,
         )
 
-        val isUserDiskresjonsmerket = try {
-            pdlConsumer.person(incomingMetadata.userPersonNumber)?.isKode6Or7()
-        } catch (e: HttpServerErrorException) {
-            log.error("Could not process LPS-plan due to server error: ${e.message}")
-            null
-        } catch (e: RuntimeException) {
-            log.error("Could not process LPS-plan due to error: ${e.message}")
-            null
+        val skjemaFnr = incomingMetadata.userPersonNumber
+        val (gjeldendeFnr, pdlCallFailed) = gjeldendeFnr(skjemaFnr)
+        if (pdlCallFailed) {
+            val errorMessage = "Unable to determine current fnr: PDL call 'hentIdenter' failed"
+            storePlanForRetry(incomingMetadata, payload, errorMessage)
+            return
         }
 
-        if (isUserDiskresjonsmerket == null) {
-            val errorMessage = "Diskresjonskode was not received from PDL and LPS-plan is stored for retry."
-            storePlanForRetry(incomingMetadata, payload, errorMessage)
-        } else if (isUserDiskresjonsmerket) {
-            log.warn("Received Oppfolgingsplan from LPS for a person that is denied access to Oppfolgingsplan")
-            metrikk.tellHendelse(METRIKK_DISKRESJONSMERKET)
-            if (isRetry) {
-                oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
-            }
-            return
-        } else {
-            val skjemaFnr = incomingMetadata.userPersonNumber
-            val (gjeldendeFnr, pdlCallFailed) = gjeldendeFnr(skjemaFnr)
-            if (pdlCallFailed) {
-                val errorMessage = "Unable to determine current fnr: PDL call 'hentIdenter' failed"
-                storePlanForRetry(incomingMetadata, payload, errorMessage)
-                return
-            }
+        val idList: Pair<Long, UUID> = savePlan(
+            gjeldendeFnr,
+            payload,
+            skjemainnhold,
+            virksomhetsnummer,
+            archiveReference,
+        )
 
-            val idList: Pair<Long, UUID> = savePlan(
+        if (isRetry) {
+            oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
+        }
+
+        val lpsPdfModel = mapFormdataToFagmelding(gjeldendeFnr, skjemainnhold, incomingMetadata)
+        val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
+        oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
+        log.info("KAFKA-trace: pdf generated and stored")
+
+        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
+            val kOppfolgingsplanLPS = KOppfolgingsplanLPS(
+                idList.second.toString(),
                 gjeldendeFnr,
-                payload,
-                skjemainnhold,
-                virksomhetsnummer,
-                archiveReference
+                virksomhetsnummer.value,
+                lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
+                LocalDate.now().toEpochDay().toInt(),
             )
-
-            if (isRetry) {
-                oppfolgingsplanLPSRetryService.delete(incomingMetadata.archiveReference)
-            }
-
-            val lpsPdfModel = mapFormdataToFagmelding(gjeldendeFnr, skjemainnhold, incomingMetadata)
-            val pdf = opPdfGenConsumer.pdfgenResponse(lpsPdfModel)
-            oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
-            log.info("KAFKA-trace: pdf generated and stored")
-
-            if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
-                val kOppfolgingsplanLPS = KOppfolgingsplanLPS(
-                    idList.second.toString(),
-                    gjeldendeFnr,
-                    virksomhetsnummer.value,
-                    lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
-                    LocalDate.now().toEpochDay().toInt()
-                )
-                metrikk.tellHendelseMedTag(METRIKK_BISTAND_FRA_NAV, METRIKK_TAG_BISTAND, lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV())
-                oppfolgingsplanLPSProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPS)
-            }
-            if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
-                sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
-            }
+            metrikk.tellHendelseMedTag(
+                METRIKK_BISTAND_FRA_NAV,
+                METRIKK_TAG_BISTAND,
+                lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
+            )
+            oppfolgingsplanLPSProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPS)
+        }
+        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
+            sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
         }
     }
 
@@ -203,7 +183,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         payload: String,
         skjemainnhold: Skjemainnhold,
         virksomhetsnummer: Virksomhetsnummer,
-        archiveReference: String
+        archiveReference: String,
     ): Pair<Long, UUID> {
         return oppfolgingsplanLPSDAO.create(
             arbeidstakerFnr = Fodselsnummer(fnr),
@@ -212,15 +192,16 @@ class OppfolgingsplanLPSService @Inject constructor(
             deltMedNAV = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav ?: false,
             delMedFastlege = skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege ?: false,
             deltMedFastlege = false,
-            archiveReference = archiveReference
+            archiveReference = archiveReference,
         )
     }
 
     private fun gjeldendeFnr(fnr: String): Pair<String, Boolean> {
         return try {
             val gjeldendeFnr = pdlConsumer.gjeldendeFnr(fnr)
-            if (gjeldendeFnr != fnr)
+            if (gjeldendeFnr != fnr) {
                 metrikk.tellHendelse(METRIKK_OLD_FNR)
+            }
             Pair(gjeldendeFnr, false)
         } catch (e: RuntimeException) {
             Pair("", true)
@@ -228,13 +209,18 @@ class OppfolgingsplanLPSService @Inject constructor(
     }
 
     fun retrySendLpsPlanTilFastlege(
-        feiletSending: FeiletSending
+        feiletSending: FeiletSending,
     ) {
         val oppfolgingsplan: POppfolgingsplanLPS = oppfolgingsplanLPSDAO.get(feiletSending.oppfolgingsplanId)
 
         if (oppfolgingsplan.pdf != null) {
             log.info("Prøver å sende oppfolgingsplan med id {} på nytt.", oppfolgingsplan.id)
-            sendLpsOppfolgingsplanTilFastlege(oppfolgingsplan.fnr, oppfolgingsplan.pdf, oppfolgingsplan.id, feiletSending.number_of_tries)
+            sendLpsOppfolgingsplanTilFastlege(
+                oppfolgingsplan.fnr,
+                oppfolgingsplan.pdf,
+                oppfolgingsplan.id,
+                feiletSending.number_of_tries,
+            )
         }
     }
 
@@ -242,7 +228,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         fnr: String,
         pdf: ByteArray,
         oppfolgingsplanId: Long,
-        try_num: Int
+        try_num: Int,
     ) {
         try {
             dialogmeldingService.sendOppfolgingsplanLPSTilFastlege(fnr, pdf)
@@ -272,7 +258,7 @@ class OppfolgingsplanLPSService @Inject constructor(
             val journalpostId = journalforOPService.createJournalpostPlanLPS(planLPS).toString()
             oppfolgingsplanLPSDAO.updateJournalpostId(
                 planLPS.id,
-                journalpostId
+                journalpostId,
             )
             metrikk.tellHendelse(METRIKK_LPS_JOURNALFORT_TIL_GOSYS)
         }
@@ -280,7 +266,6 @@ class OppfolgingsplanLPSService @Inject constructor(
 
     companion object {
         val METRIKK_PROSSESERING_VELLYKKET = "prosessering_av_lps_plan_vellykket"
-        val METRIKK_DISKRESJONSMERKET = "lps_plan_diskresjonsmerket"
         val METRIKK_LPS_RETRY = "lps_plan_retry_created"
         val METRIKK_OLD_FNR = "lps_plan_old_fnr"
         val METRIKK_DELT_MED_FASTLEGE_ETTER_FEILET_SENDING = "lps_plan_delt_etter_feilet_sending"
