@@ -31,7 +31,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("java")
-    id("org.springframework.boot") version "2.6.6"
+    id("org.springframework.boot") version "2.7.11"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
 }
@@ -150,7 +150,7 @@ dependencies {
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
 
-    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.10.5")
     implementation("net.logstash.logback:logstash-logback-encoder:4.10")
     implementation("commons-io:commons-io:2.5")
     implementation("com.lowagie:itext:2.1.7")
@@ -197,6 +197,10 @@ tasks {
         transform(PropertiesFileTransformer::class.java) {
             paths = listOf("META-INF/spring.factories")
             mergeStrategy = "append"
+        }
+        configureEach {
+            append("META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports")
+            append("META-INF/spring/org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration.imports")
         }
         mergeServiceFiles()
     }
