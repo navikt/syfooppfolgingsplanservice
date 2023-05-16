@@ -50,6 +50,9 @@ spec:
         - application: syfomodiaperson
           namespace: teamsykefravr
           cluster: dev-fss
+        - application: syfomodiaperson
+          namespace: teamsykefravr
+          cluster: dev-gcp
         - application: isyfomock
           namespace: teamsykefravr
           cluster: dev-gcp
@@ -61,6 +64,11 @@ spec:
         - application: syfooppdfgen
           namespace: team-esyfo
           cluster: dev-gcp
+        - application: syfo-tilgangskontroll
+          namespace: teamsykefravr
+          cluster: dev-gcp
+      external:
+        - host: narmesteleder.intern.dev.nav.no
   azure:
     application:
       allowAllUsers: true
@@ -113,11 +121,11 @@ spec:
     - name: LAGREJURIDISKLOGG_REST_URL
       value: https://app-q1.adeo.no/juridisklogg/api/rest/logg
     - name: SYFOTILGANGSKONTROLL_CLIENT_ID
-      value: "dev-fss.teamsykefravr.syfo-tilgangskontroll"
+      value: "dev-gcp.teamsykefravr.syfo-tilgangskontroll"
     - name: SYFOOPPDFGEN_URL
-      value: https://syfooppdfgen.dev.intern.nav.no
+      value: https://syfooppdfgen.intern.dev.nav.no
     - name: TILGANGSKONTROLLAPI_URL
-      value: https://syfo-tilgangskontroll.nais.preprod.local/syfo-tilgangskontroll/api/tilgang
+      value: https://syfo-tilgangskontroll.intern.dev.nav.no/syfo-tilgangskontroll/api/tilgang
     - name: DKIF_URL
       value: https://dkif.dev.intern.nav.no
     - name: DOKARKIV_URL
@@ -139,11 +147,11 @@ spec:
     - name: FELLESKODEVERK_URL
       value: https://kodeverk.nais.preprod.local/api/v1
     - name: SYFOSMREGISTER_URL
-      value: https://smregister.dev.nav.no
+      value: https://smregister.intern.dev.nav.no
     - name: SYFOSMREGISTER_ID
       value: dev-gcp:teamsykmelding:syfosmregister
     - name: NARMESTELEDER_URL
-      value: https://narmesteleder.dev.intern.nav.no
+      value: https://narmesteleder.intern.dev.nav.no
     - name: NARMESTELEDER_SCOPE
       value: api://dev-gcp.teamsykmelding.narmesteleder/.default
     - name: TOKENX_IDP

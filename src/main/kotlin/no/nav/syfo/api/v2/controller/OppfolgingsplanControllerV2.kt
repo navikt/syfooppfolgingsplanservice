@@ -4,7 +4,6 @@ import java.util.*
 import javax.inject.Inject
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.service.BrukerkontekstConstant.*
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.ArbeidsoppgaveRequest
 import no.nav.syfo.api.v2.mapper.toArbeidsoppgave
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
@@ -16,7 +15,6 @@ import no.nav.syfo.service.*
 import no.nav.syfo.tokenx.TokenXUtil
 import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
 import no.nav.syfo.tokenx.TokenXUtil.fnrFromIdportenTokenX
-import no.nav.syfo.util.MapUtil.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType.*
 import org.springframework.web.bind.annotation.*
@@ -214,5 +212,4 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     companion object {
         const val METRIC_SHARE_WITH_NAV_AT_APPROVAL = "del_plan_med_nav_ved_godkjenning"
     }
-
 }
