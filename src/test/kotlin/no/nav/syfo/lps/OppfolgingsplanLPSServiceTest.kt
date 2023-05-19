@@ -1,7 +1,6 @@
 package no.nav.syfo.lps
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import generated.DataBatch
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -12,7 +11,6 @@ import no.nav.syfo.dialogmelding.DialogmeldingService
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_BISTAND_FRA_NAV
 import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_DELT_MED_FASTLEGE
-import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_DISKRESJONSMERKET
 import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_LPS_RETRY
 import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_OLD_FNR
 import no.nav.syfo.lps.OppfolgingsplanLPSService.Companion.METRIKK_PROSSESERING_VELLYKKET
@@ -31,7 +29,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.client.HttpServerErrorException
-import java.io.StringReader
 import java.util.*
 
 @RunWith(SpringRunner::class)
@@ -56,7 +53,7 @@ class OppfolgingsplanLPSServiceTest {
         oppfolgingsplanLPSRetryService,
         opPdfGenConsumer,
         pdlConsumer,
-        feiletSendingService
+        feiletSendingService,
     )
 
     val pdfByteArray = "<PDF_INNHOLD>".toByteArray()
@@ -70,7 +67,10 @@ class OppfolgingsplanLPSServiceTest {
         justRun { oppfolgingplanLPSDAO.updateSharedWithFastlege(rowId) }
         justRun { oppfolgingsplanLPSProducer.sendOppfolgingsLPSTilNAV(any()) }
         justRun { dialogmeldingService.sendOppfolgingsplanLPSTilFastlege(any(), pdfByteArray) }
-        every { oppfolgingplanLPSDAO.create(any(), any(), any(), any(), any(), any(), any()) } returns Pair(rowId, UUID.randomUUID())
+        every { oppfolgingplanLPSDAO.create(any(), any(), any(), any(), any(), any(), any()) } returns Pair(
+            rowId,
+            UUID.randomUUID(),
+        )
         every { opPdfGenConsumer.pdfgenResponse(any()) } returns pdfByteArray
     }
 
@@ -82,8 +82,8 @@ class OppfolgingsplanLPSServiceTest {
             PdlHentPerson(
                 PdlPerson(
                     listOf(PdlPersonNavn("Fornavn", null, "Etternavn")),
-                    listOf(Adressebeskyttelse(Gradering.UGRADERT))
-                )
+                    listOf(Adressebeskyttelse(Gradering.UGRADERT)),
+                ),
             )
         every { pdlConsumer.gjeldendeFnr(arbeidstakerFnr) } returns arbeidstakerFnr
 
@@ -102,16 +102,25 @@ class OppfolgingsplanLPSServiceTest {
             PdlHentPerson(
                 PdlPerson(
                     listOf(PdlPersonNavn("Fornavn", null, "Etternavn")),
-                    listOf(Adressebeskyttelse(Gradering.STRENGT_FORTROLIG))
-                )
+                    listOf(Adressebeskyttelse(Gradering.STRENGT_FORTROLIG)),
+                ),
             )
 
         every { pdlConsumer.gjeldendeFnr(arbeidstakerFnr) } returns arbeidstakerFnr
-        every { oppfolgingplanLPSDAO.create(Fodselsnummer(arbeidstakerFnr), any(), any(), any(), any(), any(), any()) } returns Pair(1L, UUID.randomUUID())
+        every {
+            oppfolgingplanLPSDAO.create(
+                Fodselsnummer(arbeidstakerFnr),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+            )
+        } returns Pair(1L, UUID.randomUUID())
 
         oppfolgingsplanLPSService.receivePlan(archiveReference, lpsXml, false)
 
-        verify(exactly = 1) { metrikk.tellHendelse(METRIKK_DISKRESJONSMERKET) }
         verify(exactly = 1) { metrikk.tellHendelse(METRIKK_PROSSESERING_VELLYKKET) }
     }
 
@@ -123,8 +132,8 @@ class OppfolgingsplanLPSServiceTest {
             PdlHentPerson(
                 PdlPerson(
                     listOf(PdlPersonNavn("Fornavn", null, "Etternavn")),
-                    listOf(Adressebeskyttelse(Gradering.UGRADERT))
-                )
+                    listOf(Adressebeskyttelse(Gradering.UGRADERT)),
+                ),
             )
         every { pdlConsumer.gjeldendeFnr(arbeidstakerFnr) } returns arbeidstakerFnr
 
@@ -144,8 +153,8 @@ class OppfolgingsplanLPSServiceTest {
             PdlHentPerson(
                 PdlPerson(
                     listOf(PdlPersonNavn("Fornavn", null, "Etternavn")),
-                    listOf(Adressebeskyttelse(Gradering.UGRADERT))
-                )
+                    listOf(Adressebeskyttelse(Gradering.UGRADERT)),
+                ),
             )
 
         every { pdlConsumer.gjeldendeFnr(arbeidstakerFnr) } returns currentFnr
@@ -153,8 +162,28 @@ class OppfolgingsplanLPSServiceTest {
         oppfolgingsplanLPSService.receivePlan(archiveReference, lpsXml, false)
 
         verify(exactly = 1) { metrikk.tellHendelse(METRIKK_OLD_FNR) }
-        verify(exactly = 1) { oppfolgingplanLPSDAO.create(Fodselsnummer(currentFnr), any(), any(), any(), any(), any(), any()) }
-        verify(exactly = 0) { oppfolgingplanLPSDAO.create(Fodselsnummer(arbeidstakerFnr), any(), any(), any(), any(), any(), any()) }
+        verify(exactly = 1) {
+            oppfolgingplanLPSDAO.create(
+                Fodselsnummer(currentFnr),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+            )
+        }
+        verify(exactly = 0) {
+            oppfolgingplanLPSDAO.create(
+                Fodselsnummer(arbeidstakerFnr),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+            )
+        }
         verify(exactly = 1) { metrikk.tellHendelse(METRIKK_PROSSESERING_VELLYKKET) }
     }
 
@@ -177,8 +206,8 @@ class OppfolgingsplanLPSServiceTest {
             PdlHentPerson(
                 PdlPerson(
                     listOf(PdlPersonNavn("Fornavn", null, "Etternavn")),
-                    listOf(Adressebeskyttelse(Gradering.UGRADERT))
-                )
+                    listOf(Adressebeskyttelse(Gradering.UGRADERT)),
+                ),
             )
         every { pdlConsumer.gjeldendeFnr(any()) } throws RuntimeException()
         every { oppfolgingsplanLPSRetryService.getOrCreate(archiveReference, lpsXml) } returns 1L

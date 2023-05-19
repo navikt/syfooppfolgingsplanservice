@@ -2,7 +2,6 @@ package no.nav.syfo.brukertilgang
 
 import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.brukertilgang.v2.BrukerTilgangControllerV2
-import no.nav.syfo.brukertilgang.v2.BrukerTilgangControllerV2.Companion.IKKE_TILGANG_GRUNN_DISKRESJONSMERKET
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.BrukertilgangService
 import no.nav.syfo.testhelper.OidcTestHelper
@@ -43,7 +42,6 @@ class BrukerTilgangControllerV2Test : AbstractRessursTilgangTest() {
 
     @Before
     fun setup() {
-
     }
 
     @Test
@@ -54,7 +52,7 @@ class BrukerTilgangControllerV2Test : AbstractRessursTilgangTest() {
 
         val exp = RSTilgang(
             true,
-            null
+            null,
         )
         val res = brukerTilgangController.harTilgang(ARBEIDSTAKER_FNR)
         assertEquals(exp, res)
@@ -77,7 +75,7 @@ class BrukerTilgangControllerV2Test : AbstractRessursTilgangTest() {
         `when`(pdlConsumer.isKode6Or7(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(brukertilgangService.tilgangTilOppslattIdent(LEDER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true)
 
-        val exp = RSTilgang(false, IKKE_TILGANG_GRUNN_DISKRESJONSMERKET)
+        val exp = RSTilgang(true)
         val res = brukerTilgangController.harTilgang(ARBEIDSTAKER_FNR)
         assertEquals(exp, res)
     }
@@ -88,7 +86,7 @@ class BrukerTilgangControllerV2Test : AbstractRessursTilgangTest() {
         `when`(pdlConsumer.isKode6Or7(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(brukertilgangService.tilgangTilOppslattIdent(ARBEIDSTAKER_FNR, ARBEIDSTAKER_FNR)).thenReturn(true)
 
-        val exp = RSTilgang(false, IKKE_TILGANG_GRUNN_DISKRESJONSMERKET)
+        val exp = RSTilgang(true)
         val res = brukerTilgangController.harTilgang(null)
         assertEquals(exp, res)
     }
