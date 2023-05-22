@@ -67,6 +67,9 @@ spec:
         - application: syfo-tilgangskontroll
           namespace: teamsykefravr
           cluster: dev-gcp
+        - application: syfobrukertilgang
+          namespace: team-esyfo
+          cluster: dev-gcp
       external:
         - host: narmesteleder.intern.dev.nav.no
   azure:
@@ -141,9 +144,9 @@ spec:
     - name: EREG_BASEURL
       value: https://modapp-q1.adeo.no
     - name: SYFOBRUKERTILGANG_URL
-      value: https://syfobrukertilgang.nais.preprod.local
+      value: https://syfobrukertilgang.intern.dev.nav.no
     - name: SYFOBRUKERTILGANG_ID
-      value: dev-fss:team-esyfo:syfobrukertilgang
+      value: dev-gcp:team-esyfo:syfobrukertilgang
     - name: FELLESKODEVERK_URL
       value: https://kodeverk.nais.preprod.local/api/v1
     - name: SYFOSMREGISTER_URL

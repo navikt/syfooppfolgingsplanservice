@@ -61,6 +61,9 @@ spec:
         - application: syfo-tilgangskontroll
           namespace: teamsykefravr
           cluster: prod-gcp
+        - application: syfobrukertilgang
+          namespace: team-esyfo
+          cluster: prod-gcp
   azure:
     application:
       allowAllUsers: true
@@ -134,9 +137,9 @@ spec:
     - name: EREG_BASEURL
       value: https://modapp.adeo.no
     - name: SYFOBRUKERTILGANG_URL
-      value: https://syfobrukertilgang.nais.adeo.no
+      value: https://syfobrukertilgang.intern.nav.no
     - name: SYFOBRUKERTILGANG_ID
-      value: prod-fss:team-esyfo:syfobrukertilgang
+      value: prod-gcp:team-esyfo:syfobrukertilgang
     - name: SYFOOPPDFGEN_URL
       value: https://syfooppdfgen.intern.nav.no
     - name: FELLESKODEVERK_URL
