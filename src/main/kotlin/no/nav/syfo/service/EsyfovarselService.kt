@@ -27,13 +27,12 @@ class EsyfovarselService(
     ) {
 
         val esyfovarselHendelse = NarmesteLederHendelse(
-            getEsyfovarselHendelseType(varseltype),
-            VarselData(
-                status = VarselStatus(ferdigstilt = false)
-            ),
-            narmesteleder.naermesteLederFnr,
-            narmesteleder.ansattFnr,
-            narmesteleder.orgnummer
+            type = getEsyfovarselHendelseType(varseltype),
+            ferdigstill = false,
+            data = null,
+            narmesteLederFnr = narmesteleder.naermesteLederFnr,
+            arbeidstakerFnr = narmesteleder.ansattFnr,
+            orgnummer = narmesteleder.orgnummer
         )
 
         producer.sendVarselTilEsyfovarsel(esyfovarselHendelse)
@@ -44,12 +43,11 @@ class EsyfovarselService(
         narmesteleder: Naermesteleder
     ) {
         val esyfovarselHendelse = ArbeidstakerHendelse(
-            getEsyfovarselHendelseType(varseltype),
-            VarselData(
-                status = VarselStatus(ferdigstilt = false)
-            ),
-            narmesteleder.ansattFnr,
-            narmesteleder.orgnummer
+            type = getEsyfovarselHendelseType(varseltype),
+            ferdigstill = false,
+            data = null,
+            arbeidstakerFnr = narmesteleder.ansattFnr,
+            orgnummer = narmesteleder.orgnummer
         )
 
         producer.sendVarselTilEsyfovarsel(esyfovarselHendelse)
@@ -87,12 +85,11 @@ class EsyfovarselService(
         narmesteleder: Naermesteleder
     ) {
         val esyfovarselHendelse = ArbeidstakerHendelse(
-            getEsyfovarselHendelseType(varseltype),
-            VarselData(
-                status = VarselStatus(ferdigstilt = true)
-            ),
-            narmesteleder.ansattFnr,
-            narmesteleder.orgnummer
+            type = getEsyfovarselHendelseType(varseltype),
+            ferdigstill = true,
+            data = null,
+            arbeidstakerFnr = narmesteleder.ansattFnr,
+            orgnummer = narmesteleder.orgnummer
         )
         producer.sendVarselTilEsyfovarsel(esyfovarselHendelse)
     }
@@ -102,13 +99,12 @@ class EsyfovarselService(
         narmesteleder: Naermesteleder
     ) {
         val esyfovarselHendelse = NarmesteLederHendelse(
-            getEsyfovarselHendelseType(varseltype),
-            VarselData(
-                status = VarselStatus(ferdigstilt = true)
-            ),
-            narmesteleder.naermesteLederFnr,
-            narmesteleder.ansattFnr,
-            narmesteleder.orgnummer
+            type = getEsyfovarselHendelseType(varseltype),
+            ferdigstill = true,
+            data = null,
+            narmesteLederFnr = narmesteleder.naermesteLederFnr,
+            arbeidstakerFnr = narmesteleder.ansattFnr,
+            orgnummer = narmesteleder.orgnummer
         )
         producer.sendVarselTilEsyfovarsel(esyfovarselHendelse)
     }
