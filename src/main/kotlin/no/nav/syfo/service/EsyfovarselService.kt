@@ -40,14 +40,15 @@ class EsyfovarselService(
 
     fun sendVarselTilArbeidstaker(
         varseltype: Varseltype,
-        narmesteleder: Naermesteleder
+        arbeidstakerFnr: String,
+        orgnummer: String
     ) {
         val esyfovarselHendelse = ArbeidstakerHendelse(
             type = getEsyfovarselHendelseType(varseltype),
             ferdigstill = false,
             data = null,
-            arbeidstakerFnr = narmesteleder.ansattFnr,
-            orgnummer = narmesteleder.orgnummer
+            arbeidstakerFnr = arbeidstakerFnr,
+            orgnummer = orgnummer
         )
 
         producer.sendVarselTilEsyfovarsel(esyfovarselHendelse)

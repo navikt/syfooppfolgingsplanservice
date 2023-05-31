@@ -163,7 +163,6 @@ public class GodkjenningService {
             arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         }
         String virksomhetsnummer = oppfolgingsplan.virksomhet.virksomhetsnummer;
-        Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, virksomhetsnummer).get();
 
         if (tvungenGodkjenning && erArbeidstaker) {
             Optional<Naermesteleder> narmesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
@@ -204,9 +203,10 @@ public class GodkjenningService {
             );
 
             if (!erArbeidstaker) {
-                esyfovarselService.sendVarselTilArbeidstaker(SyfoplangodkjenningSyk, naermesteleder);
+                esyfovarselService.sendVarselTilArbeidstaker(SyfoplangodkjenningSyk, oppfolgingsplan.arbeidstaker.fnr, oppfolgingsplan.virksomhet.virksomhetsnummer);
             } else {
-                esyfovarselService.sendVarselTilNarmesteLeder(SyfoplangodkjenningNl, naermesteleder);
+                narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, virksomhetsnummer)
+                        .ifPresent(naermesteleder -> esyfovarselService.sendVarselTilNarmesteLeder(SyfoplangodkjenningNl, naermesteleder));
             }
         }
         oppfolgingsplanDAO.sistEndretAv(oppfolgingsplanId, innloggetAktoerId);
