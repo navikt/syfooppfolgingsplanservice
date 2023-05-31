@@ -13,7 +13,6 @@ import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.repository.domain.Dokument;
 import no.nav.syfo.util.ConflictException;
 import no.nav.syfo.util.JAXB;
-
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -192,15 +191,15 @@ public class GodkjenningService {
                 throw new ConflictException();
             }
             godkjenningerDAO.create(new Godkjenning()
-                                            .oppfoelgingsdialogId(oppfolgingsplanId)
-                                            .godkjent(true)
-                                            .delMedNav(delMedNav)
-                                            .godkjentAvAktoerId(innloggetAktoerId)
-                                            .gyldighetstidspunkt(new Gyldighetstidspunkt()
-                                                                         .fom(gyldighetstidspunkt.fom)
-                                                                         .tom(gyldighetstidspunkt.tom)
-                                                                         .evalueres(gyldighetstidspunkt.evalueres)
-                                            )
+                    .oppfoelgingsdialogId(oppfolgingsplanId)
+                    .godkjent(true)
+                    .delMedNav(delMedNav)
+                    .godkjentAvAktoerId(innloggetAktoerId)
+                    .gyldighetstidspunkt(new Gyldighetstidspunkt()
+                            .fom(gyldighetstidspunkt.fom)
+                            .tom(gyldighetstidspunkt.tom)
+                            .evalueres(gyldighetstidspunkt.evalueres)
+                    )
             );
 
             if (!erArbeidstaker) {
@@ -222,9 +221,7 @@ public class GodkjenningService {
     }
 
     private boolean innloggetBrukerHarAlleredeGodkjentPlan(Oppfolgingsplan oppfolgingsplan, String innloggetAktoerId) {
-        return godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(oppfolgingsplan.id)
-                .stream()
-                .anyMatch(godkjenning -> godkjenning.godkjent && godkjenning.godkjentAvAktoerId.equals(innloggetAktoerId));
+        return godkjenningerDAO.godkjenningerByOppfoelgingsdialogId(oppfolgingsplan.id).stream().anyMatch(godkjenning -> godkjenning.godkjent && godkjenning.godkjentAvAktoerId.equals(innloggetAktoerId));
     }
 
     private Godkjenning finnGodkjenning(Oppfolgingsplan oppfolgingsplan) {
@@ -309,64 +306,56 @@ public class GodkjenningService {
         String sykmeldtFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
-                                                 .withArbeidsgiverEpost(naermesteleder.epost)
-                                                 .withArbeidsgivernavn(naermesteleder.navn)
-                                                 .withArbeidsgiverOrgnr(oppfolgingsplan.virksomhet.virksomhetsnummer)
-                                                 .withVirksomhetsnavn(virksomhetsnavn)
-                                                 .withArbeidsgiverTlf(naermesteleder.mobil)
-                                                 .withEvalueres(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.evalueres))
-                                                 .withGyldigfra(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom))
-                                                 .withGyldigtil(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom))
-                                                 .withIkkeTattStillingTilArbeidsoppgaveXML(
-                                                         mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(
-                                                         mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new KanIkkeGjennomfoeresArbeidsoppgaveXML()
-                                                                          .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanIkkeBeskrivelse)
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(
-                                                         mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML()
-                                                                          .withMedHjelp(arbeidsoppgave.gjennomfoering.medHjelp)
-                                                                          .withMedMerTid(arbeidsoppgave.gjennomfoering.medMerTid)
-                                                                          .withPaaAnnetSted(arbeidsoppgave.gjennomfoering.paaAnnetSted)
-                                                                          .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanBeskrivelse)
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withKanGjennomfoeresArbeidsoppgaveXMLList(
-                                                         mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new KanGjennomfoeresArbeidsoppgaveXML()
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withTiltak(mapListe(oppfolgingsplan.tiltakListe, tiltak -> new TiltakXML()
-                                                         .withNavn(tiltak.navn)
-                                                         .withBeskrivelse(tiltak.beskrivelse)
-                                                         .withBeskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
-                                                         .withStatus(tiltak.status)
-                                                         .withId(tiltak.id)
-                                                         .withGjennomfoering(tiltak.gjennomfoering)
-                                                         .withFom(tilMuntligDatoAarFormat(
-                                                                 ofNullable(tiltak.fom).orElse(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom)))
-                                                         .withTom(tilMuntligDatoAarFormat(
-                                                                 ofNullable(tiltak.tom).orElse(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom)))
-                                                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
-                                                 ))
-                                                 .withStillingListe(mapListe(
-                                                         arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, finnGodkjenning(
-                                                                 oppfolgingsplan).gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer),
-                                                         stilling -> new StillingXML()
-                                                                 .withYrke(stilling.yrke)
-                                                                 .withProsent(stilling.prosent)))
-                                                 .withSykmeldtFnr(sykmeldtFnr)
-                                                 .withSykmeldtNavn(sykmeldtnavn)
-                                                 .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
-                                                 .withSykmeldtEpost(sykmeldtKontaktinfo.getEpostadresse())
-                                                 .withVisAdvarsel(false)
-                                                 .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
-                                                 .withOpprettetAv(!erArbeidstakeren(oppfolgingsplan, innloggetAktoerId) ? sykmeldtnavn : naermesteleder.navn)
-                                                 .withOpprettetDato(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).godkjenningsTidspunkt.toLocalDate()))
-                                                 .withGodkjentAv(erArbeidstakeren(oppfolgingsplan, innloggetAktoerId) ? sykmeldtnavn : naermesteleder.navn)
-                                                 .withGodkjentDato(tilMuntligDatoAarFormat(LocalDate.now()))
+                .withArbeidsgiverEpost(naermesteleder.epost)
+                .withArbeidsgivernavn(naermesteleder.navn)
+                .withArbeidsgiverOrgnr(oppfolgingsplan.virksomhet.virksomhetsnummer)
+                .withVirksomhetsnavn(virksomhetsnavn)
+                .withArbeidsgiverTlf(naermesteleder.mobil)
+                .withEvalueres(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.evalueres))
+                .withGyldigfra(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom))
+                .withGyldigtil(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom))
+                .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanIkkeGjennomfoeresArbeidsoppgaveXML()
+                                .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanIkkeBeskrivelse)
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML()
+                                .withMedHjelp(arbeidsoppgave.gjennomfoering.medHjelp)
+                                .withMedMerTid(arbeidsoppgave.gjennomfoering.medMerTid)
+                                .withPaaAnnetSted(arbeidsoppgave.gjennomfoering.paaAnnetSted)
+                                .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanBeskrivelse)
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanGjennomfoeresArbeidsoppgaveXML()
+                                .withNavn(arbeidsoppgave.navn)))
+                .withTiltak(mapListe(oppfolgingsplan.tiltakListe, tiltak -> new TiltakXML()
+                        .withNavn(tiltak.navn)
+                        .withBeskrivelse(tiltak.beskrivelse)
+                        .withBeskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
+                        .withStatus(tiltak.status)
+                        .withId(tiltak.id)
+                        .withGjennomfoering(tiltak.gjennomfoering)
+                        .withFom(tilMuntligDatoAarFormat(ofNullable(tiltak.fom).orElse(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom)))
+                        .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom)))
+                        .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
+                ))
+                .withStillingListe(mapListe(
+                        arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                                .withYrke(stilling.yrke)
+                                .withProsent(stilling.prosent)))
+                .withSykmeldtFnr(sykmeldtFnr)
+                .withSykmeldtNavn(sykmeldtnavn)
+                .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
+                .withSykmeldtEpost(sykmeldtKontaktinfo.getEpostadresse())
+                .withVisAdvarsel(false)
+                .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
+                .withOpprettetAv(!erArbeidstakeren(oppfolgingsplan, innloggetAktoerId) ? sykmeldtnavn : naermesteleder.navn)
+                .withOpprettetDato(tilMuntligDatoAarFormat(finnGodkjenning(oppfolgingsplan).godkjenningsTidspunkt.toLocalDate()))
+                .withGodkjentAv(erArbeidstakeren(oppfolgingsplan, innloggetAktoerId) ? sykmeldtnavn : naermesteleder.navn)
+                .withGodkjentDato(tilMuntligDatoAarFormat(LocalDate.now()))
         );
 
         String dokumentUuid = UUID.randomUUID().toString();
@@ -375,22 +364,22 @@ public class GodkjenningService {
                 .anyMatch(godkjenning -> godkjenning.delMedNav);
 
         godkjentplanDAO.create(new GodkjentPlan()
-                                       .oppfoelgingsdialogId(oppfolgingsplan.id)
-                                       .deltMedNAV(skalDeleMedNav)
-                                       .deltMedNAVTidspunkt((skalDeleMedNav) ? LocalDateTime.now() : null)
-                                       .tvungenGodkjenning(false)
-                                       .dokumentUuid(dokumentUuid)
-                                       .gyldighetstidspunkt(new Gyldighetstidspunkt()
-                                                                    .fom(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom)
-                                                                    .tom(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom)
-                                                                    .evalueres(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.evalueres)
-                                       ));
+                .oppfoelgingsdialogId(oppfolgingsplan.id)
+                .deltMedNAV(skalDeleMedNav)
+                .deltMedNAVTidspunkt((skalDeleMedNav) ? LocalDateTime.now() : null)
+                .tvungenGodkjenning(false)
+                .dokumentUuid(dokumentUuid)
+                .gyldighetstidspunkt(new Gyldighetstidspunkt()
+                        .fom(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.fom)
+                        .tom(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.tom)
+                        .evalueres(finnGodkjenning(oppfolgingsplan).gyldighetstidspunkt.evalueres)
+                ));
         metrikk.tellAntallDagerSiden(oppfolgingsplan.opprettet, "opprettettilgodkjent");
         metrikk.tellAntallDagerSiden(finnGodkjenning(oppfolgingsplan).godkjenningsTidspunkt, "fragodkjenningtilplan");
         dokumentDAO.lagre(new Dokument()
-                                  .uuid(dokumentUuid)
-                                  .pdf(tilPdf(xml))
-                                  .xml(xml)
+                .uuid(dokumentUuid)
+                .pdf(tilPdf(xml))
+                .xml(xml)
         );
     }
 
@@ -405,82 +394,75 @@ public class GodkjenningService {
         String sykmeldtFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
-                                                 .withArbeidsgiverEpost(naermesteleder.epost)
-                                                 .withArbeidsgivernavn(naermesteleder.navn)
-                                                 .withArbeidsgiverOrgnr(oppfolgingsplan.virksomhet.virksomhetsnummer)
-                                                 .withVirksomhetsnavn(virksomhetsnavn)
-                                                 .withArbeidsgiverTlf(naermesteleder.mobil)
-                                                 .withEvalueres(tilMuntligDatoAarFormat(gyldighetstidspunkt.evalueres()))
-                                                 .withGyldigfra(tilMuntligDatoAarFormat(gyldighetstidspunkt.fom))
-                                                 .withGyldigtil(tilMuntligDatoAarFormat(gyldighetstidspunkt.tom))
-                                                 .withIkkeTattStillingTilArbeidsoppgaveXML(
-                                                         mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(
-                                                         mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new KanIkkeGjennomfoeresArbeidsoppgaveXML()
-                                                                          .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanIkkeBeskrivelse)
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(
-                                                         mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML()
-                                                                          .withMedHjelp(arbeidsoppgave.gjennomfoering.medHjelp)
-                                                                          .withMedMerTid(arbeidsoppgave.gjennomfoering.medMerTid)
-                                                                          .withPaaAnnetSted(arbeidsoppgave.gjennomfoering.paaAnnetSted)
-                                                                          .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanBeskrivelse)
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withKanGjennomfoeresArbeidsoppgaveXMLList(
-                                                         mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new KanGjennomfoeresArbeidsoppgaveXML()
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withTiltak(mapListe(oppfolgingsplan.tiltakListe, tiltak -> new TiltakXML()
-                                                         .withNavn(tiltak.navn)
-                                                         .withBeskrivelse(tiltak.beskrivelse)
-                                                         .withBeskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
-                                                         .withStatus(tiltak.status)
-                                                         .withId(tiltak.id)
-                                                         .withGjennomfoering(tiltak.gjennomfoering)
-                                                         .withFom(tilMuntligDatoAarFormat(ofNullable(tiltak.fom).orElse(gyldighetstidspunkt.fom)))
-                                                         .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(gyldighetstidspunkt.tom)))
-                                                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
-                                                 ))
-                                                 .withStillingListe(mapListe(
-                                                         arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId,
-                                                                                                                   gyldighetstidspunkt.fom,
-                                                                                                                   oppfolgingsplan.virksomhet.virksomhetsnummer),
-                                                         stilling -> new StillingXML()
-                                                                 .withYrke(stilling.yrke)
-                                                                 .withProsent(stilling.prosent)))
-                                                 .withSykmeldtFnr(sykmeldtFnr)
-                                                 .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
-                                                 .withSykmeldtNavn(sykmeldtnavn)
-                                                 .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
-                                                 .withSykmeldtEpost(sykmeldtKontaktinfo.getEpostadresse())
-                                                 .withVisAdvarsel(true)
-                                                 .withGodkjentAv(naermesteleder.navn)
-                                                 .withOpprettetAv(naermesteleder.navn)
-                                                 .withOpprettetDato(tilMuntligDatoAarFormat(LocalDate.now()))
-                                                 .withGodkjentDato(tilMuntligDatoAarFormat(LocalDate.now()))
+                .withArbeidsgiverEpost(naermesteleder.epost)
+                .withArbeidsgivernavn(naermesteleder.navn)
+                .withArbeidsgiverOrgnr(oppfolgingsplan.virksomhet.virksomhetsnummer)
+                .withVirksomhetsnavn(virksomhetsnavn)
+                .withArbeidsgiverTlf(naermesteleder.mobil)
+                .withEvalueres(tilMuntligDatoAarFormat(gyldighetstidspunkt.evalueres()))
+                .withGyldigfra(tilMuntligDatoAarFormat(gyldighetstidspunkt.fom))
+                .withGyldigtil(tilMuntligDatoAarFormat(gyldighetstidspunkt.tom))
+                .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanIkkeGjennomfoeresArbeidsoppgaveXML()
+                                .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanIkkeBeskrivelse)
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML()
+                                .withMedHjelp(arbeidsoppgave.gjennomfoering.medHjelp)
+                                .withMedMerTid(arbeidsoppgave.gjennomfoering.medMerTid)
+                                .withPaaAnnetSted(arbeidsoppgave.gjennomfoering.paaAnnetSted)
+                                .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanBeskrivelse)
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanGjennomfoeresArbeidsoppgaveXML()
+                                .withNavn(arbeidsoppgave.navn)))
+                .withTiltak(mapListe(oppfolgingsplan.tiltakListe, tiltak -> new TiltakXML()
+                        .withNavn(tiltak.navn)
+                        .withBeskrivelse(tiltak.beskrivelse)
+                        .withBeskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
+                        .withStatus(tiltak.status)
+                        .withId(tiltak.id)
+                        .withGjennomfoering(tiltak.gjennomfoering)
+                        .withFom(tilMuntligDatoAarFormat(ofNullable(tiltak.fom).orElse(gyldighetstidspunkt.fom)))
+                        .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(gyldighetstidspunkt.tom)))
+                        .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
+                ))
+                .withStillingListe(mapListe(
+                        arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                                .withYrke(stilling.yrke)
+                                .withProsent(stilling.prosent)))
+                .withSykmeldtFnr(sykmeldtFnr)
+                .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
+                .withSykmeldtNavn(sykmeldtnavn)
+                .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
+                .withSykmeldtEpost(sykmeldtKontaktinfo.getEpostadresse())
+                .withVisAdvarsel(true)
+                .withGodkjentAv(naermesteleder.navn)
+                .withOpprettetAv(naermesteleder.navn)
+                .withOpprettetDato(tilMuntligDatoAarFormat(LocalDate.now()))
+                .withGodkjentDato(tilMuntligDatoAarFormat(LocalDate.now()))
         );
         String dokumentUuid = UUID.randomUUID().toString();
         godkjentplanDAO.create(new GodkjentPlan()
-                                       .oppfoelgingsdialogId(oppfolgingsplan.id)
-                                       .deltMedNAV(delMedNav)
-                                       .deltMedNAVTidspunkt(delMedNav ? LocalDateTime.now() : null)
-                                       .deltMedFastlege(false)
-                                       .tvungenGodkjenning(true)
-                                       .dokumentUuid(dokumentUuid)
-                                       .gyldighetstidspunkt(new Gyldighetstidspunkt()
-                                                                    .fom(gyldighetstidspunkt.fom)
-                                                                    .tom(gyldighetstidspunkt.tom)
-                                                                    .evalueres(gyldighetstidspunkt.evalueres)
-                                       ));
+                .oppfoelgingsdialogId(oppfolgingsplan.id)
+                .deltMedNAV(delMedNav)
+                .deltMedNAVTidspunkt(delMedNav ? LocalDateTime.now() : null)
+                .deltMedFastlege(false)
+                .tvungenGodkjenning(true)
+                .dokumentUuid(dokumentUuid)
+                .gyldighetstidspunkt(new Gyldighetstidspunkt()
+                        .fom(gyldighetstidspunkt.fom)
+                        .tom(gyldighetstidspunkt.tom)
+                        .evalueres(gyldighetstidspunkt.evalueres)
+                ));
 
         dokumentDAO.lagre(new Dokument()
-                                  .uuid(dokumentUuid)
-                                  .pdf(tilPdf(xml))
-                                  .xml(xml)
+                .uuid(dokumentUuid)
+                .pdf(tilPdf(xml))
+                .xml(xml)
         );
     }
 
@@ -496,82 +478,75 @@ public class GodkjenningService {
         String sykmeldtFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
         String xml = JAXB.marshallDialog(new OppfoelgingsdialogXML()
-                                                 .withArbeidsgiverEpost(naermesteleder.epost)
-                                                 .withArbeidsgivernavn(naermesteleder.navn)
-                                                 .withArbeidsgiverOrgnr(oppfolgingsplan.virksomhet.virksomhetsnummer)
-                                                 .withVirksomhetsnavn(virksomhetsnavn)
-                                                 .withArbeidsgiverTlf(naermesteleder.mobil)
-                                                 .withEvalueres(tilMuntligDatoAarFormat(gyldighetstidspunkt.evalueres()))
-                                                 .withGyldigfra(tilMuntligDatoAarFormat(gyldighetstidspunkt.fom))
-                                                 .withGyldigtil(tilMuntligDatoAarFormat(gyldighetstidspunkt.tom))
-                                                 .withIkkeTattStillingTilArbeidsoppgaveXML(
-                                                         mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(
-                                                         mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new KanIkkeGjennomfoeresArbeidsoppgaveXML()
-                                                                          .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanIkkeBeskrivelse)
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(
-                                                         mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML()
-                                                                          .withMedHjelp(arbeidsoppgave.gjennomfoering.medHjelp)
-                                                                          .withMedMerTid(arbeidsoppgave.gjennomfoering.medMerTid)
-                                                                          .withPaaAnnetSted(arbeidsoppgave.gjennomfoering.paaAnnetSted)
-                                                                          .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanBeskrivelse)
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withKanGjennomfoeresArbeidsoppgaveXMLList(
-                                                         mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
-                                                                  arbeidsoppgave -> new KanGjennomfoeresArbeidsoppgaveXML()
-                                                                          .withNavn(arbeidsoppgave.navn)))
-                                                 .withTiltak(mapListe(oppfolgingsplan.tiltakListe, tiltak -> new TiltakXML()
-                                                         .withNavn(tiltak.navn)
-                                                         .withBeskrivelse(tiltak.beskrivelse)
-                                                         .withBeskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
-                                                         .withStatus(tiltak.status)
-                                                         .withId(tiltak.id)
-                                                         .withGjennomfoering(tiltak.gjennomfoering)
-                                                         .withFom(tilMuntligDatoAarFormat(ofNullable(tiltak.fom).orElse(gyldighetstidspunkt.fom)))
-                                                         .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(gyldighetstidspunkt.tom)))
-                                                         .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
-                                                 ))
-                                                 .withStillingListe(mapListe(
-                                                         arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId,
-                                                                                                                   gyldighetstidspunkt.fom,
-                                                                                                                   oppfolgingsplan.virksomhet.virksomhetsnummer),
-                                                         stilling -> new StillingXML()
-                                                                 .withYrke(stilling.yrke)
-                                                                 .withProsent(stilling.prosent)))
-                                                 .withSykmeldtFnr(sykmeldtFnr)
-                                                 .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
-                                                 .withSykmeldtNavn(sykmeldtnavn)
-                                                 .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
-                                                 .withSykmeldtEpost(sykmeldtKontaktinfo.getEpostadresse())
-                                                 .withVisAdvarsel(true)
-                                                 .withGodkjentAv(naermesteleder.navn)
-                                                 .withOpprettetAv(naermesteleder.navn)
-                                                 .withOpprettetDato(tilMuntligDatoAarFormat(LocalDate.now()))
-                                                 .withGodkjentDato(tilMuntligDatoAarFormat(LocalDate.now()))
+                .withArbeidsgiverEpost(naermesteleder.epost)
+                .withArbeidsgivernavn(naermesteleder.navn)
+                .withArbeidsgiverOrgnr(oppfolgingsplan.virksomhet.virksomhetsnummer)
+                .withVirksomhetsnavn(virksomhetsnavn)
+                .withArbeidsgiverTlf(naermesteleder.mobil)
+                .withEvalueres(tilMuntligDatoAarFormat(gyldighetstidspunkt.evalueres()))
+                .withGyldigfra(tilMuntligDatoAarFormat(gyldighetstidspunkt.fom))
+                .withGyldigtil(tilMuntligDatoAarFormat(gyldighetstidspunkt.tom))
+                .withIkkeTattStillingTilArbeidsoppgaveXML(mapListe(finnIkkeTattStillingTilArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new IkkeTattStillingTilArbeidsoppgaveXML()
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanIkkeGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanIkkeGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanIkkeGjennomfoeresArbeidsoppgaveXML()
+                                .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanIkkeBeskrivelse)
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanGjennomfoeresMedTilretteleggingArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresMedTilretteleggingArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanGjennomfoeresMedTilretteleggingArbeidsoppgaveXML()
+                                .withMedHjelp(arbeidsoppgave.gjennomfoering.medHjelp)
+                                .withMedMerTid(arbeidsoppgave.gjennomfoering.medMerTid)
+                                .withPaaAnnetSted(arbeidsoppgave.gjennomfoering.paaAnnetSted)
+                                .withBeskrivelse(arbeidsoppgave.gjennomfoering.kanBeskrivelse)
+                                .withNavn(arbeidsoppgave.navn)))
+                .withKanGjennomfoeresArbeidsoppgaveXMLList(mapListe(finnKanGjennomfoeresArbeidsoppgaver(oppfolgingsplan.arbeidsoppgaveListe),
+                        arbeidsoppgave -> new KanGjennomfoeresArbeidsoppgaveXML()
+                                .withNavn(arbeidsoppgave.navn)))
+                .withTiltak(mapListe(oppfolgingsplan.tiltakListe, tiltak -> new TiltakXML()
+                        .withNavn(tiltak.navn)
+                        .withBeskrivelse(tiltak.beskrivelse)
+                        .withBeskrivelseIkkeAktuelt(tiltak.beskrivelseIkkeAktuelt)
+                        .withStatus(tiltak.status)
+                        .withId(tiltak.id)
+                        .withGjennomfoering(tiltak.gjennomfoering)
+                        .withFom(tilMuntligDatoAarFormat(ofNullable(tiltak.fom).orElse(gyldighetstidspunkt.fom)))
+                        .withTom(tilMuntligDatoAarFormat(ofNullable(tiltak.tom).orElse(gyldighetstidspunkt.tom)))
+                        .withOpprettetAv(brukerprofilService.hentNavnByAktoerId(tiltak.opprettetAvAktoerId))
+                ))
+                .withStillingListe(mapListe(
+                        arbeidsforholdService.arbeidstakersStillingerForOrgnummer(oppfolgingsplan.arbeidstaker.aktoerId, gyldighetstidspunkt.fom, oppfolgingsplan.virksomhet.virksomhetsnummer), stilling -> new StillingXML()
+                                .withYrke(stilling.yrke)
+                                .withProsent(stilling.prosent)))
+                .withSykmeldtFnr(sykmeldtFnr)
+                .withFotnote("Oppfølgningsplanen mellom " + sykmeldtnavn + " og " + naermesteleder.navn)
+                .withSykmeldtNavn(sykmeldtnavn)
+                .withSykmeldtTlf(sykmeldtKontaktinfo.getMobiltelefonnummer())
+                .withSykmeldtEpost(sykmeldtKontaktinfo.getEpostadresse())
+                .withVisAdvarsel(true)
+                .withGodkjentAv(naermesteleder.navn)
+                .withOpprettetAv(naermesteleder.navn)
+                .withOpprettetDato(tilMuntligDatoAarFormat(LocalDate.now()))
+                .withGodkjentDato(tilMuntligDatoAarFormat(LocalDate.now()))
         );
         String dokumentUuid = UUID.randomUUID().toString();
         godkjentplanDAO.create(new GodkjentPlan()
-                                       .oppfoelgingsdialogId(oppfolgingsplan.id)
-                                       .deltMedNAV(delMedNav)
-                                       .deltMedNAVTidspunkt(delMedNav ? LocalDateTime.now() : null)
-                                       .deltMedFastlege(false)
-                                       .tvungenGodkjenning(false)
-                                       .dokumentUuid(dokumentUuid)
-                                       .gyldighetstidspunkt(new Gyldighetstidspunkt()
-                                                                    .fom(gyldighetstidspunkt.fom)
-                                                                    .tom(gyldighetstidspunkt.tom)
-                                                                    .evalueres(gyldighetstidspunkt.evalueres)
-                                       ));
+                .oppfoelgingsdialogId(oppfolgingsplan.id)
+                .deltMedNAV(delMedNav)
+                .deltMedNAVTidspunkt(delMedNav ? LocalDateTime.now() : null)
+                .deltMedFastlege(false)
+                .tvungenGodkjenning(false)
+                .dokumentUuid(dokumentUuid)
+                .gyldighetstidspunkt(new Gyldighetstidspunkt()
+                        .fom(gyldighetstidspunkt.fom)
+                        .tom(gyldighetstidspunkt.tom)
+                        .evalueres(gyldighetstidspunkt.evalueres)
+                ));
 
         dokumentDAO.lagre(new Dokument()
-                                  .uuid(dokumentUuid)
-                                  .pdf(tilPdf(xml))
-                                  .xml(xml)
+                .uuid(dokumentUuid)
+                .pdf(tilPdf(xml))
+                .xml(xml)
         );
     }
 
@@ -589,9 +564,9 @@ public class GodkjenningService {
         }
         godkjenningerDAO.deleteAllByOppfoelgingsdialogId(oppfoelgingsdialogId);
         godkjenningerDAO.create(new Godkjenning()
-                                        .godkjent(false)
-                                        .oppfoelgingsdialogId(oppfoelgingsdialogId)
-                                        .godkjentAvAktoerId(innloggetAktoerId)
+                .godkjent(false)
+                .oppfoelgingsdialogId(oppfoelgingsdialogId)
+                .godkjentAvAktoerId(innloggetAktoerId)
         );
         oppfolgingsplanDAO.nullstillSamtykke(oppfoelgingsdialogId);
         oppfolgingsplanDAO.sistEndretAv(oppfoelgingsdialogId, innloggetAktoerId);
