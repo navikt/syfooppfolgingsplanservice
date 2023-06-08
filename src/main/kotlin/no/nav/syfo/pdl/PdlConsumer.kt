@@ -37,7 +37,6 @@ class PdlConsumer(
             )
 
             val pdlPersonReponse = pdlPerson.body!!
-            LOG.info("PDL DATA: ${pdlPersonReponse?.data?.hentPerson?.navn}")
             return if (pdlPersonReponse.errors != null && pdlPersonReponse.errors.isNotEmpty()) {
                 metric.tellHendelse("call_pdl_fail")
                 pdlPersonReponse.errors.forEach {
