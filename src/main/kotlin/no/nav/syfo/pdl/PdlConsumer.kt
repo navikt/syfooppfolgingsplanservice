@@ -29,7 +29,7 @@ class PdlConsumer(
         val query = this::class.java.getResource("/pdl/hentPerson.graphql").readText().replace("[\n\r]", "")
         val entity = createRequestEntity(PdlRequest(query, Variables(ident)))
         try {
-            val pdlPerson = restTemplate.exchange<PdlPersonResponse>(
+            val pdlPerson = restTemplate.exchange(
                 pdlUrl,
                 HttpMethod.POST,
                 entity,
@@ -37,6 +37,7 @@ class PdlConsumer(
             )
 
             val pdlPersonReponse = pdlPerson.body!!
+            LOG.info("PDL DATA: ${pdlPersonReponse?.data?.hentPerson?.navn}")
             return if (pdlPersonReponse.errors != null && pdlPersonReponse.errors.isNotEmpty()) {
                 metric.tellHendelse("call_pdl_fail")
                 pdlPersonReponse.errors.forEach {
