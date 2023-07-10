@@ -118,7 +118,7 @@ public class DokArkivConsumer {
                 .tittel(dokumentNavn)
                 .journalfoerendeEnhet(9999)
                 .journalpostType("INNGAAENDE")
-                .kanal(kanal) //TODO "NAV_NO"
+                .kanal(kanal)
                 .sak(sak)
                 .avsenderMottaker(avsenderMottaker)
                 .bruker(bruker)
