@@ -52,7 +52,8 @@ public class DokArkivConsumer {
                 oppfolgingsplan.virksomhet.navn,
                 oppfolgingsplan.arbeidstaker.fnr,
                 godkjentPlan.dokument,
-                hentSistEndret(oppfolgingsplan)
+                hentSistEndret(oppfolgingsplan),
+                "NAV_NO"
         );
         return journalfor(request);
     }
@@ -70,7 +71,8 @@ public class DokArkivConsumer {
                 virksomhetsnavn,
                 oppfolgingsplanLPS.getFnr(),
                 oppfolgingsplanLPS.getPdf(),
-                avsenderMottaker
+                avsenderMottaker,
+                "ALTINN"
         );
         return journalfor(request);
     }
@@ -99,7 +101,8 @@ public class DokArkivConsumer {
             String virksomhetsnavn,
             String arbeidstakerFnr,
             byte[] dokumentPdf,
-            AvsenderMottaker avsenderMottaker
+            AvsenderMottaker avsenderMottaker,
+            String kanal
     ) {
         String dokumentNavn = format("Oppfølgingsplan %s", virksomhetsnavn);
         Sak sak = new Sak()
@@ -115,7 +118,7 @@ public class DokArkivConsumer {
                 .tittel(dokumentNavn)
                 .journalfoerendeEnhet(9999)
                 .journalpostType("INNGAAENDE")
-                .kanal("NAV_NO")
+                .kanal(kanal)
                 .sak(sak)
                 .avsenderMottaker(avsenderMottaker)
                 .bruker(bruker)
