@@ -157,8 +157,6 @@ spec:
       value: https://narmesteleder.intern.dev.nav.no
     - name: NARMESTELEDER_SCOPE
       value: api://dev-gcp.teamsykmelding.narmesteleder/.default
-    - name: TOKENX_IDP
-      value: https://oidc-ver2.difi.no/idporten-oidc-provider/
     - name: OPPFOLGINGSPLAN_FRONTEND_CLIENT_ID
       value: dev-gcp:team-esyfo:oppfolgingsplan-frontend
     - name: DITT_SYKEFRAVAER_FRONTEND_CLIENT_ID

@@ -31,15 +31,13 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
     private val arbeidsforholdService: ArbeidsforholdService,
     private val pdlConsumer: PdlConsumer,
     private val metrikk: Metrikk,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
-    private val oppfolgingsplanClientId: String
+    private val oppfolgingsplanClientId: String,
 ) {
 
     @GetMapping(produces = [APPLICATION_JSON_VALUE], value = ["/{fnr}"])
     fun hentArbeidsgiversOppfolgingsplanerPaFnr(@PathVariable fnr: String, @RequestParam("virksomhetsnummer") virksomhetsnummer: String): List<BrukerOppfolgingsplan> {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.arbeidsgiversOppfolgingsplanerPaFnr(innloggetIdent, fnr, virksomhetsnummer)
@@ -53,7 +51,7 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun opprettOppfolgingsplanSomArbeidsgiver(@RequestBody opprettOppfolgingsplan: OpprettOppfolgingsplanRequest): Long {
-        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val sykmeldtFnr = opprettOppfolgingsplan.sykmeldtFnr

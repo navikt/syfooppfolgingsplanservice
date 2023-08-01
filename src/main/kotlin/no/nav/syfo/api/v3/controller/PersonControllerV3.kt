@@ -2,8 +2,8 @@ package no.nav.syfo.api.v3.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.v3.domain.Person
 import no.nav.syfo.api.util.fodselsnummerInvalid
+import no.nav.syfo.api.v3.domain.Person
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.pdl.fullName
 import no.nav.syfo.service.BrukertilgangService
@@ -26,17 +26,15 @@ class PersonControllerV3 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val pdlConsumer: PdlConsumer,
     private val brukertilgangService: BrukertilgangService,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
     @ResponseBody
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getPerson(
-        @PathVariable("fnr") fnr: String
+        @PathVariable("fnr") fnr: String,
     ): ResponseEntity<Person> {
-        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         return if (fodselsnummerInvalid(fnr)) {
@@ -58,15 +56,14 @@ class PersonControllerV3 @Inject constructor(
                         .body(
                             Person(
                                 fnr = fnr,
-                                navn = it
-                            )
+                                navn = it,
+                            ),
                         )
                 } ?: ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .build()
             }
         }
-
     }
 
     companion object {

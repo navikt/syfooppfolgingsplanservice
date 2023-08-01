@@ -2,8 +2,8 @@ package no.nav.syfo.api.v2.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.BrukerOppfolgingsplan
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.OpprettOppfolgingsplanRequest
 import no.nav.syfo.api.v2.mapper.populerArbeidstakersStillinger
 import no.nav.syfo.api.v2.mapper.populerPlanerMedAvbruttPlanListe
 import no.nav.syfo.api.v2.mapper.toBrukerOppfolgingsplan
@@ -30,17 +30,15 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
     private val arbeidsforholdService: ArbeidsforholdService,
     private val pdlConsumer: PdlConsumer,
     private val metrikk: Metrikk,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
     @Value("\${ditt.sykefravaer.frontend.client.id}")
-    private val dittSykefravaerClientId: String
+    private val dittSykefravaerClientId: String,
 ) {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentArbeidstakersOppfolgingsplaner(): List<BrukerOppfolgingsplan> {
         val innloggetIdent =
-            TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId, dittSykefravaerClientId)
+            TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId, dittSykefravaerClientId)
                 .fnrFromIdportenTokenX()
                 .value
         val arbeidstakersOppfolgingsplaner: List<Oppfolgingsplan> =
@@ -55,7 +53,7 @@ class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun opprettOppfolgingsplanSomArbeidstaker(@RequestBody opprettOppfolgingsplan: OpprettOppfolgingsplanRequest): Long {
-        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val id = oppfolgingsplanService.opprettOppfolgingsplan(innloggetFnr, opprettOppfolgingsplan.virksomhetsnummer, innloggetFnr)
