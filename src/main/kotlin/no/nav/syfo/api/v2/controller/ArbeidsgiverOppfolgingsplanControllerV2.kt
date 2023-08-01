@@ -22,7 +22,7 @@ import javax.inject.Inject
 import javax.ws.rs.ForbiddenException
 
 @RestController
-@ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4"])
+@ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4", "acr=idporten-loa-high"], combineWithOr = true)
 @RequestMapping(value = ["/api/v2/arbeidsgiver/oppfolgingsplaner"])
 class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,

@@ -20,7 +20,7 @@ import org.springframework.http.MediaType.*
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4"])
+@ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4", "acr=idporten-loa-high"], combineWithOr = true)
 @RequestMapping(value = ["/api/v2/oppfolgingsplan/actions/{id}"])
 class OppfolgingsplanControllerV2 @Inject constructor(
     private val metrikk: Metrikk,
