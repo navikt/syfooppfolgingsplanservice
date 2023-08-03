@@ -21,14 +21,12 @@ class KommentarControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val kommentarService: KommentarService,
     private val metrikk: Metrikk,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
     @PostMapping(path = ["/slett"])
     fun slettKommentar(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         kommentarService.slettKommentar(id, innloggetIdent)

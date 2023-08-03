@@ -27,19 +27,17 @@ class NarmesteLedereControllerV3 @Inject constructor(
     private val metrikk: Metrikk,
     private val brukertilgangService: BrukertilgangService,
     private val narmesteLedereConsumer: NarmesteLedereConsumer,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
     @ResponseBody
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getNarmesteLedere(
-        @PathVariable("fnr") fnr: String
+        @PathVariable("fnr") fnr: String,
     ): ResponseEntity<List<NarmesteLeder>> {
         metrikk.tellHendelse("get_narmesteledere")
 
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
 

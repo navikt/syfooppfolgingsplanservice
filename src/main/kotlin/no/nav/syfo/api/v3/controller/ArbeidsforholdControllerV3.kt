@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.inject.Inject
 
-
 @RestController
 @ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4", "acr=idporten-loa-high"], combineWithOr = true)
 @RequestMapping(value = ["/api/v3/arbeidsforhold"])
@@ -29,8 +28,6 @@ class ArbeidsforholdControllerV3 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val arbeidsforholdService: ArbeidsforholdService,
     private val brukertilgangService: BrukertilgangService,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
@@ -39,8 +36,7 @@ class ArbeidsforholdControllerV3 @Inject constructor(
         @RequestParam("fnr") fnr: String,
         @RequestParam("virksomhetsnummer") virksomhetsnummer: String,
     ): ResponseEntity<List<Arbeidsforhold>> {
-
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
 

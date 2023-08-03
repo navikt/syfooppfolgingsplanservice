@@ -2,10 +2,10 @@ package no.nav.syfo.api.selvbetjening.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.model.Sykmelding
 import no.nav.syfo.api.v2.domain.sykmelding.SykmeldingV2
 import no.nav.syfo.api.v2.domain.sykmelding.toSykmeldingV2
+import no.nav.syfo.metric.Metrikk
+import no.nav.syfo.model.Sykmelding
 import no.nav.syfo.oidc.TokenUtil.getIssuerToken
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer
@@ -28,18 +28,16 @@ class ArbeidstakerSykmeldingerControllerV2 @Inject constructor(
     private val pdlConsumer: PdlConsumer,
     private val arbeidstakerSykmeldingerConsumer: ArbeidstakerSykmeldingerConsumer,
     private val tokenDingsConsumer: TokenDingsConsumer,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
     @Value("\${syfosmregister.id}")
-    private val targetApp: String? = null
+    private val targetApp: String? = null,
 ) {
     @ResponseBody
     @GetMapping
     fun getSendteSykmeldinger(@RequestParam(required = false) today: String?): ResponseEntity<List<SykmeldingV2>> {
         metrikk.tellHendelse("get_sykmeldinger")
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val issuerToken = getIssuerToken(contextHolder, TOKENX)
@@ -53,7 +51,7 @@ class ArbeidstakerSykmeldingerControllerV2 @Inject constructor(
             .orElseGet { emptyList() }
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(sendteSykmeldinger)
+            .status(HttpStatus.OK)
+            .body(sendteSykmeldinger)
     }
 }

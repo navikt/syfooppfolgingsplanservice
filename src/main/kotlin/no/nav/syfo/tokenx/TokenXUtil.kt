@@ -1,15 +1,14 @@
 package no.nav.syfo.tokenx
 
-import javax.ws.rs.ForbiddenException
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.security.token.support.core.jwt.JwtTokenClaims
 import no.nav.syfo.domain.Fodselsnummer
+import javax.ws.rs.ForbiddenException
 
 object TokenXUtil {
     @Throws(ForbiddenException::class)
     fun validateTokenXClaims(
         contextHolder: TokenValidationContextHolder,
-        requestedTokenxIdp: String,
         vararg requestedClientId: String,
     ): JwtTokenClaims {
         val context = contextHolder.tokenValidationContext
@@ -18,11 +17,6 @@ object TokenXUtil {
 
         if (!requestedClientId.toList().contains(clientId)) {
             throw ForbiddenException("Uventet client id $clientId")
-        }
-        val idp = claims.getStringClaim("idp")
-        if (idp != requestedTokenxIdp) {
-            // Check that  Idporten was IDP for tokenX
-            throw ForbiddenException("Uventet idp $idp, requestedTokenxIdp: $requestedTokenxIdp")
         }
         return claims
     }

@@ -27,14 +27,12 @@ class BrukerTilgangControllerV2 @Inject constructor(
     private val brukertilgangConsumer: BrukertilgangConsumer,
     private val brukertilgangService: BrukertilgangService,
     private val metrikk: Metrikk,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
     @GetMapping
     fun harTilgang(@RequestParam(value = "fnr", required = false) oppslaattFnr: String?): RSTilgang {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val oppslaattIdent = if (ObjectUtils.isEmpty(oppslaattFnr)) innloggetIdent else oppslaattFnr

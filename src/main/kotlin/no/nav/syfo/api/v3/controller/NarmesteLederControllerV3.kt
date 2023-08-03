@@ -28,8 +28,6 @@ class NarmesteLederControllerV3 @Inject constructor(
     private val metrikk: Metrikk,
     private val brukertilgangService: BrukertilgangService,
     private val narmesteLederConsumer: NarmesteLederConsumer,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
@@ -37,11 +35,11 @@ class NarmesteLederControllerV3 @Inject constructor(
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getNarmesteLeder(
         @PathVariable("fnr") fnr: String,
-        @RequestParam("virksomhetsnummer") virksomhetsnummer: String
+        @RequestParam("virksomhetsnummer") virksomhetsnummer: String,
     ): ResponseEntity<NarmesteLeder> {
         metrikk.tellHendelse("get_narmesteleder")
 
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
 

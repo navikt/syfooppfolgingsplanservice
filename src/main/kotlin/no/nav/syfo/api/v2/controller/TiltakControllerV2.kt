@@ -23,14 +23,12 @@ class TiltakControllerV2 @Inject constructor(
     private val kommentarService: KommentarService,
     private val tiltakService: TiltakService,
     private val metrikk: Metrikk,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
     @PostMapping(path = ["/slett"])
     fun slettTiltak(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         tiltakService.slettTiltak(id, innloggetIdent)
@@ -40,9 +38,9 @@ class TiltakControllerV2 @Inject constructor(
     @PostMapping(path = ["/lagreKommentar"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun lagreKommentar(
         @PathVariable("id") id: Long,
-        @RequestBody kommentarRequest: KommentarRequest
+        @RequestBody kommentarRequest: KommentarRequest,
     ): Long {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val kommentar = kommentarRequest.toKommentar()

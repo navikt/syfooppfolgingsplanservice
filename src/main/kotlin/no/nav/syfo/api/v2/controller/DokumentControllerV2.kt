@@ -23,14 +23,12 @@ class DokumentControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val pdfService: PdfService,
     private val metrikk: Metrikk,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
     @GetMapping
     fun hentPdf(@PathVariable("oppfolgingsplanId") oppfolgingsplanId: Long): ResponseEntity<*> {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val pdf = pdfService.hentPdf(oppfolgingsplanId, innloggetIdent)

@@ -16,30 +16,27 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.inject.Inject
 
-
 @RestController
 @ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4", "acr=idporten-loa-high"], combineWithOr = true)
 @RequestMapping(value = ["/api/v3/virksomhet/{virksomhetsnummer}"])
 class VirksomhetControllerV3 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val eregConsumer: EregConsumer,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getVirksomhet(
-        @PathVariable("virksomhetsnummer") virksomhetsnummer: String
+        @PathVariable("virksomhetsnummer") virksomhetsnummer: String,
     ): ResponseEntity<Virksomhet> {
-        TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(
                 Virksomhet(
                     virksomhetsnummer = virksomhetsnummer,
-                    navn = eregConsumer.virksomhetsnavn(virksomhetsnummer)
-                )
+                    navn = eregConsumer.virksomhetsnavn(virksomhetsnummer),
+                ),
             )
     }
 }
