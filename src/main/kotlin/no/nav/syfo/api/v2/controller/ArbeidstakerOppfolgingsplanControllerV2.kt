@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
 
 @RestController
-@ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4"])
+@ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4", "acr=idporten-loa-high"], combineWithOr = true)
 @RequestMapping(value = ["/api/v2/arbeidstaker/oppfolgingsplaner"])
 class ArbeidstakerOppfolgingsplanControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,

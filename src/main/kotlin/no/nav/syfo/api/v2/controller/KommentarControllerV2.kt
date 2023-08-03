@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.inject.Inject
 
 @RestController
-@ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4"])
+@ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4", "acr=idporten-loa-high"], combineWithOr = true)
 @RequestMapping(value = ["/api/v2/kommentar/actions/{id}"])
 class KommentarControllerV2 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
