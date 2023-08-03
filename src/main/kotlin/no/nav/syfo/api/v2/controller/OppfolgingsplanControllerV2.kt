@@ -1,15 +1,13 @@
 package no.nav.syfo.api.v2.controller
 
-import java.util.*
-import javax.inject.Inject
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.ArbeidsoppgaveRequest
-import no.nav.syfo.api.v2.mapper.toArbeidsoppgave
-import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
-import no.nav.syfo.api.v2.mapper.toTiltak
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.Gyldighetstidspunkt
+import no.nav.syfo.api.v2.domain.oppfolgingsplan.TiltakRequest
+import no.nav.syfo.api.v2.mapper.toArbeidsoppgave
 import no.nav.syfo.api.v2.mapper.toGyldighetstidspunkt
+import no.nav.syfo.api.v2.mapper.toTiltak
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.*
 import no.nav.syfo.tokenx.TokenXUtil
@@ -18,6 +16,8 @@ import no.nav.syfo.tokenx.TokenXUtil.fnrFromIdportenTokenX
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType.*
 import org.springframework.web.bind.annotation.*
+import java.util.*
+import javax.inject.Inject
 
 @RestController
 @ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4"])
@@ -30,15 +30,13 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     private val oppfolgingsplanService: OppfolgingsplanService,
     private val samtykkeService: SamtykkeService,
     private val tiltakService: TiltakService,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
 
     @PostMapping(path = ["/avbryt"])
     fun avbryt(@PathVariable("id") id: Long): Long {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val newId = oppfolgingsplanService.avbrytPlan(id, innloggetIdent)
@@ -48,7 +46,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/avvis"])
     fun avvis(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         godkjenningService.avvisGodkjenning(id, innloggetIdent)
@@ -57,7 +55,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/delmedfastlege"])
     fun delMedFastlege(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.delMedFastlege(id, innloggetIdent)
@@ -66,7 +64,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/delmednav"])
     fun delMedNav(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.delMedNav(id, innloggetIdent)
@@ -79,9 +77,9 @@ class OppfolgingsplanControllerV2 @Inject constructor(
         @RequestBody gyldighetstidspunkt: Gyldighetstidspunkt,
         @RequestParam("status") status: String,
         @RequestParam("aktoer") aktor: String,
-        @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
+        @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?,
     ) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val isPlanSharedWithNAV = Optional.ofNullable(delMedNav).orElse(false)
@@ -94,7 +92,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
             gyldighetstidspunkt.toGyldighetstidspunkt(),
             innloggetIdent,
             tvungenGodkjenning,
-            isPlanSharedWithNAV
+            isPlanSharedWithNAV,
         )
         metrikk.tellHendelse("godkjenn_plan")
     }
@@ -103,9 +101,9 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     fun godkjennEgenPlanArbeidsgiver(
         @PathVariable("id") id: Long,
         @RequestBody gyldighetstidspunkt: Gyldighetstidspunkt,
-        @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
+        @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?,
     ) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
 
@@ -124,9 +122,9 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     fun godkjenn(
         @PathVariable("id") id: Long,
         @RequestParam("aktoer") aktor: String,
-        @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?
+        @RequestParam(value = "delmednav", required = false) delMedNav: Boolean?,
     ) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val isPlanSharedWithNAV = Optional.ofNullable(delMedNav).orElse(false)
@@ -139,7 +137,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/kopier"], produces = [APPLICATION_JSON_VALUE])
     fun kopier(@PathVariable("id") id: Long): Long {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val nyPlanId = oppfolgingsplanService.kopierOppfoelgingsdialog(id, innloggetIdent)
@@ -150,13 +148,13 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     @PostMapping(
         path = ["/lagreArbeidsoppgave"],
         consumes = [APPLICATION_JSON_VALUE],
-        produces = [APPLICATION_JSON_VALUE]
+        produces = [APPLICATION_JSON_VALUE],
     )
     fun lagreArbeidsoppgave(
         @PathVariable("id") id: Long,
-        @RequestBody arbeidsoppgaveRequest: ArbeidsoppgaveRequest
+        @RequestBody arbeidsoppgaveRequest: ArbeidsoppgaveRequest,
     ): Long {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val arbeidsoppgave = arbeidsoppgaveRequest.toArbeidsoppgave()
@@ -166,9 +164,9 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     @PostMapping(path = ["/lagreTiltak"], consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun lagreTiltak(
         @PathVariable("id") id: Long,
-        @RequestBody tiltakRequest: TiltakRequest
+        @RequestBody tiltakRequest: TiltakRequest,
     ): Long {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         val tiltak = tiltakRequest.toTiltak()
@@ -177,7 +175,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/nullstillGodkjenning"])
     fun nullstillGodkjenning(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.nullstillGodkjenning(id, innloggetIdent)
@@ -187,9 +185,9 @@ class OppfolgingsplanControllerV2 @Inject constructor(
     @PostMapping(path = ["/samtykk"])
     fun samtykk(
         @PathVariable("id") id: Long,
-        @RequestParam("samtykke") samtykke: Boolean
+        @RequestParam("samtykke") samtykke: Boolean,
     ) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         samtykkeService.giSamtykke(id, innloggetIdent, samtykke)
@@ -198,7 +196,7 @@ class OppfolgingsplanControllerV2 @Inject constructor(
 
     @PostMapping(path = ["/sett"])
     fun sett(@PathVariable("id") id: Long) {
-        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
         oppfolgingsplanService.oppdaterSistInnlogget(id, innloggetIdent)

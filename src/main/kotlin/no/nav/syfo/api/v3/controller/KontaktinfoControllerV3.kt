@@ -2,8 +2,8 @@ package no.nav.syfo.api.v3.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.syfo.api.v3.domain.Kontaktinfo
 import no.nav.syfo.api.util.fodselsnummerInvalid
+import no.nav.syfo.api.v3.domain.Kontaktinfo
 import no.nav.syfo.dkif.DigitalKontaktinfo
 import no.nav.syfo.dkif.DkifConsumer
 import no.nav.syfo.service.BrukertilgangService
@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
 
-
 @RestController
 @ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4"])
 @RequestMapping(value = ["/api/v3/kontaktinfo/{fnr}"])
@@ -26,17 +25,15 @@ class KontaktinfoControllerV3 @Inject constructor(
     private val contextHolder: TokenValidationContextHolder,
     private val brukertilgangService: BrukertilgangService,
     private val dkifConsumer: DkifConsumer,
-    @Value("\${tokenx.idp}")
-    private val tokenxIdp: String,
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
     @ResponseBody
     @GetMapping(produces = [APPLICATION_JSON_VALUE])
     fun getKontaktinfo(
-        @PathVariable("fnr") fnr: String
+        @PathVariable("fnr") fnr: String,
     ): ResponseEntity<Kontaktinfo> {
-        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, tokenxIdp, oppfolgingsplanClientId)
+        val innloggetFnr = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
             .fnrFromIdportenTokenX()
             .value
 
@@ -55,15 +52,16 @@ class KontaktinfoControllerV3 @Inject constructor(
                 val kontaktinfo = dkifConsumer.kontaktinformasjon(fnr)
                 ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(Kontaktinfo(
-                        fnr = fnr,
-                        epost = kontaktinfo.epostadresse,
-                        tlf = kontaktinfo.mobiltelefonnummer,
-                        skalHaVarsel = kanVarsles(kontaktinfo)
-                    ))
+                    .body(
+                        Kontaktinfo(
+                            fnr = fnr,
+                            epost = kontaktinfo.epostadresse,
+                            tlf = kontaktinfo.mobiltelefonnummer,
+                            skalHaVarsel = kanVarsles(kontaktinfo),
+                        ),
+                    )
             }
         }
-
     }
 
     private fun kanVarsles(digitalKontaktinfo: DigitalKontaktinfo) =
