@@ -44,9 +44,6 @@ class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var sykmeldingerController: ArbeidstakerSykmeldingerControllerV2
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
@@ -62,7 +59,7 @@ class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
 
     @Before
     fun setup() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
 
         `when`(pdlConsumer.aktorid(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
         `when`(tokenDingsConsumer.exchangeToken(anyString(), anyString())).thenReturn(encodedTokenX)

@@ -21,15 +21,12 @@ class KommentarControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var metrikk: Metrikk
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
     @Test
     fun sletter_tiltak_som_bruker() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
         val kommentarId = 1L
         kommentarController.slettKommentar(kommentarId)
         verify(kommentarService).slettKommentar(kommentarId, ARBEIDSTAKER_FNR)

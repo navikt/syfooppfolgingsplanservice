@@ -52,15 +52,12 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var tiltakService: TiltakService
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
     @Before
     fun setup() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
     }
 
     @Test
@@ -134,7 +131,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun godkjenn_plan_som_bruker_tvungen() {
         loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "tvungenGodkjenning", "arbeidsgiver", null)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), LEDER_FNR, true, false)
         verify(metrikk).tellHendelse("godkjenn_plan")
@@ -144,7 +141,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun godkjenn_plan_som_bruker_tvungen_del_med_nav() {
         loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "tvungenGodkjenning", "arbeidsgiver", true)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), LEDER_FNR, true, true)
         verify(metrikk).tellHendelse("godkjenn_plan")
@@ -176,7 +173,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun godkjennsist_plan_som_arbeidsgiver() {
         loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidsgiver", null)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, false)
         verify(metrikk).tellHendelse("godkjenn_plan_svar")
@@ -186,7 +183,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun godkjennsist_plan_som_arbeidsgiver_del_med_nav() {
         loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidsgiver", true)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, true)
         verify(metrikk).tellHendelse("godkjenn_plan_svar")
@@ -202,7 +199,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @Test
     fun godkjenn_plan_som_egen_arbeidsgiver_med_nav() {
         loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
 
         oppfolgingsplanController.godkjennEgenPlanArbeidsgiver(oppfolgingsplanId, Gyldighetstidspunkt(), true)
         verify(godkjenningService).godkjennLederSinEgenOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), LEDER_FNR, true)

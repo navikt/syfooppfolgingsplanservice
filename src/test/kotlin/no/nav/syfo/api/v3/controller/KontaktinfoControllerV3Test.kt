@@ -31,15 +31,12 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var kontaktinfoController: KontaktinfoControllerV3
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
     @Test
     fun narmesteLeder_ansatt_ok() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(
@@ -62,7 +59,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_self_ok() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
         val digitalKontaktinfo = generateDigitalKontaktinfo()
         `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
@@ -77,7 +74,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_forbidden() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
 
         val res: ResponseEntity<*> = kontaktinfoController.getKontaktinfo(ARBEIDSTAKER_FNR)
@@ -86,7 +83,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun skal_ha_varsel_naar_kan_varsles_og_er_ikke_reservert() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(
@@ -106,7 +103,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun skal_ikke_ha_varsel_naar_ikke_kan_varsles_og_er_ikke_reservert() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(
@@ -126,7 +123,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun skal_ikke_ha_varsel_naar_ikke_kan_varsles_og_er_reservert() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(
@@ -146,7 +143,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun skal_ikke_ha_varsel_naar_kan_varsles_og_er_reservert() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
 
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         val digitalKontaktinfo = DigitalKontaktinfo(

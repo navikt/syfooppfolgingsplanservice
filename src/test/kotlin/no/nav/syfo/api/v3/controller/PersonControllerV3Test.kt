@@ -29,15 +29,12 @@ class PersonControllerV3Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var personController: PersonControllerV3
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
     @Test
     fun narmesteLeder_ansatt_ok() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(pdlConsumer.person(ARBEIDSTAKER_FNR))
             .thenReturn(PdlHentPerson(PdlPerson(listOf(PdlPersonNavn("Test", "Junior", "Testesen")), emptyList())))
@@ -50,7 +47,7 @@ class PersonControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_self_ok() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
         `when`(pdlConsumer.person(ARBEIDSTAKER_FNR))
             .thenReturn(PdlHentPerson(PdlPerson(listOf(PdlPersonNavn("Test", "Junior", "Testesen")), emptyList())))
         val res: ResponseEntity<*> = personController.getPerson(ARBEIDSTAKER_FNR)
@@ -62,7 +59,7 @@ class PersonControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_noContent() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(pdlConsumer.person(ARBEIDSTAKER_FNR))
             .thenReturn(null)
@@ -72,7 +69,7 @@ class PersonControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_forbidden() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
 
         val res: ResponseEntity<*> = personController.getPerson(ARBEIDSTAKER_FNR)
