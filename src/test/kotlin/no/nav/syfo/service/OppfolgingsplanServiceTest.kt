@@ -87,16 +87,13 @@ class OppfolgingsplanServiceTest {
     @Inject
     private lateinit var oppfolgingsplanService: OppfolgingsplanService
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
     @Before
     fun setUp() {
         mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build()
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
     }
 
     @After

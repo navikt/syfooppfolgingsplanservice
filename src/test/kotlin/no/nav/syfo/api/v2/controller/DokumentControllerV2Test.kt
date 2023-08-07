@@ -24,15 +24,12 @@ class DokumentControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var metrikk: Metrikk
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
     @Test
     fun hent_pdf_som_bruker() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
         val oppfolgingsplanId = 1L
         val pdf = ByteArray(10)
         `when`(pdfService.hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(pdf)

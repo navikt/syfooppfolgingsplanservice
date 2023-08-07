@@ -30,9 +30,6 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var arbeidsforholdController: ArbeidsforholdControllerV3
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
@@ -40,7 +37,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_ansatt_ok() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER)))
             .thenReturn(listOf(stilling))
@@ -56,7 +53,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_self_ok() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
         `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER)))
             .thenReturn(listOf(stilling))
         val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
@@ -71,7 +68,7 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_forbidden() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
 
         val res: ResponseEntity<*> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)

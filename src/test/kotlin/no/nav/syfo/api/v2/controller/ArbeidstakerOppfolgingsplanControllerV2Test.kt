@@ -39,15 +39,12 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Inject
     private lateinit var arbeidstakerOppfolgingsplanController: ArbeidstakerOppfolgingsplanControllerV2
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
     @Before
     fun setup() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
     }
 
     @Test

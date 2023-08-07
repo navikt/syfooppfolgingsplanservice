@@ -31,9 +31,6 @@ class NarmesteLedereControllerV3Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var narmesteLedereController: NarmesteLedereControllerV3
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
@@ -47,7 +44,7 @@ class NarmesteLedereControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_ansatt_ok() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(narmesteLedereConsumer.narmesteLedere(ARBEIDSTAKER_FNR))
             .thenReturn(Optional.of(naermesteledere))
@@ -64,7 +61,7 @@ class NarmesteLedereControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_self_ok() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
         `when`(narmesteLedereConsumer.narmesteLedere(ARBEIDSTAKER_FNR))
             .thenReturn(Optional.of(listOf(naermesteleder)))
         val res: ResponseEntity<List<NarmesteLeder>> = narmesteLedereController.getNarmesteLedere(ARBEIDSTAKER_FNR)
@@ -80,7 +77,7 @@ class NarmesteLedereControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_noContent() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(narmesteLedereConsumer.narmesteLedere(ARBEIDSTAKER_FNR)).thenReturn(Optional.empty())
         val res: ResponseEntity<*> = narmesteLedereController.getNarmesteLedere(ARBEIDSTAKER_FNR)
@@ -89,7 +86,7 @@ class NarmesteLedereControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_forbidden() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
         val res: ResponseEntity<*> = narmesteLedereController.getNarmesteLedere(ARBEIDSTAKER_FNR)
         assertEquals(403, res.statusCodeValue.toLong())

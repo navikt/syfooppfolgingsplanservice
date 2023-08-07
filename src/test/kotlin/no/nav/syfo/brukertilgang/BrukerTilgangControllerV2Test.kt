@@ -34,9 +34,6 @@ class BrukerTilgangControllerV2Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var brukerTilgangController: BrukerTilgangControllerV2
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
@@ -142,6 +139,6 @@ class BrukerTilgangControllerV2Test : AbstractRessursTilgangTest() {
     }
 
     fun loggInnBruker(fnr: String) {
-        loggInnBrukerTokenX(contextHolder, fnr, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, fnr, oppfolgingsplanClientId)
     }
 }

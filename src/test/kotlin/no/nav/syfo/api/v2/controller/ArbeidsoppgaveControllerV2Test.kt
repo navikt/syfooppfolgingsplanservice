@@ -17,15 +17,12 @@ class ArbeidsoppgaveControllerV2Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var arbeidsoppgaveController: ArbeidsoppgaveControllerV2
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
     @Test
     fun sletter_arbeidsoppgave_som_bruker() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
         arbeidsoppgaveController.slettArbeidsoppgave(1L)
         verify(arbeidsoppgaveService).slettArbeidsoppgave(1L, ARBEIDSTAKER_FNR)
     }

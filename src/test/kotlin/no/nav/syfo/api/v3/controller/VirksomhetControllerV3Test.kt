@@ -22,9 +22,6 @@ class VirksomhetControllerV3Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var virksomhetController: VirksomhetControllerV3
 
-    @Value("\${tokenx.idp}")
-    private lateinit var tokenxIdp: String
-
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private lateinit var oppfolgingsplanClientId: String
 
@@ -34,7 +31,7 @@ class VirksomhetControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun virksomhet_ok() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId, tokenxIdp)
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
         `when`(eregConsumer.virksomhetsnavn(VIRKSOMHETSNUMMER))
             .thenReturn(virksomhetsNavn)
         val res: ResponseEntity<*> = virksomhetController.getVirksomhet(VIRKSOMHETSNUMMER)
