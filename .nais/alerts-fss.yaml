@@ -36,12 +36,3 @@ spec:
           labels:
             namespace: team-esyfo
             severity: warning
-        - alert: ALTINN KAFKA OPPFOLGINGSPLAN CONSUMER LAG
-          expr: kafka_consumergroup_group_topic_sum_lag{topic="aapen-altinn-oppfolgingsplan-Mottatt", group="kafka2jms-oppfolgingsplan"} > 0
-          for: 15m
-          annotations:
-            summary: "syfooppfolgingsplanservice har ukonsumerte Kafkameldinger på Altinn-topic aapen-altinn-oppfolgingsplan-Mottatt"
-            action: "Finn ut hvorfor syfooppfolgingsplanservice har stoppet å konsumere fra topic"
-          labels:
-            namespace: team-esyfo
-            severity: warning
