@@ -73,8 +73,8 @@ client.secret: clientSecret
 
 dev: true
 
-syfotilgangskontroll.client.id: "syfotilgangskontrollId"
-tilgangskontrollapi.url: "https://www.ikke.no"
+istilgangskontroll.client.id: "istilgangskontrollId"
+istilgangskontroll.url: "https://www.ikke.no"
 
 altinn.password: password
 altinn.username: username

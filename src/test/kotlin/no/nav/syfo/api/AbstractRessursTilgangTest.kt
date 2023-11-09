@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate
 import javax.inject.Inject
 
 /**
- * Hensikten her er å samle koden som mock svar fra syfo-tilgangskontroll.
+ * Hensikten her er å samle koden som mock svar fra istilgangskontroll.
  * Subklasser arver tilgangskontrollResponse, som de kan sette opp til å returnere 200 OK, 403 Forbidden eller
  * 500-feil.
  */
@@ -28,11 +28,8 @@ abstract class AbstractRessursTilgangTest {
     @Value("\${azure.openid.config.token.endpoint}")
     lateinit var azureTokenEndpoint: String
 
-    @Value("\${tilgangskontrollapi.url}")
+    @Value("\${istilgangskontroll.url}")
     lateinit var tilgangskontrollUrl: String
-
-    @Value("\${dev}")
-    private lateinit var dev: String
 
     @Inject
     lateinit var contextHolder: TokenValidationContextHolder
