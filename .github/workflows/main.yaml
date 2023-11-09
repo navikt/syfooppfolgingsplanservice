@@ -62,7 +62,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
-          RESOURCE: naiserator-dev.yaml
+          RESOURCE: .nais/naiserator-dev.yaml
           VAR: image=${{ needs.build.outputs.image }}
 
       # Notify Slack
@@ -87,7 +87,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
-          RESOURCE: naiserator-prod.yaml
+          RESOURCE: .nais/naiserator-prod.yaml
           VAR: image=${{ needs.build.outputs.image }}
 
       # Notify Slack
