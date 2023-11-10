@@ -102,6 +102,7 @@ class VeilederTilgangConsumer(
         httpEntity: HttpEntity<String>,
         url: String,
     ): Boolean {
+        LOG.info("Url istilgangskontroll $url")
         return try {
             val tilgang = template.exchange(
                 url,
