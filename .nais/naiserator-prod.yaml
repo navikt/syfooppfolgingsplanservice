@@ -121,7 +121,7 @@ spec:
     - name: ISTILGANGSKONTROLL_CLIENT_ID
       value: prod-gcp.teamsykefravr.istilgangskontroll
     - name: ISTILGANGSKONTROLL_URL
-      value: http://istilgangskontroll.teamsykefravr
+      value: https://istilgangskontroll.intern.nav.no
     - name: DOKARKIV_URL
       value: https://dokarkiv.nais.adeo.no
     - name: DKIF_URL
