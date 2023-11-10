@@ -9,7 +9,7 @@ import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.VEILEDER_ID
 import no.nav.syfo.testhelper.loggInnVeilederAzureADV2
-import no.nav.syfo.testhelper.mockSvarFraSyfoTilgangskontrollV2TilgangTilBruker
+import no.nav.syfo.testhelper.mockSvarFraIstilgangskontrollTilgangTilBruker
 import org.junit.*
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
@@ -46,51 +46,51 @@ class OppfolgingsplanInternControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test
     fun historyHasAccess() {
-        mockSvarFraSyfoTilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.OK)
+        mockSvarFraIstilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.OK)
         oppfolgingsplanInternController.getHistorikk(ARBEIDSTAKER_FNR)
     }
 
     @Test(expected = ForbiddenException::class)
     fun historyNoAccess() {
-        mockSvarFraSyfoTilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.FORBIDDEN)
+        mockSvarFraIstilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.FORBIDDEN)
         oppfolgingsplanInternController.getHistorikk(ARBEIDSTAKER_FNR)
     }
 
     @Test(expected = RuntimeException::class)
     fun historyServerError() {
-        mockSvarFraSyfoTilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.INTERNAL_SERVER_ERROR)
+        mockSvarFraIstilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.INTERNAL_SERVER_ERROR)
         oppfolgingsplanInternController.getHistorikk(ARBEIDSTAKER_FNR)
     }
 
     @Test
     fun oppfolgingsplanerHasAccess() {
-        mockSvarFraSyfoTilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.OK)
+        mockSvarFraIstilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.OK)
         oppfolgingsplanInternController.getOppfolgingsplaner(ARBEIDSTAKER_FNR)
     }
 
     @Test(expected = ForbiddenException::class)
     fun oppfolgingsplanerNoAccess() {
-        mockSvarFraSyfoTilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.FORBIDDEN)
+        mockSvarFraIstilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.FORBIDDEN)
         oppfolgingsplanInternController.getOppfolgingsplaner(ARBEIDSTAKER_FNR)
     }
 
     @Test(expected = RuntimeException::class)
     fun oppfolgingsplanerServerError() {
-        mockSvarFraSyfoTilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.INTERNAL_SERVER_ERROR)
+        mockSvarFraIstilgangskontrollBruker(ARBEIDSTAKER_FNR, HttpStatus.INTERNAL_SERVER_ERROR)
         oppfolgingsplanInternController.getOppfolgingsplaner(ARBEIDSTAKER_FNR)
     }
 
-    private fun mockSvarFraSyfoTilgangskontrollBruker(
+    private fun mockSvarFraIstilgangskontrollBruker(
         fnr: String,
-        status: HttpStatus
+        status: HttpStatus,
     ) {
-        mockSvarFraSyfoTilgangskontrollV2TilgangTilBruker(
+        mockSvarFraIstilgangskontrollTilgangTilBruker(
             azureTokenEndpoint = azureTokenEndpoint,
             tilgangskontrollUrl = tilgangskontrollUrl,
             mockRestServiceServer = mockRestServiceServer,
             mockRestServiceWithProxyServer = mockRestServiceWithProxyServer,
             status = status,
-            fnr = fnr
+            fnr = fnr,
         )
     }
 }

@@ -103,19 +103,19 @@ class VeilederTilgangConsumer(
         url: String,
     ): Boolean {
         return try {
-            template.exchange(
+            val tilgang = template.exchange(
                 url,
                 HttpMethod.GET,
                 httpEntity,
-                String::class.java,
+                Tilgang::class.java,
             )
-            true
+            tilgang.body!!.erGodkjent
         } catch (e: HttpClientErrorException) {
             if (e.rawStatusCode == 403) {
                 false
             } else {
                 metric.tellHendelse(METRIC_CALL_VEILEDERTILGANG_USER_FAIL)
-                LOG.error("Error requesting ansatt access from syfobrukertilgang with status-${e.rawStatusCode} callId-${httpEntity.headers[NAV_CALL_ID_HEADER]}: ", e)
+                LOG.error("Error requesting ansatt access from istilgangskontroll with status-${e.rawStatusCode} callId-${httpEntity.headers[NAV_CALL_ID_HEADER]}: ", e)
                 throw e
             }
         }
