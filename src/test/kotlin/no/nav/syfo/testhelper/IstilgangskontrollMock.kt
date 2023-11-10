@@ -2,12 +2,14 @@ package no.nav.syfo.testhelper
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import no.nav.syfo.veiledertilgang.Tilgang
 import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer.Companion.TILGANGSKONTROLL_PERSON_PATH
 import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer.Companion.TILGANGSKONTROLL_SYFO_PATH
-import org.springframework.http.*
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.test.web.client.ExpectedCount
 import org.springframework.test.web.client.MockRestServiceServer
 import org.springframework.test.web.client.ResponseCreator
@@ -69,8 +71,6 @@ private fun response(status: HttpStatus): ResponseCreator {
 
 private fun tilgangAsJsonString(): String {
     val objectMapper = ObjectMapper()
-    val module = JavaTimeModule()
-    objectMapper.registerModule(module)
     val tilgang = Tilgang(erGodkjent = true)
     return try {
         objectMapper.writeValueAsString(tilgang)
