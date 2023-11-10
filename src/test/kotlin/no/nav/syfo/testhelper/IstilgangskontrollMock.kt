@@ -1,22 +1,29 @@
 package no.nav.syfo.testhelper
 
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
+import no.nav.syfo.veiledertilgang.Tilgang
 import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer.Companion.TILGANGSKONTROLL_PERSON_PATH
 import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer.Companion.TILGANGSKONTROLL_SYFO_PATH
-import org.springframework.http.*
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.test.web.client.ExpectedCount
 import org.springframework.test.web.client.MockRestServiceServer
+import org.springframework.test.web.client.ResponseCreator
 import org.springframework.test.web.client.match.MockRestRequestMatchers
 import org.springframework.test.web.client.response.MockRestResponseCreators
 import org.springframework.web.util.UriComponentsBuilder
 
-fun mockSvarFraSyfoTilgangskontrollV2TilgangTilBruker(
+fun mockSvarFraIstilgangskontrollTilgangTilBruker(
     azureTokenEndpoint: String,
     tilgangskontrollUrl: String,
     mockRestServiceWithProxyServer: MockRestServiceServer,
     mockRestServiceServer: MockRestServiceServer,
     status: HttpStatus,
-    fnr: String
+    fnr: String,
 ) {
     mockAndExpectAzureADV2(mockRestServiceWithProxyServer, azureTokenEndpoint, generateAzureAdV2TokenResponse())
 
@@ -29,15 +36,15 @@ fun mockSvarFraSyfoTilgangskontrollV2TilgangTilBruker(
         .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
         .andExpect(MockRestRequestMatchers.header(HttpHeaders.AUTHORIZATION, "Bearer $oboToken"))
         .andExpect(MockRestRequestMatchers.header(NAV_PERSONIDENT_HEADER, fnr))
-        .andRespond(MockRestResponseCreators.withStatus(status))
+        .andRespond(response(status))
 }
 
-fun mockSvarFraSyfoTilgangskontrollV2TilgangTilSYFO(
+fun mockSvarFraIstilgangskontrollTilgangTilSYFO(
     azureTokenEndpoint: String,
     tilgangskontrollUrl: String,
     mockRestServiceWithProxyServer: MockRestServiceServer,
     mockRestServiceServer: MockRestServiceServer,
-    status: HttpStatus
+    status: HttpStatus,
 ) {
     mockAndExpectAzureADV2(mockRestServiceWithProxyServer, azureTokenEndpoint, generateAzureAdV2TokenResponse())
 
@@ -49,5 +56,25 @@ fun mockSvarFraSyfoTilgangskontrollV2TilgangTilSYFO(
     mockRestServiceServer.expect(ExpectedCount.manyTimes(), MockRestRequestMatchers.requestTo(uriString))
         .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
         .andExpect(MockRestRequestMatchers.header(HttpHeaders.AUTHORIZATION, "Bearer $oboToken"))
-        .andRespond(MockRestResponseCreators.withStatus(status))
+        .andRespond(response(status))
+}
+
+private fun response(status: HttpStatus): ResponseCreator {
+    return if (status == HttpStatus.OK) {
+        MockRestResponseCreators.withSuccess(tilgangAsJsonString(), MediaType.APPLICATION_JSON)
+    } else {
+        MockRestResponseCreators.withStatus(
+            status,
+        )
+    }
+}
+
+private fun tilgangAsJsonString(): String {
+    val objectMapper = ObjectMapper()
+    val tilgang = Tilgang(erGodkjent = true)
+    return try {
+        objectMapper.writeValueAsString(tilgang)
+    } catch (e: JsonProcessingException) {
+        throw RuntimeException(e)
+    }
 }
