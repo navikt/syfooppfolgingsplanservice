@@ -42,7 +42,7 @@ class VeilederTilgangConsumer(
         }
     }
 
-    fun hasVeilederAccessToPersonWithOBO(fnr: Fodselsnummer): Boolean {
+    private fun hasVeilederAccessToPersonWithOBO(fnr: Fodselsnummer): Boolean {
         val oboToken = azureAdV2TokenConsumer.getOnBehalfOfToken(
             scopeClientId = istilgangskontrollClientId,
             token = getIssuerToken(contextHolder, OIDCIssuer.INTERN_AZUREAD_V2),
@@ -64,7 +64,7 @@ class VeilederTilgangConsumer(
         }
     }
 
-    fun hasVeilederAccessToSYFOWithOBO(): Boolean {
+    private fun hasVeilederAccessToSYFOWithOBO(): Boolean {
         val oboToken = azureAdV2TokenConsumer.getOnBehalfOfToken(
             scopeClientId = istilgangskontrollClientId,
             token = getIssuerToken(contextHolder, OIDCIssuer.INTERN_AZUREAD_V2),
