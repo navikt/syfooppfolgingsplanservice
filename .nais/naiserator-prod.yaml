@@ -64,7 +64,7 @@ spec:
         - application: syfobrukertilgang
           namespace: team-esyfo
           cluster: prod-gcp
-        - application: syfooppfolgingsplanservice
+        - application: digdir-krr-proxy
           namespace: team-rocket
           cluster: prod-gcp
   azure:
