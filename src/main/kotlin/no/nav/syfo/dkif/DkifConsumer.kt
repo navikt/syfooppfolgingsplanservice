@@ -21,7 +21,7 @@ class DkifConsumer @Autowired constructor (
     private val azureAdTokenConsumer: AzureAdTokenConsumer,
     private val metric: Metrikk,
     @Value("\${dkif.scope}") private val dkifScope: String,
-    @Value("\${dkif.url") val dkifUrl: String
+    @Value("\${dkif.url}") val dkifUrl: String
 ) {
     @Cacheable(cacheNames = [CacheConfig.CACHENAME_DKIF_FNR], key = "#fnr", condition = "#fnr != null")
     fun kontaktinformasjon(fnr: String): DigitalKontaktinfo {
