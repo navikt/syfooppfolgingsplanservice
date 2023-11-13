@@ -51,6 +51,7 @@ felleskodeverk.url: "http://kodeverk.url"
 syfosmregister.url: "http://syfosmregister.url"
 syfosmregister.id: "localhost:teamsykmelding:syfosmregister"
 dkif.url: "http://dkif.url"
+dkif.scope: "dkif.scope"
 
 narmesteleder.url: "http://narmesteleder.url"
 narmesteleder.scope: "narmesteleder.scope"

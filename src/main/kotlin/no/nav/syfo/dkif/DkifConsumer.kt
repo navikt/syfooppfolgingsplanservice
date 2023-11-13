@@ -5,6 +5,9 @@ import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import no.nav.syfo.config.CacheConfig
+import no.nav.syfo.metric.Metrikk
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientResponseException
@@ -16,10 +19,11 @@ import java.util.*
 class DkifConsumer @Autowired constructor (
     private val restTemplate: RestTemplate,
     private val azureAdTokenConsumer: AzureAdTokenConsumer,
+    private val metric: Metrikk,
     @Value("\${dkif.scope}") private val dkifScope: String,
     @Value("\${dkif.url") val dkifUrl: String
 ) {
-
+    @Cacheable(cacheNames = [CacheConfig.CACHENAME_DKIF_FNR], key = "#fnr", condition = "#fnr != null")
     fun kontaktinformasjon(fnr: String): DigitalKontaktinfo {
         val accessToken = "Bearer ${azureAdTokenConsumer.getAccessToken(dkifScope)}"
 
@@ -32,12 +36,14 @@ class DkifConsumer @Autowired constructor (
             )
             if (response.statusCode == HttpStatus.OK) {
                 return response.body?.let {
+                    metric.countOutgoingReponses(METRIC_CALL_DKIF, response.statusCodeValue)
                     KontaktinfoMapper.mapPerson(it)
                 } ?: throw DKIFRequestFailedException("ReponseBody is null")
             }
             throw DKIFRequestFailedException("Received response with status code: ${response.statusCodeValue}")
         } catch (e: RestClientResponseException) {
             log.error("Error in call to DKIF: ${e.message}", e)
+            metric.countOutgoingReponses(METRIC_CALL_DKIF, e.rawStatusCode)
             throw e
         }
     }
@@ -52,7 +58,9 @@ class DkifConsumer @Autowired constructor (
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(DkifConsumer::class.java.name)
+        private val log = LoggerFactory.getLogger(DkifConsumer::class.java)
+
+        const val METRIC_CALL_DKIF = "call_dkif"
 
         private fun createCallId(): String {
             val randomUUID = UUID.randomUUID().toString()
