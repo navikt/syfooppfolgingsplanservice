@@ -64,6 +64,9 @@ spec:
         - application: syfobrukertilgang
           namespace: team-esyfo
           cluster: prod-gcp
+        - application: syfooppfolgingsplanservice
+          namespace: team-rocket
+          cluster: prod-gcp
   azure:
     application:
       allowAllUsers: true
@@ -125,7 +128,7 @@ spec:
     - name: DOKARKIV_URL
       value: https://dokarkiv.nais.adeo.no
     - name: DKIF_URL
-      value: https://dkif.intern.nav.no
+      value: http://digdir-krr-proxy.team-rocket/rest/v1/person
     - name: DKIF_SCOPE
       value: api://prod-gcp.team-rocket.digdir-krr-proxy/.default
     - name: CLIENT_ID

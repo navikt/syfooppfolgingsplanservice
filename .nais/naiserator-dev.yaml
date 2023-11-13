@@ -70,6 +70,9 @@ spec:
         - application: syfobrukertilgang
           namespace: team-esyfo
           cluster: dev-gcp
+        - application: syfooppfolgingsplanservice
+          namespace: team-rocket
+          cluster: dev-gcp
       external:
         - host: narmesteleder.intern.dev.nav.no
   azure:
@@ -130,7 +133,7 @@ spec:
     - name: ISTILGANGSKONTROLL_URL
       value: https://istilgangskontroll.intern.dev.nav.no
     - name: DKIF_URL
-      value: https://dkif.dev.intern.nav.no
+      value: http://digdir-krr-proxy.team-rocket/rest/v1/person
     - name: DKIF_SCOPE
       value: api://dev-gcp.team-rocket.digdir-krr-proxy/.default
     - name: DOKARKIV_URL
