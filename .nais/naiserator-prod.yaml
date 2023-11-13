@@ -126,6 +126,8 @@ spec:
       value: https://dokarkiv.nais.adeo.no
     - name: DKIF_URL
       value: https://dkif.intern.nav.no
+    - name: DKIF_SCOPE
+      value: api://prod-gcp.team-rocket.digdir-krr-proxy/.default
     - name: CLIENT_ID
       value: 970b2069-0b53-492f-bd7a-acadfa211e9f
     - name: PDL_URL

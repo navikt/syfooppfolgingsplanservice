@@ -131,6 +131,8 @@ spec:
       value: https://istilgangskontroll.intern.dev.nav.no
     - name: DKIF_URL
       value: https://dkif.dev.intern.nav.no
+    - name: DKIF_SCOPE
+      value: api://dev-gcp.team-rocket.digdir-krr-proxy/.default
     - name: DOKARKIV_URL
       value: https://dokarkiv-q1.nais.preprod.local
     - name: CLIENT_ID
