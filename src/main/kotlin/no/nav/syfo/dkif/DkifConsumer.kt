@@ -6,12 +6,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
+import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestTemplate
 import java.util.*
 
 
-
+@Service
 class DkifConsumer @Autowired constructor (
     private val restTemplate: RestTemplate,
     private val azureAdTokenConsumer: AzureAdTokenConsumer,
