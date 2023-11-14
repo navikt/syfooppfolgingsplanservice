@@ -154,7 +154,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:4.10")
     implementation("commons-io:commons-io:2.5")
     implementation("com.lowagie:itext:2.1.7")
-    implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20171016.1")
+    implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20220608.1")
     implementation("javax.ws.rs:javax.ws.rs-api:2.0.1")
     implementation("javax.inject:javax.inject:1")
     implementation("org.apache.pdfbox:pdfbox:2.0.25")
