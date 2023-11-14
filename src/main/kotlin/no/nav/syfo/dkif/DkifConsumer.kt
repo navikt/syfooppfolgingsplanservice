@@ -1,89 +1,70 @@
 package no.nav.syfo.dkif
 
-import no.nav.syfo.config.CacheConfig
-import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.sts.StsConsumer
+import no.nav.syfo.azuread.AzureAdTokenConsumer
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
-import org.springframework.cache.annotation.Cacheable
-import org.springframework.core.ParameterizedTypeReference
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import no.nav.syfo.config.CacheConfig
+import no.nav.syfo.metric.Metrikk
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestTemplate
+import java.util.*
+
 
 @Service
-class DkifConsumer(
-        @Value("\${dkif.url}") private val baseUrl: String,
-        private val metric: Metrikk,
-        private val stsConsumer: StsConsumer,
-        private val template: RestTemplate
+class DkifConsumer @Autowired constructor (
+    private val restTemplate: RestTemplate,
+    private val azureAdTokenConsumer: AzureAdTokenConsumer,
+    private val metric: Metrikk,
+    @Value("\${dkif.scope}") private val dkifScope: String,
+    @Value("\${dkif.url}") val dkifUrl: String
 ) {
-    @Cacheable(cacheNames = [CacheConfig.CACHENAME_DKIF_IDENT], key = "#ident", condition = "#ident != null")
-    fun kontaktinformasjon(ident: String): DigitalKontaktinfo {
-        val bearer = stsConsumer.token()
+    @Cacheable(cacheNames = [CacheConfig.CACHENAME_DKIF_FNR], key = "#fnr", condition = "#fnr != null")
+    fun kontaktinformasjon(fnr: String): DigitalKontaktinfo {
+        val accessToken = "Bearer ${azureAdTokenConsumer.getAccessToken(dkifScope)}"
 
         try {
-            val requestUrl = "$baseUrl/api/v1/personer/kontaktinformasjon"
-            val response = template.exchange<DigitalKontaktinfoBolk>(
-                    requestUrl,
-                    HttpMethod.GET,
-                    entity(ident, bearer),
-                    object : ParameterizedTypeReference<DigitalKontaktinfoBolk>() {}
+            val response = restTemplate.exchange(
+                dkifUrl,
+                HttpMethod.GET,
+                entity(fnr, accessToken),
+                String::class.java
             )
-            val responseBody = response.body
-
-            if (responseBody != null) {
-                val kontaktinfo = responseBody.kontaktinfo?.get(ident)
-                val feil = responseBody.feil?.get(ident)
-                when {
-                    kontaktinfo != null -> {
-                        metric.countOutgoingReponses(METRIC_CALL_DKIF, response.statusCodeValue)
-                        return kontaktinfo
-                    }
-                    feil != null -> {
-                        if (feil.melding == "Ingen kontaktinformasjon er registrert på personen") {
-                            return DigitalKontaktinfo(
-                                    kanVarsles = false,
-                                    personident = ident
-                            )
-                        } else {
-                            throw DKIFRequestFailedException(feil.melding)
-                        }
-                    }
-                    else -> {
-                        throw DKIFRequestFailedException("Kontaktinfo is null")
-                    }
-                }
-            } else {
-                throw DKIFRequestFailedException("ReponseBody is null")
+            if (response.statusCode == HttpStatus.OK) {
+                return response.body?.let {
+                    metric.countOutgoingReponses(METRIC_CALL_DKIF, response.statusCodeValue)
+                    KontaktinfoMapper.mapPerson(it)
+                } ?: throw DKIFRequestFailedException("ReponseBody is null")
             }
-        } catch (e: DKIFRequestFailedException) {
-            LOG.error("Failed to get Kontaktinfo from DKIF with error: ${e.message}")
-            throw e
+            throw DKIFRequestFailedException("Received response with status code: ${response.statusCodeValue}")
         } catch (e: RestClientResponseException) {
-            LOG.error("Request to get Kontaktinfo from DKIF failed with HTTP-status: ${e.rawStatusCode} and ${e.statusText}")
+            log.error("Error in call to DKIF: ${e.message}", e)
             metric.countOutgoingReponses(METRIC_CALL_DKIF, e.rawStatusCode)
             throw e
         }
     }
 
-    companion object {
-        private val LOG = LoggerFactory.getLogger(DkifConsumer::class.java)
-
-        const val METRIC_CALL_DKIF = "call_dkif"
+    private fun entity(fnr: String, accessToken: String): HttpEntity<String> {
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        headers[HttpHeaders.AUTHORIZATION] = accessToken
+        headers[NAV_PERSONIDENT_HEADER] = fnr
+        headers[NAV_CALL_ID_HEADER] = createCallId()
+        return HttpEntity(headers)
     }
 
-    private fun entity(ident: String, token: String): HttpEntity<String> {
-        val headers = HttpHeaders()
+    companion object {
+        private val log = LoggerFactory.getLogger(DkifConsumer::class.java)
 
-        headers.contentType = MediaType.APPLICATION_JSON
-        headers[HttpHeaders.AUTHORIZATION] = bearerHeader(token)
-        headers[NAV_CONSUMER_ID_HEADER] = APP_CONSUMER_ID
-        headers[NAV_CALL_ID_HEADER] = createCallId()
-        headers[NAV_PERSONIDENTER_HEADER] = ident
+        const val METRIC_CALL_DKIF = "call_dkif"
 
-        return HttpEntity(headers)
+        private fun createCallId(): String {
+            val randomUUID = UUID.randomUUID().toString()
+            return "syfooppfolgingsplanservice-$randomUUID"
+        }
     }
 }

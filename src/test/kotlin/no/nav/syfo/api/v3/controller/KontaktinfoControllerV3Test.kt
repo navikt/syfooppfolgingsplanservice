@@ -43,8 +43,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
             epostadresse = PERSON_EMAIL,
             kanVarsles = false,
             reservert = false,
-            mobiltelefonnummer = PERSON_TLF,
-            personident = ARBEIDSTAKER_FNR
+            mobiltelefonnummer = PERSON_TLF
         )
         `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
@@ -90,8 +89,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
             epostadresse = PERSON_EMAIL,
             kanVarsles = true,
             reservert = false,
-            mobiltelefonnummer = PERSON_TLF,
-            personident = ARBEIDSTAKER_FNR
+            mobiltelefonnummer = PERSON_TLF
         )
         `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
@@ -110,8 +108,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
             epostadresse = PERSON_EMAIL,
             kanVarsles = false,
             reservert = false,
-            mobiltelefonnummer = PERSON_TLF,
-            personident = ARBEIDSTAKER_FNR
+            mobiltelefonnummer = PERSON_TLF
         )
         `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
@@ -130,8 +127,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
             epostadresse = PERSON_EMAIL,
             kanVarsles = false,
             reservert = true,
-            mobiltelefonnummer = PERSON_TLF,
-            personident = ARBEIDSTAKER_FNR
+            mobiltelefonnummer = PERSON_TLF
         )
         `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 
@@ -150,8 +146,7 @@ class KontaktinfoControllerV3Test : AbstractRessursTilgangTest() {
             epostadresse = PERSON_EMAIL,
             kanVarsles = true,
             reservert = true,
-            mobiltelefonnummer = PERSON_TLF,
-            personident = ARBEIDSTAKER_FNR
+            mobiltelefonnummer = PERSON_TLF
         )
         `when`(dkifConsumer.kontaktinformasjon(anyString())).thenReturn(digitalKontaktinfo)
 

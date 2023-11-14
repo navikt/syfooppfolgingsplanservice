@@ -72,6 +72,7 @@ spec:
           cluster: dev-gcp
       external:
         - host: narmesteleder.intern.dev.nav.no
+        - host: digdir-krr-proxy.intern.dev.nav.no
   azure:
     application:
       allowAllUsers: true
@@ -130,7 +131,9 @@ spec:
     - name: ISTILGANGSKONTROLL_URL
       value: https://istilgangskontroll.intern.dev.nav.no
     - name: DKIF_URL
-      value: https://dkif.dev.intern.nav.no
+      value: https://digdir-krr-proxy.intern.dev.nav.no/rest/v1/person
+    - name: DKIF_SCOPE
+      value: api://dev-gcp.team-rocket.digdir-krr-proxy/.default
     - name: DOKARKIV_URL
       value: https://dokarkiv-q1.nais.preprod.local
     - name: CLIENT_ID

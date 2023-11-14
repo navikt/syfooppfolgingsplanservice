@@ -301,7 +301,7 @@ public class GodkjenningService {
         String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
-        DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
+        DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.fnr);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
@@ -389,7 +389,7 @@ public class GodkjenningService {
         String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
-        DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
+        DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.fnr);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);
@@ -473,7 +473,7 @@ public class GodkjenningService {
         String arbeidstakersFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         Naermesteleder naermesteleder = narmesteLederConsumer.narmesteLeder(arbeidstakersFnr, oppfolgingsplan.virksomhet.virksomhetsnummer)
                 .orElseThrow(() -> new RuntimeException("Fant ikke nærmeste leder"));
-        DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.aktoerId);
+        DigitalKontaktinfo sykmeldtKontaktinfo = dkifConsumer.kontaktinformasjon(oppfolgingsplan.arbeidstaker.fnr);
         String sykmeldtnavn = brukerprofilService.hentNavnByAktoerId(oppfolgingsplan.arbeidstaker.aktoerId);
         String sykmeldtFnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplan.virksomhet.virksomhetsnummer);

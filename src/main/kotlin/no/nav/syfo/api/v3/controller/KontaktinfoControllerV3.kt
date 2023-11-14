@@ -65,7 +65,7 @@ class KontaktinfoControllerV3 @Inject constructor(
     }
 
     private fun kanVarsles(digitalKontaktinfo: DigitalKontaktinfo) =
-        (digitalKontaktinfo.reservert == false) && digitalKontaktinfo.kanVarsles
+        !digitalKontaktinfo.reservert && digitalKontaktinfo.kanVarsles
 
     companion object {
         private val LOG = LoggerFactory.getLogger(KontaktinfoControllerV3::class.java)

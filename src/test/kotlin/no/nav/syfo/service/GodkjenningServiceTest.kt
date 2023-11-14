@@ -68,6 +68,7 @@ class GodkjenningServiceTest {
             .aktoerId("arbAktoerId")
         )
         .arbeidstaker(Person()
+            .fnr("sykmeldtFnr")
             .aktoerId("sykmeldtAktoerId")
         )
         .opprettet(LocalDateTime.now())
