@@ -2,7 +2,7 @@ name: Submit dependency graph
 on:
   push:
     branches:
-      - dependabot-test
+      - main
 jobs:
   dependencies:
     runs-on: ubuntu-latest
