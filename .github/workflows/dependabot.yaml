@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "**.gradle.kts"
+      - "gradle.properties"
 jobs:
   dependencies:
     runs-on: ubuntu-latest
