@@ -29,7 +29,7 @@ object KontaktinfoMapper {
         jsonNode.let {
             return DigitalKontaktinfo(
                 it["kanVarsles"]?.asBoolean() ?: false,
-                it["reservert"]?.asBoolean() ?: false,
+                it["reservert"]?.asBoolean() ?: true,
                 it["mobiltelefonnummer"]?.asText(),
                 it["epostadresse"]?.asText()
             )
