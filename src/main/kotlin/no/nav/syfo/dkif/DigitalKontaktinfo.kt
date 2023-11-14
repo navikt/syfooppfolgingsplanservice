@@ -7,8 +7,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
 data class DigitalKontaktinfo (
-    val kanVarsles: Boolean?,
-    val reservert: Boolean?,
+    val kanVarsles: Boolean,
+    val reservert: Boolean,
     val mobiltelefonnummer: String?,
     val epostadresse: String?
 )
@@ -27,8 +27,8 @@ object KontaktinfoMapper {
 
         jsonNode.let {
             return DigitalKontaktinfo(
-                it["kanVarsles"]?.asBoolean(),
-                it["reservert"]?.asBoolean(),
+                it["kanVarsles"]?.asBoolean() ?: false,
+                it["reservert"]?.asBoolean() ?: false,
                 it["mobiltelefonnummer"]?.asText(),
                 it["epostadresse"]?.asText()
             )
