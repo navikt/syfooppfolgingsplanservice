@@ -1,8 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.github.jengelman.gradle.plugins.shadow.transformers.PropertiesFileTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 group = "no.nav.syfo"
 version = "1.0.0"
 
@@ -28,36 +23,16 @@ val githubPassword: String by project
 
 plugins {
     kotlin("jvm") version "1.6.10"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.10"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    kotlin("plugin.spring") version "1.6.10"
     id("java")
     id("org.springframework.boot") version "2.7.11"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("com.github.ManifestClasspath") version "0.1.0-RELEASE"
-}
-
-buildscript {
-    dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
-        classpath("javax.xml.bind:jaxb-api:2.4.0-b180830.0359")
-        classpath("org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438")
-        classpath("com.sun.activation:javax.activation:1.2.0")
-        classpath("com.sun.xml.ws:jaxws-tools:2.3.1") {
-            exclude(group = "com.sun.xml.ws", module = "policy")
-        }
-    }
 }
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
-}
-
-allOpen {
-    annotation("org.springframework.context.annotation.Configuration")
-    annotation("org.springframework.stereotype.Service")
-    annotation("org.springframework.stereotype.Component")
 }
 
 repositories {
@@ -142,7 +117,7 @@ dependencies {
     implementation("no.nav.tjenestespesifikasjoner:varsel-inn:${Versions.tjenesteSpesifikasjonerVersion}")
 
     implementation("org.apache.avro:avro:${Versions.avroVersion}")
-    implementation("io.confluent:kafka-avro-serializer:${Versions.confluentVersion}"){
+    implementation("io.confluent:kafka-avro-serializer:${Versions.confluentVersion}") {
         exclude(group = "log4j", module = "log4j")
     }
 
@@ -163,7 +138,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3")
     implementation("org.slf4j:slf4j-api")
     implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
-    implementation("org.apache.kafka:kafka_2.13"){
+    implementation("org.apache.kafka:kafka_2.13") {
         exclude(group = "log4j", module = "log4j")
     }
 
@@ -172,45 +147,11 @@ dependencies {
 }
 
 tasks {
-
     extra["log4j2.version"] = "2.16.0"
-
-    shadowJar {
-        isZip64 = true
+    named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+        archiveFileName.set("app.jar")
     }
-
-    withType<Jar> {
-        manifest.attributes["Main-Class"] = "no.nav.syfo.Application"
+    named<Jar>("jar") {
+        enabled = false
     }
-
-    create("printVersion") {
-        doLast {
-            println(project.version)
-        }
-    }
-
-    withType<ShadowJar> {
-        transform(ServiceFileTransformer::class.java) {
-            setPath("META-INF/cxf")
-            include("bus-extensions.txt")
-        }
-        transform(PropertiesFileTransformer::class.java) {
-            paths = listOf("META-INF/spring.factories")
-            mergeStrategy = "append"
-        }
-        configureEach {
-            append("META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports")
-            append("META-INF/spring/org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration.imports")
-        }
-        mergeServiceFiles()
-    }
-
-    named<KotlinCompile>("compileKotlin") {
-        kotlinOptions.jvmTarget = "17"
-    }
-
-    named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "17"
-    }
-
 }

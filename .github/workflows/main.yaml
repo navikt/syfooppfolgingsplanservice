@@ -40,7 +40,7 @@ jobs:
           ./gradlew test
       - name: Build jar
         run: |
-          ./gradlew shadowJar -x test
+          ./gradlew assemble
       - name: Build and push docker image
         uses: nais/docker-build-push@v0
         id: docker-build-push
