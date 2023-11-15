@@ -13,4 +13,4 @@ jobs:
         with:
           dependency-graph: generate # Only generate in this job
       - name: Run a build, generating the dependency graph snapshot which will be submitted
-        run: ./gradlew dependencies
+        run: ./gradlew dependencies --configuration runtimeClasspath
