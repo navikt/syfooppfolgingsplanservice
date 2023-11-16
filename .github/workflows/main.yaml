@@ -40,7 +40,7 @@ jobs:
           ./gradlew test
       - name: Build jar
         run: |
-          ./gradlew shadowJar -x test
+          ./gradlew assemble
       - name: Build and push docker image
         uses: nais/docker-build-push@v0
         id: docker-build-push
@@ -52,7 +52,7 @@ jobs:
       image: ${{ steps.docker-build-push.outputs.image }}
 
   deploy-dev:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     name: Deploy to NAIS Dev-fss
     needs: build
     runs-on: ubuntu-latest
@@ -77,7 +77,7 @@ jobs:
           SLACK_COLOR: ${{ job.status }}
 
   deploy-prod:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     name: Deploy to NAIS Prod-fss
     needs: [deploy-dev, build]
     runs-on: ubuntu-latest
