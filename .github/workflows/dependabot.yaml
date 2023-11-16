@@ -2,10 +2,7 @@ name: Submit dependency graph
 on:
   push:
     branches:
-      - main
-    paths:
-      - "**.gradle.kts"
-      - "gradle.properties"
+      - dependabot-fix
 jobs:
   dependencies:
     runs-on: ubuntu-latest
