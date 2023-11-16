@@ -23,6 +23,10 @@ jobs:
           distribution: adopt
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Setup Gradle to generate and submit dependency graphs
+        uses: gradle/gradle-build-action@v2
+        with:
+          dependency-graph: generate
       - uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
