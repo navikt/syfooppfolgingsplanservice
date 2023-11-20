@@ -30,6 +30,7 @@ azure:
       token:
         endpoint: "https://login.microsoftonline.com/id/oauth2/v2.0/token"
 
+
 securitytokenservice.url: "sts.url"
 srvsyfooppfolgingsplanservice:
   username: "username"
