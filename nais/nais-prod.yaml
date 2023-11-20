@@ -101,14 +101,6 @@ spec:
       value: https://nav.no/arbeidsgiver/sykmeldte
     - name: EKSTERN_ALTINN_BEHANDLEALTINNMELDING_V1_ENDPOINTURL
       value: https://pep-gw.oera.no:9443/ekstern/altinn/BehandleAltinnMelding/v1
-    - name: MQGATEWAY03_HOSTNAME
-      value: a01apvl270.adeo.no
-    - name: MQGATEWAY03_PORT
-      value: "1414"
-    - name: MQGATEWAY03_NAME
-      value: MPLS03
-    - name: SYFOOPPFOLGINGSPLANSERVICE_CHANNEL_NAME
-      value: P_SYFOOPPFOLGINGSPL
     - name: LAGREJURIDISKLOGG_REST_URL
       value: https://app.adeo.no/juridisklogg/api/rest/logg
     - name: ISTILGANGSKONTROLL_CLIENT_ID
