@@ -1,4 +1,4 @@
-FROM ghcr.io/navikt/baseimages/temurin:19
+FROM ghcr.io/navikt/baseimages/temurin:21-appdynamics
 ENV APPD_ENABLED=true
 LABEL org.opencontainers.image.source=https://github.com/navikt/syfooppfolgingsplanservice
 

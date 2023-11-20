@@ -8,7 +8,6 @@ object Versions {
     const val flywayVersion = "9.10.0"
     const val tokenSupportVersion = "2.1.3"
     const val tokenTestSupportVersion = "2.0.5"
-    const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.0.4"
     const val syfotjenesterVersion = "1.2020.07.02-07.44-62078cd74f7e"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
@@ -31,7 +30,7 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(19))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -122,7 +121,6 @@ dependencies {
     }
 
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
-    implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.5")
