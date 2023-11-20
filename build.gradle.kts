@@ -8,6 +8,7 @@ object Versions {
     const val flywayVersion = "9.10.0"
     const val tokenSupportVersion = "2.1.3"
     const val tokenTestSupportVersion = "2.0.5"
+    const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.0.4"
     const val syfotjenesterVersion = "1.2020.07.02-07.44-62078cd74f7e"
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
@@ -122,6 +123,7 @@ dependencies {
 
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
+    implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.5")
     implementation("net.logstash.logback:logstash-logback-encoder:4.10")
