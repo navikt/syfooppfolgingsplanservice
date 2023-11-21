@@ -104,8 +104,6 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-transports-http:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:${Versions.cxfVersion}")
 
-    implementation("com.ibm.mq:com.ibm.mq.allclient:9.2.5.0")
-
     implementation("no.nav.helse.xml:oppfolgingsplan:${Versions.helseXmlVersion}")
 
     implementation("no.nav.syfotjenester:oppfolgingsplanlps:${Versions.syfotjenesterVersion}")
