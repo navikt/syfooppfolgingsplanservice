@@ -125,8 +125,8 @@ dependencies {
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.5")
     implementation("net.logstash.logback:logstash-logback-encoder:4.10")
-    implementation("commons-io:commons-io:2.5")
-    implementation("com.lowagie:itext:2.1.7")
+    implementation("commons-io:commons-io:2.15")
+    implementation("com.lowagie:itext:4.2.2")
     implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20220608.1")
     implementation("javax.ws.rs:javax.ws.rs-api:2.0.1")
     implementation("javax.inject:javax.inject:1")
@@ -155,6 +155,8 @@ dependencies {
 
 tasks {
     extra["log4j2.version"] = "2.16.0"
+    extra["snakeyaml.version"] = "2.2"
+
     named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
         archiveFileName.set("app.jar")
     }
