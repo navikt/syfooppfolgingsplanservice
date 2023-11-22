@@ -4,7 +4,7 @@ version = "1.0.0"
 object Versions {
     const val avroVersion = "1.11.0"
     const val confluentVersion = "7.1.0"
-    const val cxfVersion = "3.5.0"
+    const val cxfVersion = "3.5.5"
     const val flywayVersion = "9.10.0"
     const val tokenSupportVersion = "2.1.3"
     const val tokenTestSupportVersion = "2.0.5"
@@ -142,6 +142,15 @@ dependencies {
 
     testImplementation("junit:junit")
     testImplementation("io.mockk:mockk:${Versions.mockkVersion}")
+
+    constraints {
+        implementation("org.apache.zookeeper:zookeeper") {
+            because("CVE-2023-44981")
+            version {
+                require("3.8.3")
+            }
+        }
+    }
 }
 
 tasks {
