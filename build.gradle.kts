@@ -150,6 +150,12 @@ dependencies {
                 require("3.8.3")
             }
         }
+        implementation("commons-collections:commons-collections") {
+            because("CVE-2015-7501")
+            version {
+                require("3.2.2")
+            }
+        }
     }
 }
 
