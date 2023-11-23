@@ -9,7 +9,6 @@ import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
 import no.nav.syfo.tokenx.TokenXResponse
 import no.nav.syfo.tokenx.toTokenXToken
-import no.nav.syfo.tokenx.tokendings.metadata.TokenDingsMetadataConsumer
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -28,23 +27,22 @@ import javax.inject.Inject
 @Component
 class TokenDingsConsumer @Inject constructor(
     private val restTemplate: RestTemplate,
-    private val tokenDingsMetadataConsumer: TokenDingsMetadataConsumer,
     @Value("\${token.x.client.id}") private val clientId: String,
     @Value("\${token.x.private.jwk}") private val privateJwk: String,
+    @Value("\${token.x.token.endpoint}") private val tokenxEndpoint: String,
 ) {
     fun exchangeToken(
         subjectToken: String,
-        targetApp: String
+        targetApp: String,
     ): String {
-        val tokendingsEndpoint = tokenDingsMetadataConsumer.getTokenDingsMetadata().tokenEndpoint
-        val requestEntity = requestEntity(subjectToken, tokendingsEndpoint, targetApp)
+        val requestEntity = requestEntity(subjectToken, tokenxEndpoint, targetApp)
 
         try {
             val response = restTemplate.exchange(
-                tokendingsEndpoint,
+                tokenxEndpoint,
                 HttpMethod.POST,
                 requestEntity,
-                TokenXResponse::class.java
+                TokenXResponse::class.java,
             )
             val tokenX = response.body!!.toTokenXToken()
 
@@ -52,11 +50,10 @@ class TokenDingsConsumer @Inject constructor(
         } catch (e: RestClientResponseException) {
             log.error(
                 "Call to get TokenX failed with status: ${e.rawStatusCode} and message: ${e.responseBodyAsString}",
-                e
+                e,
             )
             throw e
         }
-
     }
 
     private fun requestEntity(
@@ -102,7 +99,7 @@ internal fun JWTClaimsSet.sign(rsaKey: RSAKey): SignedJWT =
         JWSHeader.Builder(JWSAlgorithm.RS256)
             .keyID(rsaKey.keyID)
             .type(JOSEObjectType.JWT).build(),
-        this
+        this,
     ).apply {
         sign(RSASSASigner(rsaKey.toPrivateKey()))
     }
