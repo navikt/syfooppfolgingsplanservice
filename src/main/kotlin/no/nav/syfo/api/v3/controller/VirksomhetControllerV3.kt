@@ -2,6 +2,7 @@ package no.nav.syfo.api.v3.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
+import no.nav.syfo.api.util.virksomhetsnummerInvalid
 import no.nav.syfo.api.v2.domain.Virksomhet
 import no.nav.syfo.ereg.EregConsumer
 import no.nav.syfo.tokenx.TokenXUtil
@@ -30,6 +31,11 @@ class VirksomhetControllerV3 @Inject constructor(
         @PathVariable("virksomhetsnummer") virksomhetsnummer: String,
     ): ResponseEntity<Virksomhet> {
         TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
+
+        if (virksomhetsnummerInvalid(virksomhetsnummer)) {
+            return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).build()
+        }
+
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(
