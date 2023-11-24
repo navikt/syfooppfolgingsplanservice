@@ -97,9 +97,9 @@ kafka.schema.registry: http://kafka.registry.url
 kafka.schema.registry.user: "<avro registry user>"
 kafka.schema.registry.password: "<avro registry password>"
 
-token.x.well.known.url: "https://token-x-well-known-url"
 token.x.client.id: "tokenx-client-id"
 token.x.private.jwk: "tokenx-jwk"
+token.x.token.endpoint: "https://tokenx-endpoint"
 
 oppfolgingsplan.frontend.client.id: "localhost:team-esyfo:oppfolgingsplan-frontend"
 ditt.sykefravaer.frontend.client.id: "localhost:flex:ditt-sykefravaer"
