@@ -16,18 +16,19 @@ import javax.inject.Inject
 
 @Service
 class EregConsumer @Inject constructor(
-        @Value("\${ereg.baseurl}") private val baseUrl: String,
-        private val metric: Metrikk,
-        @param:Qualifier("scheduler") private val restTemplate: RestTemplate,
-        private val stsConsumer: StsConsumer
+    @Value("\${ereg.baseurl}") private val baseUrl: String,
+    private val metric: Metrikk,
+    @param:Qualifier("scheduler") private val restTemplate: RestTemplate,
+    private val stsConsumer: StsConsumer,
 ) {
     fun eregReponse(virksomhetsnummer: String): EregOrganisasjonResponse {
         try {
             val response = restTemplate.exchange(
-                    getEregUrl(virksomhetsnummer),
-                    HttpMethod.GET,
-                    entity(),
-                    EregOrganisasjonResponse::class.java
+                getEregUrl(),
+                HttpMethod.GET,
+                entity(),
+                EregOrganisasjonResponse::class.java,
+                virksomhetsnummer,
             )
             val eregResponse = response.body!!
             metric.tellHendelse(METRIC_CALL_EREG_SUCCESS)
@@ -41,16 +42,16 @@ class EregConsumer @Inject constructor(
     }
 
     @Cacheable(
-            value = [CacheConfig.CACHENAME_EREG_VIRKSOMHETSNAVN],
-            key = "#virksomhetsnummer",
-            condition = "#virksomhetsnummer != null"
+        value = [CacheConfig.CACHENAME_EREG_VIRKSOMHETSNAVN],
+        key = "#virksomhetsnummer",
+        condition = "#virksomhetsnummer != null",
     )
     fun virksomhetsnavn(virksomhetsnummer: String): String {
         return eregReponse(virksomhetsnummer).navn()
     }
 
-    private fun getEregUrl(virksomhetsnummer: String): String {
-        return "$baseUrl/ereg/api/v1/organisasjon/$virksomhetsnummer"
+    private fun getEregUrl(): String {
+        return "$baseUrl/ereg/api/v1/organisasjon/{virksomhetsnummer}"
     }
 
     private fun entity(): HttpEntity<String> {
