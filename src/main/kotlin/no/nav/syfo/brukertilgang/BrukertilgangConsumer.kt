@@ -31,10 +31,11 @@ class BrukertilgangConsumer @Autowired constructor(
         val httpEntity = entity(exchangedToken)
         return try {
             val response = restTemplate.exchange(
-                    arbeidstakerUrl(ansattFnr),
-                    HttpMethod.GET,
-                    httpEntity,
-                    Boolean::class.java
+                "$baseUrl/api/v2/tilgang/ansatt/{ansattFnr}",
+                HttpMethod.GET,
+                httpEntity,
+                Boolean::class.java,
+                ansattFnr,
             )
             metrikk.countOutgoingReponses(METRIC_CALL_BRUKERTILGANG, response.statusCodeValue)
             response.body!!
@@ -55,10 +56,6 @@ class BrukertilgangConsumer @Autowired constructor(
         headers.add(NAV_CALL_ID_HEADER, createCallId())
         headers.add(NAV_CONSUMER_ID_HEADER, APP_CONSUMER_ID)
         return HttpEntity<Any>(headers)
-    }
-
-    private fun arbeidstakerUrl(ansattFnr: String): String {
-        return "$baseUrl/api/v2/tilgang/ansatt/$ansattFnr"
     }
 
     companion object {
