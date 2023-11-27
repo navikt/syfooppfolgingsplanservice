@@ -7,6 +7,7 @@ import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Value
@@ -41,4 +42,13 @@ class VirksomhetControllerV3Test : AbstractRessursTilgangTest() {
         assertEquals(virksomhet.navn, body.navn)
     }
 
+    @Test
+    fun virksomhet_invalid_virksomhetsnummer() {
+        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        `when`(eregConsumer.virksomhetsnavn(VIRKSOMHETSNUMMER))
+            .thenReturn(virksomhetsNavn)
+        val res: ResponseEntity<*> = virksomhetController.getVirksomhet("12345678")
+        assertNull(res.body)
+        assertEquals(418, res.statusCodeValue.toLong())
+    }
 }
