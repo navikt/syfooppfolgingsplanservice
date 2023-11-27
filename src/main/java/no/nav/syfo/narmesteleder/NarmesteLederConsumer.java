@@ -99,10 +99,11 @@ public class NarmesteLederConsumer {
         String token = azureAdTokenConsumer.getAccessToken(narmestelederScope);
 
         ResponseEntity<NarmestelederResponse> response = restTemplate.exchange(
-                getLederUrl(virksomhetsnummer),
+                getLederUrl(),
                 GET,
                 entityForSykmeldt(token, fnr),
-                NarmestelederResponse.class
+                NarmestelederResponse.class,
+                virksomhetsnummer
         );
         throwExceptionIfError(response.getStatusCode(), HENT_LEDER_NARMESTELEDER_FEILET);
 
@@ -146,14 +147,14 @@ public class NarmesteLederConsumer {
         return narmestelederUrl + "/leder/narmesteleder/aktive";
     }
 
-    private String getLederUrl(String virksomhetsnummer) {
-        return UriComponentsBuilder.fromHttpUrl(narmestelederUrl + "/sykmeldt/narmesteleder").queryParam("orgnummer", virksomhetsnummer).toUriString();
+    private String getLederUrl() {
+        return UriComponentsBuilder.fromHttpUrl(narmestelederUrl + "/sykmeldt/narmesteleder?orgnummer={virksomhetsnummer}").toUriString();
     }
 
     public boolean erNaermesteLederForAnsatt(String naermesteLederFnr, String ansattFnr) {
         List<String> ansatteFnr = ansatte(naermesteLederFnr).stream()
                 .map(Ansatt::fnr)
-                .collect(toList());
+                .toList();
 
         return ansatteFnr.contains(ansattFnr);
     }
