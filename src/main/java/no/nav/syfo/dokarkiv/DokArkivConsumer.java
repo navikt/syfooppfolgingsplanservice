@@ -89,10 +89,17 @@ public class DokArkivConsumer {
                     entity,
                     JournalpostResponse.class);
             metrikk.tellHendelse("journalfor_oppfolgingsplan");
-            if (!response.getBody().journalpostferdigstilt) {
-                log.warn("Journalpost is not ferdigstilt with message: {}", response.getBody().melding);
+            HttpStatus responseStatus = response.getStatusCode();
+            if (HttpStatus.CREATED.equals(responseStatus) || HttpStatus.CONFLICT.equals(responseStatus)) {
+                if (!response.getBody().journalpostferdigstilt) {
+                    log.warn("Journalpost is not ferdigstilt with message: {}", response.getBody().melding);
+                }
+                return response.getBody().journalpostId;
+            } else {
+                log.error("Failed to post Journalpost {}", response);
+                return null;
             }
-            return response.getBody().journalpostId;
+
         } catch (RestClientException e) {
             log.error("Error from DokArkiv " + url + JOURNALPOSTAPI_PATH, e);
             throw e;
