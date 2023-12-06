@@ -7,9 +7,7 @@ import no.nav.syfo.domain.Kommentar
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.KommentarService
 import no.nav.syfo.service.TiltakService
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -17,7 +15,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import javax.inject.Inject
 
@@ -34,12 +31,9 @@ class TiltakControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var metrikk: Metrikk
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     @Before
     fun setup() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
     }
 
     @Test
@@ -51,7 +45,7 @@ class TiltakControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_slett_tiltak() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         tiltakController.slettTiltak(1)
     }
 
@@ -73,7 +67,7 @@ class TiltakControllerV2Test : AbstractRessursTilgangTest() {
     fun finner_ikke_innlogget_bruker_lagre_kommentar() {
         val tiltakId = 1L
         val kommentarRequest =  KommentarRequest(1L, "")
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         tiltakController.lagreKommentar(tiltakId, kommentarRequest)
     }
 }

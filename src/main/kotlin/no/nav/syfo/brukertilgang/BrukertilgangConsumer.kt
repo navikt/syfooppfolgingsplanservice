@@ -37,11 +37,11 @@ class BrukertilgangConsumer @Autowired constructor(
                 Boolean::class.java,
                 ansattFnr,
             )
-            metrikk.countOutgoingReponses(METRIC_CALL_BRUKERTILGANG, response.statusCodeValue)
+            metrikk.countOutgoingReponses(METRIC_CALL_BRUKERTILGANG, response.statusCode.value())
             response.body!!
         } catch (e: RestClientResponseException) {
-            metrikk.countOutgoingReponses(METRIC_CALL_BRUKERTILGANG, e.rawStatusCode)
-            if (e.rawStatusCode == 401) {
+            metrikk.countOutgoingReponses(METRIC_CALL_BRUKERTILGANG, e.statusCode.value())
+            if (e.statusCode.value() == 401) {
                 throw RequestUnauthorizedException("Unauthorized request to get access to Ansatt from Syfobrukertilgang")
             } else {
                 LOG.error("Error requesting ansatt access from syfobrukertilgang with callId {}: ", httpEntity.headers[NAV_CALL_ID_HEADER], e)

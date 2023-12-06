@@ -35,7 +35,7 @@ class OPPdfGenConsumer @Inject constructor(
             return pdf
         } catch (e: RestClientResponseException) {
             metric.tellHendelse(METRIC_CALL_OPPDFGEN_FAIL)
-            val message = "Call to get generate pdf for LPS-plan failed with status: ${e.rawStatusCode} and message: ${e.responseBodyAsString}"
+            val message = "Call to get generate pdf for LPS-plan failed with status: ${e.statusCode.value()} and message: ${e.responseBodyAsString}"
             LOG.error(message)
             throw e
         }

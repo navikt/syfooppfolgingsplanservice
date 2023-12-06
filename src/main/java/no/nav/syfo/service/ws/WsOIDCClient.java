@@ -7,8 +7,8 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.PhaseInterceptor;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.Handler;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.handler.Handler;
 import java.util.*;
 
 public class WsOIDCClient<T> {

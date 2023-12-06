@@ -30,6 +30,19 @@ azure:
       token:
         endpoint: "https://login.microsoftonline.com/id/oauth2/v2.0/token"
 
+mock.token.server.port: 8081
+no.nav.security:
+  jwt:
+    expirythreshold: 1
+    issuer:
+      internazureadv2:
+        discoveryurl: http://localhost:${mock.token.server.port}/issuer1/.well-known/openid-configuration
+        accepted_audience: azure.app.client.id
+        cookiename: localhost-idtoken
+      tokenx:
+        discoveryurl: http://localhost:${mock.token.server.port}/issuer1/.well-known/openid-configuration
+        accepted_audience: clientID
+
 securitytokenservice.url: "sts.url"
 srvsyfooppfolgingsplanservice:
   username: "username"

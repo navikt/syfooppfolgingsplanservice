@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.ws.rs.ForbiddenException;
+import jakarta.ws.rs.ForbiddenException;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Optional;

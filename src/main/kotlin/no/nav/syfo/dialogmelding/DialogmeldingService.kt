@@ -78,7 +78,7 @@ class DialogmeldingService(
             restTemplate.postForLocation(uri, entity(rsOppfoelgingsplan, token))
             tellPlanDeltMedFastlegeKall(lps, true)
         } catch (e: HttpClientErrorException) {
-            val responsekode = e.rawStatusCode
+            val responsekode = e.statusCode.value()
             tellPlanDeltMedFastlegeKall(lps, false)
             if (responsekode == 404) {
                 throw OppslagFeiletException("Feil ved oppslag av fastlege eller partnerinformasjon")
@@ -87,7 +87,7 @@ class DialogmeldingService(
             }
             throw e
         } catch (e: HttpServerErrorException) {
-            val responsekode = e.rawStatusCode
+            val responsekode = e.statusCode.value()
             log.error("Feil ved sending av oppfølgingsdialog til fastlege: Fikk responskode $responsekode", e)
             tellPlanDeltMedFastlegeKall(lps, false)
             throw InnsendingFeiletException("Kunne ikke dele med fastlege")

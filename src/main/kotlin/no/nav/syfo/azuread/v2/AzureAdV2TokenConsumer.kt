@@ -47,7 +47,7 @@ class AzureAdV2TokenConsumer @Autowired constructor(
             return tokenResponse.toAzureAdV2Token()
         } catch (e: RestClientResponseException) {
             val scope = requestEntity.headers["scope"]
-            log.error("Call to get AzureADV2Token from AzureAD for scope: $scope with status: ${e.rawStatusCode} and message: ${e.responseBodyAsString}", e)
+            log.error("Call to get AzureADV2Token from AzureAD for scope: $scope with status: ${e.statusCode.value()} and message: ${e.responseBodyAsString}", e)
             throw e
         }
     }

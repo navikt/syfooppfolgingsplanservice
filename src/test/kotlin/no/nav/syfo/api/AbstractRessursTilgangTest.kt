@@ -1,8 +1,7 @@
 package no.nav.syfo.api
 
-import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.LocalApplication
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
+import no.nav.syfo.util.TokenValidationTestUtil
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -32,9 +31,6 @@ abstract class AbstractRessursTilgangTest {
     lateinit var tilgangskontrollUrl: String
 
     @Inject
-    lateinit var contextHolder: TokenValidationContextHolder
-
-    @Inject
     private lateinit var restTemplate: RestTemplate
     lateinit var mockRestServiceServer: MockRestServiceServer
 
@@ -42,6 +38,9 @@ abstract class AbstractRessursTilgangTest {
     @Qualifier("restTemplateMedProxy")
     private lateinit var restTemplateWithProxy: RestTemplate
     lateinit var mockRestServiceWithProxyServer: MockRestServiceServer
+
+    @Inject
+    lateinit var tokenValidationTestUtil: TokenValidationTestUtil
 
     @Before
     fun setUp() {
@@ -53,6 +52,6 @@ abstract class AbstractRessursTilgangTest {
     open fun tearDown() {
         mockRestServiceServer.verify()
         mockRestServiceWithProxyServer.verify()
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
     }
 }

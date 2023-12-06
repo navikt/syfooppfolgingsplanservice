@@ -34,16 +34,16 @@ class DkifConsumer @Autowired constructor (
                 entity(fnr, accessToken),
                 String::class.java
             )
-            if (response.statusCode == HttpStatus.OK) {
+            if (response.statusCode.is2xxSuccessful) {
                 return response.body?.let {
-                    metric.countOutgoingReponses(METRIC_CALL_DKIF, response.statusCodeValue)
+                    metric.countOutgoingReponses(METRIC_CALL_DKIF, response.statusCode.value())
                     KontaktinfoMapper.mapPerson(it)
                 } ?: throw DKIFRequestFailedException("ReponseBody is null")
             }
-            throw DKIFRequestFailedException("Received response with status code: ${response.statusCodeValue}")
+            throw DKIFRequestFailedException("Received response with status code: ${response.statusCode.value()}")
         } catch (e: RestClientResponseException) {
             log.error("Error in call to DKIF: ${e.message}", e)
-            metric.countOutgoingReponses(METRIC_CALL_DKIF, e.rawStatusCode)
+            metric.countOutgoingReponses(METRIC_CALL_DKIF, e.statusCode.value())
             throw e
         }
     }

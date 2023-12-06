@@ -1,5 +1,6 @@
 package no.nav.syfo.brukertilgang.v2
 
+import jakarta.ws.rs.ForbiddenException
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.brukertilgang.BrukerTilgang
@@ -17,7 +18,6 @@ import org.springframework.util.MultiValueMap
 import org.springframework.util.ObjectUtils
 import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
-import javax.ws.rs.ForbiddenException
 
 @RestController
 @ProtectedWithClaims(issuer = TOKENX, claimMap = ["acr=Level4", "acr=idporten-loa-high"], combineWithOr = true)

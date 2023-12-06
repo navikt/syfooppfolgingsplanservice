@@ -7,22 +7,20 @@ import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.service.OppfolgingsplanService
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import no.nav.syfo.testhelper.oppfolgingsplanGodkjentTvang
+import no.nav.syfo.util.TokenValidationTestUtil
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import javax.inject.Inject
-import javax.ws.rs.ForbiddenException
+import jakarta.ws.rs.ForbiddenException
 
 class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
@@ -44,17 +42,14 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Inject
     private lateinit var arbeidsgiverOppfolgingsplanController: ArbeidsgiverOppfolgingsplanControllerV2
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     @Before
     fun setup() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
     }
 
     @Test(expected = RuntimeException::class)
     fun hent_oppfolgingsplaner_finner_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplanerPaFnr(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
     }
 
@@ -89,7 +84,7 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
 
     @Test(expected = RuntimeException::class)
     fun opprett_oppfolgingsplan_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         arbeidsgiverOppfolgingsplanController.opprettOppfolgingsplanSomArbeidsgiver(opprettOppfolgingsplan)
     }

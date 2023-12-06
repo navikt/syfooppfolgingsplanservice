@@ -4,16 +4,16 @@ import no.nav.melding.virksomhet.varsel.v1.varsel.XMLVarsel;
 import no.nav.melding.virksomhet.varsel.v1.varsel.XMLVarslingstyper;
 import no.nav.syfo.pdf.domain.OppfoelgingsdialogXML;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 
 import static java.lang.Boolean.TRUE;
-import static javax.xml.bind.JAXBContext.newInstance;
-import static javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
-import static javax.xml.bind.Marshaller.JAXB_FRAGMENT;
+import static jakarta.xml.bind.JAXBContext.newInstance;
+import static jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
+import static jakarta.xml.bind.Marshaller.JAXB_FRAGMENT;
 
 public class JAXB {
 

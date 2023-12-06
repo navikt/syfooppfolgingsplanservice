@@ -2,7 +2,6 @@ package no.nav.syfo.api.v2.controller
 
 import javax.inject.Inject
 import no.nav.syfo.api.AbstractRessursTilgangTest
-import no.nav.syfo.service.BrukerkontekstConstant.*
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.ArbeidsoppgaveRequest
 import no.nav.syfo.api.v2.domain.oppfolgingsplan.Gjennomfoering
 import no.nav.syfo.api.v2.mapper.toArbeidsoppgave
@@ -15,11 +14,8 @@ import no.nav.syfo.domain.Gjennomfoering.*
 import no.nav.syfo.domain.Tiltak
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.*
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
-import no.nav.syfo.util.MapUtil.*
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -52,12 +48,9 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var tiltakService: TiltakService
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     @Before
     fun setup() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
     }
 
     @Test
@@ -69,7 +62,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun avbryt_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         oppfolgingsplanController.avbryt(oppfolgingsplanId)
     }
 
@@ -82,7 +75,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun avvis_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         oppfolgingsplanController.delMedNav(oppfolgingsplanId)
     }
 
@@ -95,7 +88,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun delmedfastlege_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         oppfolgingsplanController.delMedFastlege(oppfolgingsplanId)
     }
 
@@ -108,7 +101,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun delmednav_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         oppfolgingsplanController.delMedNav(oppfolgingsplanId)
     }
 
@@ -130,8 +123,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test
     fun godkjenn_plan_som_bruker_tvungen() {
-        loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "tvungenGodkjenning", "arbeidsgiver", null)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), LEDER_FNR, true, false)
         verify(metrikk).tellHendelse("godkjenn_plan")
@@ -140,8 +132,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test
     fun godkjenn_plan_som_bruker_tvungen_del_med_nav() {
-        loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "tvungenGodkjenning", "arbeidsgiver", true)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), LEDER_FNR, true, true)
         verify(metrikk).tellHendelse("godkjenn_plan")
@@ -150,7 +141,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun godkjenn_plan_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, Gyldighetstidspunkt(), "true", "arbeidsgiver", null)
     }
 
@@ -172,8 +163,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test
     fun godkjennsist_plan_som_arbeidsgiver() {
-        loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidsgiver", null)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, false)
         verify(metrikk).tellHendelse("godkjenn_plan_svar")
@@ -182,8 +172,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test
     fun godkjennsist_plan_som_arbeidsgiver_del_med_nav() {
-        loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidsgiver", true)
         verify(godkjenningService).godkjennOppfolgingsplan(oppfolgingsplanId, null, LEDER_FNR, false, true)
         verify(metrikk).tellHendelse("godkjenn_plan_svar")
@@ -192,14 +181,13 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun godkjennsist_plan_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         oppfolgingsplanController.godkjenn(oppfolgingsplanId, "arbeidsgiver", null)
     }
 
     @Test
     fun godkjenn_plan_som_egen_arbeidsgiver_med_nav() {
-        loggUtAlle(contextHolder)
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
 
         oppfolgingsplanController.godkjennEgenPlanArbeidsgiver(oppfolgingsplanId, Gyldighetstidspunkt(), true)
         verify(godkjenningService).godkjennLederSinEgenOppfolgingsplan(oppfolgingsplanId, no.nav.syfo.domain.Gyldighetstidspunkt(), LEDER_FNR, true)
@@ -210,7 +198,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun godkjenn_egen_plan_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         val gyldighetstidspunkt = Gyldighetstidspunkt()
         oppfolgingsplanController.godkjennEgenPlanArbeidsgiver(oppfolgingsplanId, gyldighetstidspunkt, true)
     }
@@ -226,7 +214,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun kopier_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         oppfolgingsplanController.kopier(oppfolgingsplanId)
     }
 
@@ -270,7 +258,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker_lagre_arbeidsoppgave() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         val arbeidsoppgaveRequest = ArbeidsoppgaveRequest(
             arbeidsoppgavenavn = "Arbeidsoppgavenavn"
         )
@@ -301,7 +289,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun lagre_tiltak_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         val tiltakRequest = tiltakRequestLagreNytt()
         oppfolgingsplanController.lagreTiltak(oppfolgingsplanId, tiltakRequest)
     }
@@ -322,7 +310,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun sett_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         oppfolgingsplanController.sett(oppfolgingsplanId)
     }
 
@@ -335,7 +323,7 @@ class OppfolgingsplanControllerV2Test : AbstractRessursTilgangTest() {
 
     @Test(expected = RuntimeException::class)
     fun samtykk_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         oppfolgingsplanController.samtykk(oppfolgingsplanId, true)
     }
 
