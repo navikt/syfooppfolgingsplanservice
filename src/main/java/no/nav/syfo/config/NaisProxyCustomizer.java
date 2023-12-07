@@ -1,4 +1,4 @@
-package no.nav.syfo.azuread;
+package no.nav.syfo.config;
 
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
