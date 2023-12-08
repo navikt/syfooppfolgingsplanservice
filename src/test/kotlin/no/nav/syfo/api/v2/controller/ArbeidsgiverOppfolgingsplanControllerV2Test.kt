@@ -12,7 +12,6 @@ import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
 import no.nav.syfo.testhelper.oppfolgingsplanGodkjentTvang
-import no.nav.syfo.util.TokenValidationTestUtil
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

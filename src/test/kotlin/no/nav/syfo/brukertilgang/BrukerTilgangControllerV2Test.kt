@@ -11,7 +11,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap

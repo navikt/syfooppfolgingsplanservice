@@ -3,7 +3,6 @@ package no.nav.syfo.dialogmelding
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.oidc.TokenUtil
 import no.nav.syfo.oidc.TokenUtil.getIssuerToken
 import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer

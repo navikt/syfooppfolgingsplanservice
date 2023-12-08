@@ -10,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.http.*
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
-import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class FellesKodeverkConsumerTest : TestCase() {

@@ -22,7 +22,6 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.*
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import java.time.LocalDate
 

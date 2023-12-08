@@ -16,10 +16,6 @@ class BrukertilgangServiceTest {
     @InjectMocks
     private lateinit var brukertilgangService: BrukertilgangService
 
-    @Before
-    fun setup() {
-    }
-
     @Test
     fun sporOmNoenAndreEnnSegSelvGirFalseNaarManSporOmSegSelv() {
         val tilgang = brukertilgangService.tilgangTilOppslattIdent(INNLOGGET_FNR, INNLOGGET_FNR)
