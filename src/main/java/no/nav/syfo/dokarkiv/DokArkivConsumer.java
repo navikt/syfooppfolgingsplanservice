@@ -89,8 +89,8 @@ public class DokArkivConsumer {
                     entity,
                     JournalpostResponse.class);
             metrikk.tellHendelse("journalfor_oppfolgingsplan");
-            HttpStatus responseStatus = response.getStatusCode();
-            if (HttpStatus.CREATED.equals(responseStatus) || HttpStatus.CONFLICT.equals(responseStatus)) {
+            int responseStatus = response.getStatusCode().value();
+            if (HttpStatus.CREATED.value() == responseStatus || HttpStatus.CONFLICT.value() == responseStatus) {
                 if (!response.getBody().journalpostferdigstilt) {
                     log.warn("Journalpost is not ferdigstilt with message: {}", response.getBody().melding);
                 }
