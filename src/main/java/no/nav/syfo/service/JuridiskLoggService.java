@@ -50,7 +50,7 @@ public class JuridiskLoggService {
             rt.exchange(altinnUrl, HttpMethod.POST, requestPost, LoggMelding.class);
             log.info("Logget sending av oppfølgingsplan med id {} i juridisk loggSendOppfoelgingsdialogTilAltinn", oppfolgingsplan.id);
         } catch (RestClientResponseException e) {
-            log.error("Klientfeil mot JuridiskLogg ved logging av sendt oppfølgingsplan med id {} til Altinn. HTTP-status: {} og {}", oppfolgingsplan.id, e.getRawStatusCode(), e.getStatusText(), e);
+            log.error("Klientfeil mot JuridiskLogg ved logging av sendt oppfølgingsplan med id {} til Altinn. HTTP-status: {} og {}", oppfolgingsplan.id, e.getStatusCode().value(), e.getStatusText(), e);
             throw e;
         }
     }

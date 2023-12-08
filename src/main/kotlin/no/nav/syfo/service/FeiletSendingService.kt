@@ -1,6 +1,5 @@
 package no.nav.syfo.service
 
-import no.nav.syfo.domain.FeiletSending
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.repository.dao.FeiletSendingDAO
 import org.slf4j.LoggerFactory

@@ -1,9 +1,9 @@
 package no.nav.syfo.tokenx
 
+import jakarta.ws.rs.ForbiddenException
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.security.token.support.core.jwt.JwtTokenClaims
 import no.nav.syfo.domain.Fodselsnummer
-import javax.ws.rs.ForbiddenException
 
 object TokenXUtil {
     @Throws(ForbiddenException::class)

@@ -9,11 +9,9 @@ import no.nav.syfo.pdl.PdlPerson
 import no.nav.syfo.pdl.PdlPersonNavn
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.ResponseEntity
 import javax.inject.Inject
@@ -29,50 +27,47 @@ class PersonControllerV3Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var personController: PersonControllerV3
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     @Test
     fun narmesteLeder_ansatt_ok() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(pdlConsumer.person(ARBEIDSTAKER_FNR))
             .thenReturn(PdlHentPerson(PdlPerson(listOf(PdlPersonNavn("Test", "Junior", "Testesen")), emptyList())))
         val res: ResponseEntity<*> = personController.getPerson(ARBEIDSTAKER_FNR)
         val body = res.body as Person
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(ARBEIDSTAKER_FNR, body.fnr)
         assertEquals("Test Junior Testesen", body.navn)
     }
 
     @Test
     fun narmesteLeder_self_ok() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
         `when`(pdlConsumer.person(ARBEIDSTAKER_FNR))
             .thenReturn(PdlHentPerson(PdlPerson(listOf(PdlPersonNavn("Test", "Junior", "Testesen")), emptyList())))
         val res: ResponseEntity<*> = personController.getPerson(ARBEIDSTAKER_FNR)
         val body = res.body as Person
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(ARBEIDSTAKER_FNR, body.fnr)
         assertEquals("Test Junior Testesen", body.navn)
     }
 
     @Test
     fun narmesteLeder_noContent() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(pdlConsumer.person(ARBEIDSTAKER_FNR))
             .thenReturn(null)
         val res: ResponseEntity<*> = personController.getPerson(ARBEIDSTAKER_FNR)
-        assertEquals(404, res.statusCodeValue.toLong())
+        assertEquals(404, res.statusCode.value().toLong())
     }
 
     @Test
     fun narmesteLeder_forbidden() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
 
         val res: ResponseEntity<*> = personController.getPerson(ARBEIDSTAKER_FNR)
-        assertEquals(403, res.statusCodeValue.toLong())
+        assertEquals(403, res.statusCode.value().toLong())
     }
 }

@@ -4,9 +4,9 @@ version = "1.0.0"
 object Versions {
     const val avroVersion = "1.11.0"
     const val confluentVersion = "7.1.0"
-    const val cxfVersion = "3.5.5"
+    const val cxfVersion = "3.6.2"
     const val flywayVersion = "9.10.0"
-    const val tokenSupportVersion = "2.1.3"
+    const val tokenSupportVersion = "3.1.8"
     const val tokenTestSupportVersion = "2.0.5"
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.0.4"
@@ -16,6 +16,15 @@ object Versions {
     const val jaxwsVersion = "2.3.2"
     const val h2Version = "2.1.210"
     const val mockkVersion = "1.13.4"
+    const val atomikosVersion = "6.0.0"
+    const val jakartaRsApiVersion = "3.1.0"
+    const val jacksonVersion = "2.15.3"
+    const val apacheHttpClientVersion = "5.2.1"
+    const val javaxWsVersion = "2.3.1"
+    const val javaxSoapVersion = "1.3.5"
+    const val jaxbVersion = "2.3.1"
+    const val javaxActivationVersion = "1.2.0"
+    const val jakartaSoapVersion = "1.5.1"
 }
 
 val githubUser: String by project
@@ -23,16 +32,22 @@ val githubPassword: String by project
 
 plugins {
     kotlin("jvm") version "1.9.20"
-    kotlin("plugin.spring") version "1.9.20"
     id("java")
-    id("org.springframework.boot") version "2.7.11"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.0"
+    id("org.springframework.boot") version "3.1.5"
+    id("io.spring.dependency-management") version "1.1.4"
 }
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(19))
     }
+}
+
+allOpen {
+    annotation("org.springframework.context.annotation.Configuration")
+    annotation("org.springframework.stereotype.Service")
+    annotation("org.springframework.stereotype.Component")
 }
 
 repositories {
@@ -73,8 +88,9 @@ configurations.all {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.jacksonVersion}")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${Versions.jacksonVersion}")
+    implementation("com.fasterxml.jackson.module:jackson-module-jaxb-annotations:${Versions.jacksonVersion}")
 
     implementation("com.sun.xml.ws:jaxws-ri:${Versions.jaxwsVersion}")
 
@@ -86,23 +102,22 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jersey")
     implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-jta-atomikos")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.kafka:spring-kafka")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     implementation("org.springframework:spring-jms")
 
-    implementation("org.apache.httpcomponents:httpclient")
-
     implementation("no.nav.security:token-validation-spring:${Versions.tokenSupportVersion}")
-    testImplementation("no.nav.security:token-validation-test-support:${Versions.tokenTestSupportVersion}")
 
     implementation("org.apache.cxf:cxf-rt-features-logging:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-ws-security:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-ws-policy:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-transports-http:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:${Versions.cxfVersion}")
+
+    implementation("javax.xml.bind:jaxb-api:${Versions.jaxbVersion}")
+    implementation("com.sun.xml.bind:jaxb-impl:${Versions.jaxbVersion}")
+
 
     implementation("no.nav.helse.xml:oppfolgingsplan:${Versions.helseXmlVersion}")
 
@@ -120,7 +135,6 @@ dependencies {
     }
 
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
-    testImplementation("com.h2database:h2:${Versions.h2Version}")
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.5")
@@ -128,7 +142,6 @@ dependencies {
     implementation("commons-io:commons-io:2.15.0")
     implementation("com.lowagie:itext:2.1.7")
     implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20220608.1")
-    implementation("javax.ws.rs:javax.ws.rs-api:2.0.1")
     implementation("javax.inject:javax.inject:1")
     implementation("org.apache.pdfbox:pdfbox:2.0.25")
     implementation("org.apache.pdfbox:pdfbox-tools:2.0.25")
@@ -139,9 +152,19 @@ dependencies {
     implementation("org.apache.kafka:kafka_2.13") {
         exclude(group = "log4j", module = "log4j")
     }
+    implementation("com.atomikos:transactions-spring-boot3-starter:${Versions.atomikosVersion}")
+    implementation("jakarta.ws.rs:jakarta.ws.rs-api:${Versions.jakartaRsApiVersion}")
+    implementation("com.sun.activation:javax.activation:${Versions.javaxActivationVersion}")
+    implementation("org.apache.httpcomponents.client5:httpclient5:${Versions.apacheHttpClientVersion}")
+    implementation("javax.xml.ws:jaxws-api:${Versions.javaxWsVersion}")
+    implementation("com.sun.xml.messaging.saaj:saaj-impl:${Versions.jakartaSoapVersion}")
+    implementation("javax.xml.soap:saaj-api:${Versions.javaxSoapVersion}")
 
     testImplementation("junit:junit")
     testImplementation("io.mockk:mockk:${Versions.mockkVersion}")
+    testImplementation("com.h2database:h2:${Versions.h2Version}")
+    testImplementation("no.nav.security:token-validation-spring-test:${Versions.tokenSupportVersion}")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     constraints {
         implementation("org.apache.zookeeper:zookeeper") {
@@ -161,9 +184,9 @@ dependencies {
 
 tasks {
     extra["log4j2.version"] = "2.16.0"
-    extra["snakeyaml.version"] = "2.2"
 
     named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         archiveFileName.set("app.jar")
     }
     named<Jar>("jar") {

@@ -9,11 +9,9 @@ import no.nav.syfo.narmesteleder.NarmesteLedereConsumer
 import no.nav.syfo.testhelper.UserConstants
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.ResponseEntity
 import java.time.LocalDate
@@ -31,9 +29,6 @@ class NarmesteLedereControllerV3Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var narmesteLedereController: NarmesteLedereControllerV3
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     private val naermesteleder = Naermesteleder()
         .naermesteLederFnr(LEDER_FNR)
         .orgnummer(UserConstants.VIRKSOMHETSNUMMER)
@@ -44,14 +39,14 @@ class NarmesteLedereControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_ansatt_ok() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(narmesteLedereConsumer.narmesteLedere(ARBEIDSTAKER_FNR))
             .thenReturn(Optional.of(naermesteledere))
         val res: ResponseEntity<List<NarmesteLeder>> = narmesteLedereController.getNarmesteLedere(ARBEIDSTAKER_FNR)
         val body = res.body as List<NarmesteLeder>
         val actualNarmesteLeder = body[0]
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(naermesteleder.naermesteLederFnr, actualNarmesteLeder.fnr)
         assertEquals(naermesteleder.orgnummer, actualNarmesteLeder.virksomhetsnummer)
         assertEquals(naermesteleder.naermesteLederStatus.erAktiv, actualNarmesteLeder.erAktiv)
@@ -61,13 +56,13 @@ class NarmesteLedereControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_self_ok() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
         `when`(narmesteLedereConsumer.narmesteLedere(ARBEIDSTAKER_FNR))
             .thenReturn(Optional.of(listOf(naermesteleder)))
         val res: ResponseEntity<List<NarmesteLeder>> = narmesteLedereController.getNarmesteLedere(ARBEIDSTAKER_FNR)
         val body = res.body as List<NarmesteLeder>
         val actualNarmesteLeder = body[0]
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(naermesteleder.naermesteLederFnr, actualNarmesteLeder.fnr)
         assertEquals(naermesteleder.orgnummer, actualNarmesteLeder.virksomhetsnummer)
         assertEquals(naermesteleder.naermesteLederStatus.erAktiv, actualNarmesteLeder.erAktiv)
@@ -77,18 +72,18 @@ class NarmesteLedereControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_noContent() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(narmesteLedereConsumer.narmesteLedere(ARBEIDSTAKER_FNR)).thenReturn(Optional.empty())
         val res: ResponseEntity<*> = narmesteLedereController.getNarmesteLedere(ARBEIDSTAKER_FNR)
-        assertEquals(204, res.statusCodeValue.toLong())
+        assertEquals(204, res.statusCode.value().toLong())
     }
 
     @Test
     fun narmesteLeder_forbidden() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
         val res: ResponseEntity<*> = narmesteLedereController.getNarmesteLedere(ARBEIDSTAKER_FNR)
-        assertEquals(403, res.statusCodeValue.toLong())
+        assertEquals(403, res.statusCode.value().toLong())
     }
 }

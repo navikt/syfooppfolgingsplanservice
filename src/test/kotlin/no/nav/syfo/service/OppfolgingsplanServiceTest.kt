@@ -8,11 +8,10 @@ import no.nav.syfo.model.Naermesteleder
 import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.*
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.any
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
+import no.nav.syfo.util.TokenValidationTestUtil
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +34,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
 import javax.inject.Inject
-import javax.ws.rs.ForbiddenException
+import jakarta.ws.rs.ForbiddenException
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [LocalApplication::class])
@@ -85,20 +84,20 @@ class OppfolgingsplanServiceTest {
     private lateinit var mockRestServiceServer: MockRestServiceServer
 
     @Inject
-    private lateinit var oppfolgingsplanService: OppfolgingsplanService
+    private lateinit var tokenValidationTestUtil: TokenValidationTestUtil
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
+    @Inject
+    private lateinit var oppfolgingsplanService: OppfolgingsplanService
 
     @Before
     fun setUp() {
         mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build()
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
     }
 
     @After
     fun tearDown() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
     }
 
     @Test

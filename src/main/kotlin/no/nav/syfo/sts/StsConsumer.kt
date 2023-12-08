@@ -35,7 +35,7 @@ class StsConsumer @Autowired constructor(
                 cachedOidcToken = response.body
                 metrikk.tellHendelse(METRIC_CALL_STS_SUCCESS)
             } catch (e: RestClientResponseException) {
-                LOG.error("Request to get STS failed with status: ${e.rawStatusCode} and message: ${e.responseBodyAsString}")
+                LOG.error("Request to get STS failed with status: ${e.statusCode.value()} and message: ${e.responseBodyAsString}")
                 metrikk.tellHendelse(METRIC_CALL_STS_FAIL)
                 throw e
             }

@@ -13,7 +13,6 @@ import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.sykmeldinger.ArbeidstakerSykmeldingerConsumer
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import no.nav.syfo.tokenx.tokendings.TokenDingsConsumer
 import no.nav.syfo.util.encodedJWTTokenX
 import org.junit.Assert.assertEquals
@@ -21,7 +20,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.ResponseEntity
 import java.time.LocalDate
@@ -44,9 +42,6 @@ class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var sykmeldingerController: ArbeidstakerSykmeldingerControllerV2
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     private val sykmelding = Sykmelding(
         "1",
         ARBEIDSTAKER_FNR,
@@ -59,8 +54,7 @@ class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
 
     @Before
     fun setup() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
-
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
         `when`(pdlConsumer.aktorid(ARBEIDSTAKER_FNR)).thenReturn(ARBEIDSTAKER_AKTORID)
         `when`(tokenDingsConsumer.exchangeToken(anyString(), anyString())).thenReturn(encodedTokenX)
     }
@@ -75,7 +69,7 @@ class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
 
         val sendteSykmeldingerV2 = sendteSykmeldinger.map { it.toSykmeldingV2() }
 
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(sendteSykmeldingerV2, body)
     }
 
@@ -88,7 +82,7 @@ class ArbeidstakerSykmeldingerControllerV2Test : AbstractRessursTilgangTest() {
         val res: ResponseEntity<*> = sykmeldingerController.getSendteSykmeldinger("false")
         val body = res.body as List<*>
 
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(emptyList<SykmeldingV2>(), body)
     }
 }

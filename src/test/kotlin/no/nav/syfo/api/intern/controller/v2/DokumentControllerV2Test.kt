@@ -6,9 +6,7 @@ import no.nav.syfo.domain.GodkjentPlan
 import no.nav.syfo.repository.dao.GodkjentplanDAO
 import no.nav.syfo.service.DokumentService
 import no.nav.syfo.service.PdfService
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.VEILEDER_ID
-import no.nav.syfo.testhelper.loggInnVeilederAzureADV2
 import no.nav.syfo.testhelper.mockSvarFraIstilgangskontrollTilgangTilSYFO
 import org.junit.*
 import org.mockito.Mockito
@@ -18,7 +16,7 @@ import java.io.IOException
 import java.text.ParseException
 import java.util.*
 import javax.inject.Inject
-import javax.ws.rs.ForbiddenException
+import jakarta.ws.rs.ForbiddenException
 
 class DokumentControllerV2Test : AbstractRessursTilgangTest() {
     @Inject
@@ -36,12 +34,12 @@ class DokumentControllerV2Test : AbstractRessursTilgangTest() {
     @Before
     @Throws(ParseException::class)
     fun setup() {
-        loggInnVeilederAzureADV2(contextHolder, VEILEDER_ID)
+        tokenValidationTestUtil.logInAsNavCounselor(VEILEDER_ID)
     }
 
     @After
     override fun tearDown() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
     }
 
     @Test

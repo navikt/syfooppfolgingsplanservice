@@ -5,17 +5,15 @@ import no.nav.syfo.ereg.EregConsumer
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO
 import no.nav.syfo.service.BrukerprofilService
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.VEILEDER_ID
-import no.nav.syfo.testhelper.loggInnVeilederAzureADV2
 import no.nav.syfo.testhelper.mockSvarFraIstilgangskontrollTilgangTilBruker
 import org.junit.*
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import java.text.ParseException
 import javax.inject.Inject
-import javax.ws.rs.ForbiddenException
+import jakarta.ws.rs.ForbiddenException
 
 class OppfolgingsplanInternControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
@@ -36,12 +34,12 @@ class OppfolgingsplanInternControllerV2Test : AbstractRessursTilgangTest() {
     @Before
     @Throws(ParseException::class)
     fun setup() {
-        loggInnVeilederAzureADV2(contextHolder, VEILEDER_ID)
+        tokenValidationTestUtil.logInAsNavCounselor(VEILEDER_ID)
     }
 
     @After
     override fun tearDown() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
     }
 
     @Test

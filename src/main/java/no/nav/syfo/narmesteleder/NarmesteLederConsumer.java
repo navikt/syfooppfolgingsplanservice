@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -118,7 +115,7 @@ public class NarmesteLederConsumer {
         return Optional.of(narmesteLederRelasjonConverter.convert(relasjon, lederNavn));
     }
 
-    private void throwExceptionIfError(HttpStatus statusCode, String metricEventKey) {
+    private void throwExceptionIfError(HttpStatusCode statusCode, String metricEventKey) {
         if (statusCode != OK) {
             metrikk.tellHendelse(metricEventKey);
             final String message = ERROR_MESSAGE_BASE + statusCode;

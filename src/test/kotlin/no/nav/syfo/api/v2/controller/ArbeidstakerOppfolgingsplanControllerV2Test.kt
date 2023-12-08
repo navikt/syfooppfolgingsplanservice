@@ -6,20 +6,17 @@ import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.service.OppfolgingsplanService
-import no.nav.syfo.testhelper.OidcTestHelper.loggUtAlle
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_AKTORID
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import no.nav.syfo.testhelper.oppfolgingsplanGodkjentTvang
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import javax.inject.Inject
 
@@ -39,12 +36,9 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Inject
     private lateinit var arbeidstakerOppfolgingsplanController: ArbeidstakerOppfolgingsplanControllerV2
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     @Before
     fun setup() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
     }
 
     @Test
@@ -60,7 +54,7 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
 
     @Test(expected = RuntimeException::class)
     fun finner_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         arbeidstakerOppfolgingsplanController.hentArbeidstakersOppfolgingsplaner()
     }
 
@@ -77,7 +71,7 @@ class ArbeidstakerOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
 
     @Test(expected = RuntimeException::class)
     fun opprett_oppfolgingsplan_ikke_innlogget_bruker() {
-        loggUtAlle(contextHolder)
+        tokenValidationTestUtil.logout()
         val opprettOppfolgingsplan = OpprettOppfolgingsplanRequest("", VIRKSOMHETSNUMMER)
         arbeidstakerOppfolgingsplanController.opprettOppfolgingsplanSomArbeidstaker(opprettOppfolgingsplan)
     }

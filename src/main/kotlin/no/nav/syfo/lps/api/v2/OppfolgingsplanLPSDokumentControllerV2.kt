@@ -1,5 +1,6 @@
 package no.nav.syfo.lps.api.v2
 
+import jakarta.ws.rs.ForbiddenException
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.lps.OppfolgingsplanLPSService
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import javax.inject.Inject
-import javax.ws.rs.ForbiddenException
 
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.INTERN_AZUREAD_V2)
