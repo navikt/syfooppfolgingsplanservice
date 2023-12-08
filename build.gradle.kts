@@ -4,7 +4,7 @@ version = "1.0.0"
 object Versions {
     const val avroVersion = "1.11.0"
     const val confluentVersion = "7.1.0"
-    const val cxfVersion = "3.5.5"
+    const val cxfVersion = "3.6.2"
     const val flywayVersion = "9.10.0"
     const val tokenSupportVersion = "3.1.8"
     const val tokenTestSupportVersion = "2.0.5"
@@ -21,7 +21,10 @@ object Versions {
     const val jacksonVersion = "2.15.3"
     const val apacheHttpClientVersion = "5.2.1"
     const val javaxWsVersion = "2.3.1"
+    const val javaxSoapVersion = "1.3.5"
     const val jaxbVersion = "2.3.1"
+    const val javaxActivationVersion = "1.2.0"
+    const val jakartaSoapVersion = "1.5.1"
 }
 
 val githubUser: String by project
@@ -151,8 +154,11 @@ dependencies {
     }
     implementation("com.atomikos:transactions-spring-boot3-starter:${Versions.atomikosVersion}")
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:${Versions.jakartaRsApiVersion}")
+    implementation("com.sun.activation:javax.activation:${Versions.javaxActivationVersion}")
     implementation("org.apache.httpcomponents.client5:httpclient5:${Versions.apacheHttpClientVersion}")
     implementation("javax.xml.ws:jaxws-api:${Versions.javaxWsVersion}")
+    implementation("com.sun.xml.messaging.saaj:saaj-impl:${Versions.jakartaSoapVersion}")
+    implementation("javax.xml.soap:saaj-api:${Versions.javaxSoapVersion}")
 
     testImplementation("junit:junit")
     testImplementation("io.mockk:mockk:${Versions.mockkVersion}")
