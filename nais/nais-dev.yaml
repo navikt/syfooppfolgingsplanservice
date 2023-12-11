@@ -39,7 +39,6 @@ spec:
     - "https://syfooppfolgingsplanservice.dev-fss-pub.nais.io"
   tokenx:
     enabled: true
-  webproxy: true
   accessPolicy:
     inbound:
       rules:

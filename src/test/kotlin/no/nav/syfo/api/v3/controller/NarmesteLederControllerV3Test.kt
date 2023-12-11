@@ -9,11 +9,9 @@ import no.nav.syfo.narmesteleder.NarmesteLederConsumer
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.ResponseEntity
 import java.time.LocalDate
@@ -28,9 +26,6 @@ class NarmesteLederControllerV3Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var narmesteLederConsumer: NarmesteLederConsumer
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     @Inject
     private lateinit var narmesteLederController: NarmesteLederControllerV3
 
@@ -42,13 +37,13 @@ class NarmesteLederControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_ansatt_ok() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER))
             .thenReturn(Optional.of(naermesteleder))
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         val body = res.body as NarmesteLeder
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(naermesteleder.naermesteLederFnr, body.fnr)
         assertEquals(naermesteleder.orgnummer, body.virksomhetsnummer)
         assertEquals(naermesteleder.naermesteLederStatus.erAktiv, body.erAktiv)
@@ -58,12 +53,12 @@ class NarmesteLederControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_self_ok() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
         `when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER))
             .thenReturn(Optional.of(naermesteleder))
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         val body = res.body as NarmesteLeder
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(naermesteleder.naermesteLederFnr, body.fnr)
         assertEquals(naermesteleder.orgnummer, body.virksomhetsnummer)
         assertEquals(naermesteleder.naermesteLederStatus.erAktiv, body.erAktiv)
@@ -73,18 +68,18 @@ class NarmesteLederControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_noContent() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(narmesteLederConsumer.narmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)).thenReturn(Optional.empty())
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
-        assertEquals(204, res.statusCodeValue.toLong())
+        assertEquals(204, res.statusCode.value().toLong())
     }
 
     @Test
     fun narmesteLeder_forbidden() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
         val res: ResponseEntity<*> = narmesteLederController.getNarmesteLeder(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
-        assertEquals(403, res.statusCodeValue.toLong())
+        assertEquals(403, res.statusCode.value().toLong())
     }
 }

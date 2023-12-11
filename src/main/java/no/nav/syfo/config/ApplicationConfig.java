@@ -1,5 +1,6 @@
 package no.nav.syfo.config;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -10,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 @EnableTransactionManagement
 @EnableScheduling
 @EnableCaching
-@EnableAspectJAutoProxy
 public class ApplicationConfig {
 
     @Bean
@@ -22,5 +22,12 @@ public class ApplicationConfig {
     @Bean(name = "scheduler")
     public RestTemplate restTemplateScheduler() {
         return new RestTemplate();
+    }
+
+    @Bean(name="restTemplateMedProxy")
+    public RestTemplate restTemplateMedProxy() {
+        return new RestTemplateBuilder()
+                .additionalCustomizers(new NaisProxyCustomizer())
+                .build();
     }
 }

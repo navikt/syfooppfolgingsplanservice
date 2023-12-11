@@ -1,6 +1,7 @@
 package no.nav.syfo.util;
 
-import javax.ws.rs.WebApplicationException;
+
+import jakarta.ws.rs.WebApplicationException;
 
 public class ConflictException extends WebApplicationException {
 

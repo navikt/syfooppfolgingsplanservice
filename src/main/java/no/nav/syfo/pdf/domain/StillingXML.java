@@ -1,7 +1,7 @@
 package no.nav.syfo.pdf.domain;
 
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.math.BigDecimal;
 
 @XmlAccessorType(XmlAccessType.FIELD)

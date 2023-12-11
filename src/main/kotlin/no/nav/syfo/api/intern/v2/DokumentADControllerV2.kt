@@ -1,5 +1,6 @@
 package no.nav.syfo.api.intern.v2
 
+import jakarta.ws.rs.NotFoundException
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.syfo.domain.GodkjentPlan
 import no.nav.syfo.oidc.OIDCIssuer
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*
 import java.io.IOException
 import java.io.Serializable
 import javax.inject.Inject
-import javax.ws.rs.NotFoundException
 
 @RestController
 @ProtectedWithClaims(issuer = OIDCIssuer.INTERN_AZUREAD_V2)

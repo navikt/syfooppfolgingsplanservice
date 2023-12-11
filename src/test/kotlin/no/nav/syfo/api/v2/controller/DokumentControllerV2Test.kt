@@ -5,12 +5,10 @@ import no.nav.syfo.api.AbstractRessursTilgangTest
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.service.PdfService
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import javax.inject.Inject
 
@@ -24,18 +22,15 @@ class DokumentControllerV2Test : AbstractRessursTilgangTest() {
     @MockBean
     lateinit var metrikk: Metrikk
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     @Test
     fun hent_pdf_som_bruker() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
         val oppfolgingsplanId = 1L
         val pdf = ByteArray(10)
         `when`(pdfService.hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)).thenReturn(pdf)
         val response = dokumentController.hentPdf(oppfolgingsplanId)
         verify(pdfService).hentPdf(oppfolgingsplanId, ARBEIDSTAKER_FNR)
-        assertEquals(200, response.statusCodeValue.toLong())
+        assertEquals(200, response.statusCode.value().toLong())
         assertEquals(pdf, response.body)
     }
 

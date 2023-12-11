@@ -1,5 +1,9 @@
 # Syfooppfolgingsplanservice
-Tidligere serviceoppfoelgingsdialog, håndterer digitale oppfølgigngsplaner
+Backend applikasjon som lagrer, tilbyr og videresender NAV's versjon
+av digitale oppfølgingsplaner. Mottar også LPS planer via Altinn-kanal 2
+som lagres intern, journalfører i DokArkiv og videreformidles i intern
+Kafka-topicen `team-esyfo.aapen-syfo-oppfolgingsplan-lps-nav-v2`.
+
 
 ## Lokal utvikling
 Start opp via `LocalApplication.main`. Kjører på port 8583.
@@ -8,8 +12,8 @@ Start opp via `LocalApplication.main`. Kjører på port 8583.
 ### Pipeline
 
 Pipeline er på Github Action.
-Commits til Master-branch deployes automatisk til dev-fss og prod-fss.
-Commits til ikke-master-branch bygges uten automatisk deploy.
+Commits til main-branch deployes automatisk til dev-fss og prod-fss.
+Commits til en ikke-main-branch deployes dev-fss.
 
 
 ## Database

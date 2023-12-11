@@ -8,11 +8,9 @@ import no.nav.syfo.service.ArbeidsforholdService
 import no.nav.syfo.testhelper.UserConstants.ARBEIDSTAKER_FNR
 import no.nav.syfo.testhelper.UserConstants.LEDER_FNR
 import no.nav.syfo.testhelper.UserConstants.VIRKSOMHETSNUMMER
-import no.nav.syfo.testhelper.loggInnBrukerTokenX
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.`when`
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.ResponseEntity
 import java.math.BigDecimal
@@ -30,21 +28,18 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
     @Inject
     private lateinit var arbeidsforholdController: ArbeidsforholdControllerV3
 
-    @Value("\${oppfolgingsplan.frontend.client.id}")
-    private lateinit var oppfolgingsplanClientId: String
-
     val stilling = Stilling().yrke("Bilmekaniker").prosent(BigDecimal.TEN).fom(LocalDate.now().minusYears(1)).tom(LocalDate.now())
 
     @Test
     fun narmesteLeder_ansatt_ok() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(true)
         `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER)))
             .thenReturn(listOf(stilling))
         val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         val body = res.body as List<Arbeidsforhold>
         val arbeidsforhold = body[0]
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(stilling.yrke, arbeidsforhold.yrke)
         assertEquals(stilling.prosent, arbeidsforhold.prosent)
         assertEquals(stilling.fom, arbeidsforhold.fom)
@@ -53,13 +48,13 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_self_ok() {
-        loggInnBrukerTokenX(contextHolder, ARBEIDSTAKER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(ARBEIDSTAKER_FNR)
         `when`(arbeidsforholdService.arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER)))
             .thenReturn(listOf(stilling))
         val res: ResponseEntity<List<Arbeidsforhold>> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         val body = res.body as List<Arbeidsforhold>
         val arbeidsforhold = body[0]
-        assertEquals(200, res.statusCodeValue.toLong())
+        assertEquals(200, res.statusCode.value().toLong())
         assertEquals(stilling.yrke, arbeidsforhold.yrke)
         assertEquals(stilling.prosent, arbeidsforhold.prosent)
         assertEquals(stilling.fom, arbeidsforhold.fom)
@@ -68,10 +63,10 @@ class ArbeidsforholdControllerV3Test : AbstractRessursTilgangTest() {
 
     @Test
     fun narmesteLeder_forbidden() {
-        loggInnBrukerTokenX(contextHolder, LEDER_FNR, oppfolgingsplanClientId)
+        tokenValidationTestUtil.logInAsUser(LEDER_FNR)
         `when`(brukertilgangConsumer.hasAccessToAnsatt(ARBEIDSTAKER_FNR)).thenReturn(false)
 
         val res: ResponseEntity<*> = arbeidsforholdController.getArbeidsforhold(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
-        assertEquals(403, res.statusCodeValue.toLong())
+        assertEquals(403, res.statusCode.value().toLong())
     }
 }

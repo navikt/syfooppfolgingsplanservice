@@ -15,7 +15,7 @@ import org.mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
 import java.util.*
-import javax.ws.rs.ForbiddenException
+import jakarta.ws.rs.ForbiddenException
 
 @RunWith(MockitoJUnitRunner::class)
 class OppfolgingsplanServiceTest {

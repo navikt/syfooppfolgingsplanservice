@@ -1,20 +1,20 @@
-package no.nav.syfo.api.exception;
+package no.nav.syfo.api.exception
 
-import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException;
-import no.nav.syfo.brukertilgang.RequestUnauthorizedException;
-import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.util.ConflictException;
+import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
+import no.nav.syfo.brukertilgang.RequestUnauthorizedException
+import no.nav.syfo.metric.Metrikk
+import no.nav.syfo.util.ConflictException
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.util.WebUtils;
+import org.springframework.http.*
+import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.context.request.WebRequest
+import org.springframework.web.util.WebUtils
 
-import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotFoundException;
+import javax.inject.Inject
+import jakarta.validation.ConstraintViolationException
+import jakarta.ws.rs.ForbiddenException
+import jakarta.ws.rs.NotFoundException
 
 import org.slf4j.LoggerFactory.getLogger;
 import org.springframework.web.HttpMediaTypeNotAcceptableException

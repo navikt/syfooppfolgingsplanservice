@@ -1,5 +1,6 @@
 package no.nav.syfo.veiledertilgang
 
+import jakarta.ws.rs.ForbiddenException
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer
 import no.nav.syfo.domain.Fodselsnummer
@@ -16,7 +17,6 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
-import javax.ws.rs.ForbiddenException
 
 @Service
 class VeilederTilgangConsumer(
@@ -27,13 +27,8 @@ class VeilederTilgangConsumer(
     private val contextHolder: TokenValidationContextHolder,
     private val template: RestTemplate,
 ) {
-    private val tilgangskontrollPersonUrl: String
-    private val tilgangskontrollPersonSYFOUrl: String
-
-    init {
-        tilgangskontrollPersonUrl = "$istilgangskontrollUrl$TILGANGSKONTROLL_PERSON_PATH"
-        tilgangskontrollPersonSYFOUrl = "$istilgangskontrollUrl$TILGANGSKONTROLL_SYFO_PATH"
-    }
+    private val tilgangskontrollPersonUrl = "$istilgangskontrollUrl$TILGANGSKONTROLL_PERSON_PATH"
+    private val tilgangskontrollPersonSYFOUrl = "$istilgangskontrollUrl$TILGANGSKONTROLL_SYFO_PATH"
 
     fun throwExceptionIfVeilederWithoutAccessWithOBO(fnr: Fodselsnummer) {
         val harTilgang = hasVeilederAccessToPersonWithOBO(fnr)
@@ -111,11 +106,11 @@ class VeilederTilgangConsumer(
             )
             tilgang.body!!.erGodkjent
         } catch (e: HttpClientErrorException) {
-            if (e.rawStatusCode == 403) {
+            if (e.statusCode.value() == 403) {
                 false
             } else {
                 metric.tellHendelse(METRIC_CALL_VEILEDERTILGANG_USER_FAIL)
-                LOG.error("Error requesting ansatt access from istilgangskontroll with status-${e.rawStatusCode} callId-${httpEntity.headers[NAV_CALL_ID_HEADER]}: ", e)
+                LOG.error("Error requesting ansatt access from istilgangskontroll with status-${e.statusCode.value()} callId-${httpEntity.headers[NAV_CALL_ID_HEADER]}: ", e)
                 throw e
             }
         }

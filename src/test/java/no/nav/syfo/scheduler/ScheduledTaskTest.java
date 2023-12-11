@@ -4,8 +4,7 @@ import org.junit.Test;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Date;
 
 import static java.lang.System.clearProperty;
@@ -18,6 +17,8 @@ import static org.mockito.Mockito.*;
 public class ScheduledTaskTest {
 
     private final String OPPFOLGINGSPLANSCHEDULER_CRON = "SERVICEOPPFOELGINGSDIALOG_SCHEDULER_ _CRON";
+    private static final LocalDateTime now = LocalDateTime.now();
+    private static final Clock nowClock = ScheduledTaskTest.getNowClock();
 
     @Test
     public void getTriggerDefault() throws Exception {
@@ -25,8 +26,7 @@ public class ScheduledTaskTest {
 
         TriggerContext triggerContext = mock(TriggerContext.class);
 
-        LocalDateTime now = now();
-        when(triggerContext.lastCompletionTime()).thenReturn(convertToDate(now));
+        when(triggerContext.getClock()).thenReturn(nowClock);
 
         Date nextExecutionTime = new ScheduledTask() {
             @Override
@@ -48,9 +48,7 @@ public class ScheduledTaskTest {
         setProperty(OPPFOLGINGSPLANSCHEDULER_CRON, "* * * * * *");
 
         TriggerContext triggerContext = mock(TriggerContext.class);
-
-        LocalDateTime now = now();
-        when(triggerContext.lastCompletionTime()).thenReturn(convertToDate(now));
+        when(triggerContext.getClock()).thenReturn(nowClock);
 
         Date nextExecutionTime = new ScheduledTask() {
             @Override
@@ -70,8 +68,7 @@ public class ScheduledTaskTest {
 
         TriggerContext triggerContext = mock(TriggerContext.class);
 
-        LocalDateTime now = now();
-        when(triggerContext.lastCompletionTime()).thenReturn(convertToDate(now));
+        when(triggerContext.getClock()).thenReturn(nowClock);
 
         Date nextExecutionTime = new ScheduledTask() {
             @Override
@@ -93,7 +90,7 @@ public class ScheduledTaskTest {
         TriggerContext triggerContext = mock(TriggerContext.class);
 
         LocalDateTime now = now();
-        when(triggerContext.lastCompletionTime()).thenReturn(convertToDate(now));
+        when(triggerContext.getClock()).thenReturn(nowClock);
 
         Date nextExecutionTime = new ScheduledTask() {
             @Override
@@ -114,9 +111,7 @@ public class ScheduledTaskTest {
         setProperty(OPPFOLGINGSPLANSCHEDULER_CRON, "0 0 0 * * *");
 
         TriggerContext triggerContext = mock(TriggerContext.class);
-
-        LocalDateTime now = now();
-        when(triggerContext.lastCompletionTime()).thenReturn(convertToDate(now));
+        when(triggerContext.getClock()).thenReturn(nowClock);
 
         Date nextExecutionTime = new ScheduledTask() {
             @Override
@@ -138,9 +133,7 @@ public class ScheduledTaskTest {
         setProperty(OPPFOLGINGSPLANSCHEDULER_CRON, "0 0 0 1 * *");
 
         TriggerContext triggerContext = mock(TriggerContext.class);
-
-        LocalDateTime now = now();
-        when(triggerContext.lastCompletionTime()).thenReturn(convertToDate(now));
+        when(triggerContext.getClock()).thenReturn(nowClock);
 
         Date nextExecutionTime = new ScheduledTask() {
             @Override
@@ -163,9 +156,7 @@ public class ScheduledTaskTest {
         setProperty(OPPFOLGINGSPLANSCHEDULER_CRON, "0 0 0 1 1 *");
 
         TriggerContext triggerContext = mock(TriggerContext.class);
-
-        LocalDateTime now = now();
-        when(triggerContext.lastCompletionTime()).thenReturn(convertToDate(now));
+        when(triggerContext.getClock()).thenReturn(nowClock);
 
         Date nextExecutionTime = new ScheduledTask() {
             @Override
@@ -189,9 +180,7 @@ public class ScheduledTaskTest {
         setProperty(OPPFOLGINGSPLANSCHEDULER_CRON, "0 0 0 * * 1");
 
         TriggerContext triggerContext = mock(TriggerContext.class);
-
-        LocalDateTime now = now();
-        when(triggerContext.lastCompletionTime()).thenReturn(convertToDate(now));
+        when(triggerContext.getClock()).thenReturn(nowClock);
 
         final Trigger trigger = new ScheduledTask() {
             @Override
@@ -210,7 +199,15 @@ public class ScheduledTaskTest {
                 .plusWeeks(1)));
     }
 
+    private static Clock getNowClock() {
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZoneOffset zoneOffset = zoneId.getRules().getOffset(now);
+        Instant nowInstant = now.toInstant(zoneOffset);
+        return Clock.fixed(nowInstant, zoneId);
+    }
+
     private Date convertToDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
+
 }
