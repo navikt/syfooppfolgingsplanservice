@@ -6,7 +6,7 @@ object Versions {
     const val confluentVersion = "7.1.0"
     const val cxfVersion = "3.6.2"
     const val flywayVersion = "9.10.0"
-    const val tokenSupportVersion = "3.1.8"
+    const val tokenSupportVersion = "3.2.0"
     const val tokenTestSupportVersion = "2.0.5"
     const val ojdbc8Version = "19.3.0.0"
     const val helseXmlVersion = "1.0.4"
@@ -34,7 +34,7 @@ plugins {
     kotlin("jvm") version "1.9.20"
     id("java")
     id("org.jetbrains.kotlin.plugin.allopen") version "1.9.0"
-    id("org.springframework.boot") version "3.1.5"
+    id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.4"
 }
 
