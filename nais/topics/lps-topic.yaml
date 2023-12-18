@@ -24,3 +24,4 @@ spec:
     - team: teamsykefravr
       application: ispersonoppgave
       access: read
+
