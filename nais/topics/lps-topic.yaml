@@ -18,6 +18,9 @@ spec:
     - team: team-esyfo
       application: syfooppfolgingsplanservice
       access: write
+    - team: team-esyfo
+      application: lps-oppfolgingsplan-mottak
+      access: write
     - team: teamsykefravr
       application: ispersonoppgave
       access: read
