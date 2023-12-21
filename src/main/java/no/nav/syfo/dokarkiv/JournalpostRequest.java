@@ -19,5 +19,6 @@ public class JournalpostRequest {
     public String kanal;
     public Sak sak;
     public String tema;
+    public String eksternReferanseId;
 }
 

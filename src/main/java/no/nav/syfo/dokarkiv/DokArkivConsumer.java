@@ -53,7 +53,8 @@ public class DokArkivConsumer {
                 oppfolgingsplan.arbeidstaker.fnr,
                 godkjentPlan.dokument,
                 hentSistEndret(oppfolgingsplan),
-                "NAV_NO"
+                "NAV_NO",
+                oppfolgingsplan.uuid
         );
         return journalfor(request);
     }
@@ -72,7 +73,8 @@ public class DokArkivConsumer {
                 oppfolgingsplanLPS.getFnr(),
                 oppfolgingsplanLPS.getPdf(),
                 avsenderMottaker,
-                "ALTINN"
+                "ALTINN",
+                oppfolgingsplanLPS.getUuid().toString()
         );
         return journalfor(request);
     }
@@ -87,10 +89,17 @@ public class DokArkivConsumer {
                     entity,
                     JournalpostResponse.class);
             metrikk.tellHendelse("journalfor_oppfolgingsplan");
-            if (!response.getBody().journalpostferdigstilt) {
-                log.warn("Journalpost is not ferdigstilt with message: {}", response.getBody().melding);
+            int responseStatus = response.getStatusCode().value();
+            if (HttpStatus.CREATED.value() == responseStatus || HttpStatus.CONFLICT.value() == responseStatus) {
+                if (!response.getBody().journalpostferdigstilt) {
+                    log.warn("Journalpost is not ferdigstilt with message: {}", response.getBody().melding);
+                }
+                return response.getBody().journalpostId;
+            } else {
+                log.error("Failed to post Journalpost {}", response);
+                return null;
             }
-            return response.getBody().journalpostId;
+
         } catch (RestClientException e) {
             log.error("Error from DokArkiv " + url + JOURNALPOSTAPI_PATH, e);
             throw e;
@@ -102,7 +111,8 @@ public class DokArkivConsumer {
             String arbeidstakerFnr,
             byte[] dokumentPdf,
             AvsenderMottaker avsenderMottaker,
-            String kanal
+            String kanal,
+            String eksternReferanseId
     ) {
         String dokumentNavn = format("Oppfølgingsplan %s", virksomhetsnavn);
         Sak sak = new Sak()
@@ -122,7 +132,8 @@ public class DokArkivConsumer {
                 .sak(sak)
                 .avsenderMottaker(avsenderMottaker)
                 .bruker(bruker)
-                .dokumenter(dokumenter);
+                .dokumenter(dokumenter)
+                .eksternReferanseId(eksternReferanseId);
     }
 
     private List<Dokument> lagDokumenter(String dokumentNavn, byte[] dokumentPdf) {

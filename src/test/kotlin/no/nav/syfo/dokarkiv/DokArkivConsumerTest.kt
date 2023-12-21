@@ -25,6 +25,7 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import java.util.*
 import javax.inject.Inject
+import org.springframework.http.HttpStatus
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [LocalApplication::class])
@@ -59,13 +60,16 @@ class DokArkivConsumerTest {
     @Test
     fun journalforOppfolgingsplan() {
         val responseBody = journalPostResponseAsJsonString()
-        mockRestServiceServer.expect(ExpectedCount.once(),
-            MockRestRequestMatchers.requestTo("$url/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"))
-            .andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON))
+        mockRestServiceServer.expect(
+            ExpectedCount.once(),
+            MockRestRequestMatchers.requestTo("$url/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"),
+        )
+            .andRespond(MockRestResponseCreators.withStatus(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(responseBody))
         val oppfolgingsplan = Oppfolgingsplan()
             .virksomhet(KAKEBUA)
             .arbeidstaker(KAKEMONSTERET)
             .sistEndretAvAktoerId(AKTOR_ID)
+            .uuid(UUID.randomUUID().toString())
         val dokument = "dokument".toByteArray()
         val godkjentplan = GodkjentPlan()
             .dokument(dokument)
@@ -76,8 +80,10 @@ class DokArkivConsumerTest {
     @Test(expected = RestClientException::class)
     @Throws(Exception::class)
     fun journalforOppfolgingsplanFeiler() {
-        mockRestServiceServer.expect(ExpectedCount.once(),
-            MockRestRequestMatchers.requestTo("$url/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"))
+        mockRestServiceServer.expect(
+            ExpectedCount.once(),
+            MockRestRequestMatchers.requestTo("$url/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"),
+        )
             .andRespond(MockRestResponseCreators.withBadRequest())
         val oppfolgingsplan = Oppfolgingsplan()
             .virksomhet(KAKEBUA)
