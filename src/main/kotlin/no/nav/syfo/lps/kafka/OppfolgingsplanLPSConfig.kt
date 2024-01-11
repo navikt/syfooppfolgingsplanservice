@@ -16,4 +16,9 @@ class OppfolgingsplanLPSConfig(
     fun oppfolgingsplanLPSKafkaTemplate(): KafkaTemplate<String, KOppfolgingsplanLPS> {
         return KafkaTemplate(DefaultKafkaProducerFactory(aivenKafkaConfig.producerProperties()))
     }
+
+    @Bean
+    fun lpsMigrationKafkaTemplate(): KafkaTemplate<String, AltinnLpsOppfolgingsplan> {
+        return KafkaTemplate(DefaultKafkaProducerFactory(aivenKafkaConfig.producerProperties()))
+    }
 }

@@ -1,0 +1,35 @@
+name: "Deploy migration topic"
+on:
+  push:
+    paths:
+      - nais/topics/**
+      - .github/workflows/topic-migration.yaml
+jobs:
+  deploy-topic-to-dev:
+    name: Deploy migration topic to dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Deploy lps migration topic to dev
+        uses: nais/deploy/actions/deploy@master
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-gcp
+          RESOURCE: nais/topics/lps-migration-topic.yaml
+          VARS: nais/topics/dev.json
+
+  deploy-topic-to-prod:
+    if: github.ref == 'refs/heads/main'
+    name: Deploy topic to prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Deploy lps migration topic to prod
+        uses: nais/deploy/actions/deploy@master
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: prod-gcp
+          RESOURCE: nais/topics/lps-migration-topic.yaml
+          VARS: nais/topics/prod.json

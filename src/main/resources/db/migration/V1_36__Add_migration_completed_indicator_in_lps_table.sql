@@ -1,0 +1,10 @@
+-- ROLLBACK-START
+------------------
+-- ALTER TABLE OPPFOLGINGSPLANLPS DROP ( migrert );
+---------------
+-- ROLLBACK-END
+
+ALTER TABLE OPPFOLGINGSPLANLPS
+  ADD (
+    migrert CHAR DEFAULT 0 CHECK (migrert IN (0, 1)) NOT NULL
+  );

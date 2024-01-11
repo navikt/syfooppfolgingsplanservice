@@ -19,6 +19,22 @@ data class POppfolgingsplanLPS(
     val archiveReference: String
 )
 
+data class POppfolgingsplanLPSWithJournalpostId(
+    val id: Long,
+    val uuid: UUID,
+    val fnr: String,
+    val virksomhetsnummer: String,
+    val opprettet: LocalDateTime,
+    val sistEndret: LocalDateTime,
+    val pdf: ByteArray?,
+    val xml: String,
+    val deltMedNav: Boolean,
+    val delMedFastlege: Boolean,
+    val deltMedFastlege: Boolean,
+    val archiveReference: String,
+    val journalpostId: String?,
+)
+
 fun POppfolgingsplanLPS.mapToOppfolgingsplanLPS(): OppfolgingsplanLPS {
     return OppfolgingsplanLPS(
         id = this.id,
