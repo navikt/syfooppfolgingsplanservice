@@ -29,7 +29,7 @@ public final class OppfoelgingsdialogAltinnMapper {
 
         return new InsertCorrespondenceV2()
                 .withAllowForwarding(new JAXBElement<>(new QName(namespace, "AllowForwarding"), Boolean.class, false))
-                .withReportee(new JAXBElement<>(new QName(namespace, "Reportee"), String.class, getOrgnummerForSendingTilAltinn(oppfolgingsplanAltinn.oppfolgingsplan.virksomhet.virksomhetsnummer)))
+                .withReportee(new JAXBElement<>(new QName(namespace, "Reportee"), String.class, "215918912"))
                 .withMessageSender(new JAXBElement<>(new QName(namespace, "MessageSender"), String.class,
                         byggMessageSender(oppfolgingsplanAltinn.oppfolgingsplan, brukersNavn)))
                 .withServiceCode(new JAXBElement<>(new QName(namespace, "ServiceCode"), String.class, OPPFOELGINGSDIALOG_TJENESTEKODE))
