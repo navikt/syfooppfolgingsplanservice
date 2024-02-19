@@ -5,9 +5,7 @@ import no.altinn.schemas.services.serviceengine.correspondence._2010._10.Externa
 import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2;
 import no.altinn.services.serviceengine.reporteeelementlist._2010._10.BinaryAttachmentExternalBEV2List;
 import no.altinn.services.serviceengine.reporteeelementlist._2010._10.BinaryAttachmentV2;
-import no.nav.syfo.domain.Gyldighetstidspunkt;
-import no.nav.syfo.domain.Oppfolgingsplan;
-import no.nav.syfo.domain.OppfolgingsplanAltinn;
+import org.slf4j.Logger;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -16,6 +14,11 @@ import java.time.format.DateTimeFormatter;
 import static no.altinn.schemas.services.serviceengine.correspondence._2010._10.UserTypeRestriction.SHOW_TO_ALL;
 import static no.altinn.schemas.services.serviceengine.subscription._2009._10.AttachmentFunctionType.UNSPECIFIED;
 import static no.nav.syfo.util.MockUtil.getOrgnummerForSendingTilAltinn;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import no.nav.syfo.domain.Gyldighetstidspunkt;
+import no.nav.syfo.domain.Oppfolgingsplan;
+import no.nav.syfo.domain.OppfolgingsplanAltinn;
 
 public final class OppfoelgingsdialogAltinnMapper {
 
@@ -23,13 +26,18 @@ public final class OppfoelgingsdialogAltinnMapper {
     private static final String OPPFOELGINGSDIALOG_TJENESTEVERSJON = "1";
     private static final String NORSK_BOKMAL = "1044";
 
+    private static final Logger log = getLogger(OppfoelgingsdialogAltinnMapper.class);
+
     public static InsertCorrespondenceV2 oppfoelgingsdialogTilCorrespondence(OppfolgingsplanAltinn oppfolgingsplanAltinn, String brukersNavn) {
         String namespace = "http://schemas.altinn.no/services/ServiceEngine/Correspondence/2010/10";
         String binaryNamespace = "http://www.altinn.no/services/ServiceEngine/ReporteeElementList/2010/10";
 
+        String orgnummerForSendingTilAltinn = getOrgnummerForSendingTilAltinn(oppfolgingsplanAltinn.oppfolgingsplan.virksomhet.virksomhetsnummer);
+        log.info("Sender oppfølgingsplan til " + orgnummerForSendingTilAltinn);
+
         return new InsertCorrespondenceV2()
                 .withAllowForwarding(new JAXBElement<>(new QName(namespace, "AllowForwarding"), Boolean.class, false))
-                .withReportee(new JAXBElement<>(new QName(namespace, "Reportee"), String.class, getOrgnummerForSendingTilAltinn(oppfolgingsplanAltinn.oppfolgingsplan.virksomhet.virksomhetsnummer)))
+                .withReportee(new JAXBElement<>(new QName(namespace, "Reportee"), String.class, orgnummerForSendingTilAltinn))
                 .withMessageSender(new JAXBElement<>(new QName(namespace, "MessageSender"), String.class,
                         byggMessageSender(oppfolgingsplanAltinn.oppfolgingsplan, brukersNavn)))
                 .withServiceCode(new JAXBElement<>(new QName(namespace, "ServiceCode"), String.class, OPPFOELGINGSDIALOG_TJENESTEKODE))
