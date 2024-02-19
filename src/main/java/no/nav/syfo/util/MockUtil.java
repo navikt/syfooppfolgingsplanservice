@@ -11,9 +11,7 @@ public class MockUtil {
 
         return ofNullable(getenv(ALTINN_TEST_WHITELIST_ORGNR))
                 .map(whitelist -> asList(whitelist.split(",")))
-                .map(whitelist ->
-                             whitelist.contains(orgnummer) ? orgnummer : whitelist.get(0)
-                )
+                .map(whitelist -> whitelist.contains(orgnummer) ? orgnummer : whitelist.get(0))
                 .orElse(orgnummer);
     }
 }
