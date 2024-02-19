@@ -161,6 +161,7 @@ dependencies {
     implementation("javax.xml.soap:saaj-api:${Versions.javaxSoapVersion}")
 
     testImplementation("junit:junit")
+    testImplementation("uk.org.webcompere:system-stubs-junit4:2.1.6")
     testImplementation("io.mockk:mockk:${Versions.mockkVersion}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
     testImplementation("no.nav.security:token-validation-spring-test:${Versions.tokenSupportVersion}")

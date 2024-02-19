@@ -97,7 +97,7 @@ spec:
     - name: APP_NAME
       value: "syfooppfolgingsplanservice"
     - name: ALTINN_TEST_WHITELIST_ORGNR
-      value: "910067494"
+      value: "910067494,972674818"
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
     - name: TJENESTER_URL
