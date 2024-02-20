@@ -90,6 +90,8 @@ spec:
   kafka:
     pool: nav-prod
   env:
+    - name: ENVIRONMENT
+      value: prod
     - name: APP_NAME
       value: "syfooppfolgingsplanservice"
     - name: SECURITYTOKENSERVICE_URL

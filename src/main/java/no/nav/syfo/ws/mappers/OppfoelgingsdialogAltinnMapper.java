@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 
 import static no.altinn.schemas.services.serviceengine.correspondence._2010._10.UserTypeRestriction.SHOW_TO_ALL;
 import static no.altinn.schemas.services.serviceengine.subscription._2009._10.AttachmentFunctionType.UNSPECIFIED;
-import static no.nav.syfo.util.MockUtil.getOrgnummerForSendingTilAltinn;
+import static no.nav.syfo.util.MockUtilKt.getOrgnummerForSendingTilAltinn;
 
 public final class OppfoelgingsdialogAltinnMapper {
 
