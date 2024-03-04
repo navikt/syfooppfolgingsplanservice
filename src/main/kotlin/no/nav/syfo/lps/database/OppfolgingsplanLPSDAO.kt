@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.support.SqlLobValue
 import org.springframework.stereotype.Repository
-import java.sql.Date
 import java.sql.Types
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -201,23 +200,20 @@ class OppfolgingsplanLPSDAO @Inject constructor(
     }
 
     fun getPlansNotYetMigrated(
-            cutoffDate: LocalDate,
-            batchSize: Int,
+        batchSize: Int,
     ): List<POppfolgingsplanLPSWithJournalpostId> {
         val query = """
             SELECT *
             FROM OPPFOLGINGSPLANLPS
             WHERE migrert = 0
-            AND opprettet < :cutoff
             AND rownum <= :batch_size
         """.trimIndent()
         val mapSql = MapSqlParameterSource()
-            .addValue("cutoff", Date.valueOf(cutoffDate))
             .addValue("batch_size", batchSize)
         return namedParameterJdbcTemplate.query(
-                query,
-                mapSql,
-                oppfolgingsplanLPSWithJournalpostIdRowMapper,
+            query,
+            mapSql,
+            oppfolgingsplanLPSWithJournalpostIdRowMapper,
         )
     }
 
@@ -231,27 +227,27 @@ class OppfolgingsplanLPSDAO @Inject constructor(
         """.trimIndent()
 
         val mapSaveSql = MapSqlParameterSource()
-                .addValue("migrert", 1)
-                .addValue("sist_endret", updated)
-                .addValue("uuid", oppfolgingsplanUUID.toString())
+            .addValue("migrert", 1)
+            .addValue("sist_endret", updated)
+            .addValue("uuid", oppfolgingsplanUUID.toString())
         namedParameterJdbcTemplate.update(query, mapSaveSql)
     }
 
     val oppfolgingsplanLPSWithJournalpostIdRowMapper = RowMapper { resultSet, _ ->
         POppfolgingsplanLPSWithJournalpostId(
-                id = resultSet.getLong("oppfolgingsplanlps_id"),
-                uuid = UUID.fromString(resultSet.getString("oppfolgingsplanlps_uuid")),
-                fnr = resultSet.getString("fnr"),
-                virksomhetsnummer = resultSet.getString("virksomhetsnummer"),
-                opprettet = resultSet.getTimestamp("opprettet").toLocalDateTime(),
-                sistEndret = resultSet.getTimestamp("sist_endret").toLocalDateTime(),
-                pdf = resultSet.getBytes("pdf"),
-                xml = resultSet.getString("xml"),
-                deltMedNav = resultSet.getBoolean("delt_med_nav"),
-                delMedFastlege = resultSet.getBoolean("del_med_fastlege"),
-                deltMedFastlege = resultSet.getBoolean("delt_med_fastlege"),
-                archiveReference = resultSet.getString("archive_reference"),
-                journalpostId = resultSet.getString("journalpost_id"),
+            id = resultSet.getLong("oppfolgingsplanlps_id"),
+            uuid = UUID.fromString(resultSet.getString("oppfolgingsplanlps_uuid")),
+            fnr = resultSet.getString("fnr"),
+            virksomhetsnummer = resultSet.getString("virksomhetsnummer"),
+            opprettet = resultSet.getTimestamp("opprettet").toLocalDateTime(),
+            sistEndret = resultSet.getTimestamp("sist_endret").toLocalDateTime(),
+            pdf = resultSet.getBytes("pdf"),
+            xml = resultSet.getString("xml"),
+            deltMedNav = resultSet.getBoolean("delt_med_nav"),
+            delMedFastlege = resultSet.getBoolean("del_med_fastlege"),
+            deltMedFastlege = resultSet.getBoolean("delt_med_fastlege"),
+            archiveReference = resultSet.getString("archive_reference"),
+            journalpostId = resultSet.getString("journalpost_id"),
         )
     }
 
