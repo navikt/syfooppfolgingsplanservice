@@ -154,5 +154,3 @@ spec:
       value: dev-gcp:teamsykefravr:isdialogmelding
     - name: ISDIALOGMELDING_AAD_CLIENT_ID
       value: dev-gcp.teamsykefravr.isdialogmelding
-    - name: PROCESS_ALTINN_PLAN
-      value: "false"
