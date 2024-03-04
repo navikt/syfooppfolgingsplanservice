@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 const val FIFTEEN_MINUTES_MILLISECONDS: Long = 15 * 60 * 1000
 const val BATCH_SIZE = 1000
-val CUTOFF_DATE: LocalDate = LocalDate.of(2024, Month.JANUARY, 7)
+val CUTOFF_DATE: LocalDate = LocalDate.of(2024, Month.MARCH, 4)
 
 @Service
 class AltinnLpsMigrationScheduler @Inject constructor(
@@ -39,7 +39,6 @@ class AltinnLpsMigrationScheduler @Inject constructor(
                 sentToFastlege = lps.deltMedFastlege,
                 sendToFastlegeRetryCount = 0,
                 journalpostId = lps.journalpostId,
-                originallyCreated = lps.opprettet,
                 created = lps.opprettet,
                 lastChanged = lps.sistEndret,
             )

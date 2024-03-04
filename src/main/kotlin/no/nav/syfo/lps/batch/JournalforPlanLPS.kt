@@ -14,7 +14,7 @@ class JournalforPlanLPS @Inject constructor(
 
     @Scheduled(fixedRate = 60 * 10 * 1000)
     fun createOppfolgingsplanLPSJournalposter() {
-        if (leaderElectionService.isLeader) {
+        if (leaderElectionService.isLeader && System.getProperty("PROCESS_ALTINN_PLAN") == "true") {
             oppfolgingsplanLPSService.createOppfolgingsplanLPSJournalposter()
         }
     }

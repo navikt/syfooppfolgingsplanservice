@@ -152,23 +152,25 @@ class OppfolgingsplanLPSService @Inject constructor(
         oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
         log.info("KAFKA-trace: pdf generated and stored")
 
-        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
-            val kOppfolgingsplanLPS = KOppfolgingsplanLPS(
-                idList.second.toString(),
-                gjeldendeFnr,
-                virksomhetsnummer.value,
-                lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
-                LocalDate.now().toEpochDay().toInt(),
-            )
-            metrikk.tellHendelseMedTag(
-                METRIKK_BISTAND_FRA_NAV,
-                METRIKK_TAG_BISTAND,
-                lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
-            )
-            oppfolgingsplanLPSProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPS)
-        }
-        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
-            sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
+        if (System.getProperty("PROCESS_ALTINN_PLAN") == "true") {
+            if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
+                val kOppfolgingsplanLPS = KOppfolgingsplanLPS(
+                    idList.second.toString(),
+                    gjeldendeFnr,
+                    virksomhetsnummer.value,
+                    lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
+                    LocalDate.now().toEpochDay().toInt(),
+                )
+                metrikk.tellHendelseMedTag(
+                    METRIKK_BISTAND_FRA_NAV,
+                    METRIKK_TAG_BISTAND,
+                    lpsPdfModel.oppfolgingsplan.isBehovForBistandFraNAV(),
+                )
+                oppfolgingsplanLPSProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPS)
+            }
+            if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
+                sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
+            }
         }
     }
 
