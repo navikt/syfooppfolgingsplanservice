@@ -14,9 +14,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Deploy lps migration topic to dev
-        uses: nais/deploy/actions/deploy@master
+        uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: nais/topics/lps-migration-topic.yaml
           VARS: nais/topics/dev.json
@@ -31,9 +30,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Deploy lps migration topic to prod
-        uses: nais/deploy/actions/deploy@master
+        uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
           RESOURCE: nais/topics/lps-migration-topic.yaml
           VARS: nais/topics/prod.json
