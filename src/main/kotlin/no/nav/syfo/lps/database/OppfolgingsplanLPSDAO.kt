@@ -207,7 +207,7 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             FROM OPPFOLGINGSPLANLPS
             WHERE migrert = 0
             AND rownum <= :batch_size
-            ORDER BY created ASC
+            ORDER BY opprettet ASC
         """.trimIndent()
         val mapSql = MapSqlParameterSource()
             .addValue("batch_size", batchSize)
