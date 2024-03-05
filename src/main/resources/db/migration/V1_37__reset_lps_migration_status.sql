@@ -1,0 +1,1 @@
+UPDATE OPPFOLGINGSPLANLPS set migrert = 0;

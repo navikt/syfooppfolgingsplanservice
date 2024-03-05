@@ -28,6 +28,6 @@ class MigrationLpsProducer @Inject constructor(
 
     companion object {
         private val log = LoggerFactory.getLogger(MigrationLpsProducer::class.java)
-        const val MIGRATE_LPS_TOPIC = "team-esyfo.syfo-migrering-altinn-lps"
+        const val MIGRATE_LPS_TOPIC = "team-esyfo.syfo-migrering-altinn-planer"
     }
 }
