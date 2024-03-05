@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.support.SqlLobValue
 import org.springframework.stereotype.Repository
 import java.sql.Types
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
@@ -196,6 +197,59 @@ class OppfolgingsplanLPSDAO @Inject constructor(
             .addValue("sist_endret", updated)
             .addValue("id", id)
         namedParameterJdbcTemplate.update(query, mapSaveSql)
+    }
+
+    fun getPlansNotYetMigrated(
+        batchSize: Int,
+    ): List<POppfolgingsplanLPSWithJournalpostId> {
+        val query = """
+            SELECT *
+            FROM OPPFOLGINGSPLANLPS
+            WHERE migrert = 0
+            AND rownum <= :batch_size
+            ORDER BY opprettet ASC
+        """.trimIndent()
+        val mapSql = MapSqlParameterSource()
+            .addValue("batch_size", batchSize)
+        return namedParameterJdbcTemplate.query(
+            query,
+            mapSql,
+            oppfolgingsplanLPSWithJournalpostIdRowMapper,
+        )
+    }
+
+    fun updateMigrationStatus(oppfolgingsplanUUID: UUID) {
+        val updated = DbUtil.convert(LocalDateTime.now())
+
+        val query = """
+            UPDATE OPPFOLGINGSPLANLPS
+            SET migrert = :migrert, sist_endret = :sist_endret
+            WHERE oppfolgingsplanlps_uuid = :uuid
+        """.trimIndent()
+
+        val mapSaveSql = MapSqlParameterSource()
+            .addValue("migrert", 1)
+            .addValue("sist_endret", updated)
+            .addValue("uuid", oppfolgingsplanUUID.toString())
+        namedParameterJdbcTemplate.update(query, mapSaveSql)
+    }
+
+    val oppfolgingsplanLPSWithJournalpostIdRowMapper = RowMapper { resultSet, _ ->
+        POppfolgingsplanLPSWithJournalpostId(
+            id = resultSet.getLong("oppfolgingsplanlps_id"),
+            uuid = UUID.fromString(resultSet.getString("oppfolgingsplanlps_uuid")),
+            fnr = resultSet.getString("fnr"),
+            virksomhetsnummer = resultSet.getString("virksomhetsnummer"),
+            opprettet = resultSet.getTimestamp("opprettet").toLocalDateTime(),
+            sistEndret = resultSet.getTimestamp("sist_endret").toLocalDateTime(),
+            pdf = resultSet.getBytes("pdf"),
+            xml = resultSet.getString("xml"),
+            deltMedNav = resultSet.getBoolean("delt_med_nav"),
+            delMedFastlege = resultSet.getBoolean("del_med_fastlege"),
+            deltMedFastlege = resultSet.getBoolean("delt_med_fastlege"),
+            archiveReference = resultSet.getString("archive_reference"),
+            journalpostId = resultSet.getString("journalpost_id"),
+        )
     }
 
     val oppfolgingsplanLPSRowMapper = RowMapper { resultSet, _ ->
