@@ -120,6 +120,8 @@ class OppfolgingsplanLPSService @Inject constructor(
         virksomhetsnummer: Virksomhetsnummer,
         isRetry: Boolean,
     ) {
+        val shouldDistributePlan = System.getenv("DISTRIBUTE_ALTINN_PLANS") == "true"
+
         val incomingMetadata = IncomingMetadata(
             archiveReference = archiveReference,
             senderOrgName = skjemainnhold.arbeidsgiver.orgnavn,
@@ -152,7 +154,7 @@ class OppfolgingsplanLPSService @Inject constructor(
         oppfolgingsplanLPSDAO.updatePdf(idList.first, pdf)
         log.info("KAFKA-trace: pdf generated and stored")
 
-        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
+        if (shouldDistributePlan && skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTiNav == true) {
             val kOppfolgingsplanLPS = KOppfolgingsplanLPS(
                 idList.second.toString(),
                 gjeldendeFnr,
@@ -167,7 +169,7 @@ class OppfolgingsplanLPSService @Inject constructor(
             )
             oppfolgingsplanLPSProducer.sendOppfolgingsLPSTilNAV(kOppfolgingsplanLPS)
         }
-        if (skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
+        if (shouldDistributePlan && skjemainnhold.mottaksInformasjon.isOppfolgingsplanSendesTilFastlege == true) {
             sendLpsOppfolgingsplanTilFastlege(incomingMetadata.userPersonNumber, pdf, idList.first, 0)
         }
     }
