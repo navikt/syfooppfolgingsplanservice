@@ -5,7 +5,6 @@ import no.nav.syfo.lps.kafka.AltinnLpsOppfolgingsplan
 import no.nav.syfo.lps.kafka.MigrationLpsProducer
 import no.nav.syfo.service.LeaderElectionService
 import org.slf4j.LoggerFactory
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import javax.inject.Inject
 
@@ -18,7 +17,7 @@ class AltinnLpsMigrationScheduler @Inject constructor(
     private val migrationLpsProducer: MigrationLpsProducer,
     private var leaderElectionService: LeaderElectionService
 ) {
-    @Scheduled(fixedRate = FIFTEEN_MINUTES_MILLISECONDS)
+    //    @Scheduled(fixedRate = FIFTEEN_MINUTES_MILLISECONDS)
     fun migrateAltinnLpsPlans() {
         if (leaderElectionService.isLeader()) {
             val altinnLpsPlansToMigrate = oppfolgingsplanLpsDao.getPlansNotYetMigrated(BATCH_SIZE)
