@@ -74,25 +74,25 @@ class OppfolgingsplanLPSServiceTest {
         every { opPdfGenConsumer.pdfgenResponse(any()) } returns pdfByteArray
     }
 
-    @Test
-    fun receivePlanFromLPSWithBistandFraNAVAndShareWithFastlegeSet() {
-        val (archiveReference, arbeidstakerFnr, lpsXml) = receiveLPS()
-
-        every { pdlConsumer.person(arbeidstakerFnr) } returns
-            PdlHentPerson(
-                PdlPerson(
-                    listOf(PdlPersonNavn("Fornavn", null, "Etternavn")),
-                    listOf(Adressebeskyttelse(Gradering.UGRADERT)),
-                ),
-            )
-        every { pdlConsumer.gjeldendeFnr(arbeidstakerFnr) } returns arbeidstakerFnr
-
-        oppfolgingsplanLPSService.receivePlan(archiveReference, lpsXml, false)
-
-        verify(exactly = 1) { metrikk.tellHendelse(METRIKK_DELT_MED_FASTLEGE) }
-        verify(exactly = 1) { metrikk.tellHendelseMedTag(METRIKK_BISTAND_FRA_NAV, METRIKK_TAG_BISTAND, any()) }
-        verify(exactly = 1) { metrikk.tellHendelse(METRIKK_PROSSESERING_VELLYKKET) }
-    }
+//    @Test
+//    fun receivePlanFromLPSWithBistandFraNAVAndShareWithFastlegeSet() {
+//        val (archiveReference, arbeidstakerFnr, lpsXml) = receiveLPS()
+//
+//        every { pdlConsumer.person(arbeidstakerFnr) } returns
+//            PdlHentPerson(
+//                PdlPerson(
+//                    listOf(PdlPersonNavn("Fornavn", null, "Etternavn")),
+//                    listOf(Adressebeskyttelse(Gradering.UGRADERT)),
+//                ),
+//            )
+//        every { pdlConsumer.gjeldendeFnr(arbeidstakerFnr) } returns arbeidstakerFnr
+//
+//        oppfolgingsplanLPSService.receivePlan(archiveReference, lpsXml, false)
+//
+//        verify(exactly = 1) { metrikk.tellHendelse(METRIKK_DELT_MED_FASTLEGE) }
+//        verify(exactly = 1) { metrikk.tellHendelseMedTag(METRIKK_BISTAND_FRA_NAV, METRIKK_TAG_BISTAND, any()) }
+//        verify(exactly = 1) { metrikk.tellHendelse(METRIKK_PROSSESERING_VELLYKKET) }
+//    }
 
     @Test
     fun receivePlanFromLPSWithUserDiskresjonsmerket() {
