@@ -8,6 +8,8 @@ jobs:
   deploy-topic-to-dev:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/topic-')
     name: Deploy topic to dev
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

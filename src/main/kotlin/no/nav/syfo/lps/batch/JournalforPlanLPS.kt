@@ -14,7 +14,9 @@ class JournalforPlanLPS @Inject constructor(
 
     @Scheduled(fixedRate = 60 * 10 * 1000)
     fun createOppfolgingsplanLPSJournalposter() {
-        if (leaderElectionService.isLeader) {
+        val shouldDistributePlan = System.getenv("DISTRIBUTE_ALTINN_PLANS") == "true"
+
+        if (leaderElectionService.isLeader && shouldDistributePlan) {
             oppfolgingsplanLPSService.createOppfolgingsplanLPSJournalposter()
         }
     }

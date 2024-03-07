@@ -89,8 +89,8 @@ class OppfolgingsplanLPSServiceTest {
 
         oppfolgingsplanLPSService.receivePlan(archiveReference, lpsXml, false)
 
-        verify(exactly = 1) { metrikk.tellHendelse(METRIKK_DELT_MED_FASTLEGE) }
-        verify(exactly = 1) { metrikk.tellHendelseMedTag(METRIKK_BISTAND_FRA_NAV, METRIKK_TAG_BISTAND, any()) }
+        verify(exactly = 0) { metrikk.tellHendelse(METRIKK_DELT_MED_FASTLEGE) }
+        verify(exactly = 0) { metrikk.tellHendelseMedTag(METRIKK_BISTAND_FRA_NAV, METRIKK_TAG_BISTAND, any()) }
         verify(exactly = 1) { metrikk.tellHendelse(METRIKK_PROSSESERING_VELLYKKET) }
     }
 

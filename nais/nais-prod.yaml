@@ -150,3 +150,5 @@ spec:
       value: prod-gcp:teamsykefravr:isdialogmelding
     - name: ISDIALOGMELDING_AAD_CLIENT_ID
       value: prod-gcp.teamsykefravr.isdialogmelding
+    - name: DISTRIBUTE_ALTINN_PLANS
+      value: "false"
