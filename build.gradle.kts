@@ -144,7 +144,7 @@ dependencies {
     implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20220608.1")
     implementation("javax.inject:javax.inject:1")
     implementation("org.apache.pdfbox:pdfbox:2.0.25")
-    implementation("org.apache.pdfbox:pdfbox-tools:2.0.25")
+    implementation("org.apache.pdfbox:pdfbox-tools:3.0.1")
     implementation("org.xhtmlrenderer:flying-saucer-pdf:9.6.0")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.slf4j:slf4j-api")
