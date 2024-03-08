@@ -1,8 +1,6 @@
 # Syfooppfolgingsplanservice
 Backend applikasjon som lagrer, tilbyr og videresender NAV's versjon
-av digitale oppfølgingsplaner. Mottar også LPS planer via Altinn-kanal 2
-som lagres intern, journalfører i DokArkiv og videreformidles i intern
-Kafka-topicen `team-esyfo.aapen-syfo-oppfolgingsplan-lps-nav-v2`.
+av digitale oppfølgingsplaner.
 
 
 ## Lokal utvikling
