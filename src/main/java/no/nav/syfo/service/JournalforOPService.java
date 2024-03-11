@@ -1,9 +1,10 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.dokarkiv.DokArkivConsumer;
-import no.nav.syfo.domain.*;
+import no.nav.syfo.domain.GodkjentPlan;
+import no.nav.syfo.domain.Oppfolgingsplan;
+import no.nav.syfo.domain.Person;
 import no.nav.syfo.ereg.EregConsumer;
-import no.nav.syfo.lps.OppfolgingsplanLPS;
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO;
 import org.springframework.stereotype.Service;
 
@@ -42,15 +43,6 @@ public class JournalforOPService {
         setPDF(godkjentPlan);
 
         return dokArkivConsumer.journalforOppfolgingsplan(oppfolgingsplan, godkjentPlan);
-    }
-
-    public Integer createJournalpostPlanLPS(OppfolgingsplanLPS oppfolgingsplanLPS) {
-        String virksomhetsnavn = eregConsumer.virksomhetsnavn(oppfolgingsplanLPS.getVirksomhetsnummer());
-
-        return dokArkivConsumer.journalforOppfolgingsplanLPS(
-                oppfolgingsplanLPS,
-                virksomhetsnavn
-        );
     }
 
     private void setPDF(GodkjentPlan godkjentPlan) {

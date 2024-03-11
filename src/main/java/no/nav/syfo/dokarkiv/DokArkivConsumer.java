@@ -2,7 +2,6 @@ package no.nav.syfo.dokarkiv;
 
 import no.nav.syfo.domain.GodkjentPlan;
 import no.nav.syfo.domain.Oppfolgingsplan;
-import no.nav.syfo.lps.OppfolgingsplanLPS;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.sts.StsConsumer;
 import org.slf4j.Logger;
@@ -55,26 +54,6 @@ public class DokArkivConsumer {
                 hentSistEndret(oppfolgingsplan),
                 "NAV_NO",
                 oppfolgingsplan.uuid
-        );
-        return journalfor(request);
-    }
-
-    public Integer journalforOppfolgingsplanLPS(
-            OppfolgingsplanLPS oppfolgingsplanLPS,
-            String virksomhetsnavn
-    ) {
-        AvsenderMottaker avsenderMottaker = new AvsenderMottaker()
-                .id(oppfolgingsplanLPS.getVirksomhetsnummer())
-                .idType("ORGNR")
-                .navn(virksomhetsnavn);
-
-        JournalpostRequest request = createJournalpostRequest(
-                virksomhetsnavn,
-                oppfolgingsplanLPS.getFnr(),
-                oppfolgingsplanLPS.getPdf(),
-                avsenderMottaker,
-                "ALTINN",
-                oppfolgingsplanLPS.getUuid().toString()
         );
         return journalfor(request);
     }
