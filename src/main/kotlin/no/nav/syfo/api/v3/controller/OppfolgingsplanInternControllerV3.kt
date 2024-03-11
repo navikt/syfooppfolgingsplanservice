@@ -1,9 +1,9 @@
 package no.nav.syfo.api.v3.controller
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import no.nav.syfo.api.intern.domain.RSOppfoelgingsdialog
-import no.nav.syfo.api.intern.mappers.OppfoelgingsdialogRestMapper
 import no.nav.syfo.api.v3.domain.Historikk
+import no.nav.syfo.api.v3.domain.oppfoelgingsdialog.RSOppfoelgingsdialog
+import no.nav.syfo.api.v3.mapper.oppfoelgingsdialog2rs
 import no.nav.syfo.domain.Fodselsnummer
 import no.nav.syfo.domain.Oppfolgingsplan
 import no.nav.syfo.ereg.EregConsumer
@@ -11,7 +11,6 @@ import no.nav.syfo.oidc.OIDCIssuer.INTERN_AZUREAD_V2
 import no.nav.syfo.pdl.PdlConsumer
 import no.nav.syfo.repository.dao.OppfolgingsplanDAO
 import no.nav.syfo.service.BrukerprofilService
-import no.nav.syfo.util.MapUtil
 import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import no.nav.syfo.veiledertilgang.VeilederTilgangConsumer
 import org.springframework.http.MediaType
@@ -69,13 +68,13 @@ class OppfolgingsplanInternControllerV3 @Inject constructor(
 
         veilederTilgangConsumer.throwExceptionIfVeilederWithoutAccessWithOBO(personFnr)
 
-        return MapUtil.mapListe(
-            oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(pdlConsumer.aktorid(personFnr.value))
-                .stream()
-                .map { oppfoelgingsdialog: Oppfolgingsplan? -> oppfolgingsplanDAO.populate(oppfoelgingsdialog) }
-                .filter { oppfoelgingsdialog: Oppfolgingsplan -> oppfoelgingsdialog.godkjentPlan.isPresent }
-                .filter { oppfoelgingsdialog: Oppfolgingsplan -> oppfoelgingsdialog.godkjentPlan.get().deltMedNAV }
-                .collect(Collectors.toList()),
-            OppfoelgingsdialogRestMapper.oppfoelgingsdialog2rs)
+        val planer = oppfolgingsplanDAO.oppfolgingsplanerKnyttetTilSykmeldt(pdlConsumer.aktorid(personFnr.value))
+            .stream()
+            .map { oppfoelgingsdialog: Oppfolgingsplan? -> oppfolgingsplanDAO.populate(oppfoelgingsdialog) }
+            .filter { oppfoelgingsdialog: Oppfolgingsplan -> oppfoelgingsdialog.godkjentPlan.isPresent }
+            .filter { oppfoelgingsdialog: Oppfolgingsplan -> oppfoelgingsdialog.godkjentPlan.get().deltMedNAV }
+            .collect(Collectors.toList())
+
+        return planer.map { oppfoelgingsdialog2rs(it) }
     }
 }
