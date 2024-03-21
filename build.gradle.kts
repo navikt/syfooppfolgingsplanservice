@@ -148,7 +148,7 @@ dependencies {
     implementation("org.xhtmlrenderer:flying-saucer-pdf:9.7.1")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.slf4j:slf4j-api")
-    implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
+    implementation("net.sf.saxon:Saxon-HE:12.4")
     implementation("org.apache.kafka:kafka_2.13") {
         exclude(group = "log4j", module = "log4j")
     }
