@@ -138,7 +138,7 @@ dependencies {
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.12.4")
-    implementation("net.logstash.logback:logstash-logback-encoder:4.10")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("commons-io:commons-io:2.15.1")
     implementation("com.lowagie:itext:2.1.7")
     implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20220608.1")
