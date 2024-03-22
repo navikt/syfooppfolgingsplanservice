@@ -1,25 +1,29 @@
 package no.nav.syfo.ereg
 
+import javax.inject.Inject
 import no.nav.syfo.config.CacheConfig
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.sts.StsConsumer
-import no.nav.syfo.util.*
+import no.nav.syfo.util.APP_CONSUMER_ID
+import no.nav.syfo.util.NAV_CALL_ID_HEADER
+import no.nav.syfo.util.NAV_CONSUMER_ID_HEADER
+import no.nav.syfo.util.createCallId
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.http.*
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestTemplate
-import javax.inject.Inject
 
 @Service
 class EregConsumer @Inject constructor(
     @Value("\${ereg.baseurl}") private val baseUrl: String,
     private val metric: Metrikk,
     @param:Qualifier("scheduler") private val restTemplate: RestTemplate,
-    private val stsConsumer: StsConsumer,
 ) {
     fun eregReponse(virksomhetsnummer: String): EregOrganisasjonResponse {
         try {
@@ -55,10 +59,8 @@ class EregConsumer @Inject constructor(
     }
 
     private fun entity(): HttpEntity<String> {
-        val stsToken = stsConsumer.token()
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
-        headers[HttpHeaders.AUTHORIZATION] = bearerHeader(stsToken)
         headers[NAV_CONSUMER_ID_HEADER] = APP_CONSUMER_ID
         headers[NAV_CALL_ID_HEADER] = createCallId()
         return HttpEntity(headers)

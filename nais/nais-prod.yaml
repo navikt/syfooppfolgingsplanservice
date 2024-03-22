@@ -123,7 +123,7 @@ spec:
     - name: AAREG_SERVICES_URL
       value: https://aareg-services.intern.nav.no/api
     - name: EREG_BASEURL
-      value: https://modapp.adeo.no
+      value: https://ereg-services.intern.nav.no
     - name: SYFOBRUKERTILGANG_URL
       value: https://syfobrukertilgang.intern.nav.no
     - name: SYFOBRUKERTILGANG_ID
