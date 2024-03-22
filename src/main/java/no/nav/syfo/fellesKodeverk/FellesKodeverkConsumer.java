@@ -22,7 +22,7 @@ public class FellesKodeverkConsumer {
     private static final Logger LOG = getLogger(FellesKodeverkConsumer.class);
 
     private final Metrikk metric;
-    private final RestTemplate restTemplate;
+    private final RestTemplate restTemplateMedProxy;
     private final String url;
 
     public static final String NAV_CALL_ID_HEADER = "Nav-Call-Id";
@@ -31,11 +31,11 @@ public class FellesKodeverkConsumer {
     @Autowired
     public FellesKodeverkConsumer(
             Metrikk metric,
-            RestTemplate restTemplate,
+            RestTemplate restTemplateMedProxy,
             @Value("${felleskodeverk.url}") String url
     ) {
         this.metric = metric;
-        this.restTemplate = restTemplate;
+        this.restTemplateMedProxy = restTemplateMedProxy;
         this.url = url;
     }
 
@@ -44,7 +44,7 @@ public class FellesKodeverkConsumer {
         String kodeverkYrkerBetydningUrl = url + "/kodeverk/Yrker/koder/betydninger?spraak=nb";
 
         try {
-            ResponseEntity<KodeverkKoderBetydningerResponse> response = restTemplate.exchange(
+            ResponseEntity<KodeverkKoderBetydningerResponse> response = restTemplateMedProxy.exchange(
                     kodeverkYrkerBetydningUrl,
                     GET,
                     entity(),
