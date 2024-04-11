@@ -145,7 +145,7 @@ dependencies {
     implementation("javax.inject:javax.inject:1")
     implementation("org.apache.pdfbox:pdfbox:2.0.25")
     implementation("org.apache.pdfbox:pdfbox-tools:2.0.25")
-    implementation("org.xhtmlrenderer:flying-saucer-pdf:9.7.1")
+    implementation("org.xhtmlrenderer:flying-saucer-pdf:9.7.2")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.slf4j:slf4j-api")
     implementation("net.sf.saxon:Saxon-HE:9.7.0-8")
