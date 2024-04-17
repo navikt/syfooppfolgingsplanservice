@@ -24,6 +24,7 @@ class FlywayConfig() {
     @Bean
     fun flywayMigrationStrategy(jtaTransactionManager: JtaTransactionManager) =
         FlywayMigrationStrategy { flyway ->
+            flyway.repair()
             flyway.migrate()
         }
 
