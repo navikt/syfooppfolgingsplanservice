@@ -32,10 +32,6 @@ spec:
   prometheus:
     enabled: true
     path: /syfooppfolgingsplanservice/internal/prometheus
-  observability:
-    autoInstrumentation:
-      enabled: true
-      runtime: java
   ingresses:
     - "https://syfooppfolgingsplanservice.intern.nav.no"
     - "https://syfooppfolgingsplanservice.nais.adeo.no"
