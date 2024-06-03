@@ -53,6 +53,17 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     }
 
     @Test
+    fun hent_oppfolgingsplaner_som_arbeidgiver_pa_personident() {
+        `when`(oppfolgingsplanService.arbeidsgiversOppfolgingsplanerPaFnr(LEDER_FNR, ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)).thenReturn(listOf(oppfolgingsplanGodkjentTvang()))
+        `when`(pdlConsumer.fnr(UserConstants.ARBEIDSTAKER_AKTORID)).thenReturn(ARBEIDSTAKER_FNR)
+        `when`(pdlConsumer.fnr(UserConstants.LEDER_AKTORID)).thenReturn(LEDER_FNR)
+        arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplanerPaPersonident(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
+        verify(oppfolgingsplanService).arbeidsgiversOppfolgingsplanerPaFnr(LEDER_FNR, ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
+        verify(arbeidsforholdService).arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER))
+        verify(metrikk).tellHendelse("hent_oppfolgingsplan_ag")
+    }
+
+    @Test
     fun hent_oppfolgingsplaner_som_arbeidgiver_pa_fnr() {
         `when`(oppfolgingsplanService.arbeidsgiversOppfolgingsplanerPaFnr(LEDER_FNR, ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)).thenReturn(listOf(oppfolgingsplanGodkjentTvang()))
         `when`(pdlConsumer.fnr(UserConstants.ARBEIDSTAKER_AKTORID)).thenReturn(ARBEIDSTAKER_FNR)
