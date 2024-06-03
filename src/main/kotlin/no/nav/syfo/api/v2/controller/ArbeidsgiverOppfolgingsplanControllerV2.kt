@@ -16,6 +16,7 @@ import no.nav.syfo.service.OppfolgingsplanService
 import no.nav.syfo.tokenx.TokenXUtil
 import no.nav.syfo.tokenx.TokenXUtil.TokenXIssuer.TOKENX
 import no.nav.syfo.tokenx.TokenXUtil.fnrFromIdportenTokenX
+import no.nav.syfo.util.NAV_PERSONIDENT_HEADER
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.web.bind.annotation.*
@@ -34,6 +35,20 @@ class ArbeidsgiverOppfolgingsplanControllerV2 @Inject constructor(
     @Value("\${oppfolgingsplan.frontend.client.id}")
     private val oppfolgingsplanClientId: String,
 ) {
+
+    @GetMapping(produces = [APPLICATION_JSON_VALUE])
+    fun hentArbeidsgiversOppfolgingsplanerPaPersonident(@RequestHeader(name = NAV_PERSONIDENT_HEADER) personident: String, @RequestParam("virksomhetsnummer") virksomhetsnummer: String): List<BrukerOppfolgingsplan> {
+        val innloggetIdent = TokenXUtil.validateTokenXClaims(contextHolder, oppfolgingsplanClientId)
+            .fnrFromIdportenTokenX()
+            .value
+        val arbeidsgiversOppfolgingsplaner = oppfolgingsplanService.arbeidsgiversOppfolgingsplanerPaFnr(innloggetIdent, personident, virksomhetsnummer)
+        val liste = arbeidsgiversOppfolgingsplaner.map { it.toBrukerOppfolgingsplan(pdlConsumer) }
+        liste.forEach { plan -> plan.populerPlanerMedAvbruttPlanListe(liste) }
+        val arbeidsforhold = arbeidsforholdService.arbeidstakersStillingerForOrgnummer(personident, listOf(virksomhetsnummer))
+        liste.forEach { plan -> plan.populerArbeidstakersStillinger(arbeidsforhold) }
+        metrikk.tellHendelse("hent_oppfolgingsplan_ag")
+        return liste
+    }
 
     @GetMapping(produces = [APPLICATION_JSON_VALUE], value = ["/{fnr}"])
     fun hentArbeidsgiversOppfolgingsplanerPaFnr(@PathVariable fnr: String, @RequestParam("virksomhetsnummer") virksomhetsnummer: String): List<BrukerOppfolgingsplan> {
