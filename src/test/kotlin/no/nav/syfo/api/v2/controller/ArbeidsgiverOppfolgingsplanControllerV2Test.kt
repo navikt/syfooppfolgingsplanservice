@@ -49,7 +49,7 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
     @Test(expected = RuntimeException::class)
     fun hent_oppfolgingsplaner_finner_ikke_innlogget_bruker() {
         tokenValidationTestUtil.logout()
-        arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplanerPaFnr(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
+        arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplanerPaPersonident(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
     }
 
     @Test
@@ -58,17 +58,6 @@ class ArbeidsgiverOppfolgingsplanControllerV2Test : AbstractRessursTilgangTest()
         `when`(pdlConsumer.fnr(UserConstants.ARBEIDSTAKER_AKTORID)).thenReturn(ARBEIDSTAKER_FNR)
         `when`(pdlConsumer.fnr(UserConstants.LEDER_AKTORID)).thenReturn(LEDER_FNR)
         arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplanerPaPersonident(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
-        verify(oppfolgingsplanService).arbeidsgiversOppfolgingsplanerPaFnr(LEDER_FNR, ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
-        verify(arbeidsforholdService).arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER))
-        verify(metrikk).tellHendelse("hent_oppfolgingsplan_ag")
-    }
-
-    @Test
-    fun hent_oppfolgingsplaner_som_arbeidgiver_pa_fnr() {
-        `when`(oppfolgingsplanService.arbeidsgiversOppfolgingsplanerPaFnr(LEDER_FNR, ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)).thenReturn(listOf(oppfolgingsplanGodkjentTvang()))
-        `when`(pdlConsumer.fnr(UserConstants.ARBEIDSTAKER_AKTORID)).thenReturn(ARBEIDSTAKER_FNR)
-        `when`(pdlConsumer.fnr(UserConstants.LEDER_AKTORID)).thenReturn(LEDER_FNR)
-        arbeidsgiverOppfolgingsplanController.hentArbeidsgiversOppfolgingsplanerPaFnr(ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         verify(oppfolgingsplanService).arbeidsgiversOppfolgingsplanerPaFnr(LEDER_FNR, ARBEIDSTAKER_FNR, VIRKSOMHETSNUMMER)
         verify(arbeidsforholdService).arbeidstakersStillingerForOrgnummer(ARBEIDSTAKER_FNR, listOf(VIRKSOMHETSNUMMER))
         verify(metrikk).tellHendelse("hent_oppfolgingsplan_ag")
