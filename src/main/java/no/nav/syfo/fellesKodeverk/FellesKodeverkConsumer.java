@@ -63,6 +63,7 @@ public class FellesKodeverkConsumer {
                     KodeverkKoderBetydningerResponse.class
             );
             metric.tellHendelse("call_felleskodeverk_success");
+            LOG.info("[AAD KODEVERK FUNKER]");
             return response.getBody();
         } catch (RestClientException e) {
             metric.tellHendelse("call_felleskodeverk_fail");
