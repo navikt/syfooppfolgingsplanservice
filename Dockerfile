@@ -5,4 +5,4 @@ WORKDIR /app
 COPY build/libs/*.jar app.jar
 COPY init.sh /init-scripts/init.sh
 LABEL org.opencontainers.image.source=https://github.com/navikt/syfooppfolgingsplanservice
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["app.jar"]
