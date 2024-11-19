@@ -5,7 +5,5 @@ ENV TZ="Europe/Oslo"
 WORKDIR /app
 COPY build/libs/*.jar app.jar
 COPY init.sh /init-scripts/init.sh
+ENTRYPOINT ["java", "-jar", "app.jar"]
 LABEL org.opencontainers.image.source=https://github.com/navikt/syfooppfolgingsplanservice
-EXPOSE 8080
-USER nonroot
-CMD ["app.jar"]
