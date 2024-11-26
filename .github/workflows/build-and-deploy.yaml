@@ -5,7 +5,7 @@ on:
 
 jobs:
   jar-app:
-    uses: navikt/teamesyfo-github-actions-workflows/.github/workflows/fss-boot-jar-app.yaml@use-java-21-for-fss
+    uses: navikt/teamesyfo-github-actions-workflows/.github/workflows/fss-boot-jar-app-21.yaml@main
     permissions:
       actions: read
       contents: write
