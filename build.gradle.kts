@@ -152,6 +152,7 @@ dependencies {
     implementation("org.apache.kafka:kafka_2.13") {
         exclude(group = "log4j", module = "log4j")
     }
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.16.0")
     implementation("com.atomikos:transactions-spring-boot3-starter:${Versions.atomikosVersion}")
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:${Versions.jakartaRsApiVersion}")
     implementation("com.sun.activation:javax.activation:${Versions.javaxActivationVersion}")
