@@ -143,7 +143,9 @@ dependencies {
     implementation("com.lowagie:itext:2.1.7")
     implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20220608.1")
     implementation("javax.inject:javax.inject:1")
-    implementation("org.apache.pdfbox:pdfbox:2.0.25")
+    implementation("org.apache.pdfbox:pdfbox:2.0.25"){
+        exclude(group = "commons-logging", module = "commons-logging")
+    }
     implementation("org.apache.pdfbox:pdfbox-tools:2.0.25")
     implementation("org.xhtmlrenderer:flying-saucer-pdf:9.9.0")
     implementation("org.apache.commons:commons-lang3")
