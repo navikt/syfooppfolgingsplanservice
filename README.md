@@ -1,5 +1,5 @@
 # Syfooppfolgingsplanservice
-Backend applikasjon som lagrer, tilbyr og videresender NAV's versjon
+Backend applikasjon som lagrer, tilbyr og videresender NAV's innloggede versjon
 av digitale oppfølgingsplaner.
 
 
