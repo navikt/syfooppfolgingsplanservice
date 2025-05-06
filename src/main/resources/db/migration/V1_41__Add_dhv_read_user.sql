@@ -17,14 +17,16 @@ END IF;
 END;
 /
 
+DECLARE
+user_exists NUMBER;
 BEGIN
-EXECUTE IMMEDIATE 'CREATE USER dvh_les IDENTIFIED BY some_password';
-EXCEPTION
-    WHEN OTHERS THEN
-        IF SQLCODE = -01920 THEN
-            DBMS_OUTPUT.PUT_LINE('User dvh_les already exists');
-ELSE
-            RAISE;
+SELECT COUNT(*)
+INTO user_exists
+FROM all_users
+WHERE username = 'DVH_LES' OR username = 'dvh_les';
+
+IF user_exists = 0 THEN
+        EXECUTE IMMEDIATE 'CREATE USER dvh_les';
 END IF;
 END;
 /
