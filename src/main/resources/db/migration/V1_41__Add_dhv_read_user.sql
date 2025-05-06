@@ -1,22 +1,32 @@
-DO $$
+DECLARE
+view_exists NUMBER;
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.views WHERE table_name = 'godkjentplan_view') THEN
-CREATE VIEW GODKJENTPLAN_VIEW AS
-SELECT SM_FNR, VIRKSOMHETSNUMMER, G.CREATED
-FROM oppfoelgingsdialog o
-         INNER JOIN godkjentplan g
-                    ON o.oppfoelgingsdialog_id = g.oppfoelgingsdialog_id
-                        AND g.delt_med_nav = 1;
+SELECT COUNT(*)
+INTO view_exists
+FROM all_views
+WHERE view_name = 'GODKJENTPLAN_VIEW';
+
+IF view_exists = 0 THEN
+        EXECUTE IMMEDIATE 'CREATE VIEW GODKJENTPLAN_VIEW AS
+                           SELECT SM_FNR, VIRKSOMHETSNUMMER, G.CREATED
+                           FROM oppfoelgingsdialog o
+                           INNER JOIN godkjentplan g
+                           ON o.oppfoelgingsdialog_id = g.oppfoelgingsdialog_id
+                           AND g.delt_med_nav = 1';
 END IF;
-END
-$$;
+END;
+/
 
-DO $$
 BEGIN
-        CREATE USER "dvh_les";
-EXCEPTION WHEN DUPLICATE_OBJECT THEN
-        RAISE NOTICE 'not creating role dvh_les -- it already exists';
-END
-$$;
+EXECUTE IMMEDIATE 'CREATE USER dvh_les IDENTIFIED BY some_password';
+EXCEPTION
+    WHEN OTHERS THEN
+        IF SQLCODE = -01920 THEN
+            DBMS_OUTPUT.PUT_LINE('User dvh_les already exists');
+ELSE
+            RAISE;
+END IF;
+END;
+/
 
-GRANT SELECT ON GODKJENTPLAN_VIEW TO "dvh_les";
+GRANT SELECT ON GODKJENTPLAN_VIEW TO dvh_les;
