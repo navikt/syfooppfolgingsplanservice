@@ -1,4 +1,4 @@
-FROM ghcr.io/navikt/baseimages/temurin:19
+FROM ghcr.io/navikt/baseimages/temurin:21
 LABEL org.opencontainers.image.source=https://github.com/navikt/syfooppfolgingsplanservice
 
 COPY init.sh /init-scripts/init.sh

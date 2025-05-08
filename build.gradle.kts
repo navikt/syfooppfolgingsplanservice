@@ -14,8 +14,8 @@ object Versions {
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
     const val altinnKanalSchemasVersion = "2.0.0"
     const val jaxwsVersion = "2.3.2"
-    const val h2Version = "2.1.210"
-    const val mockkVersion = "1.13.4"
+    const val h2Version = "2.3.232"
+    const val mockkVersion = "1.14.2"
     const val atomikosVersion = "6.0.0"
     const val jakartaRsApiVersion = "3.1.0"
     const val jacksonVersion = "2.15.3"
@@ -34,13 +34,13 @@ plugins {
     kotlin("jvm") version "1.9.24"
     id("java")
     id("org.jetbrains.kotlin.plugin.allopen") version "1.9.24"
-    id("org.springframework.boot") version "3.3.2"
-    id("io.spring.dependency-management") version "1.1.6"
+    id("org.springframework.boot") version "3.3.11"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(19))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
