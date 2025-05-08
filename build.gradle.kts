@@ -2,9 +2,9 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 object Versions {
-    const val avroVersion = "1.11.0"
+    const val avroVersion = "1.12.0"
     const val confluentVersion = "7.1.0"
-    const val cxfVersion = "3.6.4"
+    const val cxfVersion = "3.6.6"
     const val flywayVersion = "9.10.0"
     const val tokenSupportVersion = "3.2.0"
     const val tokenTestSupportVersion = "2.0.5"
