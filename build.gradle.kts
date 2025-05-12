@@ -2,9 +2,9 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 object Versions {
-    const val avroVersion = "1.11.0"
+    const val avroVersion = "1.12.0"
     const val confluentVersion = "7.1.0"
-    const val cxfVersion = "3.6.4"
+    const val cxfVersion = "3.6.6"
     const val flywayVersion = "9.10.0"
     const val tokenSupportVersion = "3.2.0"
     const val tokenTestSupportVersion = "2.0.5"
@@ -14,8 +14,8 @@ object Versions {
     const val tjenesteSpesifikasjonerVersion = "1.2020.06.23-15.31-57b909d0a05c"
     const val altinnKanalSchemasVersion = "2.0.0"
     const val jaxwsVersion = "2.3.2"
-    const val h2Version = "2.1.210"
-    const val mockkVersion = "1.13.4"
+    const val h2Version = "2.3.232"
+    const val mockkVersion = "1.14.2"
     const val atomikosVersion = "6.0.0"
     const val jakartaRsApiVersion = "3.1.0"
     const val jacksonVersion = "2.15.3"
@@ -34,13 +34,13 @@ plugins {
     kotlin("jvm") version "1.9.24"
     id("java")
     id("org.jetbrains.kotlin.plugin.allopen") version "1.9.24"
-    id("org.springframework.boot") version "3.3.2"
-    id("io.spring.dependency-management") version "1.1.6"
+    id("org.springframework.boot") version "3.3.11"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(19))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -106,11 +106,13 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
 
     implementation("org.springframework:spring-jms")
-
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78")
     implementation("no.nav.security:token-validation-spring:${Versions.tokenSupportVersion}")
-
     implementation("org.apache.cxf:cxf-rt-features-logging:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-ws-security:${Versions.cxfVersion}")
+    {
+        exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
+    }
     implementation("org.apache.cxf:cxf-rt-ws-policy:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-transports-http:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:${Versions.cxfVersion}")
@@ -164,6 +166,9 @@ dependencies {
     testImplementation("io.mockk:mockk:${Versions.mockkVersion}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
     testImplementation("no.nav.security:token-validation-spring-test:${Versions.tokenSupportVersion}")
+    {
+        exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
+    }
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     constraints {
