@@ -106,13 +106,11 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
 
     implementation("org.springframework:spring-jms")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78")
+
     implementation("no.nav.security:token-validation-spring:${Versions.tokenSupportVersion}")
+
     implementation("org.apache.cxf:cxf-rt-features-logging:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-ws-security:${Versions.cxfVersion}")
-    {
-        exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
-    }
     implementation("org.apache.cxf:cxf-rt-ws-policy:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-transports-http:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:${Versions.cxfVersion}")
@@ -166,9 +164,6 @@ dependencies {
     testImplementation("io.mockk:mockk:${Versions.mockkVersion}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
     testImplementation("no.nav.security:token-validation-spring-test:${Versions.tokenSupportVersion}")
-    {
-        exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
-    }
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     constraints {
