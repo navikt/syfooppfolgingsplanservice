@@ -1,5 +1,9 @@
 FROM ghcr.io/navikt/baseimages/temurin:21
 LABEL org.opencontainers.image.source=https://github.com/navikt/syfooppfolgingsplanservice
+
+USER root
+RUN apt remove wget -y
+USER apprunner
 COPY init.sh /init-scripts/init.sh
 
 COPY build/libs/*.jar app.jar
