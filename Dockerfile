@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre-alpine-3.21
+FROM eclipse-temurin:21-jdk-alpine-3.21
 LABEL org.opencontainers.image.source=https://github.com/navikt/syfooppfolgingsplanservice
 
 COPY init.sh /init-scripts/init.sh
