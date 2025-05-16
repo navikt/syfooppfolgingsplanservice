@@ -1,6 +1,6 @@
-FROM eclipse-temurin:21-jdk-jammy
+FROM ghcr.io/navikt/baseimages/temurin:21
 LABEL org.opencontainers.image.source=https://github.com/navikt/syfooppfolgingsplanservice
-
+RUN apt remove wget -y
 COPY init.sh /init-scripts/init.sh
 
 COPY build/libs/*.jar app.jar
