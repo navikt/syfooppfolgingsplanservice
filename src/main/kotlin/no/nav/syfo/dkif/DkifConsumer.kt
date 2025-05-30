@@ -14,7 +14,6 @@ import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestTemplate
 import java.util.*
 
-
 @Service
 class DkifConsumer @Autowired constructor (
     private val restTemplate: RestTemplate,
@@ -30,17 +29,19 @@ class DkifConsumer @Autowired constructor (
         try {
             val response = restTemplate.exchange(
                 dkifUrl,
-                HttpMethod.GET,
+                HttpMethod.POST,
                 entity(fnr, accessToken),
-                String::class.java
+                PostPersonerResponse::class.java
             )
-            if (response.statusCode.is2xxSuccessful) {
-                return response.body?.let {
-                    metric.countOutgoingReponses(METRIC_CALL_DKIF, response.statusCode.value())
-                    KontaktinfoMapper.mapPerson(it)
-                } ?: throw DKIFRequestFailedException("ReponseBody is null")
+            if (!response.statusCode.is2xxSuccessful) {
+                throw DKIFRequestFailedException("Received response with status code: ${response.statusCode.value()}")
             }
-            throw DKIFRequestFailedException("Received response with status code: ${response.statusCode.value()}")
+            val kontaktinfo = response.body?.let {
+                metric.countOutgoingReponses(METRIC_CALL_DKIF, response.statusCode.value())
+                it.personer.getOrDefault(fnr, null)
+                   ?: throw DKIFRequestFailedException("Response did not contain person")
+            } ?: throw DKIFRequestFailedException( "ResponseBody is null")
+            return kontaktinfo
         } catch (e: RestClientResponseException) {
             log.error("Error in call to DKIF: ${e.message}", e)
             metric.countOutgoingReponses(METRIC_CALL_DKIF, e.statusCode.value())
@@ -48,13 +49,12 @@ class DkifConsumer @Autowired constructor (
         }
     }
 
-    private fun entity(fnr: String, accessToken: String): HttpEntity<String> {
+    private fun entity(fnr: String, accessToken: String): HttpEntity<PostPersonerRequest> {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         headers[HttpHeaders.AUTHORIZATION] = accessToken
-        headers[NAV_PERSONIDENT_HEADER] = fnr
         headers[NAV_CALL_ID_HEADER] = createCallId()
-        return HttpEntity(headers)
+        return HttpEntity(PostPersonerRequest(setOf(fnr)), headers)
     }
 
     companion object {
