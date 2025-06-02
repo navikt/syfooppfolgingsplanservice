@@ -115,7 +115,7 @@ spec:
     - name: ISTILGANGSKONTROLL_URL
       value: https://istilgangskontroll.intern.dev.nav.no
     - name: DKIF_URL
-      value: https://digdir-krr-proxy.intern.dev.nav.no/rest/v1/person
+      value: https://digdir-krr-proxy.intern.dev.nav.no/rest/v1/personer
     - name: DKIF_SCOPE
       value: api://dev-gcp.team-rocket.digdir-krr-proxy/.default
     - name: DOKARKIV_URL
