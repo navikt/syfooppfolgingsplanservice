@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate
 import java.util.*
 
 @Service
-class DkifConsumer @Autowired constructor (
+class DkifConsumer @Autowired constructor(
     private val restTemplate: RestTemplate,
     private val azureAdTokenConsumer: AzureAdTokenConsumer,
     private val metric: Metrikk,
@@ -33,14 +33,14 @@ class DkifConsumer @Autowired constructor (
                 entity(fnr, accessToken),
                 PostPersonerResponse::class.java
             )
+            metric.countOutgoingReponses(METRIC_CALL_DKIF, response.statusCode.value())
             if (!response.statusCode.is2xxSuccessful) {
                 throw DKIFRequestFailedException("Received response with status code: ${response.statusCode.value()}")
             }
             val kontaktinfo = response.body?.let {
-                metric.countOutgoingReponses(METRIC_CALL_DKIF, response.statusCode.value())
                 it.personer.getOrDefault(fnr, null)
-                   ?: throw DKIFRequestFailedException("Response did not contain person")
-            } ?: throw DKIFRequestFailedException( "ResponseBody is null")
+                    ?: throw DKIFRequestFailedException("Response did not contain person")
+            } ?: throw DKIFRequestFailedException("ResponseBody is null")
             return kontaktinfo
         } catch (e: RestClientResponseException) {
             log.error("Error in call to DKIF: ${e.message}", e)
