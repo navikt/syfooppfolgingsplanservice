@@ -34,7 +34,7 @@ plugins {
     kotlin("jvm") version "2.0.21"
     id("java")
     id("org.jetbrains.kotlin.plugin.allopen") version "1.9.25"
-    id("org.springframework.boot") version "3.3.12"
+    id("org.springframework.boot") version "3.3.13"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
