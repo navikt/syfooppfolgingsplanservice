@@ -106,7 +106,7 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
 
     implementation("org.springframework:spring-jms")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.81")
     implementation("no.nav.security:token-validation-spring:${Versions.tokenSupportVersion}")
     implementation("org.apache.cxf:cxf-rt-features-logging:${Versions.cxfVersion}")
     implementation("org.apache.cxf:cxf-rt-ws-security:${Versions.cxfVersion}")
