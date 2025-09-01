@@ -1,11 +1,8 @@
 package no.nav.syfo.aareg;
 
-import no.nav.syfo.fellesKodeverk.FellesKodeverkConsumer;
 import no.nav.syfo.aareg.exceptions.RestErrorFromAareg;
+import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.model.Stilling;
-import no.nav.syfo.pdl.PdlConsumer;
-import no.nav.syfo.sts.StsConsumer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +16,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
 import java.util.*;
 
 import static no.nav.syfo.aareg.utils.AaregConsumerTestUtils.*;
@@ -37,22 +33,25 @@ public class AaregConsumerTest {
     @Mock
     private RestTemplate restTemplate;
     @Mock
-    private StsConsumer stsConsumer;
+    private AzureAdV2TokenConsumer azureAdV2TokenConsumer;
 
     @InjectMocks
     private AaregConsumer aaregConsumer;
 
     private static final String AAREG_URL = "http://aareg-services.url";
+    private static final String TOKEN = "azure-system-token";
+    private static final String SCOPE = "api://aareg/.default";
 
     @Before
     public void setup() {
         ReflectionTestUtils.setField(aaregConsumer, "url", AAREG_URL);
-        when(stsConsumer.token()).thenReturn("token");
+        ReflectionTestUtils.setField(aaregConsumer, "scope", SCOPE);
     }
 
     @Test
     public void getArbeidsforholdArbeidstaker() {
         List<Arbeidsforhold> expectedArbeidsforholdList = Collections.singletonList(simpleArbeidsforhold());
+        when(azureAdV2TokenConsumer.getSystemToken(SCOPE)).thenReturn(TOKEN);
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<Arbeidsforhold>>() {
         }))).thenReturn(new ResponseEntity<>(expectedArbeidsforholdList, OK));
 
@@ -66,12 +65,14 @@ public class AaregConsumerTest {
         assertThat(arbeidsforhold.arbeidstaker.aktoerId).isEqualTo(AT_AKTORID);
         assertThat(arbeidsforhold.arbeidstaker.offentligIdent).isEqualTo(AT_FNR);
 
+        verify(azureAdV2TokenConsumer).getSystemToken(SCOPE);
         verify(metrikk).tellHendelse("call_aareg");
         verify(metrikk).tellHendelse("call_aareg_success");
     }
 
     @Test(expected = RestErrorFromAareg.class)
     public void arbeidsforholdArbeidstaker_fail() {
+        when(azureAdV2TokenConsumer.getSystemToken(SCOPE)).thenReturn(TOKEN);
         when(restTemplate.exchange(anyString(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<Arbeidsforhold>>() {
         }))).thenThrow(new RestClientException("Failed!"));
 

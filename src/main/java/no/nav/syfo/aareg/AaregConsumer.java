@@ -1,10 +1,8 @@
 package no.nav.syfo.aareg;
 
-import no.nav.syfo.fellesKodeverk.FellesKodeverkConsumer;
+import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer;
 import no.nav.syfo.aareg.exceptions.RestErrorFromAareg;
 import no.nav.syfo.metric.Metrikk;
-import no.nav.syfo.pdl.PdlConsumer;
-import no.nav.syfo.sts.StsConsumer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import static no.nav.syfo.util.CredentialUtilKt.bearerHeader;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -27,29 +25,34 @@ public class AaregConsumer {
     private static final Logger LOG = getLogger(AaregConsumer.class);
     private final Metrikk metrikk;
     private final RestTemplate restTemplate;
-    private final StsConsumer stsConsumer;
     private final String url;
+    private final String scope;
+    private final AzureAdV2TokenConsumer azureAdV2TokenConsumer;
 
-    public static final String NAV_CONSUMER_TOKEN_HEADER = "Nav-Consumer-Token";
     public static final String NAV_PERSONIDENT_HEADER = "Nav-Personident";
 
     @Autowired
     public AaregConsumer(
             Metrikk metrikk,
             RestTemplate restTemplate,
-            StsConsumer stsConsumer,
-            @Value("${aareg.services.url}") String url
+            @Value("${aareg.services.url}") String url,
+            @Value("${aareg.scope}") String scope,
+            AzureAdV2TokenConsumer azureAdV2TokenConsumer
     ) {
         this.metrikk = metrikk;
         this.restTemplate = restTemplate;
-        this.stsConsumer = stsConsumer;
         this.url = url;
+        this.scope = scope;
+        this.azureAdV2TokenConsumer = azureAdV2TokenConsumer;
     }
 
     @Cacheable(cacheNames = "arbeidsforholdAT", key = "#fnr", condition = "#fnr != null")
     public List<Arbeidsforhold> arbeidsforholdArbeidstaker(String fnr) {
         metrikk.tellHendelse("call_aareg");
-        String token = stsConsumer.token();
+        String token = Objects.requireNonNull(
+                azureAdV2TokenConsumer.getSystemToken(scope),
+                "Azure system token was null"
+        );
 
         try {
             ResponseEntity<List<Arbeidsforhold>> response = restTemplate.exchange(
@@ -71,7 +74,6 @@ public class AaregConsumer {
     private HttpEntity entity(String fnr, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, bearerHeader(token));
-        headers.add(NAV_CONSUMER_TOKEN_HEADER, bearerHeader(token));
         headers.add(NAV_PERSONIDENT_HEADER, fnr);
         return new HttpEntity<>(headers);
     }
