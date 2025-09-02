@@ -122,6 +122,8 @@ spec:
       value: https://security-token-service.nais.adeo.no
     - name: AAREG_SERVICES_URL
       value: https://aareg-services.intern.nav.no/api
+    - name: AAREG_SCOPE
+      value: api://prod-fss.arbeidsforhold.aareg-services-nais/.default
     - name: EREG_BASEURL
       value: https://ereg-services.intern.nav.no
     - name: SYFOBRUKERTILGANG_URL

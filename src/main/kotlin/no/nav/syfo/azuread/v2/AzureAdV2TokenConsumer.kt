@@ -76,7 +76,7 @@ class AzureAdV2TokenConsumer @Autowired constructor(
         headers.contentType = MediaType.MULTIPART_FORM_DATA
         val body: MultiValueMap<String, String> = LinkedMultiValueMap()
         body.add("client_id", azureAppClientId)
-        body.add("scope", "api://$scopeClientId/.default")
+        body.add("scope", scopeClientId)
         body.add("grant_type", "client_credentials")
         body.add("client_secret", azureAppClientSecret)
 
