@@ -1,8 +1,8 @@
 package no.nav.syfo.pdl
 
+import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer
 import no.nav.syfo.config.CacheConfig.*
 import no.nav.syfo.metric.Metrikk
-import no.nav.syfo.sts.StsConsumer
 import no.nav.syfo.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
@@ -20,7 +20,8 @@ import org.springframework.web.client.RestTemplate
 class PdlConsumer(
     private val metric: Metrikk,
     @Value("\${pdl.url}") private val pdlUrl: String,
-    private val stsConsumer: StsConsumer,
+    @Value("\${pdl.scope}") private val pdlScope: String,
+    private val azureAdV2TokenConsumer: AzureAdV2TokenConsumer,
     @param:Qualifier("scheduler") private val restTemplate: RestTemplate
 ) : InitializingBean {
     fun person(ident: String): PdlHentPerson? {
@@ -117,12 +118,11 @@ class PdlConsumer(
     }
 
     private fun createRequestEntity(request: PdlRequest): HttpEntity<PdlRequest> {
-        val stsToken: String = stsConsumer.token()
+        val token: String = azureAdV2TokenConsumer.getSystemToken(pdlScope)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         headers.set(PDL_BEHANDLINGSNUMMER_HEADER, BEHANDLINGSNUMMER_OPPFOLGINGSPLAN)
-        headers.set(AUTHORIZATION, bearerHeader(stsToken))
-        headers.set(NAV_CONSUMER_TOKEN_HEADER, bearerHeader(stsToken))
+        headers.set(AUTHORIZATION, bearerHeader(token))
         return HttpEntity(request, headers)
     }
 
