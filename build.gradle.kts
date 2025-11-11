@@ -141,7 +141,7 @@ dependencies {
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.16.0")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
-    implementation("commons-io:commons-io:2.20.0")
+    implementation("commons-io:commons-io:2.21.0")
     implementation("com.lowagie:itext:2.1.7")
     implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20220608.1")
     implementation("javax.inject:javax.inject:1")
