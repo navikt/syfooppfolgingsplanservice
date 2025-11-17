@@ -79,6 +79,16 @@ public class PdfService {
 
         return dokumentDAO.hent(godkjentPlan.dokumentUuid);
     }
+    public byte[] hentPdfTilArkivporten(Oppfolgingsplan oppfolgingsplan) {
+        // skip the metric here for now as it is already counted in hentPdfTilAltinn
+        // metrikk.tellAntallDagerSiden(oppfolgingsplan.opprettet, "antallDagerFraOpprettetTilPdf");
+
+        GodkjentPlan godkjentPlan = oppfolgingsplan.godkjentPlan.orElseThrow(() ->
+                throwOppfoelgingsplanUtenGodkjenPlan(oppfolgingsplan)
+        );
+
+        return dokumentDAO.hent(godkjentPlan.dokumentUuid);
+    }
 
     public byte[] pdf2image(byte[] pdfBytes, int side) {
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {

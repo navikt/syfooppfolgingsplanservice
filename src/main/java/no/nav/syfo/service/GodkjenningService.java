@@ -11,6 +11,7 @@ import no.nav.syfo.pdf.domain.*;
 import no.nav.syfo.pdl.PdlConsumer;
 import no.nav.syfo.repository.dao.*;
 import no.nav.syfo.repository.domain.Dokument;
+import no.nav.syfo.toggle.Toggle;
 import no.nav.syfo.util.ConflictException;
 import no.nav.syfo.util.JAXB;
 import org.slf4j.Logger;
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+
 import jakarta.ws.rs.ForbiddenException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,8 +33,7 @@ import static java.util.Optional.ofNullable;
 import static no.nav.syfo.domain.Gjennomfoering.KanGjennomfoeres.*;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningNl;
 import static no.nav.syfo.model.Varseltype.SyfoplangodkjenningSyk;
-import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVER;
-import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_SEND;
+import static no.nav.syfo.oppgave.Oppgavetype.*;
 import static no.nav.syfo.pdf.PdfFabrikk.tilPdf;
 import static no.nav.syfo.util.MapUtil.mapListe;
 import static no.nav.syfo.util.OppfoelgingsdialogUtil.*;
@@ -70,6 +72,9 @@ public class GodkjenningService {
     private final GodkjenningerDAO godkjenningerDAO;
 
     private final AsynkOppgaveDAO asynkOppgaveDAO;
+
+    @Inject
+    private Toggle toggle;
 
     @Inject
     public GodkjenningService(
@@ -576,5 +581,10 @@ public class GodkjenningService {
         String ressursId = String.valueOf(oppfoelgingsdialogId);
         AsynkOppgave sendOppfoelgingsdialog = asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_SEND, ressursId));
         asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_ARKIVER, ressursId, sendOppfoelgingsdialog.id));
+
+        // Also send oppfolgingsplan to Arkivporten
+        if (toggle.erPreprod()) {
+            asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_ARKIVPORTEN_SEND, ressursId));
+        }
     }
 }
