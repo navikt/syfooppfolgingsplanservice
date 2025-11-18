@@ -3,24 +3,19 @@ package no.nav.syfo.arkivporten
 import no.nav.syfo.azuread.v2.AzureAdV2TokenConsumer
 import no.nav.syfo.metric.Metrikk
 import no.nav.syfo.pdl.PdlConsumer
-import no.nav.syfo.pdl.PdlIdenterResponse
-import no.nav.syfo.pdl.PdlRequest
-import no.nav.syfo.util.BEHANDLINGSNUMMER_OPPFOLGINGSPLAN
-import no.nav.syfo.util.PDL_BEHANDLINGSNUMMER_HEADER
 import no.nav.syfo.util.bearerHeader
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestTemplate
-
 
 @Service
 class ArkivportenConsumer(
@@ -33,18 +28,22 @@ class ArkivportenConsumer(
     companion object {
         private val LOG = LoggerFactory.getLogger(PdlConsumer::class.java)
         lateinit var arkivportenConsumer: ArkivportenConsumer
+        const val ARKIVPORTEN_DOCUMENT_PATH = "/internal/api/v1/documents"
+        const val METRIC_CALL_ARKIVPORTEN = "call_arkivporten"
     }
 
     fun sendDocument(document: Document) {
         try {
             val entity = createRequestEntity(document)
-            restTemplate.exchange(
-                arkivportenUrl,
+            val response = restTemplate.exchange(
+                "$arkivportenUrl$ARKIVPORTEN_DOCUMENT_PATH",
                 HttpMethod.POST,
                 entity,
                 Void::class.java
             )
-        } catch (e: Exception) {
+            metric.countOutgoingReponses(METRIC_CALL_ARKIVPORTEN, response.statusCode.value())
+        } catch (e: RestClientResponseException) {
+            metric.countOutgoingReponses(METRIC_CALL_ARKIVPORTEN, e.statusCode.value())
             LOG.error("Error sending document to Arkivporten", e)
             throw e
         }
