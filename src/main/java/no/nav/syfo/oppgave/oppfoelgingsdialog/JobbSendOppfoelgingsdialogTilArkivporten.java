@@ -51,6 +51,7 @@ public class JobbSendOppfoelgingsdialogTilArkivporten implements Jobb {
     public void utfoerOppgave(String oppfoelgingsdialogId) {
         Oppfolgingsplan oppfolgingsplan = oppfolgingsplanService.hentGodkjentOppfolgingsplan(Long.valueOf(oppfoelgingsdialogId));
         oppfolgingsplan.arbeidstaker.fnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
+        String arbeidstakerNavn = pdlConsumer.personName(oppfolgingsplan.arbeidstaker.fnr);
 
         byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilArkivporten(oppfolgingsplan);
         Document document = new Document(
@@ -59,7 +60,7 @@ public class JobbSendOppfoelgingsdialogTilArkivporten implements Jobb {
                 oppfoelgingsdialogPdf,
                 "application/pdf",
                 oppfolgingsplan.virksomhet.virksomhetsnummer,
-                Document.Companion.title(oppfolgingsplan.arbeidstaker.navn),
+                Document.Companion.title(arbeidstakerNavn),
                 Document.Companion.summary(oppfolgingsplan.sistEndretDato)
         );
         arkivportenConsumer.sendDocument(document);
