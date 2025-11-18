@@ -24,7 +24,7 @@ data class Document(
             "Oppfølgingsplan for $name"
 
         fun summary(date: LocalDateTime): String =
-            "Oppfølgingsplan opprettet den ${dateFormatter.format(date)} "
+            "Oppfølgingsplan opprettet den ${dateFormatter.format(date)}"
     }
 }
 
