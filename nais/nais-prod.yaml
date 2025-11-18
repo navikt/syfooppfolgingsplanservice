@@ -158,3 +158,7 @@ spec:
       value: prod-gcp.teamsykefravr.isdialogmelding
     - name: DISTRIBUTE_ALTINN_PLANS
       value: "false"
+    - name: ARKIVPORTEN_URL
+      value: https://arkivporten.intern.nav.no
+    - name: ARKIVPORTEN_SCOPE
+      value: api://prod-gcp.team-esyfo.arkivporten/.default
