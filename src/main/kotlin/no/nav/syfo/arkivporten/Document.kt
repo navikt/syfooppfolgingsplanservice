@@ -21,7 +21,6 @@ data class Document(
         val dateFormatter = DateTimeFormatter
             .ofPattern("dd.MM.yyyy")
             .withLocale(Locale.forLanguageTag("nb-NO"))
-            .withZone(ZoneId.of("Europe/Oslo"))
         fun title(name: String?): String =
             "Oppfølgingsplan for $name"
 
@@ -29,7 +28,6 @@ data class Document(
             "${arbeidsgiverNavn} har opprettet en oppfølgingsplan for ${arbeidstakerNavn} på \"Dine sykmeldte\" hos Nav den opprettet den ${dateFormatter.format(date)}"
     }
 }
-// Leder Ledersen har opprettet en oppfølgingsplan for Lisa Lisen på "Dine sykmeldte" hos Nav den 11.10.25.
 enum class DocumentType {
     OPPFOLGINGSPLAN,
 }
