@@ -24,7 +24,7 @@ class DocumentTest {
         val arbeidstakerNavn = "Lisa Lisen"
         val arbeidsgiverNavn = "Leder Ledersen"
         val date = LocalDateTime.of(2025, 10, 11, 12, 0)
-        val expected = "Leder Ledersen har opprettet en oppfølgingsplan for Lisa Lisen på \"Dine sykmeldte\" hos Nav den opprettet den 11.10.2025"
+        val expected = "Leder Ledersen har opprettet en oppfølgingsplan for Lisa Lisen på \"Dine sykmeldte\" hos Nav opprettet den 11.10.2025"
         assertEquals(expected, Document.summary(arbeidstakerNavn, arbeidsgiverNavn, date))
     }
 }

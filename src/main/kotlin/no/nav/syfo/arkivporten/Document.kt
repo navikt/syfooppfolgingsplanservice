@@ -25,7 +25,7 @@ data class Document(
             "Oppfølgingsplan for $name"
 
         fun summary(arbeidstakerNavn: String, arbeidsgiverNavn: String, date: LocalDateTime): String =
-            "${arbeidsgiverNavn} har opprettet en oppfølgingsplan for ${arbeidstakerNavn} på \"Dine sykmeldte\" hos Nav den opprettet den ${dateFormatter.format(date)}"
+            "${arbeidsgiverNavn} har opprettet en oppfølgingsplan for ${arbeidstakerNavn} på \"Dine sykmeldte\" hos Nav opprettet den ${dateFormatter.format(date)}"
     }
 }
 enum class DocumentType {
