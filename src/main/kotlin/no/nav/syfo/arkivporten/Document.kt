@@ -11,9 +11,11 @@ data class Document(
     val type: DocumentType,
     val content: ByteArray,
     val contentType: String,
-    val orgnumber: String,
-    val dialogTitle: String,
-    val dialogSummary: String,
+    val orgNumber: String,
+    val title: String,
+    val summary: String,
+    val fnr: String,
+    val fullName: String,
 ) {
     companion object {
         val dateFormatter = DateTimeFormatter
@@ -23,11 +25,11 @@ data class Document(
         fun title(name: String?): String =
             "Oppfølgingsplan for $name"
 
-        fun summary(date: LocalDateTime): String =
-            "Oppfølgingsplan opprettet den ${dateFormatter.format(date)}"
+        fun summary(arbeidstakerNavn: String, arbeidsgiverNavn: String, date: LocalDateTime): String =
+            "${arbeidsgiverNavn} har opprettet en oppfølgingsplan for ${arbeidstakerNavn} på \"Dine sykmeldte\" hos Nav den opprettet den ${dateFormatter.format(date)}"
     }
 }
-
+// Leder Ledersen har opprettet en oppfølgingsplan for Lisa Lisen på "Dine sykmeldte" hos Nav den 11.10.25.
 enum class DocumentType {
     OPPFOLGINGSPLAN,
 }

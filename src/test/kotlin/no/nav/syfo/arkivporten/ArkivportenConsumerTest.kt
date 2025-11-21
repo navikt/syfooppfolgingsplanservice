@@ -69,17 +69,8 @@ class ArkivportenConsumerTest {
             .andRespond(
                 MockRestResponseCreators.withStatus(HttpStatus.BAD_REQUEST)
             )
-        val document = Document(
-            documentId = UUID.randomUUID(),
-            type = DocumentType.OPPFOLGINGSPLAN,
-            dialogTitle = "Test Document",
-            dialogSummary = "Test Dialog Summary",
-            content = byteArrayOf(),
-            contentType = MediaType.APPLICATION_PDF.toString(),
-            orgnumber = "123456789"
-        )
         assertThrows<RestClientResponseException> {
-            arkivportenConsumer.sendDocument(document)
+            arkivportenConsumer.sendDocument(document())
         }
     }
 
@@ -92,18 +83,21 @@ class ArkivportenConsumerTest {
             .andRespond(
                 MockRestResponseCreators.withStatus(HttpStatus.OK)
             )
-        val document = Document(
-            documentId = UUID.randomUUID(),
-            type = DocumentType.OPPFOLGINGSPLAN,
-            dialogTitle = "Test Document",
-            dialogSummary = "Test Dialog Summary",
-            content = byteArrayOf(),
-            contentType = MediaType.APPLICATION_PDF.toString(),
-            orgnumber = "123456789"
-        )
         assertDoesNotThrow {
-            arkivportenConsumer.sendDocument(document)
+            arkivportenConsumer.sendDocument(document())
         }
     }
+
+    private fun document() = Document(
+        documentId = UUID.randomUUID(),
+        type = DocumentType.OPPFOLGINGSPLAN,
+        title = "Test Document",
+        summary = "Test Dialog Summary",
+        content = byteArrayOf(),
+        contentType = MediaType.APPLICATION_PDF.toString(),
+        orgNumber = "123456789",
+        fnr = "123456789",
+        fullName = "Test Person",
+    )
 
 }
