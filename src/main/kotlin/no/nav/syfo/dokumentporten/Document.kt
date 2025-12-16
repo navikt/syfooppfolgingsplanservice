@@ -1,7 +1,6 @@
-package no.nav.syfo.arkivporten
+package no.nav.syfo.dokumentporten
 
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.UUID

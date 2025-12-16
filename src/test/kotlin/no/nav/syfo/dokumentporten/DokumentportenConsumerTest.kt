@@ -1,4 +1,4 @@
-package no.nav.syfo.arkivporten
+package no.nav.syfo.dokumentporten
 
 import java.util.*
 import javax.inject.Inject
@@ -28,21 +28,21 @@ import org.springframework.web.client.RestTemplate
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [LocalApplication::class])
 @DirtiesContext
-class ArkivportenConsumerTest {
+class DokumentportenConsumerTest {
     @Inject
     private lateinit var restTemplate: RestTemplate
 
     @MockBean
     private lateinit var azureAdV2TokenConsumer: AzureAdV2TokenConsumer
 
-    @Value("\${arkivporten.scope}")
-    private lateinit var arkivportenScope: String
+    @Value("\${dokumentporten.scope}")
+    private lateinit var dokumentportenScope: String
 
-    @Value("\${arkivporten.url}")
+    @Value("\${dokumentporten.url}")
     private lateinit var url: String
 
     @MockBean
-    private lateinit var arkivportenConsumer: ArkivportenConsumer
+    private lateinit var dokumentportenConsumer: DokumentportenConsumer
 
     @Inject
     private lateinit var metrikk: Metrikk
@@ -51,12 +51,12 @@ class ArkivportenConsumerTest {
     @Before
     fun setUp() {
         mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build()
-        arkivportenConsumer = ArkivportenConsumer(
+        dokumentportenConsumer = DokumentportenConsumer(
             metric = metrikk,
             restTemplate = restTemplate,
             azureAdV2TokenConsumer = azureAdV2TokenConsumer,
-            arkivportenScope = arkivportenScope,
-            arkivportenUrl = url
+            dokumentportenScope = dokumentportenScope,
+            dokumentportenUrl = url
         )
     }
 
@@ -64,13 +64,13 @@ class ArkivportenConsumerTest {
     fun `sendDocument throws RestClientResponseException if outgoing call does not respond with 2xx`() {
         mockRestServiceServer.expect(
             ExpectedCount.once(),
-            MockRestRequestMatchers.requestTo("$url${ArkivportenConsumer.ARKIVPORTEN_DOCUMENT_PATH}"),
+            MockRestRequestMatchers.requestTo("$url${DokumentportenConsumer.DOKUMENTOPORTEN_DOCUMENT_PATH}"),
         ).andExpect { it.method == HttpMethod.POST }
             .andRespond(
                 MockRestResponseCreators.withStatus(HttpStatus.BAD_REQUEST)
             )
         assertThrows<RestClientResponseException> {
-            arkivportenConsumer.sendDocument(document())
+            dokumentportenConsumer.sendDocument(document())
         }
     }
 
@@ -78,13 +78,13 @@ class ArkivportenConsumerTest {
     fun `sendDocument does not throw when outgoing call responds with 200`() {
         mockRestServiceServer.expect(
             ExpectedCount.once(),
-            MockRestRequestMatchers.requestTo("$url${ArkivportenConsumer.ARKIVPORTEN_DOCUMENT_PATH}"),
+            MockRestRequestMatchers.requestTo("$url${DokumentportenConsumer.DOKUMENTOPORTEN_DOCUMENT_PATH}"),
         ).andExpect { it.method == HttpMethod.POST }
             .andRespond(
                 MockRestResponseCreators.withStatus(HttpStatus.OK)
             )
         assertDoesNotThrow {
-            arkivportenConsumer.sendDocument(document())
+            dokumentportenConsumer.sendDocument(document())
         }
     }
 

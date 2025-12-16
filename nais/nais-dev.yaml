@@ -68,6 +68,9 @@ spec:
         - application: syfobrukertilgang
           namespace: team-esyfo
           cluster: dev-gcp
+        - application: arkivporten
+          namespace: team-esyfo
+          cluster: dev-gcp
       external:
         - host: narmesteleder.intern.dev.nav.no
         - host: digdir-krr-proxy.intern.dev.nav.no
@@ -162,7 +165,7 @@ spec:
       value: dev-gcp.teamsykefravr.isdialogmelding
     - name: DISTRIBUTE_ALTINN_PLANS
       value: "false"
-    - name: ARKIVPORTEN_URL
-      value: https://arkivporten.intern.dev.nav.no
-    - name: ARKIVPORTEN_SCOPE
+    - name: DOKUMENTPORTEN_URL
+      value: https:///syfo-dokumentporten.intern.dev.nav.no
+    - name: DOKUMENTPORTEN_SCOPE
       value: api://dev-gcp.team-esyfo.arkivporten/.default

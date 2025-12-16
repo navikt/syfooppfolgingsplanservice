@@ -79,7 +79,7 @@ public class PdfService {
 
         return dokumentDAO.hent(godkjentPlan.dokumentUuid);
     }
-    public byte[] hentPdfTilArkivporten(Oppfolgingsplan oppfolgingsplan) {
+    public byte[] hentPdfTilDokumentporten(Oppfolgingsplan oppfolgingsplan) {
         // skip the metric here for now as it is already counted in hentPdfTilAltinn
         // metrikk.tellAntallDagerSiden(oppfolgingsplan.opprettet, "antallDagerFraOpprettetTilPdf");
 

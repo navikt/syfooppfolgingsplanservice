@@ -72,8 +72,8 @@ dkif.scope: "dkif.scope"
 narmesteleder.url: "http://narmesteleder.url"
 narmesteleder.scope: "narmesteleder.scope"
 
-arkivporten.url: "https://arkivporten.url"
-arkivporten.scope: "arkivporten.scope"
+dokumentporten.url: "https://dokumentporten.url"
+dokumentporten.scope: "dokumentporten.scope"
 
 azure.openid.config.token.endpoint: "http://azure"
 azure.app.client.id: 'client.id'

@@ -1,8 +1,8 @@
 package no.nav.syfo.oppgave.oppfoelgingsdialog;
 
-import no.nav.syfo.arkivporten.ArkivportenConsumer;
-import no.nav.syfo.arkivporten.Document;
-import no.nav.syfo.arkivporten.DocumentType;
+import no.nav.syfo.dokumentporten.DokumentportenConsumer;
+import no.nav.syfo.dokumentporten.Document;
+import no.nav.syfo.dokumentporten.DocumentType;
 import no.nav.syfo.domain.Oppfolgingsplan;
 import no.nav.syfo.metric.Metrikk;
 import no.nav.syfo.oppgave.Jobb;
@@ -16,34 +16,34 @@ import javax.inject.Inject;
 
 import java.util.UUID;
 
-import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_ARKIVPORTEN_SEND;
+import static no.nav.syfo.oppgave.Oppgavetype.OPPFOELGINGSDIALOG_DOKUMENTPORTEN_SEND;
 
 @Service
-public class JobbSendOppfoelgingsdialogTilArkivporten implements Jobb {
+public class JobbSendOppfoelgingsdialogTilDokumentporten implements Jobb {
 
     private final PdlConsumer pdlConsumer;
     private final Metrikk metrikk;
     private final OppfolgingsplanService oppfolgingsplanService;
     private final PdfService pdfService;
-    private final ArkivportenConsumer arkivportenConsumer;
+    private final DokumentportenConsumer dokumentportenConsumer;
 
     @Override
     public Oppgavetype oppgavetype() {
-        return OPPFOELGINGSDIALOG_ARKIVPORTEN_SEND;
+        return OPPFOELGINGSDIALOG_DOKUMENTPORTEN_SEND;
     }
 
     @Inject
-    public JobbSendOppfoelgingsdialogTilArkivporten(
+    public JobbSendOppfoelgingsdialogTilDokumentporten(
             PdlConsumer pdlConsumer,
             Metrikk metrikk,
             OppfolgingsplanService oppfolgingsplanService,
-            PdfService pdfService, ArkivportenConsumer arkivportenConsumer
+            PdfService pdfService, DokumentportenConsumer dokumentportenConsumer
     ) {
         this.pdlConsumer = pdlConsumer;
         this.metrikk = metrikk;
         this.oppfolgingsplanService = oppfolgingsplanService;
         this.pdfService = pdfService;
-        this.arkivportenConsumer = arkivportenConsumer;
+        this.dokumentportenConsumer = dokumentportenConsumer;
     }
 
 
@@ -53,7 +53,7 @@ public class JobbSendOppfoelgingsdialogTilArkivporten implements Jobb {
         oppfolgingsplan.arbeidstaker.fnr = pdlConsumer.fnr(oppfolgingsplan.arbeidstaker.aktoerId);
         String arbeidstakerNavn = pdlConsumer.personName(oppfolgingsplan.arbeidstaker.fnr);
         String arbeidsgiverNavn = pdlConsumer.personName(oppfolgingsplan.opprettetAvAktoerId);
-        byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilArkivporten(oppfolgingsplan);
+        byte[] oppfoelgingsdialogPdf = pdfService.hentPdfTilDokumentporten(oppfolgingsplan);
         assert arbeidstakerNavn != null;
         assert arbeidsgiverNavn != null;
         Document document = new Document(
@@ -67,7 +67,7 @@ public class JobbSendOppfoelgingsdialogTilArkivporten implements Jobb {
                 oppfolgingsplan.arbeidstaker.fnr,
                 arbeidstakerNavn
         );
-        arkivportenConsumer.sendDocument(document);
-        metrikk.tellHendelse("plan_sendt_til_arkivporten");
+        dokumentportenConsumer.sendDocument(document);
+        metrikk.tellHendelse("plan_sendt_til_dokumentporten");
     }
 }

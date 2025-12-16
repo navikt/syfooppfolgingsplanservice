@@ -582,9 +582,9 @@ public class GodkjenningService {
         AsynkOppgave sendOppfoelgingsdialog = asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_SEND, ressursId));
         asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_ARKIVER, ressursId, sendOppfoelgingsdialog.id));
 
-        // Also send oppfolgingsplan to Arkivporten
+        // Also send oppfolgingsplan to Dokumentporten
         if (toggle.erPreprod()) {
-            asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_ARKIVPORTEN_SEND, ressursId));
+            asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_DOKUMENTPORTEN_SEND, ressursId));
         }
     }
 }
