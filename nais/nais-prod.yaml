@@ -162,6 +162,6 @@ spec:
     - name: DISTRIBUTE_ALTINN_PLANS
       value: "false"
     - name: DOKUMENTPORTEN_URL
-      value: https:///syfo-dokumentporten.intern.nav.no
+      value: https://syfo-dokumentporten.intern.nav.no
     - name: DOKUMENTPORTEN_SCOPE
       value: api://prod-gcp.team-esyfo.syfo-dokumentporten/.default
