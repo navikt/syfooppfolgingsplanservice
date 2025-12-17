@@ -68,7 +68,7 @@ spec:
         - application: syfobrukertilgang
           namespace: team-esyfo
           cluster: dev-gcp
-        - application: arkivporten
+        - application: syfo-dokumentporten
           namespace: team-esyfo
           cluster: dev-gcp
       external:
@@ -168,4 +168,4 @@ spec:
     - name: DOKUMENTPORTEN_URL
       value: https:///syfo-dokumentporten.intern.dev.nav.no
     - name: DOKUMENTPORTEN_SCOPE
-      value: api://dev-gcp.team-esyfo.arkivporten/.default
+      value: api://dev-gcp.team-esyfo.syfo-dokumentporten/.default
