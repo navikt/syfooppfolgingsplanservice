@@ -1,4 +1,4 @@
-package no.nav.syfo.arkivporten
+package no.nav.syfo.dokumentporten
 
 import java.time.LocalDateTime
 import junit.framework.TestCase.assertEquals
