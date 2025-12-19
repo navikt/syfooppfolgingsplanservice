@@ -25,6 +25,8 @@ object Versions {
     const val jaxbVersion = "2.3.1"
     const val javaxActivationVersion = "1.2.0"
     const val jakartaSoapVersion = "1.5.1"
+    const val tomcatEmbedded = "10.1.49"
+    const val springBootVersion = "3.3.13"
 }
 
 val githubUser: String by project
@@ -85,6 +87,16 @@ configurations.all {
     }
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:${Versions.springBootVersion}")
+    }
+    dependencies {
+        dependency("org.apache.tomcat.embed:tomcat-embed-core:${Versions.tomcatEmbedded}")
+        dependency("org.apache.tomcat.embed:tomcat-embed-websocket:${Versions.tomcatEmbedded}")
+        dependency("org.apache.tomcat.embed:tomcat-embed-el:${Versions.tomcatEmbedded}")
+    }
+}
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
