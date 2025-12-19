@@ -146,7 +146,7 @@ dependencies {
 
     implementation("org.apache.avro:avro:${Versions.avroVersion}")
     implementation("io.confluent:kafka-avro-serializer:${Versions.confluentVersion}") {
-        exclude(group = "log4j", module = "log4j")
+//        exclude(group = "log4j", module = "log4j")
     }
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
@@ -165,7 +165,7 @@ dependencies {
     implementation("net.sf.saxon:Saxon-HE:12.9")
     implementation("org.apache.kafka:kafka-clients:${Versions.kafkaClientVersion}")
     implementation("org.apache.kafka:kafka_2.13:${Versions.kafkaClientVersion}") {
-        exclude(group = "log4j", module = "log4j")
+//        exclude(group = "log4j", module = "log4j")
     }
     implementation("com.atomikos:transactions-spring-boot3-starter:${Versions.atomikosVersion}")
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:${Versions.jakartaRsApiVersion}")
@@ -175,6 +175,7 @@ dependencies {
     implementation("com.sun.xml.messaging.saaj:saaj-impl:${Versions.jakartaSoapVersion}")
     implementation("javax.xml.soap:saaj-api:${Versions.javaxSoapVersion}")
 
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.25.3")
     testImplementation("junit:junit")
     testImplementation("io.mockk:mockk:${Versions.mockkVersion}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
@@ -201,7 +202,7 @@ dependencies {
 }
 
 tasks {
-    extra["log4j2.version"] = "2.16.0"
+//    extra["log4j2.version"] = "2.16.0"
 
     named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
