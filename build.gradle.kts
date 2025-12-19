@@ -211,3 +211,6 @@ tasks {
         enabled = false
     }
 }
+configurations.all {
+    exclude(group = "org.springframework", module = "spring-jcl")
+}
