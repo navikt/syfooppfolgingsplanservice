@@ -27,6 +27,7 @@ object Versions {
     const val jakartaSoapVersion = "1.5.1"
     const val tomcatEmbedded = "10.1.49"
     const val springBootVersion = "3.3.13"
+    const val kafkaClientVersion = "3.9.1"
 }
 
 val githubUser: String by project
@@ -147,7 +148,6 @@ dependencies {
     implementation("io.confluent:kafka-avro-serializer:${Versions.confluentVersion}") {
         exclude(group = "log4j", module = "log4j")
     }
-
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
 
@@ -163,7 +163,8 @@ dependencies {
     implementation("org.apache.commons:commons-lang3")
     implementation("org.slf4j:slf4j-api")
     implementation("net.sf.saxon:Saxon-HE:12.9")
-    implementation("org.apache.kafka:kafka_2.13") {
+    implementation("org.apache.kafka:kafka-clients:${Versions.kafkaClientVersion}")
+    implementation("org.apache.kafka:kafka_2.13:${Versions.kafkaClientVersion}") {
         exclude(group = "log4j", module = "log4j")
     }
     implementation("com.atomikos:transactions-spring-boot3-starter:${Versions.atomikosVersion}")
