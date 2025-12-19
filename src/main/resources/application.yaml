@@ -23,6 +23,10 @@ server:
     context-path: /syfooppfolgingsplanservice
 
 spring:
+  datasource:
+    url: ${ORACLE_DB_URL}
+    username: ${ORACLE_DB_USERNAME}
+    password: ${ORACLE_DB_PASSWORD}
   main.banner-mode: 'off'
   cache.type: redis
   data:
