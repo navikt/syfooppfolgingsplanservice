@@ -25,7 +25,7 @@ import static java.util.Collections.unmodifiableMap;
         HibernateJpaAutoConfiguration.class
 })
 @EnableJwtTokenValidation
-@ConfigurationPropertiesScan
+//@ConfigurationPropertiesScan
 public class Application {
     public static void main(String[] args) {
         new SpringApplicationBuilder(Application.class)
