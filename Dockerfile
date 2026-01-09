@@ -1,6 +1,6 @@
-FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jre:openjdk-21
+FROM eclipse-temurin:21-jre
+#FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jre:openjdk-21
 LABEL maintainer="Team-esyfo"
-
 ENV LANG='nb_NO.UTF-8' LANGUAGE='nb_NO:nb' LC_ALL='nb:NO.UTF-8' TZ="Europe/Oslo"
 ENV JAVA_TOOL_OPTIONS="-Dspring.profiles.active=remote \
         -Xmx1024M \
