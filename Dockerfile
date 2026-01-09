@@ -3,8 +3,7 @@ LABEL maintainer="Team-esyfo"
 
 ENV LANG='nb_NO.UTF-8' LANGUAGE='nb_NO:nb' LC_ALL='nb:NO.UTF-8' TZ="Europe/Oslo"
 
-ENV JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom \
-               -Dspring.profiles.active=remote \
+ENV JAVA_OPTS="-Dspring.profiles.active=remote \
                -Xmx1024M \
                -Xms512M"
 COPY build/libs/app.jar /app/app.jar
