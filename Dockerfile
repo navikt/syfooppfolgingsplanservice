@@ -7,5 +7,5 @@ ENV JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom \
                -Dspring.profiles.active=remote \
                -Xmx1024M \
                -Xms512M"
-COPY build/libs/*.jar  /app/app.jar
+COPY build/libs/app.jar /app/app.jar
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
