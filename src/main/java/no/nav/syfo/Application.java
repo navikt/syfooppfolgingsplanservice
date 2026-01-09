@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfig
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.core.env.MapPropertySource;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import static java.util.Collections.unmodifiableMap;
         HibernateJpaAutoConfiguration.class
 })
 @EnableJwtTokenValidation
+@ConfigurationPropertiesScan
 public class Application {
     public static void main(String[] args) {
         new SpringApplicationBuilder(Application.class)
