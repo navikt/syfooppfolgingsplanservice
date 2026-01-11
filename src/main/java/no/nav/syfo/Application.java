@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.util.Collections.unmodifiableMap;
 
@@ -25,7 +26,7 @@ import static java.util.Collections.unmodifiableMap;
         HibernateJpaAutoConfiguration.class
 })
 @EnableJwtTokenValidation
-//@ConfigurationPropertiesScan
+@ConfigurationPropertiesScan
 public class Application {
     public static void main(String[] args) {
         new SpringApplicationBuilder(Application.class)
@@ -34,19 +35,45 @@ public class Application {
                     properties.put("ORACLE_DB_URL", fromFile("/secrets/oppfolgingsplandb/config/jdbc_url"));
                     properties.put("ORACLE_DB_USERNAME", fromFile("/secrets/oppfolgingsplandb/credentials/username"));
                     properties.put("ORACLE_DB_PASSWORD", fromFile("/secrets/oppfolgingsplandb/credentials/password"));
+                    properties.putAll(naisVault());
                     var propertySource = new MapPropertySource("database-properties", unmodifiableMap(properties));
                     applicationContext.getEnvironment().getPropertySources().addFirst(propertySource);
                 })
                 .run(args);
     }
 
-    private static String fromFile(String filename) {
+    private static List<String> fromFile(String filename) {
         try {
             Path file = Paths.get(filename);
-            List<String> lines = Files.readAllLines(file);
-            return lines.getFirst();
+            return Files.readAllLines(file);
         } catch (IOException exception) {
-            throw new RuntimeException("Failed to read property value from " + filename, exception);
+            throw new RuntimeException("Failed to read lines from " + filename, exception);
         }
+    }
+
+    private static Map<String, Object> naisVault() {
+        Map<String, Object> properties = new HashMap<>();
+
+        try (Stream<Path> stream = Files.list(Paths.get("/var/run/secrets/nais.io/vault"))) {
+            List<String> fileList = stream
+                    .filter(file -> !Files.isDirectory(file))
+                    .map(Path::toString)
+                    .toList();
+
+            fileList.forEach(filePath -> {
+                List<String> secrets = fromFile(filePath);
+                secrets.forEach(secret -> {
+                    String[] parts = secret.split("=", 2);
+                    if (parts.length == 2) {
+                        String key = parts[0].trim();
+                        String value = parts[1].trim().replaceAll("^\"|\"$", "");
+                        properties.put(key, value);
+                    }
+                });
+            });
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to get list of files from vault", e);
+        }
+        return properties;
     }
 }
