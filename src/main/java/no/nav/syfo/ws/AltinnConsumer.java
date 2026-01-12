@@ -2,6 +2,7 @@ package no.nav.syfo.ws;
 
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptExternal;
 import no.altinn.schemas.services.intermediary.receipt._2009._10.ReceiptStatusEnum;
+import no.altinn.schemas.services.serviceengine.correspondence._2010._10.InsertCorrespondenceV2;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasic;
 import no.altinn.services.serviceengine.correspondence._2009._10.ICorrespondenceAgencyExternalBasicInsertCorrespondenceBasicV2AltinnFaultFaultFaultMessage;
 import no.nav.syfo.domain.OppfolgingsplanAltinn;
@@ -46,15 +47,23 @@ public class AltinnConsumer {
     public Integer sendOppfolgingsplanTilArbeidsgiver(OppfolgingsplanAltinn oppfolgingplanAltinn) {
         Optional<String> brukersNavn = Optional.ofNullable(pdlConsumer.personName(oppfolgingplanAltinn.oppfolgingsplan.arbeidstaker.fnr));
         try {
+            if (alltinnUsername == null) log.warn("Altinn username is null");
+            if (altinnPassword == null) log.warn("Altinn password is null");
+            if (alltinnUsername.isEmpty()) log.warn("Altinn usernam is empty");
+            if (altinnPassword.isEmpty()) log.warn("Altinn password is empty");
+            InsertCorrespondenceV2 insertCorrespondenceV2 = oppfoelgingsdialogTilCorrespondence(oppfolgingplanAltinn, brukersNavn.orElseThrow(() -> {
+                log.error("Fikk uventet feil fra TPS");
+                return new RuntimeException(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN);
+            }));
+            if (insertCorrespondenceV2 == null) {
+                log.error("InsertCorrespondenceV2 is null");
+            }
             ReceiptExternal receiptExternal = insertCorrespondenceBasic.insertCorrespondenceBasicV2(
                     alltinnUsername,
                     altinnPassword,
                     SYSTEM_USER_CODE,
                     oppfolgingplanAltinn.oppfolgingsplan.uuid,
-                    oppfoelgingsdialogTilCorrespondence(oppfolgingplanAltinn, brukersNavn.orElseThrow(() -> {
-                        log.error("Fikk uventet feil fra TPS");
-                        return new RuntimeException(FEIL_VED_SENDING_AV_OPPFOELGINGSPLAN_TIL_ALTINN);
-                    }))
+                    insertCorrespondenceV2
             );
             if (receiptExternal.getReceiptStatusCode() != ReceiptStatusEnum.OK) {
                 log.error("Fikk uventet statuskode fra Altinn {}", receiptExternal.getReceiptStatusCode());
