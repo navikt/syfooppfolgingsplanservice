@@ -18,6 +18,7 @@ public class AltinnConfig {
 
     @Value("${srv.password}")
     private String passwordl;
+
     @Bean
     @Primary
     public ICorrespondenceAgencyExternalBasic iCorrespondenceAgencyExternal() {
