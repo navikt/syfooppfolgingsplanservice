@@ -24,7 +24,7 @@ public class CustomPropertyInitializer implements ApplicationContextInitializer<
         properties.put("ORACLE_DB_PASSWORD", fromFile("/secrets/oppfolgingsplandb/credentials/password").getFirst());
         properties.putAll(naisVault());
         context.getEnvironment().getPropertySources().addFirst(
-                new MapPropertySource("myCustomFileSource", properties)
+                new MapPropertySource("configProperties", properties)
         );
     }
 
