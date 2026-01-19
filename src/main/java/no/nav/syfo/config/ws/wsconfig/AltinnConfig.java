@@ -14,16 +14,16 @@ public class AltinnConfig {
     private String serviceUrl;
 
     @Value("${srv.username}")
-    private String usernname;
+    private String username;
 
     @Value("${srv.password}")
-    private String passwordl;
+    private String password;
 
     @Bean
     @Primary
     public ICorrespondenceAgencyExternalBasic iCorrespondenceAgencyExternal() {
         ICorrespondenceAgencyExternalBasic port = factory();
-        STSClientConfig.configureRequestSamlToken(port, usernname, passwordl);
+        STSClientConfig.configureRequestSamlToken(port, username, password);
         return port;
     }
 
