@@ -28,6 +28,7 @@ object Versions {
     const val tomcatEmbedded = "10.1.49"
     const val springBootVersion = "3.3.13"
     const val kafkaClientVersion = "3.9.1"
+    const val log4jVersion = "2.25.3"
 }
 
 val githubUser: String by project
@@ -133,7 +134,6 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api:${Versions.jaxbVersion}")
     implementation("com.sun.xml.bind:jaxb-impl:${Versions.jaxbVersion}")
 
-
     implementation("no.nav.helse.xml:oppfolgingsplan:${Versions.helseXmlVersion}")
 
     implementation("no.nav.syfotjenester:oppfolgingsplanlps:${Versions.syfotjenesterVersion}")
@@ -145,9 +145,7 @@ dependencies {
     implementation("no.nav.tjenestespesifikasjoner:varsel-inn:${Versions.tjenesteSpesifikasjonerVersion}")
 
     implementation("org.apache.avro:avro:${Versions.avroVersion}")
-    implementation("io.confluent:kafka-avro-serializer:${Versions.confluentVersion}") {
-        exclude(group = "log4j", module = "log4j")
-    }
+    implementation("io.confluent:kafka-avro-serializer:${Versions.confluentVersion}")
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
 
@@ -164,9 +162,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
     implementation("net.sf.saxon:Saxon-HE:12.9")
     implementation("org.apache.kafka:kafka-clients:${Versions.kafkaClientVersion}")
-    implementation("org.apache.kafka:kafka_2.13:${Versions.kafkaClientVersion}") {
-        exclude(group = "log4j", module = "log4j")
-    }
+    implementation("org.apache.kafka:kafka_2.13:${Versions.kafkaClientVersion}")
     implementation("com.atomikos:transactions-spring-boot3-starter:${Versions.atomikosVersion}")
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:${Versions.jakartaRsApiVersion}")
     implementation("com.sun.activation:javax.activation:${Versions.javaxActivationVersion}")
@@ -175,6 +171,7 @@ dependencies {
     implementation("com.sun.xml.messaging.saaj:saaj-impl:${Versions.jakartaSoapVersion}")
     implementation("javax.xml.soap:saaj-api:${Versions.javaxSoapVersion}")
 
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:${Versions.log4jVersion}")
     testImplementation("junit:junit")
     testImplementation("io.mockk:mockk:${Versions.mockkVersion}")
     testImplementation("com.h2database:h2:${Versions.h2Version}")
@@ -201,8 +198,6 @@ dependencies {
 }
 
 tasks {
-    extra["log4j2.version"] = "2.16.0"
-
     named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         archiveFileName.set("app.jar")
@@ -210,4 +205,7 @@ tasks {
     named<Jar>("jar") {
         enabled = false
     }
+}
+configurations.all {
+    exclude(group = "org.springframework", module = "spring-jcl")
 }
