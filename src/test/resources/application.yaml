@@ -48,11 +48,6 @@ srvsyfooppfolgingsplanservice:
   username: "username"
   password: "1234"
 
-
-srv:
-  username: srvusr
-  password: srvpassword
-
 elector.path: "www.kanskje.no"
 
 syfooppdfgen.url: "https://syfooppdfgen"
