@@ -13,17 +13,11 @@ public class AltinnConfig {
     @Value("${ekstern.altinn.behandlealtinnmelding.v1.endpointurl}")
     private String serviceUrl;
 
-    @Value("${srv.username}")
-    private String username;
-
-    @Value("${srv.password}")
-    private String password;
-
     @Bean
     @Primary
     public ICorrespondenceAgencyExternalBasic iCorrespondenceAgencyExternal() {
         ICorrespondenceAgencyExternalBasic port = factory();
-        STSClientConfig.configureRequestSamlToken(port, username, password);
+        STSClientConfig.configureRequestSamlToken(port);
         return port;
     }
 
