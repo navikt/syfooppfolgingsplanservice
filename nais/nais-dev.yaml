@@ -169,3 +169,5 @@ spec:
       value: https://syfo-dokumentporten.intern.dev.nav.no
     - name: DOKUMENTPORTEN_SCOPE
       value: api://dev-gcp.team-esyfo.syfo-dokumentporten/.default
+    - name: SPRING_PROFILES_ACTIVE
+      value: remote
