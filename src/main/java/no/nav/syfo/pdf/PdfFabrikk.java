@@ -1,7 +1,7 @@
 package no.nav.syfo.pdf;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.*;
+import org.openpdf.text.DocumentException;
+import org.openpdf.text.pdf.*;
 import org.slf4j.Logger;
 import org.xhtmlrenderer.pdf.DefaultPDFCreationListener;
 import org.xhtmlrenderer.pdf.ITextRenderer;
