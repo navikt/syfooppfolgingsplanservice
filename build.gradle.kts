@@ -151,7 +151,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core:${Versions.flywayVersion}")
     implementation("com.oracle.ojdbc:ojdbc8:${Versions.ojdbc8Version}")
 
-    implementation("io.micrometer:micrometer-registry-prometheus:1.16.2")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.16.3")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("commons-io:commons-io:2.21.0")
     implementation("com.lowagie:itext:2.1.7")
