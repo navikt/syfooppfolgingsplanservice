@@ -1,10 +1,14 @@
-FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jre:openjdk-21
-LABEL maintainer="Team-esyfo"
+FROM ghcr.io/navikt/baseimages/temurin:21
+LABEL org.opencontainers.image.source=https://github.com/navikt/syfooppfolgingsplanservice
 
-ENV LANG='nb_NO.UTF-8' LANGUAGE='nb_NO:nb' LC_ALL='nb:NO.UTF-8' TZ="Europe/Oslo"
-ENV JAVA_TOOL_OPTIONS="-Xmx1024M \
-        -Xms512M \
-        -Djava.security.egd=file:/dev/./urandom"
+USER root
+RUN apt remove wget -y
+USER apprunner
+COPY init.sh /init-scripts/init.sh
 
-COPY build/libs/app.jar /app/app.jar
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+COPY build/libs/*.jar app.jar
+
+ENV JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom \
+               -Dspring.profiles.active=remote \
+               -Xmx1024M \
+               -Xms512M"
