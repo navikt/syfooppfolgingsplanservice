@@ -21,10 +21,10 @@ public class STSClientConfig {
     private static final String STS_REQUEST_SAML_POLICY = "classpath:policy/requestSamlPolicy.xml";
     private static final String STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml";
 
-    public static <T> T configureRequestSamlToken(T port) {
+    public static <T> T configureRequestSamlToken(T port, String username, String password) {
         Client client = ClientProxy.getClient(port);
         // do not have onbehalfof token so cache token in endpoint
-        configureStsRequestSamlToken(client, true);
+        configureStsRequestSamlToken(client, true, username, password);
         return port;
     }
 
@@ -37,21 +37,23 @@ public class STSClientConfig {
         client.getOutInterceptors().add(new OnBehalfOfOutInterceptor());
 
         // want to cache the token with the OnBehalfOfToken, not per proxy
-        configureStsRequestSamlToken(client, false);
+        configureStsRequestSamlToken(client, false, null, null);
         return port;
     }
 
-    protected static void configureStsRequestSamlToken(Client client, boolean cacheTokenInEndpoint) {
+    protected static void configureStsRequestSamlToken(Client client, boolean cacheTokenInEndpoint, String username, String password) {
         // TODO: remove custom client when STS is updated to support the cxf client
         STSClient stsClient = createCustomSTSClient(client.getBus());
-        configureStsWithPolicyForClient(stsClient, client, STS_REQUEST_SAML_POLICY, cacheTokenInEndpoint);
+        configureStsWithPolicyForClient(stsClient, client, STS_REQUEST_SAML_POLICY, cacheTokenInEndpoint, username, password);
     }
 
-    protected static void configureStsWithPolicyForClient(STSClient stsClient, Client client, String policyReference,
-                                                          boolean cacheTokenInEndpoint) {
+    protected static void configureStsWithPolicyForClient(STSClient stsClient,
+                                                          Client client,
+                                                          String policyReference,
+                                                          boolean cacheTokenInEndpoint,
+                                                          String username,
+                                                          String password) {
         String location = System.getenv("SECURITYTOKENSERVICE_URL");
-        String username = System.getenv("SRV_USERNAME");
-        String password = System.getenv("SRV_PASSWORD");
 
         configureSTSClient(stsClient, location, username, password);
 
