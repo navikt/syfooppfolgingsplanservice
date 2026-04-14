@@ -18,7 +18,7 @@ object Versions {
     const val mockkVersion = "1.14.2"
     const val atomikosVersion = "6.0.0"
     const val jakartaRsApiVersion = "3.1.0"
-    const val jacksonVersion = "2.15.3"
+    const val jacksonVersion = "2.15.4"
     const val apacheHttpClientVersion = "5.2.1"
     const val javaxWsVersion = "2.3.1"
     const val javaxSoapVersion = "1.3.5"
@@ -41,6 +41,7 @@ plugins {
     id("org.springframework.boot") version "3.3.13"
     id("io.spring.dependency-management") version "1.1.7"
 }
+extra["tomcat.version"] = "10.1.54"
 
 java {
     toolchain {
@@ -92,11 +93,6 @@ configurations.all {
 dependencyManagement {
     imports {
         mavenBom("org.springframework.boot:spring-boot-dependencies:${Versions.springBootVersion}")
-    }
-    dependencies {
-        dependency("org.apache.tomcat.embed:tomcat-embed-core:${Versions.tomcatEmbedded}")
-        dependency("org.apache.tomcat.embed:tomcat-embed-websocket:${Versions.tomcatEmbedded}")
-        dependency("org.apache.tomcat.embed:tomcat-embed-el:${Versions.tomcatEmbedded}")
     }
 }
 dependencies {
