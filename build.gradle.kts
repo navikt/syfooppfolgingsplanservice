@@ -25,7 +25,6 @@ object Versions {
     const val jaxbVersion = "2.3.1"
     const val javaxActivationVersion = "1.2.0"
     const val jakartaSoapVersion = "1.5.1"
-    const val tomcatEmbedded = "10.1.49"
     const val springBootVersion = "3.3.13"
     const val kafkaClientVersion = "3.9.1"
     const val log4jVersion = "2.25.3"
@@ -41,7 +40,6 @@ plugins {
     id("org.springframework.boot") version "3.3.13"
     id("io.spring.dependency-management") version "1.1.7"
 }
-extra["tomcat.version"] = "10.1.54"
 
 java {
     toolchain {
@@ -95,6 +93,9 @@ dependencyManagement {
         mavenBom("org.springframework.boot:spring-boot-dependencies:${Versions.springBootVersion}")
     }
 }
+
+extra["tomcat.version"] = "10.1.54"
+
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
