@@ -94,7 +94,7 @@ dependencyManagement {
     }
 }
 
-extra["tomcat.version"] = "10.1.54"
+extra["tomcat.version"] = "10.1.55"
 
 dependencies {
     implementation(kotlin("stdlib"))
