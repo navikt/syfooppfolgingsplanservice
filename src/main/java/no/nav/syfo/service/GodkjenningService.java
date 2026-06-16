@@ -578,12 +578,12 @@ public class GodkjenningService {
     }
 
     private void sendGodkjentPlanTilAltinn(Long oppfoelgingsdialogId) {
+        String ressursId = String.valueOf(oppfoelgingsdialogId);
+        LOG.info("Sender plan med ressurdId {} til Dokumentporten.", ressursId);
+        asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_DOKUMENTPORTEN_SEND, ressursId));
         if (LocalDateTime.now().isBefore(LocalDateTime.of(2026, 6, 15, 11, 45))) {
-            String ressursId = String.valueOf(oppfoelgingsdialogId);
             AsynkOppgave sendOppfoelgingsdialog = asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_SEND, ressursId));
             asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_ARKIVER, ressursId, sendOppfoelgingsdialog.id));
-            // Also send oppfolgingsplan to Dokumentporten
-            asynkOppgaveDAO.create(new AsynkOppgave(OPPFOELGINGSDIALOG_DOKUMENTPORTEN_SEND, ressursId));
         } else {
             LOG.info("Sending til Altinn 2 er blokkert. Altinn 2 blir faset ut av Digdir ved utgangen av mai 2026.");
         }
