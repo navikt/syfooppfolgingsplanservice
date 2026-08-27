@@ -156,7 +156,7 @@ dependencies {
     implementation("org.xhtmlrenderer:flying-saucer-pdf:9.13.2")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.slf4j:slf4j-api")
-    implementation("net.sf.saxon:Saxon-HE:12.9")
+    implementation("net.sf.saxon:Saxon-HE:13.0")
     implementation("org.apache.kafka:kafka-clients:${Versions.kafkaClientVersion}")
     implementation("org.apache.kafka:kafka_2.13:${Versions.kafkaClientVersion}")
     implementation("com.atomikos:transactions-spring-boot3-starter:${Versions.atomikosVersion}")
